@@ -73,5 +73,65 @@ const getAllProducts = async (req, res) => {
     }
   
    }
+   const searchProductByName = async (req, res) => {
+      try {
+          const { Name } = req.body; // Extract product name from the request body
+  
+          if (!Name) {
+              return res.status(400).json({ message: "Product name is required for search." });
+          }
+  
+          // Use regex for case-insensitive, partial matching
+          const products = await productModel.find({
+              Name: { $regex: Name, $options: 'i' } // 'i' makes it case-insensitive
+          });
+  
+          if (products.length === 0) {
+              return res.status(404).json({ message: "No products found matching the given name." });
+          }
+  
+          res.status(200).json(products);
+      } catch (error) {
+          res.status(500).json({ message: "Failed to search products.", error: error.message });
+      }
+  };
 
- module.exports = {postProduct, getAllProducts, getProductbyName, putProductPriceandDetails,deleteProduct};
+  const filterProductByPrice = async (req, res) => {
+   try {
+       const { minPrice, maxPrice } = req.body; // Extract minPrice and maxPrice from the request body
+
+       // Validate if at least one price range is provided
+       if (minPrice === undefined && maxPrice === undefined) {
+           return res.status(400).json({ message: 'At least one of minPrice or maxPrice is required.' });
+       }
+
+       // Build the price filter based on provided minPrice and maxPrice
+       let priceFilter = {};
+       if (minPrice !== undefined) {
+           priceFilter.$gte = minPrice; // Price greater than or equal to minPrice
+       }
+       if (maxPrice !== undefined) {
+           priceFilter.$lte = maxPrice; // Price less than or equal to maxPrice
+       }
+
+       // Find products within the price range
+       const products = await productModel.find({
+           Price: priceFilter
+       });
+
+       if (products.length === 0) {
+           return res.status(404).json({ message: 'No products found within the specified price range.' });
+       }
+
+       res.status(200).json(products);
+   } catch (error) {
+       res.status(500).json({ message: 'Failed to filter products by price.', error: error.message });
+   }
+};
+ 
+
+
+   
+
+
+ module.exports = {postProduct, getAllProducts, getProductbyName, putProductPriceandDetails,deleteProduct,searchProductByName,filterProductByPrice};

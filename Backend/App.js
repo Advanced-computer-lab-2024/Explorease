@@ -46,6 +46,11 @@ app.post('/loginTourist',  touristControllers.loginTourist);
 app.get('/sortAllByPrice', touristControllers.sortAllByPrice);
 app.get('/sortAllByRating', touristControllers.sortAllByRating);
 
+// tourist search product by name and filter product by price
+app.get('/touristsearchProductByName', touristControllers.searchProductByName);
+app.get('/touristfilterProductByPrice', touristControllers.filterProductByPrice);
+
+
 // Tourist Guide Routers
 app.post('/createGuide', tourGuideController.createTourGuide);
 app.get('/getTourGuides', tourGuideController.getAllTourGuides);
@@ -63,6 +68,11 @@ app.put('/updateSeller/:id', sellerController.updateSeller);
 app.delete('/deleteSeller/:id', sellerController.deleteSeller);
 app.post('/loginSeller',  sellerController.loginSeller);
 
+
+// seller search product by name and filter product by price
+app.get('/sellersearchProductByName', sellerController.searchProductByName);
+app.get('/sellerfilterProductByPrice', sellerController.filterProductByPrice);
+
 // Advertiser Routers 
 app.post('/createAdvertiser', advertiserController.createAdvertiser);
 app.get('/getAdvertisers', advertiserController.getAllAdvertisers);
@@ -77,6 +87,7 @@ app.post('/category', authenticateAdmin, activityCategoryController.createCatego
 app.get('/categories', activityCategoryController.getAllCategories); // Anyone can get all categories
 app.put('/category/:id', authenticateAdmin, activityCategoryController.updateCategory); // Admin can update a category
 app.delete('/category/:id', authenticateAdmin, activityCategoryController.deleteCategory); // Admin can delete a category
+
 
 //Activity Routers 
 app.post('/createActivity', authenticate, activityControllers.createActivity); // Protected route with authentication
@@ -142,6 +153,10 @@ app.post('/addTourismGovernor',
     adminController.addTourismGovernor);
 
 app.post('/createMainAdmin', adminController.createMainAdmin);
+
+// admin search product by name and filter product by price
+app.get('/adminsearchProductByName', adminController.searchProductByName);
+app.get('/adminfilterProductByPrice', adminController.filterProductByPrice);
 
 // preference tags routers
 app.post('/createTag', preferenceTagController.createTag);
