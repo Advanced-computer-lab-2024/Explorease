@@ -86,4 +86,48 @@ const deleteActivity = async(req, res) => {
     }
 };
 
-module.exports = { createActivity, readActivities, updateActivity, deleteActivity };
+
+// Filter Activity using Budget
+const filterUpcomingActivityByBudget = async (req, res) => {
+    const { budget } = req.body;
+
+    try {
+        const currentDate = new Date(); 
+        const activities = await activityModel.find({ date: { $gte: currentDate }, price: { $lte: budget }});
+
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'There are no upcoming activities found within the specified budget.' });
+        }
+
+        res.status(200).json(activities);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching activities by budget', error });
+    }
+};
+
+
+// Filter Activities by Date
+const filterUpcomingActivityByDate = async (req, res) => {
+    const { date } = req.body; 
+
+    try {
+        const selectedDate = new Date(date);
+        const startOfDay = new Date(selectedDate.setUTCHours(0, 0, 0, 0)); 
+        const endOfDay = new Date(selectedDate.setUTCHours(23, 59, 59, 999)); 
+
+        const activities = await activityModel.find({ date: { $gte: startOfDay, $lt: endOfDay } });
+
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'There are no activities found on that specified date.' });
+        }
+
+        res.status(200).json(activities);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching activities by date', error });
+    }
+};
+
+
+
+
+module.exports = { createActivity, readActivities, updateActivity, deleteActivity, filterUpcomingActivityByBudget, filterUpcomingActivityByDate };
