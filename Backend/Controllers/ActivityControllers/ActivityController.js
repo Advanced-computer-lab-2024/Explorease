@@ -28,7 +28,7 @@ const readActivities = async(req, res) => {
     }
 };
 
-//get all created activity
+//get all activity
 const getAllActivity = async(req, res) => {
     try {
         const getAllActivity = await activityModel.find({});
@@ -99,4 +99,4 @@ const deleteActivity = async(req, res) => {
     }
 };
 
-module.exports = { createActivity, readActivities, updateActivity, deleteActivity };
+module.exports = { createActivity, readActivities, getAllActivity, updateActivity, deleteActivity };
