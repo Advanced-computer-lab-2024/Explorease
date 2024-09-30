@@ -14,8 +14,8 @@ const historicLocationController = require('./Controllers/ActivityControllers/Hi
 const productControllers = require('./Controllers/ProductControllers/ProductController');
 const iteniraryControllers = require('./Controllers/ActivityControllers/IteniraryController');
 const activityCategoryController = require('./Controllers/ActivityControllers/ActivityCategoryController');
-const preferenceTagController = require('./Controllers/ActivityControllers/PreferenceTagsController.js')
-
+const preferenceTagController = require('./Controllers/ActivityControllers/PreferenceTagsController.js');
+const TourismGovernorController = require('./Controllers/UserControllers/tourismGovernerController.js');
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
@@ -42,6 +42,7 @@ app.get('/getTourists', touristControllers.getAllTourists);
 app.put('/updateTourist/:id', touristControllers.updateTourist);
 app.delete('/deleteTourist/:id', touristControllers.deleteTourist);
 app.get('/getTourist/:id', touristControllers.getTouristById);
+app.post('/loginTourist',  touristControllers.loginTourist);
 
 // Tourist Guide Routers
 app.post('/createGuide', tourGuideController.createTourGuide);
@@ -58,6 +59,7 @@ app.get('/getSellers', sellerController.getAllSellers);
 app.get('/getSeller/:id', sellerController.getSellerById);
 app.put('/updateSeller/:id', sellerController.updateSeller);
 app.delete('/deleteSeller/:id', sellerController.deleteSeller);
+app.post('/loginSeller',  sellerController.loginSeller);
 
 // Advertiser Routers 
 app.post('/createAdvertiser', advertiserController.createAdvertiser);
@@ -134,3 +136,7 @@ app.get('/tags', preferenceTagController.getAllTags);
 app.get('/tags/:id', preferenceTagController.getTagById);
 app.put('/updateTag', preferenceTagController.updateTag);
 app.delete('/deleteTag/:id', preferenceTagController.deleteTag);
+
+
+//Tourist Governor Login
+app.post('/loginGovernor',TourismGovernorController.loginTouristGovernor);
