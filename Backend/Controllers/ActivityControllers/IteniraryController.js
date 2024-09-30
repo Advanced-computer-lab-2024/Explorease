@@ -5,9 +5,9 @@ const { default: mongoose } = require('mongoose');
 const createItenirary = async(req, res) => {
     const { activities, locations, timeline, durationOfEachActivity, LanguageOfTour, price, AvailableDates, AvailableTimes, accesibility, PickUpLocation, DropOffLocation } = req.body;
     const createdBy = req.user._id; // Assume req.user is set by authentication middleware
-
+    const languageArray = Array.isArray(LanguageOfTour) ? LanguageOfTour : [LanguageOfTour];
     try {
-        const Itenirary = new IteniraryModel({ activities, locations, timeline, durationOfEachActivity, LanguageOfTour, price, AvailableDates, AvailableTimes, accesibility, PickUpLocation, DropOffLocation });
+        const Itenirary = new IteniraryModel({ activities, locations, timeline, durationOfEachActivity, LanguageOfTour : languageArray, price, AvailableDates, AvailableTimes, accesibility, PickUpLocation, DropOffLocation, createdBy });
         await Itenirary.save();
         res.status(201).json({ message: 'Itenirary created successfully', Itenirary });
     } catch (error) {
@@ -116,7 +116,7 @@ const FilterUpcomingItinerariesByLanguage = async (req, res) => {
 
     try {
         const itineraries = await IteniraryModel.find({
-            LanguageOfTour: language 
+            LanguageOfTour: { $in: [language] }  
         });
 
         if (itineraries.length === 0) {
@@ -150,10 +150,34 @@ const FilterUpcomingItinerariesByBudget = async (req, res) => {
     }
 };
 
+const sortIteniraryByPrice = async (req,res) =>{
+    try {
+        // Fetch all itineraries and sort them by price (ascending)
+        const sortedItineraries = await IteniraryModel.find().sort({ price: 1 }).lean();  // 1 for ascending order
+
+        // Return the sorted itineraries
+        res.status(200).json(sortedItineraries);
+    } catch (err) {
+        console.error("Error fetching and sorting itineraries by price:", err);
+        res.status(500).json({ error: "Failed to fetch and sort itineraries." });
+    }
+};
+const sortIteniraryByRating = async (req,res) =>{
+    try {
+        // Fetch all itineraries and sort them by price (ascending)
+        const sortedItineraries = await IteniraryModel.find().sort({rating: -1 }).lean();  // -1 for decending order (higher first)
+
+        // Return the sorted itineraries
+        res.status(200).json(sortedItineraries);
+    } catch (err) {
+        console.error("Error fetching and sorting itineraries by rating:", err);
+        res.status(500).json({ error: "Failed to fetch and sort itineraries." });
+    }
+};
 
 
 
 
 
 
-module.exports = { createItenirary, readItenirary, updateItenirary, deleteItenirary, FilterUpcomingItinerariesByDate, FilterUpcomingItinerariesByLanguage, FilterUpcomingItinerariesByBudget  };
+module.exports = { createItenirary, readItenirary, updateItenirary, deleteItenirary, FilterUpcomingItinerariesByDate, FilterUpcomingItinerariesByLanguage, FilterUpcomingItinerariesByBudget ,sortIteniraryByPrice, sortIteniraryByRating};
