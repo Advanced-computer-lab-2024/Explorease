@@ -82,4 +82,4 @@ const deleteItenirary = async(req, res) => {
 
 };
 
-module.exports = { createItenirary, readItenirary, updateItenirary, deleteItenirary };
+module.exports = { createItenirary, readItenirary, getAllIteniarry, updateItenirary, deleteItenirary };
