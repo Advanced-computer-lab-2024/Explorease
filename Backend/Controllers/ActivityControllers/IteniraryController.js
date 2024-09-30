@@ -5,9 +5,9 @@ const { default: mongoose } = require('mongoose');
 const createItenirary = async(req, res) => {
     const { activities, locations, timeline, durationOfEachActivity, LanguageOfTour, price, AvailableDates, AvailableTimes, accesibility, PickUpLocation, DropOffLocation } = req.body;
     const createdBy = req.user._id; // Assume req.user is set by authentication middleware
-
+    const languageArray = Array.isArray(LanguageOfTour) ? LanguageOfTour : [LanguageOfTour];
     try {
-        const Itenirary = new IteniraryModel({ activities, locations, timeline, durationOfEachActivity, LanguageOfTour, price, AvailableDates, AvailableTimes, accesibility, PickUpLocation, DropOffLocation });
+        const Itenirary = new IteniraryModel({ activities, locations, timeline, durationOfEachActivity, LanguageOfTour : languageArray, price, AvailableDates, AvailableTimes, accesibility, PickUpLocation, DropOffLocation, createdBy });
         await Itenirary.save();
         res.status(201).json({ message: 'Itenirary created successfully', Itenirary });
     } catch (error) {
@@ -116,7 +116,7 @@ const FilterUpcomingItinerariesByLanguage = async (req, res) => {
 
     try {
         const itineraries = await IteniraryModel.find({
-            LanguageOfTour: language 
+            LanguageOfTour: { $in: [language] }  
         });
 
         if (itineraries.length === 0) {
