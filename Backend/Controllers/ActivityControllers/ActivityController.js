@@ -101,12 +101,12 @@ const deleteActivity = async(req, res) => {
 
 
 // Filter Activity using Budget
-const filterUpcomingActivityByBudget = async (req, res) => {
+const filterUpcomingActivityByBudget = async(req, res) => {
     const { budget } = req.body;
 
     try {
-        const currentDate = new Date(); 
-        const activities = await activityModel.find({ date: { $gte: currentDate }, price: { $lte: budget }});
+        const currentDate = new Date();
+        const activities = await activityModel.find({ date: { $gte: currentDate }, price: { $lte: budget } });
 
         if (activities.length === 0) {
             return res.status(404).json({ message: 'There are no upcoming activities found within the specified budget.' });
@@ -120,13 +120,13 @@ const filterUpcomingActivityByBudget = async (req, res) => {
 
 
 // Filter Activities by Date
-const filterUpcomingActivityByDate = async (req, res) => {
-    const { date } = req.body; 
+const filterUpcomingActivityByDate = async(req, res) => {
+    const { date } = req.body;
 
     try {
         const selectedDate = new Date(date);
-        const startOfDay = new Date(selectedDate.setUTCHours(0, 0, 0, 0)); 
-        const endOfDay = new Date(selectedDate.setUTCHours(23, 59, 59, 999)); 
+        const startOfDay = new Date(selectedDate.setUTCHours(0, 0, 0, 0));
+        const endOfDay = new Date(selectedDate.setUTCHours(23, 59, 59, 999));
 
         const activities = await activityModel.find({ date: { $gte: startOfDay, $lt: endOfDay } });
 
@@ -143,5 +143,4 @@ const filterUpcomingActivityByDate = async (req, res) => {
 
 
 
-module.exports = { createActivity, readActivities, updateActivity, deleteActivity, filterUpcomingActivityByBudget, filterUpcomingActivityByDate };
-
+module.exports = { createActivity, readActivities, getAllActivity, updateActivity, deleteActivity, filterUpcomingActivityByBudget, filterUpcomingActivityByDate };
