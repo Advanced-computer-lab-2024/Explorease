@@ -108,6 +108,13 @@ app.get('/getItenraries', iteniraryControllers.readItenirary);
 app.put('/updateItenirary/:id', iteniraryControllers.updateItenirary);
 app.delete('/deleteItenirary/:id', iteniraryControllers.deleteItenirary);
 
+//filter Itenirary by date and language
+app.get('/FilterUpcomingItinerariesByDate', iteniraryControllers.FilterUpcomingItinerariesByDate);
+app.get('/FilterUpcomingItinerariesByLanguage', iteniraryControllers.FilterUpcomingItinerariesByLanguage);
+app.get('/FilterUpcomingItinerariesByBudget', iteniraryControllers.FilterUpcomingItinerariesByBudget);
+
+
+
 
 //Admin Routers
 app.delete('/deleteAdmin/:id', authenticateAdmin, adminController.deleteAdminAccount);

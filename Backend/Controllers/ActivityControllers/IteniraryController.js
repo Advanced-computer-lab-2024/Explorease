@@ -82,4 +82,78 @@ const deleteItenirary = async(req, res) => {
 
 };
 
-module.exports = { createItenirary, readItenirary, getAllIteniarry, updateItenirary, deleteItenirary };
+
+const FilterUpcomingItinerariesByDate = async (req, res) => {
+    const { date } = req.body; 
+
+    if (!date) {
+        return res.status(400).json({ message: 'Date parameter is required' });
+    }
+    const filterDate = new Date(date);
+
+    try {
+        const itineraries = await IteniraryModel.find({
+            AvailableDates: { $eq: filterDate }
+        });
+
+        if (itineraries.length === 0) {
+            return res.status(404).json({ message: 'No itineraries found for the specified date' });
+        }
+
+        res.status(200).json(itineraries);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching itineraries', error });
+    }
+};
+
+
+const FilterUpcomingItinerariesByLanguage = async (req, res) => {
+    const { language } = req.body; 
+
+    if (!language) {
+        return res.status(400).json({ message: 'Language parameter is required' });
+    }
+
+    try {
+        const itineraries = await IteniraryModel.find({
+            LanguageOfTour: language 
+        });
+
+        if (itineraries.length === 0) {
+            return res.status(404).json({ message: `No itineraries found for language: ${language}` });
+        }
+
+        res.status(200).json(itineraries);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching itineraries', error });
+    }
+};
+
+const FilterUpcomingItinerariesByBudget = async (req, res) => {
+    const { budget } = req.body;
+   
+    if (!budget) {
+        return res.status(400).json({ message: 'Budget parameter is required' });
+    }
+
+    try {
+        const itineraries = await IteniraryModel.find({
+            price: { $lte: budget }
+        });
+
+        if (itineraries.length === 0) {
+            return res.status(404).json({ message: 'No itineraries found within the specified budget' });
+        }
+        res.status(200).json(itineraries);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching itineraries', error });
+    }
+};
+
+
+
+
+
+
+
+module.exports = { createItenirary, readItenirary, updateItenirary, deleteItenirary, FilterUpcomingItinerariesByDate, FilterUpcomingItinerariesByLanguage, FilterUpcomingItinerariesByBudget  };
