@@ -1,5 +1,7 @@
 const Admin = require('../../Models/UserModels/Admin.js'); // Corrected model path
 const TourismGovernor = require('../../Models/UserModels/TouristGoverner.js'); // Corrected model path
+const {searchProductByName} = require('../../Controllers/ProductControllers/ProductController.js');
+const {filterProductByPrice} = require('../../Controllers/ProductControllers/ProductController.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
@@ -176,6 +178,27 @@ const createMainAdmin = async(req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
+const searchProductByName =async(req,res) => {
+    try{
+        const product= await searchProductByName();
+        
+        res.status(200).jsonn
+    } catch (err) {
+        console.error("Error search product by name", err);
+        res.status(500).json({ error: "Failed to fetch data." });
+    } 
+};
+const filterProductByPrice =async(req,res) => {
+    try{
+        const price= await filterProductByPrice();
+        
+        res.status(200).jsonn
+    } catch (err) {
+        console.error("Error search product by price", err);
+        res.status(500).json({ error: "Failed to fetch data." });
+    } 
+};
 
-module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin };
+module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, searchProductByName,
+    filterProductByPrice};
