@@ -13,8 +13,8 @@ const ItenirarySchema = new Schema({
     accesibility: { type: String, required: true,},
     PickUpLocation: { type: String,required: true },
     DropOffLocation: { type: String, required: true },
-    createdBy: { type: Schema.Types.ObjectId, ref: 'TourGuide', required: true }
-
+    createdBy: { type: Schema.Types.ObjectId, ref: 'TourGuide', required: true },
+    tags : {type : Schema.Types.ObjectId, ref : 'PreferenceTags'}
 }, { timestamps: true });
 
 const Itenirary = mongoose.model('Itenirary', ItenirarySchema);

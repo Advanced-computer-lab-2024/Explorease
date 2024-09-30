@@ -18,7 +18,8 @@ const HistoricalPlaceSchema = new Schema({
         enum: ['Monument', 'Museum', 'Religious Site', 'Palace/Castle'] // Restrict values to these types
     },
     tags: [{ type: String }],
-    managedBy: { type: Schema.Types.ObjectId, ref: 'TourismGovernor', required: true }
+    managedBy: { type: Schema.Types.ObjectId, ref: 'TourismGovernor', required: true }, 
+    tags : {type : Schema.Types.ObjectId, ref : 'PreferenceTags'}
 }, { timestamps: true });
 
 const HistoricalPlace = mongoose.model('HistoricalPlace', HistoricalPlaceSchema);
