@@ -24,19 +24,22 @@ const authenticate = async(req, res, next) => {
             user = await TourGuide.findById(decoded.id); // If not an advertiser, try finding a tour guide
         }
 
+        // If not an advertiser nor a tour guide, must be a seller.
         if(!user){
             user = await Seller.findById(decoded.id);
         }
 
+        // If not an advertiser, nor a tour guide, nor a seller, must be a tourist. 
         if(!user){
             user = await Tourist.findById(decoded.id);
         }
 
+        // Otheriwse, the user is not found. 
         if (!user) {
             return res.status(401).json({ message: 'User not found' });
         }
 
-        req.user = user; // Attach the user (advertiser or tour guide) to the request
+        req.user = user; // Attach the user (We attach the user to the request) to the request
         next(); // Proceed to the next middleware or route handler
     } catch (error) {
         return res.status(401).json({ message: 'Token is not valid', error });
