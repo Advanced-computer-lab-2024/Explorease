@@ -82,6 +82,8 @@ const getHistoricalPlaces = async(req, res) => {
 
 }
 
+
+
 const updateHistoricalPlace = async(req, res) => {
     const id = req.params.id;
     const update = req.body;
