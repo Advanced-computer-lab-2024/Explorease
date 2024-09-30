@@ -43,6 +43,8 @@ app.put('/updateTourist/:id', touristControllers.updateTourist);
 app.delete('/deleteTourist/:id', touristControllers.deleteTourist);
 app.get('/getTourist/:id', touristControllers.getTouristById);
 app.post('/loginTourist',  touristControllers.loginTourist);
+app.get('/sortAllByPrice', touristControllers.sortAllByPrice);
+app.get('/sortAllByRating', touristControllers.sortAllByRating);
 
 // Tourist Guide Routers
 app.post('/createGuide', tourGuideController.createTourGuide);
@@ -81,6 +83,8 @@ app.post('/createActivity', authenticate, activityControllers.createActivity); /
 app.get('/getActivities', activityControllers.readActivities); // Open route
 app.put('/updateActivity/:id', authenticate, activityControllers.updateActivity); // Protected route
 app.delete('/deleteActivity/:id', authenticate, activityControllers.deleteActivity); // Protected route
+app.get('/sortActivityByPrice',activityControllers.sortActivityByPrice);
+app.get('/sortActivityByRating',activityControllers.sortActivityByRating);
 
  //Filter activity by budget and date
  app.get('/filterUpcomingActivityByBudget', activityControllers.filterUpcomingActivityByBudget); 
@@ -107,6 +111,8 @@ app.post('/createItenirary', authenticate, iteniraryControllers.createItenirary)
 app.get('/getItenraries', iteniraryControllers.readItenirary);
 app.put('/updateItenirary/:id', iteniraryControllers.updateItenirary);
 app.delete('/deleteItenirary/:id', iteniraryControllers.deleteItenirary);
+app.get('/sortIteniraryByPrice',iteniraryControllers.sortIteniraryByPrice);
+app.get('/sortIteniraryByRating',iteniraryControllers.sortIteniraryByRating);
 
 //filter Itenirary by date and language
 app.get('/FilterUpcomingItinerariesByDate', iteniraryControllers.FilterUpcomingItinerariesByDate);
