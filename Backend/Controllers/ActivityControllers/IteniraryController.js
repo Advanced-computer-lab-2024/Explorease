@@ -30,6 +30,18 @@ const readItenirary = async(req, res) => {
     }
 };
 
+const getAllIteniarry = async(req, res) => {
+    try {
+        const getAllIteniarry = await IteniraryModel.find({});
+        if (getAllIteniarry.length === 0) {
+            return res.status(404).json({ message: 'No Itenirary found' });
+        }
+        res.status(200).json(getAllIteniarry);
+    } catch (error) {
+        res.status(400).json({ message: 'Error fetching Itenirary', error })
+    }
+}
+
 const updateItenirary = async(req, res) => {
     const id = req.params.id;
     const update = req.body;
@@ -70,4 +82,4 @@ const deleteItenirary = async(req, res) => {
 
 };
 
-module.exports = { createItenirary, readItenirary, updateItenirary, deleteItenirary };
+module.exports = { createItenirary, readItenirary, getAllIteniarry, updateItenirary, deleteItenirary };

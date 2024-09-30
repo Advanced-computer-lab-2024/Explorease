@@ -1,5 +1,6 @@
 const userModel = require('../../Models/UserModels/TourGuide.js');
 const { default: mongoose } = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 const createTourGuide = async(req, res) => {
 
@@ -64,7 +65,7 @@ const getAllTourGuides = async(req, res) => {
     }
 }
 
-const loginTourguide = async(req, res) => {
+const loginTourGuide = async(req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -96,5 +97,5 @@ module.exports = {
     updateTourGuide,
     deleteTourGuide,
     getAllTourGuides,
-    loginTourguide
+    loginTourGuide
 }

@@ -28,6 +28,19 @@ const readActivities = async(req, res) => {
     }
 };
 
+//get all activity
+const getAllActivity = async(req, res) => {
+    try {
+        const getAllActivity = await activityModel.find({});
+        if (getAllActivity.length === 0) {
+            return res.status(404).json({ message: 'No activities found' });
+        }
+        res.status(200).json(getAllActivity);
+    } catch (error) {
+        res.status(400).json({ message: 'Error fetching activities', error })
+    }
+}
+
 // Update Activity
 const updateActivity = async(req, res) => {
     const id = req.params.id; // Get the ID from request parameters
@@ -131,3 +144,4 @@ const filterUpcomingActivityByDate = async (req, res) => {
 
 
 module.exports = { createActivity, readActivities, updateActivity, deleteActivity, filterUpcomingActivityByBudget, filterUpcomingActivityByDate };
+

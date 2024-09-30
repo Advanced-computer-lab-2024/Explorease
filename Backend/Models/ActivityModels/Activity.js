@@ -10,7 +10,8 @@ const ActivitySchema = new Schema({
     tags: { type: [String], required: true, default: [] },
     specialDiscounts: { type: String, required: true },
     bookingOpen: { type: Boolean, required: true },
-    createdBy: { type: Schema.Types.ObjectId, ref: 'Advertiser', required: true }
+    createdBy: { type: Schema.Types.ObjectId, ref: 'Advertiser', required: true },
+    tags : {type : Schema.Types.ObjectId, ref : 'PreferenceTags'}
 }, { timestamps: true });
 
 const Activity = mongoose.model('Activity', ActivitySchema);

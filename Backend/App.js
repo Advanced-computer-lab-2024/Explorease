@@ -14,6 +14,8 @@ const historicLocationController = require('./Controllers/ActivityControllers/Hi
 const productControllers = require('./Controllers/ProductControllers/ProductController');
 const iteniraryControllers = require('./Controllers/ActivityControllers/IteniraryController');
 const activityCategoryController = require('./Controllers/ActivityControllers/ActivityCategoryController');
+const preferenceTagController = require('./Controllers/ActivityControllers/PreferenceTagsController.js')
+
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
@@ -47,6 +49,7 @@ app.get('/getTourGuides', tourGuideController.getAllTourGuides);
 app.get('/getTourGuide/:id', tourGuideController.getTourGuideById);
 app.put('/updateGuide/:id', tourGuideController.updateTourGuide);
 app.delete('/deleteGuide/:id', tourGuideController.deleteTourGuide);
+app.post('/loginTourGuide', tourGuideController.loginTourGuide);
 
 
 // Seller Routers
@@ -62,6 +65,8 @@ app.get('/getAdvertisers', advertiserController.getAllAdvertisers);
 app.get('/getAdvertiser/:id', advertiserController.getAdvertiserById);
 app.put('/updateAdvertiser/:id', advertiserController.updateAdvertiser);
 app.delete('/deleteAdvertiser/:id', advertiserController.deleteAdvertiser);
+app.post('/loginAdvertiser', advertiserController.loginAdvertiser);
+
 
 // Admin Activity Category Routers
 app.post('/category', authenticateAdmin, activityCategoryController.createCategory); // Admin can create a category
@@ -81,7 +86,7 @@ app.delete('/deleteActivity/:id', authenticate, activityControllers.deleteActivi
 
 
 //Historic Location Router
-app.post('/createLocation', historicLocationController.createHistoricalPlace);
+app.post('/createLocation', authenticate, historicLocationController.createHistoricalPlace);
 app.get('/getHistoricLocations', historicLocationController.getHistoricalPlaces);
 app.get('/getTicketPrice', historicLocationController.getTicketPrice);
 app.get('/getHistoricLocationsByType', historicLocationController.getHistoricalPlacesByType);
@@ -90,18 +95,17 @@ app.delete('/deleteHistoricLocation', historicLocationController.deleteHistorica
 
 
 //Product Routers
-app.post('/createProduct', productControllers.postProduct);
+app.post('/createProduct', authenticate, productControllers.postProduct);
 app.get('/getProducts', productControllers.getAllProducts);
 app.put('/updateProductPriceDetails', productControllers.putProductPriceandDetails);
 app.delete('/deleteProduct', productControllers.deleteProduct);
 
 // Itenirary Routers
-app.post('/createItenirary', iteniraryControllers.createItenirary);
+app.post('/createItenirary', authenticate, iteniraryControllers.createItenirary);
 app.get('/getItenraries', iteniraryControllers.readItenirary);
 app.put('/updateItenirary/:id', iteniraryControllers.updateItenirary);
 app.delete('/deleteItenirary/:id', iteniraryControllers.deleteItenirary);
 
-app.post('/loginAdvertiser', advertiserController.loginAdvertiser);
 
 //Admin Routers
 app.delete('/deleteAdmin/:id', authenticateAdmin, adminController.deleteAdminAccount);
@@ -112,14 +116,21 @@ app.post('/addAdmin',
         check('email').isEmail().withMessage('Enter a valid email'),
         check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
     ],
-    adminController.addAdmin
-);
+    adminController.addAdmin);
+
 app.post('/addTourismGovernor',
     authenticateAdmin, [
         check('username').notEmpty().withMessage('Username is required'),
         check('email').isEmail().withMessage('Enter a valid email'),
         check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
     ],
-    adminController.addTourismGovernor
-);
+    adminController.addTourismGovernor);
+
 app.post('/createMainAdmin', adminController.createMainAdmin);
+
+// preference tags routers
+app.post('/createTag', preferenceTagController.createTag);
+app.get('/tags', preferenceTagController.getAllTags);
+app.get('/tags/:id', preferenceTagController.getTagById);
+app.put('/updateTag', preferenceTagController.updateTag);
+app.delete('/deleteTag/:id', preferenceTagController.deleteTag);

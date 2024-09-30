@@ -2,7 +2,8 @@ const HistoricalPlaceModel = require('../../Models/ActivityModels/HistoricalPlac
 const { default: mongoose } = require('mongoose');
 
 const createHistoricalPlace = async(req, res) => {
-    const { Name, Description, Location, OpeningHours, ClosingHours, TicketPrices, Period, Type, managedBy, tags } = req.body;
+    const { Name, Description, Location, OpeningHours, ClosingHours, TicketPrices, Period, Type, tags } = req.body;
+    const managedBy = req.user._id;
     try {
         const historicalPlace = await HistoricalPlaceModel.create({
             Name,
@@ -80,6 +81,8 @@ const getHistoricalPlaces = async(req, res) => {
 
 
 }
+
+
 
 const updateHistoricalPlace = async(req, res) => {
     const id = req.params.id;
