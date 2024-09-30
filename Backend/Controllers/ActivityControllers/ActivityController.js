@@ -139,8 +139,32 @@ const filterUpcomingActivityByDate = async(req, res) => {
         res.status(500).json({ message: 'Error fetching activities by date', error });
     }
 };
+const sortActivityByPrice = async (req,res) =>{
+    try {
+        // Fetch all Activities and sort them by price (ascending)
+        const sortedActivities = await activityModel.find().sort({ price: 1 }).lean();  // 1 for ascending order
+
+        // Return the sorted activities
+        res.status(200).json(sortedActivities);
+    } catch (err) {
+        console.error("Error fetching and sorting activities by price:", err);
+        res.status(500).json({ error: "Failed to fetch and sort activities." });
+    }
+};
+const sortActivityByRating = async (req,res) =>{
+    try {
+        // Fetch all itineraries and sort them by price (ascending)
+        const sortedActivities = await activityModel.find().sort({rating: -1 }).lean();  // -1 for decending order (higher first)
+
+        // Return the sorted itineraries
+        res.status(200).json(sortedActivities);
+    } catch (err) {
+        console.error("Error fetching and sorting activities by rating:", err);
+        res.status(500).json({ error: "Failed to fetch and sort activities." });
+    }
+}
 
 
 
 
-module.exports = { createActivity, readActivities, getAllActivity, updateActivity, deleteActivity, filterUpcomingActivityByBudget, filterUpcomingActivityByDate };
+module.exports = { createActivity, readActivities, getAllActivity, updateActivity, deleteActivity, filterUpcomingActivityByBudget, filterUpcomingActivityByDate ,sortActivityByPrice,sortActivityByRating};
