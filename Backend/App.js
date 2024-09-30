@@ -82,6 +82,10 @@ app.get('/getActivities', activityControllers.readActivities); // Open route
 app.put('/updateActivity/:id', authenticate, activityControllers.updateActivity); // Protected route
 app.delete('/deleteActivity/:id', authenticate, activityControllers.deleteActivity); // Protected route
 
+ //Filter activity by budget and date
+ app.get('/filterUpcomingActivityByBudget', activityControllers.filterUpcomingActivityByBudget); 
+ app.get('/filterUpcomingActivityByDate', activityControllers.filterUpcomingActivityByDate); 
+
 
 //Historic Location Router
 app.post('/createLocation', authenticate, historicLocationController.createHistoricalPlace);

@@ -68,9 +68,22 @@ const getHistoricalPlacesByType = async(req, res) => {
     }
 };
 
-
-
 const getHistoricalPlaces = async(req, res) => {
+    const guideId = req.body._id; // Assuming you have the Guide's ID in the request
+    try {
+        const HistoricalPlaces = await HistoricalPlaceModel.find({ createdBy: guideId });
+        if (HistoricalPlaces.length === 0) {
+            return res.status(404).json({ message: 'No Historical places found' });
+        }
+        res.status(200).json(HistoricalPlaces);
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+
+
+}
+
+const getallHistoricalPlaces = async(req, res) => {
     //retrieve all users from the database
     try {
         const HistoricalPlaces = await HistoricalPlaceModel.find({});
@@ -115,4 +128,4 @@ const deleteHistoricalPlace = async(req, res) => {
 
 
 
-module.exports = { createHistoricalPlace, getHistoricalPlaces, updateHistoricalPlace, deleteHistoricalPlace, getHistoricalPlacesByType, getTicketPrice };
+module.exports = { createHistoricalPlace, getHistoricalPlaces, getallHistoricalPlaces, updateHistoricalPlace, deleteHistoricalPlace, getHistoricalPlacesByType, getTicketPrice };
