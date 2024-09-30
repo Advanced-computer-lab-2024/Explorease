@@ -70,4 +70,31 @@ const deleteItenirary = async(req, res) => {
 
 };
 
-module.exports = { createItenirary, readItenirary, updateItenirary, deleteItenirary };
+const sortIteniraryByPrice = async (req,res) =>{
+    try {
+        // Fetch all itineraries and sort them by price (ascending)
+        const sortedItineraries = await IteniraryModel.find().sort({ price: 1 }).lean();  // 1 for ascending order
+
+        // Return the sorted itineraries
+        res.status(200).json(sortedItineraries);
+    } catch (err) {
+        console.error("Error fetching and sorting itineraries by price:", err);
+        res.status(500).json({ error: "Failed to fetch and sort itineraries." });
+    }
+};
+const sortIteniraryByRating = async (req,res) =>{
+    try {
+        // Fetch all itineraries and sort them by price (ascending)
+        const sortedItineraries = await IteniraryModel.find().sort({rating: -1 }).lean();  // -1 for decending order (higher first)
+
+        // Return the sorted itineraries
+        res.status(200).json(sortedItineraries);
+    } catch (err) {
+        console.error("Error fetching and sorting itineraries by rating:", err);
+        res.status(500).json({ error: "Failed to fetch and sort itineraries." });
+    }
+}
+
+
+
+module.exports = { createItenirary, readItenirary, updateItenirary, deleteItenirary ,sortIteniraryByPrice,sortIteniraryByRating};
