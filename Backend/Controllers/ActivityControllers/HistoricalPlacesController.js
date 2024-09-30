@@ -69,7 +69,7 @@ const getHistoricalPlacesByType = async(req, res) => {
 };
 
 const getHistoricalPlaces = async(req, res) => {
-    const guideId = req.body._id; // Assuming you have the advertiser's ID in the request
+    const guideId = req.body._id; // Assuming you have the Guide's ID in the request
     try {
         const HistoricalPlaces = await HistoricalPlaceModel.find({ createdBy: guideId });
         if (HistoricalPlaces.length === 0) {
