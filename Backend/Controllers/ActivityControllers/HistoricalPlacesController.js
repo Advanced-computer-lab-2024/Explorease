@@ -2,7 +2,8 @@ const HistoricalPlaceModel = require('../../Models/ActivityModels/HistoricalPlac
 const { default: mongoose } = require('mongoose');
 
 const createHistoricalPlace = async(req, res) => {
-    const { Name, Description, Location, OpeningHours, ClosingHours, TicketPrices, Period, Type, managedBy, tags } = req.body;
+    const { Name, Description, Location, OpeningHours, ClosingHours, TicketPrices, Period, Type, tags } = req.body;
+    const managedBy = req.user._id;
     try {
         const historicalPlace = await HistoricalPlaceModel.create({
             Name,
@@ -67,9 +68,22 @@ const getHistoricalPlacesByType = async(req, res) => {
     }
 };
 
-
-
 const getHistoricalPlaces = async(req, res) => {
+    const guideId = req.body._id; // Assuming you have the Guide's ID in the request
+    try {
+        const HistoricalPlaces = await HistoricalPlaceModel.find({ createdBy: guideId });
+        if (HistoricalPlaces.length === 0) {
+            return res.status(404).json({ message: 'No Historical places found' });
+        }
+        res.status(200).json(HistoricalPlaces);
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+
+
+}
+
+const getallHistoricalPlaces = async(req, res) => {
     //retrieve all users from the database
     try {
         const HistoricalPlaces = await HistoricalPlaceModel.find({});
@@ -80,6 +94,8 @@ const getHistoricalPlaces = async(req, res) => {
 
 
 }
+
+
 
 const updateHistoricalPlace = async(req, res) => {
     const id = req.params.id;
@@ -112,4 +128,4 @@ const deleteHistoricalPlace = async(req, res) => {
 
 
 
-module.exports = { createHistoricalPlace, getHistoricalPlaces, updateHistoricalPlace, deleteHistoricalPlace, getHistoricalPlacesByType, getTicketPrice };
+module.exports = { createHistoricalPlace, getHistoricalPlaces, getallHistoricalPlaces, updateHistoricalPlace, deleteHistoricalPlace, getHistoricalPlacesByType, getTicketPrice };

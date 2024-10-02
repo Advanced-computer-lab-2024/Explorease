@@ -14,6 +14,8 @@ const historicLocationController = require('./Controllers/ActivityControllers/Hi
 const productControllers = require('./Controllers/ProductControllers/ProductController');
 const iteniraryControllers = require('./Controllers/ActivityControllers/IteniraryController');
 const activityCategoryController = require('./Controllers/ActivityControllers/ActivityCategoryController');
+const preferenceTagController = require('./Controllers/ActivityControllers/PreferenceTagsController.js');
+const TourismGovernorController = require('./Controllers/UserControllers/tourismGovernerController.js');
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
@@ -42,6 +44,14 @@ app.get('/sortAllByRating', touristControllers.sortAllByRating);
 app.put('/updateTourist/:id', touristControllers.updateTourist);
 app.delete('/deleteTourist/:id', touristControllers.deleteTourist);
 app.get('/getTourist/:id', touristControllers.getTouristById);
+app.post('/loginTourist',  touristControllers.loginTourist);
+app.get('/sortAllByPrice', touristControllers.sortAllByPrice);
+app.get('/sortAllByRating', touristControllers.sortAllByRating);
+
+// tourist search product by name and filter product by price
+app.get('/touristsearchProductByName', touristControllers.searchProductByName);
+app.get('/touristfilterProductByPrice', touristControllers.filterProductByPrice);
+
 
 // Tourist Guide Routers
 app.post('/createGuide', tourGuideController.createTourGuide);
@@ -49,6 +59,7 @@ app.get('/getTourGuides', tourGuideController.getAllTourGuides);
 app.get('/getTourGuide/:id', tourGuideController.getTourGuideById);
 app.put('/updateGuide/:id', tourGuideController.updateTourGuide);
 app.delete('/deleteGuide/:id', tourGuideController.deleteTourGuide);
+app.post('/loginTourGuide', tourGuideController.loginTourGuide);
 
 
 // Seller Routers
@@ -57,6 +68,12 @@ app.get('/getSellers', sellerController.getAllSellers);
 app.get('/getSeller/:id', sellerController.getSellerById);
 app.put('/updateSeller/:id', sellerController.updateSeller);
 app.delete('/deleteSeller/:id', sellerController.deleteSeller);
+app.post('/loginSeller',  sellerController.loginSeller);
+
+
+// seller search product by name and filter product by price
+app.get('/sellersearchProductByName', sellerController.searchProductByName);
+app.get('/sellerfilterProductByPrice', sellerController.filterProductByPrice);
 
 // Advertiser Routers 
 app.post('/createAdvertiser', advertiserController.createAdvertiser);
@@ -64,12 +81,15 @@ app.get('/getAdvertisers', advertiserController.getAllAdvertisers);
 app.get('/getAdvertiser/:id', advertiserController.getAdvertiserById);
 app.put('/updateAdvertiser/:id', advertiserController.updateAdvertiser);
 app.delete('/deleteAdvertiser/:id', advertiserController.deleteAdvertiser);
+app.post('/loginAdvertiser', advertiserController.loginAdvertiser);
+
 
 // Admin Activity Category Routers
 app.post('/category', authenticateAdmin, activityCategoryController.createCategory); // Admin can create a category
 app.get('/categories', activityCategoryController.getAllCategories); // Anyone can get all categories
 app.put('/category/:id', authenticateAdmin, activityCategoryController.updateCategory); // Admin can update a category
 app.delete('/category/:id', authenticateAdmin, activityCategoryController.deleteCategory); // Admin can delete a category
+
 
 //Activity Routers 
 app.post('/createActivity', authenticate, activityControllers.createActivity); // Protected route with authentication
@@ -78,10 +98,16 @@ app.get('/sortActivityByPrice',activityControllers.sortActivityByPrice);
 app.get('/sortActivityByRating',activityControllers.sortActivityByRating);
 app.put('/updateActivity/:id', authenticate, activityControllers.updateActivity); // Protected route
 app.delete('/deleteActivity/:id', authenticate, activityControllers.deleteActivity); // Protected route
+app.get('/sortActivityByPrice',activityControllers.sortActivityByPrice);
+app.get('/sortActivityByRating',activityControllers.sortActivityByRating);
+
+ //Filter activity by budget and date
+ app.get('/filterUpcomingActivityByBudget', activityControllers.filterUpcomingActivityByBudget); 
+ app.get('/filterUpcomingActivityByDate', activityControllers.filterUpcomingActivityByDate); 
 
 
 //Historic Location Router
-app.post('/createLocation', historicLocationController.createHistoricalPlace);
+app.post('/createLocation', authenticate, historicLocationController.createHistoricalPlace);
 app.get('/getHistoricLocations', historicLocationController.getHistoricalPlaces);
 app.get('/getTicketPrice', historicLocationController.getTicketPrice);
 app.get('/getHistoricLocationsByType', historicLocationController.getHistoricalPlacesByType);
@@ -90,20 +116,28 @@ app.delete('/deleteHistoricLocation', historicLocationController.deleteHistorica
 
 
 //Product Routers
-app.post('/createProduct', productControllers.postProduct);
+app.post('/createProduct', authenticate, productControllers.postProduct);
 app.get('/getProducts', productControllers.getAllProducts);
 app.put('/updateProductPriceDetails', productControllers.putProductPriceandDetails);
 app.delete('/deleteProduct', productControllers.deleteProduct);
 
 // Itenirary Routers
-app.post('/createItenirary', iteniraryControllers.createItenirary);
+app.post('/createItenirary', authenticate, iteniraryControllers.createItenirary);
 app.get('/getItenraries', iteniraryControllers.readItenirary);
 app.get('/sortIteniraryByPrice',iteniraryControllers.sortIteniraryByPrice);
 app.get('/sortIteniraryByRating',iteniraryControllers.sortIteniraryByRating);
 app.put('/updateItenirary/:id', iteniraryControllers.updateItenirary);
 app.delete('/deleteItenirary/:id', iteniraryControllers.deleteItenirary);
+app.get('/sortIteniraryByPrice',iteniraryControllers.sortIteniraryByPrice);
+app.get('/sortIteniraryByRating',iteniraryControllers.sortIteniraryByRating);
 
-app.post('/loginAdvertiser', advertiserController.loginAdvertiser);
+//filter Itenirary by date and language
+app.get('/FilterUpcomingItinerariesByDate', iteniraryControllers.FilterUpcomingItinerariesByDate);
+app.get('/FilterUpcomingItinerariesByLanguage', iteniraryControllers.FilterUpcomingItinerariesByLanguage);
+app.get('/FilterUpcomingItinerariesByBudget', iteniraryControllers.FilterUpcomingItinerariesByBudget);
+
+
+
 
 //Admin Routers
 app.delete('/deleteAdmin/:id', authenticateAdmin, adminController.deleteAdminAccount);
@@ -114,14 +148,29 @@ app.post('/addAdmin',
         check('email').isEmail().withMessage('Enter a valid email'),
         check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
     ],
-    adminController.addAdmin
-);
+    adminController.addAdmin);
+
 app.post('/addTourismGovernor',
     authenticateAdmin, [
         check('username').notEmpty().withMessage('Username is required'),
         check('email').isEmail().withMessage('Enter a valid email'),
         check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
     ],
-    adminController.addTourismGovernor
-);
+    adminController.addTourismGovernor);
+
 app.post('/createMainAdmin', adminController.createMainAdmin);
+
+// admin search product by name and filter product by price
+app.get('/adminsearchProductByName', adminController.searchProductByName);
+app.get('/adminfilterProductByPrice', adminController.filterProductByPrice);
+
+// preference tags routers
+app.post('/createTag', preferenceTagController.createTag);
+app.get('/tags', preferenceTagController.getAllTags);
+app.get('/tags/:id', preferenceTagController.getTagById);
+app.put('/updateTag', preferenceTagController.updateTag);
+app.delete('/deleteTag/:id', preferenceTagController.deleteTag);
+
+
+//Tourist Governor Login
+app.post('/loginGovernor',TourismGovernorController.loginTouristGovernor);

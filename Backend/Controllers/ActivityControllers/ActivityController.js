@@ -29,6 +29,19 @@ const readActivities = async(req, res) => {
     }
 };
 
+//get all activity
+const getAllActivity = async(req, res) => {
+    try {
+        const getAllActivity = await activityModel.find({});
+        if (getAllActivity.length === 0) {
+            return res.status(404).json({ message: 'No activities found' });
+        }
+        res.status(200).json(getAllActivity);
+    } catch (error) {
+        res.status(400).json({ message: 'Error fetching activities', error })
+    }
+}
+
 // Update Activity
 const updateActivity = async(req, res) => {
     const id = req.params.id; // Get the ID from request parameters
@@ -112,5 +125,72 @@ const sortActivityByRating = async (req,res) =>{
 }
 
 
+// Filter Activity using Budget
+const filterUpcomingActivityByBudget = async(req, res) => {
+    const { budget } = req.body;
 
-module.exports = { createActivity, readActivities, updateActivity, deleteActivity , sortActivityByPrice,sortActivityByRating};
+    try {
+        const currentDate = new Date();
+        const activities = await activityModel.find({ date: { $gte: currentDate }, price: { $lte: budget } });
+
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'There are no upcoming activities found within the specified budget.' });
+        }
+
+        res.status(200).json(activities);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching activities by budget', error });
+    }
+};
+
+
+// Filter Activities by Date
+const filterUpcomingActivityByDate = async(req, res) => {
+    const { date } = req.body;
+
+    try {
+        const selectedDate = new Date(date);
+        const startOfDay = new Date(selectedDate.setUTCHours(0, 0, 0, 0));
+        const endOfDay = new Date(selectedDate.setUTCHours(23, 59, 59, 999));
+
+        const activities = await activityModel.find({ date: { $gte: startOfDay, $lt: endOfDay } });
+
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'There are no activities found on that specified date.' });
+        }
+
+        res.status(200).json(activities);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching activities by date', error });
+    }
+};
+const sortActivityByPrice = async (req,res) =>{
+    try {
+        // Fetch all Activities and sort them by price (ascending)
+        const sortedActivities = await activityModel.find().sort({ price: 1 }).lean();  // 1 for ascending order
+
+        // Return the sorted activities
+        res.status(200).json(sortedActivities);
+    } catch (err) {
+        console.error("Error fetching and sorting activities by price:", err);
+        res.status(500).json({ error: "Failed to fetch and sort activities." });
+    }
+};
+const sortActivityByRating = async (req,res) =>{
+    try {
+        // Fetch all itineraries and sort them by price (ascending)
+        const sortedActivities = await activityModel.find().sort({rating: -1 }).lean();  // -1 for decending order (higher first)
+
+        // Return the sorted itineraries
+        res.status(200).json(sortedActivities);
+    } catch (err) {
+        console.error("Error fetching and sorting activities by rating:", err);
+        res.status(500).json({ error: "Failed to fetch and sort activities." });
+    }
+}
+
+
+
+
+module.exports = { createActivity, readActivities, getAllActivity, updateActivity, deleteActivity, filterUpcomingActivityByBudget, filterUpcomingActivityByDate ,sortActivityByPrice,sortActivityByRating};
+
