@@ -39,6 +39,8 @@ app.use(express.json());
 // Tourist Routers 
 app.post('/createTourist', touristControllers.createTourist);
 app.get('/getTourists', touristControllers.getAllTourists);
+app.get('/sortAllByPrice', touristControllers.sortAllByPrice);
+app.get('/sortAllByRating', touristControllers.sortAllByRating);
 app.put('/updateTourist/:id', touristControllers.updateTourist);
 app.delete('/deleteTourist/:id', touristControllers.deleteTourist);
 app.get('/getTourist/:id', touristControllers.getTouristById);
@@ -92,6 +94,8 @@ app.delete('/category/:id', authenticateAdmin, activityCategoryController.delete
 //Activity Routers 
 app.post('/createActivity', authenticate, activityControllers.createActivity); // Protected route with authentication
 app.get('/getActivities', activityControllers.readActivities); // Open route
+app.get('/sortActivityByPrice',activityControllers.sortActivityByPrice);
+app.get('/sortActivityByRating',activityControllers.sortActivityByRating);
 app.put('/updateActivity/:id', authenticate, activityControllers.updateActivity); // Protected route
 app.delete('/deleteActivity/:id', authenticate, activityControllers.deleteActivity); // Protected route
 app.get('/sortActivityByPrice',activityControllers.sortActivityByPrice);
@@ -120,6 +124,8 @@ app.delete('/deleteProduct', productControllers.deleteProduct);
 // Itenirary Routers
 app.post('/createItenirary', authenticate, iteniraryControllers.createItenirary);
 app.get('/getItenraries', iteniraryControllers.readItenirary);
+app.get('/sortIteniraryByPrice',iteniraryControllers.sortIteniraryByPrice);
+app.get('/sortIteniraryByRating',iteniraryControllers.sortIteniraryByRating);
 app.put('/updateItenirary/:id', iteniraryControllers.updateItenirary);
 app.delete('/deleteItenirary/:id', iteniraryControllers.deleteItenirary);
 app.get('/sortIteniraryByPrice',iteniraryControllers.sortIteniraryByPrice);

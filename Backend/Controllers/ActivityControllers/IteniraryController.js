@@ -83,6 +83,7 @@ const deleteItenirary = async(req, res) => {
 };
 
 
+
 const FilterUpcomingItinerariesByDate = async (req, res) => {
     const { date } = req.body; 
 
@@ -173,8 +174,7 @@ const sortIteniraryByRating = async (req,res) =>{
         console.error("Error fetching and sorting itineraries by rating:", err);
         res.status(500).json({ error: "Failed to fetch and sort itineraries." });
     }
-};
-
+}
 
 
 

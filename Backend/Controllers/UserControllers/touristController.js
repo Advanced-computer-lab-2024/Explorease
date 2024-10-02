@@ -1,5 +1,6 @@
 const userModel = require('../../Models/UserModels/Tourist');
 
+
 const {searchProductByName} = require('../../Controllers/ProductControllers/ProductController.js');
 const {filterProductByPrice} = require('../../Controllers/ProductControllers/ProductController.js');
 
@@ -61,6 +62,50 @@ const getAllTourists = async(req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
+}
+const sortAllByPrice = async(req,res) => {
+    try{
+        const itineraries = await sortItineraryByPrice();
+        const activities = await sortActivityByPrice();
+
+        // Combine both arrays
+        const combined = [
+            ...itineraries.map(itinerary => ({ ...itinerary, type: 'itinerary' })),  // Tagging with type 'itinerary'
+            ...activities.map(activity => ({ ...activity, type: 'activity' }))       // Tagging with type 'activity'
+        ];
+
+        // Sort combined array by price
+        combined.sort((a, b) => a.price - b.price);
+
+        // Return the sorted data
+        res.status(200).json(combined);
+    } catch (err) {
+        console.error("Error combining and sorting itineraries and activities:", err);
+        res.status(500).json({ error: "Failed to fetch and sort data." });
+    }
+   
+}
+const sortAllByRating = async(req,res) => {
+    try{
+        const itineraries = await sortItineraryByRating();
+        const activities = await sortActivityByRating();
+
+        // Combine both arrays
+        const combined = [
+            ...itineraries.map(itinerary => ({ ...itinerary, type: 'itinerary' })),  // Tagging with type 'itinerary'
+            ...activities.map(activity => ({ ...activity, type: 'activity' }))       // Tagging with type 'activity'
+        ];
+
+        // Sort combined array by rating
+        combined.sort((a, b) => b.rating - a.rating);
+
+        // Return the sorted data
+        res.status(200).json(combined);
+    } catch (err) {
+        console.error("Error combining and sorting itineraries and activities:", err);
+        res.status(500).json({ error: "Failed to fetch and sort data." });
+    }
+   
 }
 
 const loginTourist = async(req, res) => {
@@ -159,7 +204,11 @@ module.exports = {
     getTouristById,
     updateTourist,
     deleteTourist,
-    getAllTourists, 
+
+    getAllTourists,
+    sortAllByPrice,
+    sortAllByRating
+
     loginTourist,
 
     searchProductByName,
