@@ -11,7 +11,7 @@ const TourGuideDashboard = () => {
         const token = localStorage.getItem('token');
 
         // Fetch tour guide's itineraries
-        axios.get('/tour-guides/myItineraries', {
+        axios.get('/tourguide/myItineraries', {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then(response => setItineraries(response.data))
@@ -21,7 +21,7 @@ const TourGuideDashboard = () => {
         });
 
         // Fetch tour guide's profile
-        axios.get('/tour-guides/myProfile', {
+        axios.get('/tourguide/myProfile', {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then(response => setProfile(response.data))
@@ -37,7 +37,7 @@ const TourGuideDashboard = () => {
         const token = localStorage.getItem('token');
 
         try {
-            await axios.put('/tour-guides/myProfile', profile, {
+            await axios.put('/tourguide/updateProfile', profile, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMessage('Profile updated successfully!');
@@ -52,7 +52,7 @@ const TourGuideDashboard = () => {
         const token = localStorage.getItem('token');
 
         try {
-            await axios.post('/tour-guides/createItinerary', newItinerary, {
+            await axios.post('/tourguide/createItinerary', newItinerary, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMessage('Itinerary created successfully!');
