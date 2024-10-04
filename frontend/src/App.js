@@ -5,7 +5,8 @@ import AdminLogin from './Components/AdminLogin';
 import MultiRoleRegister from './Components/MultiRoleRegister';
 import AdminDashboard from './Components/AdminDashboard';
 import TouristDashboard from './Components/TouristDashboard';
-import TourGuideDashboard from './Components/TourGuideDashboard';  // Import the new dashboard
+import TourGuideDashboard from './Components/TourGuideDashboard';
+import SellerDashboard from './Components/SellerDashboard';  // Import SellerDashboard
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/register" element={<MultiRoleRegister />} />
           <Route path="/tourist/dashboard" element={<TouristDashboard />} />
-          <Route path="/tourguide/dashboard" element={<TourGuideDashboard />} />  {/* Tour Guide Dashboard */}
+          <Route path="/tourguide/dashboard" element={<TourGuideDashboard />} />
+          <Route path="/seller/dashboard" element={<SellerDashboard />} />  {/* Seller Dashboard */}
         </Routes>
       </div>
     </Router>
