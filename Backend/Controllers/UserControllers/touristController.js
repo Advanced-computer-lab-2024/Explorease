@@ -33,15 +33,16 @@ const createTourist = async (req, res) => {
 // Get a tourist by ID
 const getTouristById = async (req, res) => {
     try {
-        const tourist = await userModel.findById(req.user.id);
+        const tourist = await userModel.findById(req.user.id);  // Find by user ID from token
         if (!tourist) {
             return res.status(404).json({ message: 'Tourist not found' });
         }
-        res.status(200).json({ tourist });
+        res.status(200).json(tourist);  // Send tourist data
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Update tourist by ID
 const updateTourist = async (req, res) => {

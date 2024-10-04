@@ -1,115 +1,68 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const TouristDashboard = () => {
-    const [activities, setActivities] = useState([]);
-    const [itineraries, setItineraries] = useState([]);
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');  // Assuming JWT is stored in localStorage after login
-
-        // Fetch tourist's profile with JWT token
-        axios.get('/tourists/myProfile', {
-            headers: {
-                Authorization: `Bearer ${token}`  // Add JWT token to the request headers
+        const fetchProfile = async () => {
+            const token = localStorage.getItem('token');  
+            console.log(token);
+    
+            if (!token) {
+                navigate('/login');  
             }
-        })
-        .then(response => setProfile(response.data))
-        .catch(error => {
-            setMessage('Error fetching profile');
-            console.error('Error fetching profile:', error);  // Log the error for debugging
-        });
-
-        // Fetch tourist's booked activities
-        axios.get('/tourists/activities', {
-            headers: {
-                Authorization: `Bearer ${token}`  // Add JWT token to the request headers
-            }
-        })
-        .then(response => setActivities(response.data))
-        .catch(error => setMessage('Error fetching activities'));
-
-        // Fetch tourist's itineraries
-        axios.get('/tourists/itineraries', {
-            headers: {
-                Authorization: `Bearer ${token}`  // Add JWT token to the request headers
-            }
-        })
-        .then(response => setItineraries(response.data))
-        .catch(error => setMessage('Error fetching itineraries'));
-
-    }, []);
-
-    const handleProfileUpdate = async (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem('token');
-
-        try {
-            await axios.put('/tourists/myProfile', profile, {
-                headers: {
-                    Authorization: `Bearer ${token}`  // Add JWT token to the request headers
+    
+            try {
+                // Use relative path, proxy will forward the request
+                const response = await axios.get('/tourists/myProfile', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+    
+                // Log the response to see if it contains the "tourist" object
+                console.log('Response:', response.data);
+    
+                // Check if response contains the expected "tourist" field
+                if (response.data) {
+                    setProfile(response.data);
+                } else {
+                    console.error('No tourist data in the response:', response.data);
+                    setMessage('No profile data found');
                 }
-            });
-            setMessage('Profile updated successfully!');
-        } catch (error) {
-            setMessage('Error updating profile');
-        }
-    };
+    
+            } catch (error) {
+                console.error('Error fetching profile:', error.response ? error.response.data : error.message);
+                setMessage('Error fetching profile');
+            }
+        };
+    
+        fetchProfile();
+    }, [navigate]);
+    
 
     return (
         <div>
-            <h2>Tourist Dashboard</h2>
+            <h2>Tourist Profile</h2>
 
             {message && <p>{message}</p>}
 
-            <section>
-                <h3>Your Profile</h3>
-                <form onSubmit={handleProfileUpdate}>
-                    <div>
-                        <label>Username:</label>
-                        <input
-                            type="text"
-                            value={profile.username || ''}
-                            onChange={e => setProfile({ ...profile, username: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Email:</label>
-                        <input
-                            type="email"
-                            value={profile.email || ''}
-                            onChange={e => setProfile({ ...profile, email: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <button type="submit">Update Profile</button>
-                </form>
-            </section>
+            {profile && profile.username ? (
+    <div>
+        <p><strong>Username:</strong> {profile.username}</p>
+        <p><strong>Email:</strong> {profile.email}</p>
+        <p><strong>Date of Birth:</strong> {profile.dob}</p>
+        <p><strong>Nationality:</strong> {profile.nationality}</p>
+        <p><strong>Wallet Balance:</strong> {profile.wallet} USD</p>
+    </div>
+) : (
+    <p>Loading profile...</p>
+)}
 
-            <section>
-                <h3>Your Booked Activities</h3>
-                <ul>
-                    {activities.map(activity => (
-                        <li key={activity._id}>
-                            {activity.name} - {activity.date} - {activity.location}
-                        </li>
-                    ))}
-                </ul>
-            </section>
-
-            <section>
-                <h3>Your Itineraries</h3>
-                <ul>
-                    {itineraries.map(itinerary => (
-                        <li key={itinerary._id}>
-                            {itinerary.name} - {itinerary.date} - {itinerary.totalPrice} USD
-                        </li>
-                    ))}
-                </ul>
-            </section>
         </div>
     );
 };
