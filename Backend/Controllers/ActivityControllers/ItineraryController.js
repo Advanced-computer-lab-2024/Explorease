@@ -154,152 +154,109 @@ const deleteItinerary = async (req, res) => {
 //     }
 // };
 
-const searchItinerariesByNameOrCategoryOrTag = async (req, res) => {
-    const { name, category, tag } = req.query;
-
+const filterSortSearchItineraries = async (req, res) => {
     try {
-        // Build the query object based on the search parameters
-        const query = {};
+        const {
+            searchQuery,
+            minPrice,
+            maxPrice,
+            startDate,
+            endDate,
+            minRating,
+            language,
+            tags,
+            sortBy,
+            order,
+            accessibility
+        } = req.query;
 
-        // If a name is provided, search by itinerary name (case-insensitive)
-        if (name) {
-            query.name = new RegExp(name, 'i');  // 'i' for case-insensitive search
-        }
-
-        // Fetch itineraries with activities populated for further filtering
-        let itineraries = await ItineraryModel.find(query)
-            .populate({
-                path: 'activities',
-                populate: {
-                    path: 'category tags',  // Populate activity category and tags
-                }
-            });
-
-        // If a category is provided, filter itineraries based on activities' categories
-        if (category) {
-            itineraries = itineraries.filter(itinerary =>
-                itinerary.activities.some(activity => activity.category && activity.category.name === category)
-            );
-        }
-
-        // If a tag is provided, filter itineraries based on activities' tags
-        if (tag) {
-            itineraries = itineraries.filter(itinerary =>
-                itinerary.activities.some(activity =>
-                    activity.tags.some(t => t.name === tag)
-                )
-            );
-        }
-
-        // If no itineraries found, return a 404 message
-        if (itineraries.length === 0) {
-            return res.status(404).json({ message: 'No itineraries found matching the search criteria.' });
-        }
-
-        // Return the filtered itineraries
-        res.status(200).json(itineraries);
-    } catch (error) {
-        res.status(500).json({ message: 'Error searching itineraries', error: error.message });
-    }
-};
-
-const filterUpcomingItineraries = async (req, res) => {
-    const { minPrice, maxPrice, minDate, maxDate, preferences, languages } = req.query;
-
-    try {
-        // Step 1: Build the base query for upcoming itineraries
+        // Initialize query object
         let query = {};
 
-        // Step 2: Add price filtering using totalPrice
+        // Search by name
+        if (searchQuery) {
+            query.name = { $regex: searchQuery, $options: 'i' };  // Case-insensitive search
+        }
+
+        // Filter by price range
         if (minPrice || maxPrice) {
             query.totalPrice = {};
-            if (minPrice) query.totalPrice.$gte = Number(minPrice);
-            if (maxPrice) query.totalPrice.$lte = Number(maxPrice);
+            if (minPrice) query.totalPrice.$gte = parseFloat(minPrice);  // Minimum price
+            if (maxPrice) query.totalPrice.$lte = parseFloat(maxPrice);  // Maximum price
         }
 
-        // Step 3: Add date range filtering
-        if (minDate || maxDate) {
+        // Filter by available date range
+        if (startDate || endDate) {
             query.AvailableDates = {};
-            if (minDate) query.AvailableDates.$gte = new Date(minDate);
-            if (maxDate) query.AvailableDates.$lte = new Date(maxDate);
+            if (startDate) query.AvailableDates.$gte = new Date(startDate);  // Start date
+            if (endDate) query.AvailableDates.$lte = new Date(endDate);  // End date
         }
 
-        // Step 4: Filter by preferences (tags)
-        if (preferences) {
-            const tagIds = await preferenceTagModel.find({ name: { $in: preferences.split(',') } }).select('_id');
-            if (tagIds.length > 0) {
-                query.tags = { $in: tagIds.map(tag => tag._id) };
-            }
+        // Filter by minimum rating (Assuming itinerary has a rating field)
+        if (minRating) {
+            query.ratings = { $gte: parseFloat(minRating) };
         }
 
-        // Step 5: Filter by languages
-        if (languages) {
-            query.LanguageOfTour = { $in: languages.split(',') };
+        // Filter by accessibility (Exact match required)
+        if (accessibility) {
+            query.accessibility = accessibility;
         }
 
-        // Step 6: Fetch the itineraries matching the query
-        let itineraries = await ItineraryModel.find(query).populate('activities tags');
+        // Use regex for partial match on tags (if you want partial matching)
+        if (tags) {
+                      // Split the tag names, assuming they are comma-separated
+                      const tagNames = tags.split(',').map(tag => tag.trim());
 
-        // Step 7: If no itineraries match the filters, return a 404
-        if (itineraries.length === 0) {
-            return res.status(404).json({ message: 'No itineraries found matching the filter criteria.' });
+                      // Find matching tag documents by their `name`
+                      const matchingTags = await preferenceTagModel.find({
+                          name: { $in: tagNames }
+                      });
+          
+                      if (matchingTags.length === 0) {
+                          return res.status(404).json({ message: 'No matching tags found' });
+                      }
+          
+                      // Extract the ObjectId of each matching tag
+                      const tagIds = matchingTags.map(tag => tag._id);
+          
+                      // Use the ObjectId in the query to find itineraries with those tags
+                      query.tags = { $in: tagIds };
         }
 
-        // Step 8: Return the filtered itineraries
-        res.status(200).json(itineraries);
-    } catch (error) {
-        res.status(500).json({ message: 'Error filtering itineraries', error: error.message });
-    }
-};
+        if(language){
+            query.LanguageOfTour = { $in: [language] };
+        }
 
-const sortItineraries = async (req, res) => {
-    const { sortBy , order } = req.query;  // Sort by 'price' or 'ratings'
-    const sortOrder = order === 'desc' ? -1 : 1;  // Default is ascending, set to -1 for descending
-
-    try {
-        let itineraries;
-        
+        // Sorting logic
+        let sortField;
         if (sortBy === 'price') {
-            // Sort itineraries by totalPrice (ascending)
-            itineraries = await ItineraryModel.find()
-                .sort({ totalPrice: sortOrder }) 
-                .populate('activities tags');
+            sortField = 'totalPrice'; // Sort by total price of itinerary
         } else if (sortBy === 'ratings') {
-            // Sort itineraries by the average rating of their activities (descending)
-            itineraries = await ItineraryModel.aggregate([
-                {
-                    $lookup: {
-                        from: 'activities',  // activities collection
-                        localField: 'activities',
-                        foreignField: '_id',
-                        as: 'activityDetails'
-                    }
-                },
-                {
-                    $addFields: {
-                        avgRating: { $avg: '$activityDetails.ratings' }  // Calculate average rating
-                    }
-                },
-                {
-                    $sort: { avgRating: sortOrder }  // Sort by average rating in descending order
-                }
-            ]);
+            sortField = 'ratings';  // Sort by rating (ensure this field exists in the schema)
         } else {
-            return res.status(400).json({ message: 'Invalid sortBy value. Use "price" or "ratings".' });
+            sortField = 'totalPrice'; // Default sort by price
+        }
+        const sortOrder = order === 'desc' ? -1 : 1;  // Ascending or Descending order
+
+        // Execute query with filters, search, and sort
+        const itineraries = await ItineraryModel.find(query)
+            .populate('tags')  // Assuming tags are populated
+            .populate('createdBy')  // Populate the Tour Guide who created the itinerary
+            .sort({ [sortField]: sortOrder });  // Sort by the field (price or ratings)
+
+        // Check if any itineraries match the criteria
+        if (!itineraries.length) {
+            return res.status(404).json({ message: 'No itineraries found with the given criteria.' });
         }
 
-        // If no itineraries found, return 404
-        if (!itineraries || itineraries.length === 0) {
-            return res.status(404).json({ message: 'No itineraries found.' });
-        }
-
-        // Return sorted itineraries
+        // Return the found itineraries
         res.status(200).json(itineraries);
+
     } catch (error) {
-        res.status(500).json({ message: 'Error sorting itineraries', error: error.message });
+        // Handle errors and send the response
+        res.status(500).json({ message: 'Error fetching itineraries', error: error.message });
     }
 };
-
 
 module.exports = {
     createItinerary,
@@ -307,7 +264,5 @@ module.exports = {
     getAllItinerary,
     updateItinerary,
     deleteItinerary,
-    searchItinerariesByNameOrCategoryOrTag,
-    filterUpcomingItineraries,
-    sortItineraries
+    filterSortSearchItineraries
 };

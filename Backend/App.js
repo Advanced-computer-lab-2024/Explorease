@@ -59,6 +59,7 @@ const cors = require('cors');
 app.use(cors({
     origin: 'http://localhost:3000',  // Allow requests from the frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials : true
   }));
 

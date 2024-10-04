@@ -5,7 +5,9 @@ import AdminLogin from './Components/AdminLogin';
 import MultiRoleRegister from './Components/MultiRoleRegister';
 import AdminDashboard from './Components/AdminDashboard';
 import TouristDashboard from './Components/TouristDashboard';
-
+import Activities from './Components/Activities';
+import Itineraries from './Components/Itineraries';
+import HistoricalPlaces from './Components/HistoricalPlace';
 import TourGuideDashboard from './Components/TourGuideDashboard';  // Import the new dashboard
 import Login from './Components/Login';
 
@@ -23,6 +25,9 @@ function App() {
           <Route path="/tourist/" element={<TouristDashboard />} />
           <Route path="/tourguide/" element={<TourGuideDashboard />} />
           <Route path="/seller/" element={<SellerDashboard />} />  {/* Seller Dashboard */}
+          <Route path="/activities" element={<Activities />} />
+          <Route path="/itineraries" element={<Itineraries />} />
+          <Route path="/historical-places" element={<HistoricalPlaces />} />
           <Route path="/login" element={<Login />} />  {/* Login route */}
         </Routes>
       </div>

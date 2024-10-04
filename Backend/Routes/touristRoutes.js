@@ -19,20 +19,16 @@ router.get('/products/filter', roleAuth(['tourist']), productControllers.filterP
 router.get('/products/sortByRating', roleAuth(['tourist']), productControllers.sortProductsByRatings);  // Sort products by rating
 
 // Tourist/Guest shared routes for viewing and filtering
-router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.getAllActivity);  // View all activities
+router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.filterSortSearchActivities );  // View all activities
 router.get('/itineraries', optionalAuth(['tourist', 'guest']), itineraryControllers.getAllItinerary);  // View all itineraries
 router.get('/historical-places', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.getallHistoricalPlaces);  // View all historical places
 
 // Filtering and searching (Activities, Itineraries, Historical Places)
-router.get('/activities/search', optionalAuth(['tourist', 'guest']), activityControllers.searchActivitiesByNameOrCategoryOrTag);  // Search activities by name, category, or tag
-router.get('/itineraries/search', optionalAuth(['tourist', 'guest']), itineraryControllers.searchItinerariesByNameOrCategoryOrTag);  // Search itineraries by name, category, or tag
+router.get('/activities/filter-sort-search', optionalAuth(['tourist', 'guest']), activityControllers.filterSortSearchActivities );  // Search activities by name, category, or tag
+router.get('/itineraries/filter-sort-search', optionalAuth(['tourist', 'guest']), itineraryControllers.filterSortSearchItineraries);  // Search itineraries by name, category, or tag
 router.get('/historical-places/search', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.searchHistoricalPlaces);  // Search historical places by tag
 
 // Filter routes for activities, itineraries, and historical places
-router.get('/activities/filter', optionalAuth(['tourist', 'guest']), activityControllers.filterActivitiesByBudgetOrDateOrCategoryOrRating);  // Filter activities by budget, date, category, or ratings
-router.get('/activities/sort', optionalAuth(['tourist', 'guest']), activityControllers.sortActivity);  // Filter activities by budget, date, category, or ratings
-router.get('/itineraries/filter', optionalAuth(['tourist', 'guest']), itineraryControllers.filterUpcomingItineraries);  // Filter itineraries by budget, date, preferences, or language
 router.get('/historical-places/filter', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.filterHistoricalPlaceByTag);  // Filter historical places by tag
 
-router.get('/itineraries/sort', optionalAuth(['tourist', 'guest']), itineraryControllers.sortItineraries);
 module.exports = router;

@@ -158,137 +158,79 @@ const deleteActivity = async (req, res) => {
 };
 
 
-const sortActivity = async (req, res) => {
+const filterSortSearchActivities = async (req, res) => {
+    const { searchQuery, category, tag, minPrice, maxPrice, startDate, endDate, minRating, sortBy, order } = req.query;
+
     try {
-        const { sortBy, order } = req.query; // Get sorting field and order from query parameters
-
-        // Set the default sorting field to price and order to ascending if not provided
-        const sortField = sortBy || 'price';  // Default is 'price'
-        const sortOrder = order === 'desc' ? -1 : 1;  // Default is ascending, set to -1 for descending
-
-        // Ensure sortField is either 'price' or 'rating'
-        if (!['price', 'ratings'].includes(sortField)) {
-            return res.status(400).json({ message: 'Invalid sorting field. Use either "price" or "rating".' });
-        }
-
-        // Fetch and sort the activities
-        const sortedActivities = await activityModel.find().sort({ [sortField]: sortOrder }).populate('category tags');
-
-        res.status(200).json(sortedActivities);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch and sort activities.', err: err.message });
-    }
-};
-
-const filterActivitiesByBudgetOrDateOrCategoryOrRating = async (req, res) => {
-    try {
-        const { minPrice, maxPrice, startDate, endDate, category, minRating } = req.query;
-
-        // Build the query object
         let query = {};
+        // Build query based on the received parameters
 
-        // Filter by price range
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = parseFloat(minPrice);  // Greater than or equal to minPrice
-            if (maxPrice) query.price.$lte = parseFloat(maxPrice);  // Less than or equal to maxPrice
-        }
-
-        // Filter by date range
-        if (startDate || endDate) {
-            query.date = {};
-            if (startDate) query.date.$gte = new Date(startDate);  // Greater than or equal to startDate
-            if (endDate) query.date.$lte = new Date(endDate);  // Less than or equal to endDate
-        }
-
-        // Filter by category (Assuming category is a string name)
-        if (category) {
-            const categoryDoc = await activityCategoryModel.findOne({ name: category });
-            if (!categoryDoc) {
-                return res.status(404).json({ message: 'Category not found' });
-            }
-            query.category = categoryDoc._id;  // Use category ObjectId for filtering
-        }
-
-        // Filter by rating (Assuming the Activity model has a 'rating' field)
-        if (minRating) {
-            query.rating = { $gte: parseFloat(minRating) };  // Greater than or equal to minRating
-        }
-
-        // Execute the query
-        const activities = await activityModel.find(query).populate('category tags');
-
-        if (!activities.length) {
-            return res.status(404).json({ message: 'No activities found with the given criteria.' });
-        }
-
-        res.status(200).json(activities);
-    } catch (error) {
-        res.status(500).json({ message: 'Error filtering activities', error: error.message });
-    }
-};
-
-const searchActivitiesByNameOrCategoryOrTag = async (req, res) => {
-    const { name, searchQuery, category, tag } = req.query;
-
-    try {
-        // Build the search criteria dynamically
-        let searchCriteria = {};
-
-        // If searchQuery is provided, search by name, location, or specialDiscounts using regex for partial matching
         if (searchQuery) {
-            searchCriteria.$or = [
-                { name: { $regex: searchQuery, $options: 'i' } },  // Case-insensitive regex search for name
-                { location: { $regex: searchQuery, $options: 'i' } },  // Case-insensitive regex search for location
-                { specialDiscounts: { $regex: searchQuery, $options: 'i' } }  // Case-insensitive regex search for specialDiscounts
+            query.$or = [
+            { name : {$regex: searchQuery, $options: 'i' } },
+            { location: { $regex: searchQuery, $options: 'i' } },
+            { specialDiscounts: { $regex: searchQuery, $options: 'i' } }
             ];
         }
-
-        // If a category string is provided, resolve the category ID
         if (category) {
             const categoryDoc = await activityCategoryModel.findOne({ name: category });
             if (categoryDoc) {
-                searchCriteria.category = categoryDoc._id;
+                query.category = categoryDoc._id;
             } else {
-                return res.status(404).json({ message: 'Category not found.' });
-            }
+                return res.status(404).json({ message: 'Category not found' });
+            }       
+         }
+
+         if (startDate || endDate) {
+            query.date = {};
+            if (startDate) query.date.$gte = new Date(startDate);
+            if (endDate) query.date.$lte = new Date(endDate);
         }
 
-        // If a tag string is provided, resolve the tag ID
         if (tag) {
-            const tagDoc = await preferenceTagModel.findOne({ name: tag });
-            if (tagDoc) {
-                searchCriteria.tags = tagDoc._id;
-            } else {
-                return res.status(404).json({ message: 'Tag not found.' });
-            }
+             // Split the tag names, assuming they are comma-separated
+             const tagNames = tag.split(',').map(tag => tag.trim());
+
+             // Find matching tag documents by their `name`
+             const matchingTags = await preferenceTagModel.find({
+                 name: { $in: tagNames }
+             });
+ 
+             if (matchingTags.length === 0) {
+                 return res.status(404).json({ message: 'No matching tags found' });
+             }
+ 
+             // Extract the ObjectId of each matching tag
+             const tagIds = matchingTags.map(tag => tag._id);
+ 
+             // Use the ObjectId in the query to find itineraries with those tags
+             query.tags = { $in: tagIds };
+        }
+        if (minPrice || maxPrice) {
+            query.price = {};
+            if (minPrice) query.price.$gte = minPrice;
+            if (maxPrice) query.price.$lte = maxPrice;
+        }
+      
+        if (minRating) {
+            query.ratings = { $gte: minRating };
         }
 
-        if(name){
-            const activityTmp = await activityModel.find({name : name});
-            if(activityTmp){
-                searchCriteria.name = name;
-            }
-        }
-        // Fetch matching activities based on the built criteria
-        const activities = await activityModel.find(searchCriteria)
-            .populate('category')  // Populate the category field with ActivityCategory data
-            .populate('tags')  // Populate the tags field with PreferenceTag data
-            .exec();
-
-        // If no activities found, return 404
-        if (activities.length === 0) {
-            return res.status(404).json({ message: 'No activities found matching your criteria.' });
+        // Sorting logic
+        let sortOptions = {};
+        if (sortBy) {
+            sortOptions[sortBy] = order === 'desc' ? -1 : 1;
         }
 
-        // Return the found activities
+        // Fetch activities
+        const activities = await activityModel.find(query).sort(sortOptions).populate('category tags');
         res.status(200).json(activities);
-
     } catch (error) {
-        console.error('Error searching for activities:', error);
-        res.status(500).json({ message: 'Error occurred while searching for activities', error: error.message });
+        res.status(500).json({ message: 'Error fetching activities', error: error.message });
     }
 };
+
+
 
 module.exports = {
     createActivity,
@@ -296,7 +238,5 @@ module.exports = {
     getAllActivity,
     updateActivity,
     deleteActivity,
-    sortActivity,
-    searchActivitiesByNameOrCategoryOrTag,
-    filterActivitiesByBudgetOrDateOrCategoryOrRating
+    filterSortSearchActivities
 };
