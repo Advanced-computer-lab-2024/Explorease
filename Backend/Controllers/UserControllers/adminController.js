@@ -106,6 +106,23 @@ const addAdmin = async(req, res) => {
     }
 };
 
+// Fetch all admins
+const getAllAdmins = async (req, res) => {
+    // Ensure only main admin or authorized admins can access this endpoint
+    if (!req.admin.isMainAdmin) {
+        return res.status(403).json({ message: 'Only the main admin can view all admins' });
+    }
+
+    try {
+        // Fetch all admins from the Admin collection
+        const admins = await Admin.find();  // Optionally, you can add a filter if needed
+        res.status(200).json(admins);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching admins', details: error.message });
+    }
+};
+
+
 // Role-Based Access Control (Authorization)
 const authorizeAdmin = (requiredPermissions) => {
     return (req, res, next) => {
@@ -181,4 +198,4 @@ const createMainAdmin = async(req, res) => {
 };
 
 
-module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin };
+module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins };
