@@ -24,7 +24,7 @@ const unifiedLoginController = async (req, res) => {
                 const isMatch = await bcrypt.compare(password, user.password);
                 if (isMatch) {
                     const token = jwt.sign({ id: user._id, role: userType }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                    return { user, token };
+                    return { user, token, role: userType };  // Include the role explicitly here
                 }
             }
             return null;
@@ -36,8 +36,7 @@ const unifiedLoginController = async (req, res) => {
         if (!userResponse) userResponse = await findUserAndAuthenticate(Seller, 'seller');
         if (!userResponse) userResponse = await findUserAndAuthenticate(Advertiser, 'advertiser');
         if (!userResponse) userResponse = await findUserAndAuthenticate(Admin, 'admin');
-        if(!userResponse) userResponse = await findUserAndAuthenticate(TouristGovernor, 'touristGovernor');
-
+        if (!userResponse) userResponse = await findUserAndAuthenticate(TouristGovernor, 'touristGovernor');
 
         // If no user was found or authenticated
         if (!userResponse) {
@@ -45,11 +44,11 @@ const unifiedLoginController = async (req, res) => {
         }
 
         // If user was authenticated successfully
-        const { user, token } = userResponse;
-    
+        const { user, token, role } = userResponse;
+
         res.status(200).json({
             message: 'Login successful',
-            user: { id: user._id, email: user.email, role: userResponse.role },
+            user: { id: user._id, email: user.email, role },  // Send the role explicitly
             token
         });
     } catch (error) {

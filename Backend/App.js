@@ -18,7 +18,7 @@ require('dotenv').config();
 
 // App Variables
 const app = express();
-const port = 3000;
+const port = 5000;
 
 // MongoDB Connection
 mongoose.connect(process.env.Mongo_URI)
