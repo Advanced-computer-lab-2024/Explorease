@@ -1,41 +1,54 @@
-const userModel = require('../../Models/UserModels/TourGuide.js');
-const { default: mongoose } = require('mongoose');
-const jwt = require('jsonwebtoken');
+const userModel = require('../../Models/UserModels/TourGuide');
+const { hashPassword, comparePassword, createToken } = require('../../utils/auth');
+const mongoose = require('mongoose');
 
-const createTourGuide = async(req, res) => {
-
+// Create a new tour guide
+const createTourGuide = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
-        const tourguide = await userModel.create({ username, email, password });
+        const hashedPassword = await hashPassword(password);
+
+        const tourguide = await userModel.create({
+            username,
+            email,
+            password: hashedPassword
+        });
+
         res.status(201).json({ tourguide });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
-const getTourGuideById = async(req, res) => {
+// Get a tour guide by ID
+const getTourGuideById = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req.user.id;
         if (!mongoose.Types.ObjectId.isValid(id))
             return res.status(404).send('No user with that id');
+
         const tourguide = await userModel.findById(id);
         if (!tourguide) return res.status(404).send('No user with that id');
+        
         res.status(200).json({ tourguide });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
-const updateTourGuide = async(req, res) => {
+// Update a tour guide by ID
+const updateTourGuide = async (req, res) => {
     try {
-        const tourguide = await userModel.findById(req.params.id);
+        const tourguide = await userModel.findById(req.user.id);
         if (!tourguide) {
             return res.status(404).json({ message: 'Tour guide not found' });
         }
+
         if (!tourguide.isAccepted) {
             return res.status(403).json({ message: 'Tour guide not accepted. Profile updates are not allowed.' });
         }
+
         const updatedTourGuide = await userModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json({ updatedTourGuide });
     } catch (error) {
@@ -43,17 +56,18 @@ const updateTourGuide = async(req, res) => {
     }
 };
 
-
-const deleteTourGuide = async(req, res) => {
+// Delete a tour guide by ID
+const deleteTourGuide = async (req, res) => {
     try {
-        const tourguide = await userModel.findByIdAndDelete(req.params.id);
-        res.status(200).json({ tourguide });
+        const tourguide = await userModel.findByIdAndDelete(req.user.id);
+        res.status(200).json({ message: 'Tour guide deleted', tourguide });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
-const getAllTourGuides = async(req, res) => {
+// Get all tour guides
+const getAllTourGuides = async (req, res) => {
     try {
         const tourguides = await userModel.find({}).sort({ createdAt: -1 });
         if (tourguides.length === 0) {
@@ -63,28 +77,24 @@ const getAllTourGuides = async(req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
-const loginTourGuide = async(req, res) => {
+// Tour guide login
+const loginTourGuide = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Find the user by email
         const user = await userModel.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Validate the password (you should be hashing and comparing hashed passwords)
-        const isMatch = password === user.password; // (Simplified, add hashing for security)
+        const isMatch = await comparePassword(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Create a JWT token
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        // Send the token as part of the response
+        const token = createToken(user);  // Token creation
         res.status(200).json({ token });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error });
@@ -98,4 +108,4 @@ module.exports = {
     deleteTourGuide,
     getAllTourGuides,
     loginTourGuide
-}
+};

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const PreferenceTag = require('../../Models/ActivityModels/PreferenceTags');
 
 // Create PreferenceTag
@@ -6,7 +7,7 @@ exports.createTag = async (req, res) => {
         const { name } = req.body;
 
         // Check if the tag already exists
-        const existingTag = await PreferenceTag.findOne({ name });
+        const existingTag = await PreferenceTag.findOne({ name: name }); 
         if (existingTag) {
             return res.status(400).json({ message: 'Tag already exists' });
         }

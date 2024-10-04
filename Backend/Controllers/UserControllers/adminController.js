@@ -179,26 +179,6 @@ const createMainAdmin = async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-const searchProductByName =async(req,res) => {
-    try{
-        const product= await searchProductByName();
-        
-        res.status(200).jsonn
-    } catch (err) {
-        console.error("Error search product by name", err);
-        res.status(500).json({ error: "Failed to fetch data." });
-    } 
-};
-const filterProductByPrice =async(req,res) => {
-    try{
-        const price= await filterProductByPrice();
-        
-        res.status(200).jsonn
-    } catch (err) {
-        console.error("Error search product by price", err);
-        res.status(500).json({ error: "Failed to fetch data." });
-    } 
-};
 
-module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, searchProductByName,
-    filterProductByPrice};
+
+module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin };

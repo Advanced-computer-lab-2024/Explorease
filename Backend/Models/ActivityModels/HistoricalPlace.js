@@ -12,14 +12,22 @@ const HistoricalPlaceSchema = new Schema({
         student: { type: Number, required: true }
     },
     Period: { type: String, required: true },
-    Type: {
-        type: String,
-        required: true,
-        enum: ['Monument', 'Museum', 'Religious Site', 'Palace/Castle'] // Restrict values to these types
-    },
-    tags: [{ type: String }],
-    managedBy: { type: Schema.Types.ObjectId, ref: 'TourismGovernor', required: true }, 
-    tags : {type : Schema.Types.ObjectId, ref : 'PreferenceTags'}
+    managedBy: { type: Schema.Types.ObjectId, ref: 'TourismGovernor', required: true },
+    tags: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'PreferenceTag',
+        validate: {
+            validator: async function(tagIds) {
+                // Fetch all tag names corresponding to these tagIds from the PreferenceTag collection
+                const tags = await mongoose.model('PreferenceTag').find({ _id: { $in: tagIds } });
+                const allowedTags = ['Monument', 'Museum', 'Religious Site', 'Palace', 'Castle'];
+
+                // Check if all tags correspond to allowed types
+                return tags.every(tag => allowedTags.includes(tag.name));
+            },
+            message: 'Invalid tag. Allowed tags are Monument, Museum, Religious Site, Palace/Castle.'
+        }
+    }]
 }, { timestamps: true });
 
 const HistoricalPlace = mongoose.model('HistoricalPlace', HistoricalPlaceSchema);
