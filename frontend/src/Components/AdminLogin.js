@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate for redirection
+import { useNavigate } from 'react-router-dom';  // Assuming you want to redirect after login
 
 const AdminLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const navigate = useNavigate();  // Initialize the navigate function
+    const navigate = useNavigate();  // To redirect after login
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await axios.post('/admins/login', { email, password });
+            const { token } = response.data;  // Assuming the JWT token is in the response
+            localStorage.setItem('token', token);  // Store JWT in localStorage
             setMessage('Login successful!');
-            console.log(response.data);
-            navigate('/admin/dashboard');  // Redirect to admin dashboard
+            navigate('/tourist/dashboard');  // Redirect to tourist dashboard
         } catch (error) {
             setMessage('Error during login. Please check your credentials.');
-            console.error(error);
         }
     };
 
@@ -41,7 +41,6 @@ const AdminLogin = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        minLength="6"
                     />
                 </div>
                 <button type="submit">Login</button>
