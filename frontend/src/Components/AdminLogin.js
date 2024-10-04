@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Assuming you want to redirect after login
+import { useNavigate } from 'react-router-dom';  // To redirect after login
 
 const AdminLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const navigate = useNavigate();  // To redirect after login
+    const navigate = useNavigate();  // For redirecting after login
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('/admin/login', { email, password });
+            const response = await axios.post('/admins/login', { email, password });
             const { token } = response.data;  // Assuming the JWT token is in the response
             localStorage.setItem('token', token); // Store JWT in localStorage
-            setMessage('Login successful!');
-            navigate('/admin/dashboard'); // Redirect to tourist dashboard
+            setMessage('Login successful! Redirecting to dashboard...');
+
+            // Redirect to the admin dashboard after a short delay (2 seconds)
+            setTimeout(() => {
+                navigate('/admin/dashboard');
+            }, 2000);  // 2-second delay for user to see the message
         } catch (error) {
             setMessage('Error during login. Please check your credentials.');
         }
