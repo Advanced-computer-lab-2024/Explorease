@@ -11,11 +11,11 @@ const AdminLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('/admins/login', { email, password });
+            const response = await axios.post('/admin/login', { email, password });
             const { token } = response.data;  // Assuming the JWT token is in the response
-            localStorage.setItem('token', token);  // Store JWT in localStorage
+            localStorage.setItem('token', token); // Store JWT in localStorage
             setMessage('Login successful!');
-            navigate('/tourist/dashboard');  // Redirect to tourist dashboard
+            navigate('/admin/dashboard'); // Redirect to tourist dashboard
         } catch (error) {
             setMessage('Error during login. Please check your credentials.');
         }

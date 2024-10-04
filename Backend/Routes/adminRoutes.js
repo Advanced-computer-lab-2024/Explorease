@@ -23,6 +23,7 @@ router.post('/add', [
 
 // Login Admin
 router.post('/login', adminController.loginAdmin);
+router.get('/all', authenticateAdmin, adminController.getAllAdmins);
 
 // Add Tourism Governor
 router.post('/addGovernor', [
