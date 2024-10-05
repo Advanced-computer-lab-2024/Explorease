@@ -11,7 +11,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/login', { email, password });
+            const response = await axios.post('/login', { email, password });
             const { token, user } = response.data;
 
             // Save token in local storage

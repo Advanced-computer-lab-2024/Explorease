@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path'); 
+const cors = require('cors');
 
 // const roleAuth = require('../Middleware/AuthMiddleware');
 const touristRoutes = require('./Routes/touristRoutes');
@@ -11,13 +12,12 @@ const advertiserRoutes = require('./Routes/advertiserRoutes');
 const adminRoutes = require('./Routes/adminRoutes');
 const governorRoutes = require('./Routes/governorRoutes');
 
-
-
 mongoose.set('strictQuery', false);
 require('dotenv').config();
 
 // App Variables
 const app = express();
+app.use(express.json());
 const port = 5000;
 
 // MongoDB Connection
@@ -29,14 +29,21 @@ mongoose.connect(process.env.Mongo_URI)
         });
     }).catch(err => console.log(err));
 
-// Middleware
-app.use(express.json());
+// Enable CORS for all routes
+app.use(cors({
+    origin: 'http://localhost:3000',  // Allow requests from the frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+
+// Middleware and Routes
 
 // Unified Registration Route
 const registerController = require('./Controllers/registerController');
 app.post('/register', registerController.registerUser);
 
-//Unified Login Route
+// Unified Login Route
 const unifiedLoginController = require('./Controllers/loginController');
 app.post('/login', unifiedLoginController);
 
@@ -54,12 +61,3 @@ app.use(express.static(path.join(__dirname, '../frontend/build')));
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
 });
-
-const cors = require('cors');
-app.use(cors({
-    origin: 'http://localhost:3000',  // Allow requests from the frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials : true
-  }));
-

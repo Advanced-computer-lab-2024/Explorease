@@ -13,8 +13,8 @@ router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristByI
 router.put('/myProfile', roleAuth(['tourist']), touristControllers.updateTourist);   // Tourist can update their profile
 
 // Tourist-specific routes for products
-router.get('/products', roleAuth(['tourist']), productControllers.getAllProducts);  // View all products
-router.get('/products/filter-sort-search', roleAuth(['tourist']), productControllers.getFilteredSortedProducts);  // Search products by name
+router.get('/products',optionalAuth(['tourist']), productControllers.getAllProducts);  // View all products
+router.get('/products/filter-sort-search', optionalAuth(['tourist']), productControllers.getFilteredSortedProducts);  // Search products by name
 
 
 // Tourist/Guest shared routes for viewing and filtering
