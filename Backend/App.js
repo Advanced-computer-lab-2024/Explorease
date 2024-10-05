@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path'); 
+const cors = require('cors');
 
 // const roleAuth = require('../Middleware/AuthMiddleware');
 const touristRoutes = require('./Routes/touristRoutes');
@@ -17,7 +18,6 @@ require('dotenv').config();
 // App Variables
 const app = express();
 app.use(express.json());
-
 const port = 5000;
 
 // MongoDB Connection
@@ -35,7 +35,7 @@ mongoose.connect(process.env.Mongo_URI)
 const registerController = require('./Controllers/registerController');
 app.post('/register', registerController.registerUser);
 
-//Unified Login Route
+// Unified Login Route
 const unifiedLoginController = require('./Controllers/loginController');
 app.post('/login', unifiedLoginController);
 

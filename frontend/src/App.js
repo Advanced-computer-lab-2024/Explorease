@@ -18,6 +18,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+    /// All paths needed
           <Route path='/' element ={<HomePage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
