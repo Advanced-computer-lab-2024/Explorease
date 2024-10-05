@@ -6,6 +6,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 
+const Tourist = require('../../Models/UserModels/Tourist');
+const Seller = require('../../Models/UserModels/Seller');
+const TourGuide = require('../../Models/UserModels/TourGuide');
+const Advertiser = require('../../Models/UserModels/Advertiser');
+
+
 
 // Delete admin account
 const deleteAdminAccount = async(req, res) => {
@@ -197,5 +203,101 @@ const createMainAdmin = async(req, res) => {
     }
 };
 
+const getAllTourists = async(req, res) => {
+    const Tourist = require('../../Models/UserModels/Tourist');
+    try {
+        const tourists = await Tourist.find();
+        res.status(200).json(tourists);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
-module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins };
+const getAllSellers = async(req, res) => {
+    const Seller = require('../../Models/UserModels/Seller');
+    try {
+        const sellers = await Seller.find();
+        res.status(200).json(sellers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+const getAllTourismGovernors = async(req, res) => {
+    const TourismGovernor = require('../../Models/UserModels/TouristGoverner');
+    try {
+        const governors = await TourismGovernor.find();
+        res.status(200).json(governors);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getAllTourguides = async(req, res) => {
+    const Tourguide = require('../../Models/UserModels/TourGuide');
+    try {
+        const tourguides = await Tourguide.find();
+        res.status(200).json(tourguides);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getAllAdvertisers = async(req, res) => {
+    const Advertiser = require('../../Models/UserModels/Advertiser');
+    try {
+        const advertisers = await Advertiser.find();
+        res.status(200).json(advertisers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const deleteUser = async (req, res) => {
+    const { id, userType } = req.params;  // Get user ID and user type from the request parameters
+
+    try {
+        let deletedUser;
+        switch (userType) {
+            case 'tourist':
+                deletedUser = await Tourist.findByIdAndDelete(id);
+                break;
+            case 'seller':
+                deletedUser = await Seller.findByIdAndDelete(id);
+                break;
+            case 'tourismGovernor':
+                deletedUser = await TourismGovernor.findByIdAndDelete(id);
+                break;
+            case 'tourGuide':
+                deletedUser = await TourGuide.findByIdAndDelete(id);
+                break;
+            case 'advertiser':
+                deletedUser = await Advertiser.findByIdAndDelete(id);
+                break;
+            case 'admin':
+                if (!req.admin.isMainAdmin) {
+                    return res.status(403).json({ message: 'Only the main admin can delete admins' });
+                }
+                if (req.admin._id.toString() === id) {
+                    return res.status(403).json({ message: 'Main admin cannot delete their own account' });
+                }
+                deletedUser = await Admin.findByIdAndDelete(id);
+                break;
+            default:
+                return res.status(400).json({ message: 'Invalid user type' });
+        }
+
+        if (!deletedUser) {
+            return res.status(404).json({ message: `${userType} not found` });
+        }
+
+        res.status(200).json({ message: `${userType} deleted successfully` });
+    } catch (error) {
+        res.status(500).json({ error: `Error deleting ${userType}: ${error.message}` });
+    }
+};
+
+
+
+
+module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins, getAllTourists, getAllSellers, getAllTourismGovernors, getAllTourguides, getAllAdvertisers , deleteUser};
