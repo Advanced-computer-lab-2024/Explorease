@@ -32,10 +32,12 @@ const getSellerById = async (req, res) => {
 };
 
 // Update seller by ID
+
 const updateSeller = async (req, res) => {
     try {
-        const seller = await userModel.findById(req.user.id);
+        console.log('Updating seller with ID:', req.user.id);  // Debugging log
 
+        const seller = await userModel.findById(req.user.id);
         if (!seller) {
             return res.status(404).json({ message: 'Seller not found' });
         }
@@ -44,12 +46,22 @@ const updateSeller = async (req, res) => {
             return res.status(403).json({ message: 'Seller not accepted. Profile updates are not allowed.' });
         }
 
-        const updatedSeller = await userModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        console.log('Seller before update:', seller);  // Log seller before update
+        console.log('Request Body:', req.body);  // Log incoming update data
+
+        // Update the seller with fields from req.body
+        Object.assign(seller, req.body);  // Merge new data into the existing seller object
+
+        const updatedSeller = await seller.save();  // Save the updated seller object
+        console.log('Seller after update:', updatedSeller);  // Log the updated seller
         res.status(200).json({ updatedSeller });
     } catch (error) {
+        console.error('Update error:', error.message);  // Log any errors
         res.status(400).json({ error: error.message });
     }
 };
+
+
 
 // Delete seller by ID
 const deleteSeller = async (req, res) => {
