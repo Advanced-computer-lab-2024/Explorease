@@ -31,7 +31,7 @@ const SellerDashboard = () => {
     
                 console.log('Response data:', response.data);  // Check if the response contains the expected data
     
-                if (response.data&& response.data.seller) {
+                if (response.data && response.data.seller) {
                     setProfile(response.data.seller); // Update profile state with fetched data
                 } else {
                     setMessage('No profile data found');
@@ -44,7 +44,6 @@ const SellerDashboard = () => {
     
         fetchProfile();
     }, [navigate]);
-    
 
     // Function to handle updating the profile
     const UpdateProfile = ({ profile, setProfile }) => {
@@ -93,8 +92,6 @@ const SellerDashboard = () => {
         if (!formProfile.email) {
             return <div>Loading...</div>;
         }
-    
-        
 
         return (
             <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
@@ -129,22 +126,22 @@ const SellerDashboard = () => {
                         />
                     </div>
                     <div>
-                        <label>Business Name</label>
+                        <label>Name</label>
                         <input
                             type="text"
                             name="businessName"
-                            value={formProfile.businessName || ''}
+                            value={formProfile.name || ''}
                             onChange={handleChange}
                             required
                             style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
                         />
                     </div>
                     <div>
-                        <label>Business Address</label>
+                        <label>Description</label>
                         <input
                             type="text"
                             name="businessAddress"
-                            value={formProfile.businessAddress || ''}
+                            value={formProfile.description || ''}
                             onChange={handleChange}
                             required
                             style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
@@ -169,7 +166,7 @@ const SellerDashboard = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log(response.data); 
+            console.log(response.data);
 
             if (response.data && response.data.seller) {
                 setProfile(response.data); // Update based on the actual structure
@@ -181,7 +178,7 @@ const SellerDashboard = () => {
         }
     };
 
-    // Function to render products
+    // Render products function
     const renderProducts = () => {
         return (
             <>
@@ -210,7 +207,6 @@ const SellerDashboard = () => {
         padding: '20px',
     };
 
-    // Styling for the profile card
     const cardStyle = {
         border: '1px solid #ccc',
         borderRadius: '8px',
@@ -247,8 +243,9 @@ const SellerDashboard = () => {
                             <div style={cardStyle}>
                                 <p><span style={labelStyle}>Username:</span> <span style={valueStyle}>{profile.username}</span></p>
                                 <p><span style={labelStyle}>Email:</span> <span style={valueStyle}>{profile.email}</span></p>
-                                <p><span style={labelStyle}>Business Name:</span> <span style={valueStyle}>{profile.businessName}</span></p>
-                                <p><span style={labelStyle}>Business Address:</span> <span style={valueStyle}>{profile.businessAddress}</span></p>
+                                <p><span style={labelStyle}>Name:</span> <span style={valueStyle}>{profile.name}</span></p>
+                                <p><span style={labelStyle}>Description:</span>
+                                <span style={valueStyle}>{profile.description}</span></p>
                             </div>
                         ) : (
                             <p>Loading profile...</p>
@@ -259,7 +256,8 @@ const SellerDashboard = () => {
                 fetchProducts();
                 return renderProducts();
             case 'updateProfile':
-                return <UpdateProfile />; // Show the Update Profile form when 'Update Profile' is selected
+                // Pass the profile and setProfile to the UpdateProfile component
+                return <UpdateProfile profile={profile} setProfile={setProfile} />;  // Ensure profile and setProfile are passed
             default:
                 return <h2>Welcome to the Dashboard</h2>;
         }
@@ -267,7 +265,7 @@ const SellerDashboard = () => {
 
     return (
         <div>
-            <SellerNavbar />
+            <SellerNavbar />  {/* Assuming SellerNavbar is a similar component to TouristNavbar */}
 
             <div style={sidebarStyle}>
                 <h3>Dashboard</h3>
@@ -286,3 +284,4 @@ const SellerDashboard = () => {
 };
 
 export default SellerDashboard;
+
