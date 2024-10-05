@@ -41,7 +41,7 @@ router.delete('/delete/:id', authenticateAdmin, adminController.deleteAdminAccou
 // router.get('/filterProductByPrice', authenticateAdmin, filterProductByPrice);
 
 router.post('/createTags',authenticateAdmin, tagController.createTag);
-router.put('/updateTag', authenticateAdmin, tagController.updateTag);
+router.put('/updateTag/:id', authenticateAdmin, tagController.updateTag);
 router.get('/getTags', authenticateAdmin, tagController.getAllTags);
 router.delete('/deleteTag/:id', authenticateAdmin, tagController.deleteTag);
 
@@ -49,7 +49,7 @@ router.delete('/deleteTag/:id', authenticateAdmin, tagController.deleteTag);
 
 // must add another middleware to check the activity I create category for is free.
 router.post('/createCategory', authenticateAdmin, activityController.createCategory);
-router.put('/updateCategory', authenticateAdmin, activityController.updateCategory);
+router.put('/updateCategory/:id', authenticateAdmin, activityController.updateCategory);
 router.get('/getCategories', authenticateAdmin, activityController.getAllCategories);
 router.delete('/deleteCategory/:id', authenticateAdmin, activityController.deleteCategory);
 
