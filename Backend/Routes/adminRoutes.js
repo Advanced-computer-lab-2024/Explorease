@@ -54,10 +54,10 @@ router.get('/getCategories', authenticateAdmin, activityController.getAllCategor
 router.delete('/deleteCategory/:id', authenticateAdmin, activityController.deleteCategory);
 
 router.get('/products', authenticateAdmin, productController.getAllProducts);
-router.get('/searchProductByName', authenticateAdmin, productController.searchProductByName);
-router.get('/products', authenticateAdmin, productController.getAllProducts);
-router.get('/products/filter', authenticateAdmin, productController.filterProductByPrice);  // Filter products by price
-router.get('/products/sortByRating', authenticateAdmin, productController.sortProductsByRatings);
+// router.get('/searchProductByName', authenticateAdmin, productController.searchProductByName);
+// router.get('/products', authenticateAdmin, productController.getAllProducts);
+// router.get('/products/filter', authenticateAdmin, productController.filterProductByPrice);  // Filter products by price
+// router.get('/products/sortByRating', authenticateAdmin, productController.sortProductsByRatings);
 router.put('/updateProduct/:id', authenticateAdmin, productController.updateProductDetails);
 
 
