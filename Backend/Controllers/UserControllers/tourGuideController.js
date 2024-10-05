@@ -40,21 +40,16 @@ const getTourGuideById = async (req, res) => {
 // Update a tour guide by ID
 const updateTourGuide = async (req, res) => {
     try {
-        const tourguide = await userModel.findById(req.user.id);
-        if (!tourguide) {
+        const tourGuide = await userModel.findByIdAndUpdate(req.user.id, req.body, { new: true });
+        if (!tourGuide) {
             return res.status(404).json({ message: 'Tour guide not found' });
         }
-
-        if (!tourguide.isAccepted) {
-            return res.status(403).json({ message: 'Tour guide not accepted. Profile updates are not allowed.' });
-        }
-
-        const updatedTourGuide = await userModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.status(200).json({ updatedTourGuide });
+        res.status(200).json({ tourGuide });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Delete a tour guide by ID
 const deleteTourGuide = async (req, res) => {

@@ -7,7 +7,7 @@ const authenticateAdmin = require('../Middleware/adminAuthMiddleware');
 const tagController = require('../Controllers/ActivityControllers/PreferenceTagsController');
 const activityController = require('../Controllers/ActivityControllers/ActivityCategoryController');
 const productController = require('../Controllers/ProductControllers/ProductController'); // Ensure correct path
-
+const {optionalAuth} = require('../Middleware/authMiddleware');
 // Admin Routes
 
 // Add Main Admin (can be used once to create the first admin)
@@ -42,7 +42,7 @@ router.delete('/delete/:id', authenticateAdmin, adminController.deleteAdminAccou
 
 router.post('/createTags',authenticateAdmin, tagController.createTag);
 router.put('/updateTag/:id', authenticateAdmin, tagController.updateTag);
-router.get('/getTags', authenticateAdmin, tagController.getAllTags);
+router.get('/getTags',optionalAuth(['guest']), tagController.getAllTags);
 router.delete('/deleteTag/:id', authenticateAdmin, tagController.deleteTag);
 
 

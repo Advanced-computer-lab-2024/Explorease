@@ -89,27 +89,38 @@ const updateItinerary = async (req, res) => {
     const { tags, ...updateData } = req.body; // Extract tags and other update data
 
     try {
+        // 1. Fetch the itinerary by ID
         const itinerary = await ItineraryModel.findById(id);
         if (!itinerary) {
             return res.status(404).json({ message: 'Itinerary not found' });
         }
-        if (!itinerary.createdBy.equals(req.user._id)) {
+
+        // 2. Check if the user is authorized to update this itinerary
+        if (!itinerary.createdBy.equals(req.user.id)) {
             return res.status(403).json({ message: 'Not authorized to update this Itinerary' });
         }
 
-        // If tags are provided, convert tag names to their corresponding IDs
+        // 3. Handle tags if provided
         if (tags && tags.length > 0) {
-            const tagDocs = await preferenceTagModel.find({ name: { $in: tags } });
-            if (tagDocs.length !== tags.length) {
+            const tagDocs = await preferenceTagModel.find({ _id: { $in: tags } }); // Use _id instead of name
+            if (!tagDocs || tagDocs.length !== tags.length) {
                 return res.status(400).json({ message: 'One or more tags not found.' });
             }
-            updateData.tags = tagDocs.map(tag => tag._id); // Add valid tag IDs to the update data
+            updateData.tags = tagDocs.map(tag => tag._id);
         }
+        
+        
 
+        // 4. Perform the update with validated data
         const updatedItinerary = await ItineraryModel.findByIdAndUpdate(id, updateData, { new: true }).lean();
 
+        // 5. Return a success response
         res.status(200).json({ message: 'Itinerary updated successfully', updatedItinerary });
     } catch (error) {
+        // Log the error for debugging
+        console.error('Error updating itinerary:', error);
+
+        // Return an error response
         res.status(500).json({ message: 'Error updating Itinerary', error: error.message });
     }
 };
@@ -124,7 +135,7 @@ const deleteItinerary = async (req, res) => {
         if (!itinerary) {
             return res.status(404).json({ message: 'Itinerary not found' });
         }
-        if (!itinerary.createdBy.equals(req.user._id)) {
+        if (!itinerary.createdBy.equals(req.user.id)) {
             return res.status(403).json({ message: 'Not authorized to delete this Itinerary' });
         }
         await ItineraryModel.findByIdAndDelete(id);

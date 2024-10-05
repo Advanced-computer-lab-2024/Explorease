@@ -11,13 +11,13 @@ const advertiserRoutes = require('./Routes/advertiserRoutes');
 const adminRoutes = require('./Routes/adminRoutes');
 const governorRoutes = require('./Routes/governorRoutes');
 
-
-
 mongoose.set('strictQuery', false);
 require('dotenv').config();
 
 // App Variables
 const app = express();
+app.use(express.json());
+
 const port = 5000;
 
 // MongoDB Connection
@@ -30,7 +30,6 @@ mongoose.connect(process.env.Mongo_URI)
     }).catch(err => console.log(err));
 
 // Middleware
-app.use(express.json());
 
 // Unified Registration Route
 const registerController = require('./Controllers/registerController');
@@ -63,3 +62,4 @@ app.use(cors({
     credentials : true
   }));
 
+app.options('*', cors());

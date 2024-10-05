@@ -22,7 +22,7 @@ const MultiRoleRegister = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`/users/register`, formData);  // Adjust the API endpoint if necessary
+            const response = await axios.post(`register`, formData);  // Adjust the API endpoint if necessary
             setMessage('Registration successful!');
         } catch (error) {
             setMessage('Error during registration. Please try again.');
