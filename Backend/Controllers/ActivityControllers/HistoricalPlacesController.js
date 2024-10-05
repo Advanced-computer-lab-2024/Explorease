@@ -129,7 +129,7 @@ const getHistoricalPlaceByGov = async (req, res) => {
 // Get all Historical Places
 const getallHistoricalPlaces = async (req, res) => {
     try {
-        const historicalPlaces = await HistoricalPlaceModel.find({}).populate('tags');
+        const historicalPlaces = await HistoricalPlaceModel.find({}).populate('tags managedBy');
         if (historicalPlaces.length === 0) {
             return res.status(404).json({ message: 'No historical places found.' });
         }
@@ -186,8 +186,8 @@ const deleteHistoricalPlace = async (req, res) => {
     }
 };
 
-const searchHistoricalPlaces = async (req, res) => {
-    const { name, type, tags } = req.query;
+const filterSortSearchHistoricalPlaces = async (req, res) => {
+    const { name, type, tag } = req.query;
 
     try {
         // Create a dynamic filter object
@@ -198,63 +198,37 @@ const searchHistoricalPlaces = async (req, res) => {
             filter.Name = { $regex: name, $options: 'i' }; // 'i' for case-insensitive search
         }
 
-        // If a type is provided, search by type
+        // If a type is provided, search by type using regex
         if (type) {
-            filter.Type = { $regex: type, $options: 'i' }; // Use regex for case-insensitive match
+            filter.Type = { $regex: type, $options: 'i' }; // Case-insensitive
         }
 
-        // If tags are provided, find matching tags by name
-        if (tags && tags.length > 0) {
-            const tagDocs = await preferenceTagModel.find({ name: { $in: tags.split(',') } }); // Split tags by comma
+        // If a tag is provided, filter by tags
+        if (tag && tag.length > 0) {
+            const tagDocs = await preferenceTagModel.find({ name: { $in: tag.split(',') } });
             if (tagDocs.length > 0) {
                 const tagIds = tagDocs.map(tag => tag._id);
                 filter.tags = { $in: tagIds }; // Match historical places with any of these tag IDs
             }
         }
 
-        // Find historical places based on the filter
-        const historicalPlaces = await HistoricalPlaceModel.find(filter).populate('tags');
+        // Fetch filtered and sorted historical places
+        const historicalPlaces = await HistoricalPlaceModel.find(filter)
+            .populate('tags managedBy')  // Populate tags and managedBy
+         
 
+        // If no places are found, return 404
         if (historicalPlaces.length === 0) {
             return res.status(404).json({ message: 'No historical places found.' });
         }
 
+        // Return the list of filtered and sorted historical places
         res.status(200).json(historicalPlaces);
+
     } catch (error) {
-        res.status(500).json({ message: 'Error searching historical places', error: error.message });
+        res.status(500).json({ message: 'Error filtering, sorting, or searching historical places', error: error.message });
     }
 };
-
-
-const filterHistoricalPlaceByTag = async (req, res) => {
-    const { tag } = req.query; // Extract the tag from the query parameters
-
-    try {
-        if (!tag) {
-            return res.status(400).json({ message: 'Tag parameter is required.' });
-        }
-
-        // Find the tag by name
-        const tagDoc = await preferenceTagModel.findOne({ name: tag });
-        if (!tagDoc) {
-            return res.status(404).json({ message: 'Tag not found.' });
-        }
-
-        // Find historical places that are associated with this tag
-        const historicalPlaces = await HistoricalPlaceModel.find({ tags: tagDoc._id }).populate('tags');
-
-        if (historicalPlaces.length === 0) {
-            return res.status(404).json({ message: 'No historical places found with this tag.' });
-        }
-
-        res.status(200).json(historicalPlaces);
-    } catch (error) {
-        res.status(500).json({ message: 'Error filtering historical places by tag', error: error.message });
-    }
-};
-
-module.exports = { filterHistoricalPlaceByTag };
-
 
 
 module.exports = {
@@ -265,6 +239,5 @@ module.exports = {
     deleteHistoricalPlace,
     getHistoricalPlacesByType,
     getTicketPrice,
-    searchHistoricalPlaces, 
-    filterHistoricalPlaceByTag
+    filterSortSearchHistoricalPlaces
 };

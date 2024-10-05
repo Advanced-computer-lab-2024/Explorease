@@ -97,63 +97,6 @@ const deleteProduct = async (req, res) => {
     }
 };
 
-// Search product by name (case-insensitive, partial match)
-const searchProductByName = async (req, res) => {
-    const { name } = req.query;
-
-    try {
-        if (!name) {
-            return res.status(400).json({ message: 'Product name is required' });
-        }
-
-        const products = await productModel.find({ Name: { $regex: name, $options: 'i' } }); // Case-insensitive search
-        if (products.length === 0) {
-            return res.status(404).json({ message: 'No products found with the specified name' });
-        }
-
-        res.status(200).json(products);
-    } catch (error) {
-        res.status(500).json({ message: 'Error searching for product', error: error.message });
-    }
-};
-// Filter products by price range
-const filterProductByPrice = async (req, res) => {
-    const { minPrice, maxPrice } = req.query;
-
-    try {
-        // Build the price filter
-        const priceFilter = {};
-        if (minPrice) priceFilter.$gte = minPrice;
-        if (maxPrice) priceFilter.$lte = maxPrice;
-
-        // Find products within the specified price range
-        const products = await productModel.find({ Price: priceFilter });
-
-        if (products.length === 0) {
-            return res.status(404).json({ message: 'No products found in this price range.' });
-        }
-
-        res.status(200).json(products);
-    } catch (error) {
-        res.status(500).json({ message: 'Error filtering products by price', error: error.message });
-    }
-};
-
-const sortProductsByRatings = async (req, res) => {
-    try {
-        // Find and sort products by ratings in descending order (-1)
-        const sortedProducts = await productModel.find().sort({ Ratings: -1 });
-
-        if (sortedProducts.length === 0) {
-            return res.status(404).json({ message: 'No products found.' });
-        }
-
-        res.status(200).json(sortedProducts);
-    } catch (error) {
-        res.status(500).json({ message: 'Error sorting products by ratings', error: error.message });
-    }
-};
-
 const updateProductDetails = async (req, res) => {
     const { id } = req.params;
     const { Price, AvailableQuantity } = req.body;
@@ -181,14 +124,56 @@ const updateProductDetails = async (req, res) => {
     }
 };
 
+// Unified controller to search, filter by price, and sort products
+const getFilteredSortedProducts = async (req, res) => {
+    const { name, minPrice, maxPrice, sortByRatings } = req.query;
+
+    try {
+        // Create the filter object
+        let filter = {};
+
+        // If a name is provided, add it to the filter with a case-insensitive regex
+        if (name) {
+            filter.Name = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial matches
+        }
+
+        // If price filtering is provided, add the price range to the filter
+        if (minPrice || maxPrice) {
+            filter.Price = {};
+            if (minPrice) filter.Price.$gte = parseFloat(minPrice); // Greater than or equal to minPrice
+            if (maxPrice) filter.Price.$lte = parseFloat(maxPrice); // Less than or equal to maxPrice
+        }
+
+        // Initialize sorting object
+        let sortOption = {};
+
+        // If sorting by ratings is requested, add it to the sort option
+        if (sortByRatings) {
+            sortOption.Ratings = sortByRatings === 'desc' ? -1 : 1; // Sort ratings in descending or ascending order
+        }
+
+        // Fetch products based on the filter and sorting criteria
+        const products = await productModel.find(filter).sort(sortOption);
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: 'No products found.' });
+        }
+
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching products', error: error.message });
+    }
+};
+
+
+
+
 
 module.exports = {
     createProduct,
     getAllProducts,
     deleteProduct,
-    searchProductByName,
-    filterProductByPrice,
     getMyProducts,
-    sortProductsByRatings,
-    updateProductDetails
+    updateProductDetails,
+    getFilteredSortedProducts
 };

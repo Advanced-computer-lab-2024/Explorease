@@ -40,8 +40,8 @@ router.post('/createProduct', roleAuth(['seller']), upload.single('image'), prod
 //Get my products
 router.get('/myproducts', roleAuth(['seller']), productController.getMyProducts);
 router.get('/products', roleAuth(['seller']), productController.getAllProducts);
-router.get('/products/filter', roleAuth(['seller']), productController.filterProductByPrice);  // Filter products by price
-router.get('/products/sortByRating', roleAuth(['seller']), productController.sortProductsByRatings);  // Sort products by rating
+// router.get('/products/filter', roleAuth(['seller']), productController.filterProductByPrice);  // Filter products by price
+// router.get('/products/sortByRating', roleAuth(['seller']), productController.sortProductsByRatings);  // Sort products by rating
 
 
 // Update a product
@@ -49,7 +49,7 @@ router.put('/updateProduct/:id', roleAuth(['seller']), productController.updateP
 
 
 
-router.get('/searchProduct', roleAuth(['seller']) , productController.searchProductByName);
+// router.get('/searchProduct', roleAuth(['seller']) , productController.searchProductByName);
 
 // Export only the router
 module.exports = router;

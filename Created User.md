@@ -134,7 +134,7 @@
   },
   {
     "username": "tourist_lucas",
-    "email": "lucas_tourist@example.com",
+    "email": "lucas12@example.com",
     "password": "LucasPassword789",
     "mobileNumber": "1122334455",
     "nationality": "Canadian",
@@ -194,3 +194,75 @@
         "managedHistoricalPlaces": []
     }
 ]
+
+Main Dashboard (Guest) ->
+Login Button
+Register Button
+View All Activities
+View All Itineraries
+View All Historical Places
+Search Activities By Name or Category or Tag
+Search Historical Place By Name or Tag
+Search Itineraries By Name or Tag
+Filter All Activities Based on Budget/Date/Category/Rating
+Sort All Activities On Rating & Price
+Sort All Itineraries On Rating & Price
+Filter Itineraries on Budget/ Date/ Preference Tags / Language
+Filter Historical Places By Tag
+
+Tour Guide Dashboard ->
+Account Data 
+Update Profile
+Create Itinerary 
+Update Itinerary
+Delete My Itineraries
+Get My Itineraries
+
+Tourist Governor Dashboard -> 
+Create Historical Place
+Delete Historical Places I Added
+Update Historical Places I Added
+Get All Historical Places
+Get My Historical Places
+Create Tags
+
+Advertiser Dashboard ->
+Account Data (Change Dummy Data to Companies/Entities)
+Update Profile
+Get All Activities
+Get My Activities
+Update Activity
+Delete Activities
+
+Seller Dashboard ->
+Account Data
+Update Profile
+View A List of All Products
+Search for Product By Name
+Sort Products By Ratings
+Filter Products By Price
+Add Products 
+View My Products
+Edit My Products
+
+
+Tourist ->
+Account Data (Wallet)
+Update Profile 
+View A List of All Products
+Search for Product By Name
+Sort Products By Ratings
+Filter Products By Price
++ All In Guest
+
+
+
+Admin Dashboard -> 
+Delete account off system
+Add tourism governor
+Add another admin
+Create Tags
+Create Activity Category for Activity
+View A List of All Products
+Search for Product By Name
+Add Product With

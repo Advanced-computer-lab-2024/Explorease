@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const HistoricalPlaceSchema = new Schema({
+    Name : {type : String, required : true},
     Description: { type: String, required: true },
     Location: { type: String, required: true },
     OpeningHours: { type: String, required: true },

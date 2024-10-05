@@ -10,8 +10,7 @@ import Itineraries from './Components/Itineraries';
 import HistoricalPlaces from './Components/HistoricalPlace';
 import TourGuideDashboard from './Components/TourGuideDashboard';  // Import the new dashboard
 import Login from './Components/Login';
-
-
+import HomePage from './Components/HomePage';
 import SellerDashboard from './Components/SellerDashboard';  // Import SellerDashboard
 
 function App() {
@@ -19,6 +18,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          <Route path='/' element ={<HomePage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/register" element={<MultiRoleRegister />} />

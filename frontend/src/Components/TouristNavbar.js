@@ -6,6 +6,7 @@ const Navbar = () => {
         backgroundColor: '#333',
         padding: '10px',
         textAlign: 'center',
+        display : 'sticky'
     };
 
     const linkStyle = {

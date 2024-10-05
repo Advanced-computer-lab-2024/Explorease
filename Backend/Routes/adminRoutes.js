@@ -60,4 +60,15 @@ router.get('/products/filter', authenticateAdmin, productController.filterProduc
 router.get('/products/sortByRating', authenticateAdmin, productController.sortProductsByRatings);
 router.put('/updateProduct/:id', authenticateAdmin, productController.updateProductDetails);
 
+
+router.get('/tourists', authenticateAdmin, adminController.getAllTourists);
+router.get('/sellers', authenticateAdmin, adminController.getAllSellers);
+router.get('/tourismGovernors', authenticateAdmin, adminController.getAllTourismGovernors);
+router.get('/tourGuides', authenticateAdmin, adminController.getAllTourguides);
+router.get('/advertisers', authenticateAdmin, adminController.getAllAdvertisers);
+
+// Delete user by ID (universal delete route for any user)
+router.delete('/deleteUser/:id/:userType', authenticateAdmin, adminController.deleteUser);
+ 
+
 module.exports = router;

@@ -14,9 +14,8 @@ router.put('/myProfile', roleAuth(['tourist']), touristControllers.updateTourist
 
 // Tourist-specific routes for products
 router.get('/products', roleAuth(['tourist']), productControllers.getAllProducts);  // View all products
-router.get('/products/search', roleAuth(['tourist']), productControllers.searchProductByName);  // Search products by name
-router.get('/products/filter', roleAuth(['tourist']), productControllers.filterProductByPrice);  // Filter products by price
-router.get('/products/sortByRating', roleAuth(['tourist']), productControllers.sortProductsByRatings);  // Sort products by rating
+router.get('/products/filter-sort-search', roleAuth(['tourist']), productControllers.getFilteredSortedProducts);  // Search products by name
+
 
 // Tourist/Guest shared routes for viewing and filtering
 router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.filterSortSearchActivities );  // View all activities
@@ -26,9 +25,10 @@ router.get('/historical-places', optionalAuth(['tourist', 'guest']), historicalP
 // Filtering and searching (Activities, Itineraries, Historical Places)
 router.get('/activities/filter-sort-search', optionalAuth(['tourist', 'guest']), activityControllers.filterSortSearchActivities );  // Search activities by name, category, or tag
 router.get('/itineraries/filter-sort-search', optionalAuth(['tourist', 'guest']), itineraryControllers.filterSortSearchItineraries);  // Search itineraries by name, category, or tag
-router.get('/historical-places/search', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.searchHistoricalPlaces);  // Search historical places by tag
+router.get('/historical-places/filter-sort-search', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.filterSortSearchHistoricalPlaces);  // Search historical places by tag
 
 // Filter routes for activities, itineraries, and historical places
-router.get('/historical-places/filter', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.filterHistoricalPlaceByTag);  // Filter historical places by tag
+
+
 
 module.exports = router;
