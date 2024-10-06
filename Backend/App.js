@@ -1,9 +1,10 @@
 // Dependencies Import
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path'); 
+const path = require('path');
 const cors = require('cors');
 
+// User Routes
 // const roleAuth = require('../Middleware/AuthMiddleware');
 const touristRoutes = require('./Routes/touristRoutes');
 const tourGuideRoutes = require('./Routes/tourGuideRoutes');
