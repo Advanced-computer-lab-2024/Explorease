@@ -1,9 +1,10 @@
 // Dependencies Import
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path'); 
+const path = require('path');
 const cors = require('cors');
 
+// User Routes
 // const roleAuth = require('../Middleware/AuthMiddleware');
 const touristRoutes = require('./Routes/touristRoutes');
 const tourGuideRoutes = require('./Routes/tourGuideRoutes');
@@ -58,7 +59,7 @@ app.use(cors({
     origin: 'http://localhost:3000',  // Allow requests from the frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials : true
-  }));
+    credentials: true
+}));
 
 app.options('*', cors());
