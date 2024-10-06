@@ -13,5 +13,9 @@ router.delete('/deleteProfile', roleAuth(['advertiser']), advertiserController.d
 // Advertiser can create activities
 router.post('/createActivity', roleAuth(['advertiser']), activityController.createActivity);
 router.get('/getMyActivities',  roleAuth(['advertiser']) , activityController.readActivities);
+router.delete('/deleteActivity/:id', roleAuth(['advertiser']), activityController.deleteActivity);
+// Add the update activity route
+router.put('/updateActivity/:id', roleAuth(['advertiser']), activityController.updateActivity);
+
 // Export the router
 module.exports = router;

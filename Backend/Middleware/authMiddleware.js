@@ -18,7 +18,6 @@ const roleAuth = (allowedRoles) => {
             const actualToken = token.split(' ')[1];  // Extract token
             const decoded = jwt.verify(actualToken, process.env.JWT_SECRET);  // Verify token
             
-            console.log(decoded.role);
 
             if (!allowedRoles.includes(decoded.role)) {
                 return res.status(403).json({ message: 'Access denied: insufficient permissions' });

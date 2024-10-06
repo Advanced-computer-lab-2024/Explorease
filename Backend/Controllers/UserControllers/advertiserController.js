@@ -39,21 +39,49 @@ const updateAdvertiser = async (req, res) => {
         const advertiser = await userModel.findById(req.user.id);
         if (!advertiser) return res.status(404).json({ error: 'Advertiser not found' });
 
-        if (!advertiser.isAccepted) {
-            return res.status(403).json({ message: 'Advertiser not accepted. Profile updates are not allowed.' });
-        }
+        // if (!advertiser.isAccepted) {
+        //     return res.status(403).json({ message: 'Advertiser not accepted. Profile updates are not allowed.' });
+        // }
 
         // Update the advertiser's profile
-        const updateFields = { ...req.body };
 
-        // If password is included, hash it before saving
-        if (updateFields.password) {
-            const hashedPassword = await bcrypt.hash(updateFields.password, 10);
-            updateFields.password = hashedPassword;
+        const {username, companyName , websiteLink , hotline , companyProfile} = req.body;
+
+       
+        if (username && username !== advertiser.username) {
+            const existingAdvertiser = await userModel.findOne({ username });
+            if (existingAdvertiser) {
+                return res.status(400).json({ message: 'Username already taken' });
+            }
+            advertiser.username = username;
         }
+        
+        if (companyName) advertiser.companyName = companyName;
+        if (websiteLink) advertiser.websiteLink = websiteLink;
+        if (hotline) advertiser.hotline = hotline;
+        if (companyProfile) advertiser.companyProfile = companyProfile;
+        
+        // if (password) {
+        //     const hashedPassword = await bcrypt.hash(password, 10);
+        //     advertiser.password = hashedPassword;
+        // }
 
-        const updatedAdvertiser = await userModel.findByIdAndUpdate(req.user.id, updateFields, { new: true });
-        res.status(200).json({ updatedAdvertiser });
+        //test
+        // if (currentPassword && newPassword) {
+        //     const isMatch = await bcrypt.compare(currentPassword, advertiser.password);
+        //     if (!isMatch) {
+        //         return res.status(400).json({ message: 'Current password is incorrect' });
+        //     }
+        //     // Hash the new password and update it
+        //     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        //     advertiser.password = hashedNewPassword;
+        // }
+        
+
+        const updatedAdvertiser= await advertiser.save();
+
+        res.status(200).json({ message: 'Advertiser updated successfully', updatedAdvertiser });
+        console.log('Advertiser updated successfully');
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -101,11 +129,13 @@ const loginAdvertiser = async (req, res) => {
     }
 };
 
+
+
 module.exports = {
     createAdvertiser,
     getAdvertiserById,
     updateAdvertiser,
     deleteAdvertiser,
     getAllAdvertisers,
-    loginAdvertiser
+    loginAdvertiser,
 };
