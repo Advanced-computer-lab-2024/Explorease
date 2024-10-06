@@ -17,7 +17,8 @@ router.get('/products', optionalAuth(['tourist']), productControllers.getAllProd
 router.get('/products/filter-sort-search', optionalAuth(['tourist']), productControllers.getFilteredSortedProducts);  // Search products by name
 
 
-// Tourist/Guest shared routes for viewing and filtering
+// Tourist shared routes for viewing and filtering
+// Guest shared routes for viewing and filtering
 router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.filterSortSearchActivities );  // View all activities
 router.get('/itineraries', optionalAuth(['tourist', 'guest']), itineraryControllers.getAllItinerary);  // View all itineraries
 router.get('/historical-places', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.getallHistoricalPlaces);  // View all historical places
