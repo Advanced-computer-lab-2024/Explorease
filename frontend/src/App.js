@@ -13,6 +13,7 @@ import Login from './Components/Login';
 import HomePage from './Components/HomePage';
 import SellerDashboard from './Components/SellerDashboard';  // Import SellerDashboard
 import AdvertiserDashboard from './Components/AdvertiserDashboard';
+import TouristGovernorDashboard from './Components/TouristGovernor';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path='/' element ={<HomePage />} />
+          <Route path="/governor" element={<TouristGovernorDashboard />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/register" element={<MultiRoleRegister />} />

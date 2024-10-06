@@ -108,23 +108,27 @@ const getHistoricalPlacesByType = async (req, res) => {
 
 // Get Historical Places created by a specific guide
 const getHistoricalPlaceByGov = async (req, res) => {
-    const govId  = req.user.id;
+    const govId  = req.user.id;  // Getting governor's ID from the logged-in user
 
     try {
         if (!govId) {
             return res.status(400).json({ message: 'Governor ID is required.' });
         }
 
-        const historicalPlaces = await HistoricalPlaceModel.find({ managedBy : govId }).populate('tags');
+        // Find historical places managed by the governor, using the managedBy field
+        const historicalPlaces = await HistoricalPlaceModel.find({ managedBy: govId }).populate('tags');
+        
         if (historicalPlaces.length === 0) {
-            return res.status(404).json({ message: 'No historical places found for this guide.' });
+            return res.status(404).json({ message: 'No historical places found for this governor.' });
         }
 
+        // Return the found historical places
         res.status(200).json(historicalPlaces);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching historical places', error: error.message });
     }
 };
+
 
 // Get all Historical Places
 const getallHistoricalPlaces = async (req, res) => {
@@ -169,13 +173,13 @@ const updateHistoricalPlace = async (req, res) => {
 
 // Delete Historical Place
 const deleteHistoricalPlace = async (req, res) => {
-    const { _id } = req.body;
+    const id = req.params.id;
     try {
-        if (!_id) {
+        if (!id) {
             return res.status(400).json({ message: 'Historical Place ID is required for deletion.' });
         }
 
-        const deletedHistoricalPlace = await HistoricalPlaceModel.findByIdAndDelete(_id);
+        const deletedHistoricalPlace = await HistoricalPlaceModel.findByIdAndDelete(id);
         if (!deletedHistoricalPlace) {
             return res.status(404).json({ message: 'Historical Place not found.' });
         }

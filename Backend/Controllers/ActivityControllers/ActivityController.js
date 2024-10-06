@@ -229,15 +229,18 @@ const filterSortSearchActivities = async (req, res) => {
 };
 
 const filterSortSearchActivitiesByAdvertiser = async (req, res) => {
-    const { searchQuery, category, tag, minPrice, maxPrice, startDate, endDate, minRating, sortBy, order , createdBy } = req.query;
+    const { searchQuery, category, tag, minPrice, maxPrice, startDate, endDate, minRating, sortBy, order } = req.query;
     const advertiserid = req.user.id;
-    if(!advertiserid === createdBy) {
-        return res.status(403).json({ message: 'Not authorized to view this activity.' });
-    }
+
+
+    console.log(advertiserid);
+    // if(!advertiserid === createdBy) {
+    //     return res.status(403).json({ message: 'Not authorized to view this activity.' });
+    // }
 
 
     try {
-        let query = {};
+        let query = { createdBy : advertiserid };
         // Build query based on the received parameters
 
         if (searchQuery) {

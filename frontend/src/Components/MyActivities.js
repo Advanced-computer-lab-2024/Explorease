@@ -2,34 +2,47 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const MyActivities = () => {
-    const [activities, setActivities] = useState([]);
+    const [activities, setActivities] = useState([]); // Ensure this is initialized as an array
     const [message, setMessage] = useState('');
     const [editingActivity, setEditingActivity] = useState(null);  // Track which activity is being edited
     const [updatedFields, setUpdatedFields] = useState({});  // Track updated fields
+    const [searchQuery, setSearchQuery] = useState('');
+    const [category, setCategory] = useState('');
+    const [tag, setTag] = useState('');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+    const [minRating, setMinRating] = useState('');
+    const [sortBy, setSortBy] = useState('');
+    const [order, setOrder] = useState('asc');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     // Fetch the activities when the component mounts
-    useEffect(() => {
-        const fetchActivities = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) return;
+    const fetchActivities = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
-            try {
-                const response = await axios.get('/advertiser/getMyActivities', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        try {
+            const response = await axios.get('/advertiser/getMyActivities', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-                if (response.data) {
-                    setActivities(response.data);  // Set the activities in state
-                } else {
-                    setMessage('No activities found');
-                }
-            } catch (error) {
-                setMessage('Error fetching activities');
+            // Ensure the response data is an array
+            if (Array.isArray(response.data)) {
+                setActivities(response.data);  // Set the activities in state
+            } else {
+                setMessage('No activities found');
+                setActivities([]);  // Set an empty array if the response isn't an array
             }
-        };
+        } catch (error) {
+            setMessage('Error fetching activities');
+            setActivities([]);  // Handle error by setting activities to an empty array
+        }
+    };
 
+    useEffect(() => {
         fetchActivities();
     }, []);
 
@@ -99,12 +112,124 @@ const MyActivities = () => {
         });
     };
 
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        await filterSortSearchActivities();
+    };
+
+    const filterSortSearchActivities = async () => {
+        const token = localStorage.getItem('token');
+
+        let queryString = '';
+
+        // Add parameters to query string
+        if (searchQuery) queryString += `searchQuery=${searchQuery}&`;
+        if (category) queryString += `category=${category}&`;
+        if (tag) queryString += `tag=${tag}&`;
+        if (minPrice) queryString += `minPrice=${minPrice}&`;
+        if (maxPrice) queryString += `maxPrice=${maxPrice}&`;
+        if (startDate) queryString += `startDate=${startDate}&`;
+        if (endDate) queryString += `endDate=${endDate}&`;
+        if (minRating) queryString += `minRating=${minRating}&`;
+        if (sortBy) queryString += `sortBy=${sortBy}&order=${order}`;
+
+        
+
+
+
+        try {
+            const response = await axios.get(`/advertiser/filter-sort-search?${queryString}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            console.log('API Response:', response.data);
+            // Ensure the response data is an array
+            if (Array.isArray(response.data)) {
+                setActivities(response.data);
+            } else {
+                setMessage('No activities found');
+                setActivities([]);  // Set an empty array if the response isn't an array
+            }
+        } catch (error) {
+            setMessage('Error fetching activities');
+            setActivities([]);  // Handle error by setting activities to an empty array
+        }
+    };
+
     return (
         <div>
             <h2>My Activities</h2>
             {message && <p>{message}</p>}
+
+            <form onSubmit={handleSearch} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Search by Name:</label>
+                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }} />
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Category:</label>
+                    <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Start Date:</label>
+                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>End Date:</label>
+                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Min Price:</label>
+                    <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '100px' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Max Price:</label>
+                    <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '100px' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Min Rating:</label>
+                    <input type="number" value={minRating} onChange={(e) => setMinRating(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '100px' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Tag:</label>
+                    <input type="text" value={tag} onChange={(e) => setTag(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '150px' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Sort By:</label>
+                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}>
+                        <option value="">Select</option>
+                        <option value="price">Price</option>
+                        <option value="ratings">Rating</option>
+                    </select>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label>Order:</label>
+                    <select value={order} onChange={(e) => setOrder(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+
+                <button type="submit" style={{ padding: '10px 15px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
+                    Search & Filter
+                </button>
+            </form>
+
+
             <div style={containerStyle}>
-                {activities.length > 0 ? (
+                {/* Ensure activities is an array before mapping */}
+                {Array.isArray(activities) && activities.length > 0 ? (
                     activities.map((activity) => (
                         <div key={activity._id} style={cardStyle}>
                             {editingActivity === activity._id ? (

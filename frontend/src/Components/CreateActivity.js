@@ -65,9 +65,10 @@ const CreateActivity = () => {
     };
 
     const handleTagChange = (e) => {
-        const selectedTag = e.target.value;  // Get the selected tag value
-        setFormData({ ...formData, tags: selectedTag });  // Update formData with a single tag
+        const selectedTags = Array.from(e.target.selectedOptions, option => option.value);  // Convert selected options into an array of tag names
+        setFormData({ ...formData, tags: selectedTags });  // Set the tags as an array of selected values
     };
+    
 
     const handleCheckboxChange = (e) => {
         setFormData({ ...formData, bookingOpen: e.target.checked });
@@ -95,62 +96,123 @@ const CreateActivity = () => {
         }
     };
 
+    const formStyle = {
+        padding: '20px',
+        maxWidth: '600px',
+        margin: '0 auto',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+    };
+    
+    const formGroupStyle = {
+        marginBottom: '15px',
+        display: 'flex',
+        flexDirection: 'column'
+    };
+    
+    const labelStyle = {
+        marginBottom: '5px',
+        fontWeight: 'bold',
+        fontSize: '14px',
+        color: '#333'
+    };
+    
+    const inputStyle = {
+        padding: '10px',
+        fontSize: '14px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+        outline: 'none',
+        width: '100%',
+        boxSizing: 'border-box'
+    };
+    
+    const selectStyle = {
+        padding: '10px',
+        fontSize: '14px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+        outline: 'none',
+        width: '100%',
+        boxSizing: 'border-box'
+    };
+    
+    const buttonStyle = {
+        padding: '10px',
+        fontSize: '16px',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        width: '100%',
+        boxSizing: 'border-box',
+        marginTop: '20px'
+    };
+    
+    const messageStyle = {
+        marginBottom: '15px',
+        color: 'green',
+        fontWeight: 'bold'
+    };
+
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+        <div style={formStyle}>
             <h2>Create Activity</h2>
-            {message && <p>{message}</p>}
+            {message && <p style={messageStyle}>{message}</p>}
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Name:</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Name:</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} required style={inputStyle} />
                 </div>
-                <div>
-                    <label>Date:</label>
-                    <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Date:</label>
+                    <input type="date" name="date" value={formData.date} onChange={handleChange} required style={inputStyle} />
                 </div>
-                <div>
-                    <label>Time:</label>
-                    <input type="time" name="time" value={formData.time} onChange={handleChange} required />
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Time:</label>
+                    <input type="time" name="time" value={formData.time} onChange={handleChange} required style={inputStyle} />
                 </div>
-                <div>
-                    <label>Location:</label>
-                    <input type="text" name="location" value={formData.location} onChange={handleChange} required />
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Location:</label>
+                    <input type="text" name="location" value={formData.location} onChange={handleChange} required style={inputStyle} />
                 </div>
-                <div>
-                    <label>Price:</label>
-                    <input type="number" name="price" value={formData.price} onChange={handleChange} required />
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Price:</label>
+                    <input type="number" name="price" value={formData.price} onChange={handleChange} required style={inputStyle} />
                 </div>
-                <div>
-                    <label>Category:</label>
-                    <select name="category" value={formData.category} onChange={handleChange} required>
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Category:</label>
+                    <select name="category" value={formData.category} onChange={handleChange} required style={selectStyle}>
                         <option value="">Select a Category</option>
                         {Array.isArray(categories) && categories.map(category => (
                             <option key={category._id} value={category.name}>{category.name}</option>
                         ))}
                     </select>
                 </div>
-                <div>
-                    <label>Tag:</label> {/* Modified label for single tag */}
-                    <select name="tags" value={formData.tags} onChange={handleTagChange} required>
-                        <option value="">Select a Tag</option>
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Tags (select multiple):</label>
+                    <select multiple={true} name="tags" value={formData.tags} onChange={handleTagChange} required style={selectStyle}>
+                        <option value="">Select Tags</option>
                         {Array.isArray(tags) && tags.map(tag => (
                             <option key={tag._id} value={tag.name}>{tag.name}</option>
                         ))}
                     </select>
                 </div>
-                <div>
-                    <label>Special Discounts:</label>
-                    <input type="text" name="specialDiscounts" value={formData.specialDiscounts} onChange={handleChange} />
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Special Discounts:</label>
+                    <input type="text" name="specialDiscounts" value={formData.specialDiscounts} onChange={handleChange} style={inputStyle} />
                 </div>
-                <div>
-                    <label>Duration (hours):</label>
-                    <input type="number" name="duration" value={formData.duration} onChange={handleChange} required />
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Duration (hours):</label>
+                    <input type="number" name="duration" value={formData.duration} onChange={handleChange} required style={inputStyle} />
                 </div>
-                <div>
-                    <label>Booking Open:</label>
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Booking Open:</label>
                     <input type="checkbox" name="bookingOpen" checked={formData.bookingOpen} onChange={handleCheckboxChange} />
                 </div>
-                <button type="submit" style={{ padding: '10px', marginTop: '10px' }}>Create Activity</button>
+                <button type="submit" style={buttonStyle}>Create Activity</button>
             </form>
         </div>
     );

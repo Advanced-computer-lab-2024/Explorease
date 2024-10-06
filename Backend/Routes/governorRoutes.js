@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const historicalPlaceController = require('../Controllers/ActivityControllers/HistoricalPlacesController');
 const preferenceTagController = require('../Controllers/ActivityControllers/PreferenceTagsController');
+const touristGovernorController = require('../Controllers/UserControllers/tourismGovernorController');
 const { roleAuth } = require('../Middleware/authMiddleware');
 
 // Tourist Governor Routes
@@ -23,5 +24,16 @@ router.delete('/deleteHistoricalPlace/:id', roleAuth(['touristGovernor']), histo
 
 // Create Tags for Historical Locations (Tourist Governor only)
 router.post('/createTag', roleAuth(['touristGovernor']), preferenceTagController.createTag);
+
+// Get My Profile
+router.get('/myProfile', roleAuth(['touristGovernor']), touristGovernorController.getTouristGovernorById);
+
+// Update My Profile   
+router.put('/updateProfile', roleAuth(['touristGovernor']), touristGovernorController.updateTouristGovernor);
+
+// Delete My Profile
+router.delete('/deleteProfile', roleAuth(['touristGovernor']), touristGovernorController.deleteTouristGovernor);
+
+
 
 module.exports = router;
