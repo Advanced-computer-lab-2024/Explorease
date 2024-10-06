@@ -20,6 +20,17 @@ const app = express();
 app.use(express.json());
 const port = 5000;
 
+app.use(cors({
+    origin: 'http://localhost:3000',  // Allow requests from the frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials : true
+  }));
+
+app.options('*', cors());
+
+
+
 // MongoDB Connection
 mongoose.connect(process.env.Mongo_URI)
     .then(() => {
@@ -46,6 +57,7 @@ app.use('/admins', adminRoutes);
 app.use('/governor', governorRoutes);
 app.use('/seller', sellerRoutes);
 
+
 // Serve static files from the React frontend app
 app.use(express.static(path.join(__dirname, '../frontend/build')));
 
@@ -54,11 +66,3 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
 });
 
-app.use(cors({
-    origin: 'http://localhost:3000',  // Allow requests from the frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials : true
-  }));
-
-app.options('*', cors());

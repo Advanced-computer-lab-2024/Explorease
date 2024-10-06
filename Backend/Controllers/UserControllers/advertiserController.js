@@ -25,7 +25,7 @@ const createAdvertiser = async (req, res) => {
 // Get advertiser by ID
 const getAdvertiserById = async (req, res) => {
     try {
-        const advertiser = await userModel.findById(req.params.id);
+        const advertiser = await userModel.findById(req.user.id);
         if (!advertiser) return res.status(404).json({ error: 'Advertiser not found' });
         res.status(200).json({ advertiser });
     } catch (error) {
@@ -36,19 +36,29 @@ const getAdvertiserById = async (req, res) => {
 // Update an advertiser by ID
 const updateAdvertiser = async (req, res) => {
     try {
-        const advertiser = await userModel.findById(req.params.id);
+        const advertiser = await userModel.findById(req.user.id);
         if (!advertiser) return res.status(404).json({ error: 'Advertiser not found' });
 
         if (!advertiser.isAccepted) {
             return res.status(403).json({ message: 'Advertiser not accepted. Profile updates are not allowed.' });
         }
 
-        const updatedAdvertiser = await userModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        // Update the advertiser's profile
+        const updateFields = { ...req.body };
+
+        // If password is included, hash it before saving
+        if (updateFields.password) {
+            const hashedPassword = await bcrypt.hash(updateFields.password, 10);
+            updateFields.password = hashedPassword;
+        }
+
+        const updatedAdvertiser = await userModel.findByIdAndUpdate(req.user.id, updateFields, { new: true });
         res.status(200).json({ updatedAdvertiser });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Delete an advertiser by ID
 const deleteAdvertiser = async (req, res) => {

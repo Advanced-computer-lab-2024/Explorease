@@ -9,9 +9,14 @@ const Navbar = () => {
         top: 0,
         width: '100%',
         zIndex: 1000,
-        display: 'flex',           // Flexbox layout to align items horizontally
-        justifyContent: 'space-between',  // Space links across the width (left, center, right)
-        alignItems: 'center',      // Center links vertically
+        display: 'flex',  // Flex layout for the navbar
+        justifyContent: 'center',  // Center the links in the navbar
+        alignItems: 'center',
+    };
+
+    const linkContainerStyle = {
+        display: 'flex', // Flex layout for link container
+        gap: '20px',     // Space between each link
     };
 
     const linkStyle = {
@@ -22,9 +27,11 @@ const Navbar = () => {
 
     return (
         <nav style={navStyle}>
-            <Link to="/activities" style={linkStyle}>View All Activities</Link>
-            <Link to="/itineraries" style={linkStyle}>View All Itineraries</Link>
-            <Link to="/historical-places" style={linkStyle}>View All Historical Places</Link>
+            <div style={linkContainerStyle}>
+                <Link to="/activities" style={linkStyle}>View All Activities</Link>
+                <Link to="/itineraries" style={linkStyle}>View All Itineraries</Link>
+                <Link to="/historical-places" style={linkStyle}>View All Historical Places</Link>
+            </div>
         </nav>
     );
 };

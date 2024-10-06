@@ -165,6 +165,46 @@ const getFilteredSortedProducts = async (req, res) => {
     }
 };
 
+const getFilteredSortedProductsBySeller = async (req, res) => {
+    const { name, minPrice, maxPrice, sortByRatings } = req.query;
+
+    try {
+        // Create the filter object and ensure only the seller's products are fetched
+        let filter = { Seller: req.user.id }; // This ensures the products returned belong to the authenticated seller
+
+        // If a name is provided, add it to the filter with a case-insensitive regex
+        if (name) {
+            filter.Name = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial matches
+        }
+
+        // If price filtering is provided, add the price range to the filter
+        if (minPrice || maxPrice) {
+            filter.Price = {};
+            if (minPrice) filter.Price.$gte = parseFloat(minPrice); // Greater than or equal to minPrice
+            if (maxPrice) filter.Price.$lte = parseFloat(maxPrice); // Less than or equal to maxPrice
+        }
+
+        // Initialize sorting object
+        let sortOption = {};
+
+        // If sorting by ratings is requested, add it to the sort option
+        if (sortByRatings) {
+            sortOption.Ratings = sortByRatings === 'desc' ? -1 : 1; // Sort ratings in descending or ascending order
+        }
+
+        // Fetch products based on the filter and sorting criteria
+        const products = await productModel.find(filter).sort(sortOption);
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: 'No products found.' });
+        }
+
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching products', error: error.message });
+    }
+};
+
 
 
 
@@ -175,5 +215,6 @@ module.exports = {
     deleteProduct,
     getMyProducts,
     updateProductDetails,
-    getFilteredSortedProducts
+    getFilteredSortedProducts,
+    getFilteredSortedProductsBySeller
 };

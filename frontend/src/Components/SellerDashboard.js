@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SellerNavbar from './TouristNavbar'; // Assume SellerNavbar is similar to TouristNavbar
 import Products from './Products'; // Component to manage seller's products
+import MyProducts from './MyProducts';
+import AddProduct from './AddProduct';
 
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -12,36 +14,34 @@ const SellerDashboard = () => {
     const [productMessage, setProductMessage] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            const token = localStorage.getItem('token');
-            console.log('Token:', token); // Check if token is present
-    
-            if (!token) {
-                navigate('/login');
-                return;
-            }
-    
-            try {
-                const response = await axios.get('/seller/myProfile', {
-                    headers: {
-                        Authorization: `Bearer ${token}` // Send token in request header
-                    }
-                });
-    
-                console.log('Response data:', response.data);  // Check if the response contains the expected data
-    
-                if (response.data && response.data.seller) {
-                    setProfile(response.data.seller); // Update profile state with fetched data
-                } else {
-                    setMessage('No profile data found');
+    const fetchProfile = async () => {
+        const token = localStorage.getItem('token');
+        console.log('Token:', token); // Check if token is present
+
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const response = await axios.get('/seller/myProfile', {
+                headers: {
+                    Authorization: `Bearer ${token}` // Send token in request header
                 }
-            } catch (error) {
-                console.error('Error fetching profile:', error.response ? error.response.data : error.message);
-                setMessage('Error fetching profile');
-            }
-        };
-    
+            });
+
+
+            if (response.data && response.data.seller) {
+                setProfile(response.data.seller); // Update profile state with fetched data
+            } 
+        } catch (error) {
+            console.error('Error fetching profile:', error.response ? error.response.data : error.message);
+            setMessage('Error fetching profile');
+        }
+    };
+
+    useEffect(() => {
+       
         fetchProfile();
     }, [navigate]);
 
@@ -80,11 +80,13 @@ const SellerDashboard = () => {
                 setProfile(response.data.updatedSeller);
                 setUpdateMessage('Profile updated successfully');
                 setSuccess(true);
+                fetchProfile();
             } catch (error) {
                 console.error('Error updating profile:', error.response ? error.response.data : error.message);
                 setUpdateMessage(error.response?.data?.message || 'Error updating profile');
                 setSuccess(false);
             }
+            
         };
         
         
@@ -158,38 +160,6 @@ const SellerDashboard = () => {
         );
     };
 
-    // Function to fetch products
-    const fetchProducts = async () => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await axios.get('/seller/myproducts', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            console.log(response.data);
-
-            if (response.data && response.data.seller) {
-                setProfile(response.data); // Update based on the actual structure
-            } else {
-                setMessage('No profile data found');
-            }
-        } catch (error) {
-            setProductMessage('Error fetching products');
-        }
-    };
-
-    // Render products function
-    const renderProducts = () => {
-        return (
-            <>
-                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>My Products</h2>
-                {productMessage && <p style={{ color: 'red', textAlign: 'center' }}>{productMessage}</p>}
-                <Products products={products} /> {/* Component to display products */}
-            </>
-        );
-    };
-
     const sidebarStyle = {
         width: '250px',
         backgroundColor: '#f1f1f1',
@@ -254,11 +224,17 @@ const SellerDashboard = () => {
                     </>
                 );
             case 'viewProducts':
-                fetchProducts();
-                return renderProducts();
+                return <Products />;
             case 'updateProfile':
                 // Pass the profile and setProfile to the UpdateProfile component
                 return <UpdateProfile profile={profile} setProfile={setProfile} />;  // Ensure profile and setProfile are passed
+            
+            case 'myProducts':
+                return <MyProducts />
+
+
+            case 'addProduct' :
+                    return <AddProduct />
             default:
                 return <h2>Welcome to the Dashboard</h2>;
         }
@@ -272,8 +248,11 @@ const SellerDashboard = () => {
                 <h3>Dashboard</h3>
                 <ul style={{ listStyleType: 'none', padding: '0' }}>
                     <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
-                    <li onClick={() => setActiveComponent('viewProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View My Products</li>
+                    <li onClick={() => setActiveComponent('viewProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View All Products</li>
                     <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
+                    <li onClick={() => setActiveComponent('myProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View My Products</li>
+                    <li onClick={() => setActiveComponent('addProduct')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Add A Product</li>
+
                 </ul>
             </div>
 

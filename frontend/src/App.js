@@ -12,13 +12,16 @@ import TourGuideDashboard from './Components/TourGuideDashboard';  // Import the
 import Login from './Components/Login';
 import HomePage from './Components/HomePage';
 import SellerDashboard from './Components/SellerDashboard';  // Import SellerDashboard
+import AdvertiserDashboard from './Components/AdvertiserDashboard';
+
 
 function App() {
+            // All paths needed
   return (
     <Router>
+
       <div className="App">
         <Routes>
-    /// All paths needed
           <Route path='/' element ={<HomePage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -28,6 +31,7 @@ function App() {
           <Route path="/seller/" element={<SellerDashboard />} />  {/* Seller Dashboard */}
           <Route path="/activities" element={<Activities />} />
           <Route path="/itineraries" element={<Itineraries />} />
+          <Route path='/advertiser' element={<AdvertiserDashboard />} />
           <Route path="/historical-places" element={<HistoricalPlaces />} />
           <Route path="/login" element={<Login />} />  {/* Login route */}
         </Routes>
