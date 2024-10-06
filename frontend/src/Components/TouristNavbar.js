@@ -5,14 +5,18 @@ const Navbar = () => {
     const navStyle = {
         backgroundColor: '#333',
         padding: '10px',
-        textAlign: 'center',
-        display : 'sticky'
+        position: 'sticky',
+        top: 0,
+        width: '100%',
+        zIndex: 1000,
+        display: 'flex',           // Flexbox layout to align items horizontally
+        justifyContent: 'space-between',  // Space links across the width (left, center, right)
+        alignItems: 'center',      // Center links vertically
     };
 
     const linkStyle = {
         color: 'white',
         textDecoration: 'none',
-        margin: '0 15px',
         fontSize: '18px',
     };
 

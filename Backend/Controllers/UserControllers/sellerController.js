@@ -36,7 +36,7 @@ const getSellerById = async (req, res) => {
 
 const updateSeller = async (req, res) => {
     try {
-        console.log('Updating seller with ID:', req.user.id);  // Debugging log
+        console.log('Updating seller with ID:', req.user.id);
 
         const seller = await userModel.findById(req.user.id);
         if (!seller) {
@@ -47,34 +47,34 @@ const updateSeller = async (req, res) => {
             return res.status(403).json({ message: 'Seller not accepted. Profile updates are not allowed.' });
         }
 
-        console.log('Seller before update:', seller);  // Log seller before update
-        console.log('Request Body:', req.body);  // Log incoming update data
+        const { username, password, name, description } = req.body;
 
-        // Only update the allowed fields
-        const { username, password, name , description } = req.body;
-
-        if (username) seller.username = username;
-        
-        // Hash the password before saving it
-        if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10);  // Hash the password with salt rounds = 10
-            seller.password = hashedPassword;
+        // Check if username already exists
+        if (username && username !== seller.username) {
+            const existingSeller = await userModel.findOne({ username });
+            if (existingSeller) {
+                return res.status(400).json({ message: 'Username already taken' });
+            }
+            seller.username = username;
         }
 
-        if (username) seller.username = username;
-        if (password) seller.password = password;  // You might want to hash the password before saving
         if (name) seller.name = name;
         if (description) seller.description = description;
 
+        // Hash password if provided
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            seller.password = hashedPassword;
+        }
 
-        const updatedSeller = await seller.save();  // Save the updated seller object
-        console.log('Seller after update:', updatedSeller);  // Log the updated seller
+        const updatedSeller = await seller.save();
         res.status(200).json({ updatedSeller });
     } catch (error) {
-        console.error('Update error:', error.message);  // Log any errors
+        console.error('Update error:', error.message);
         res.status(400).json({ error: error.message });
     }
 };
+
 
 
 
