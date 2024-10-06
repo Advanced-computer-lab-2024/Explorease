@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AdminDashboard.css'; // Import the CSS file
+import Products from './Products';
 
 const AdminDashboard = () => {
     const [newAdminUsername, setNewAdminUsername] = useState('');
@@ -509,6 +510,7 @@ const deleteUser = async (id, userType, setStateFunction) => {
 
     return (
         <div className="container">
+            
             <h1>Welcome to the Admin Dashboard</h1>
 
             {/* Navigation bar */}
@@ -854,54 +856,9 @@ const deleteUser = async (id, userType, setStateFunction) => {
             </div>
             <button type="submit" className="submit-btn">Create Product</button>
         </form>
+        <Products products={products} productMessage={productMessage} />
 
-        {/* Display Message */}
-        <p>{productMessage}</p>
-
-        {/* Search Product */}
-        <form onSubmit={searchProductByName}>
-            <input
-                type="text"
-                placeholder="Search by product name"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit">Search</button>
-        </form>
-
-        {/* Filter by Price */}
-        <form onSubmit={filterProductByPrice}>
-            <input
-                type="number"
-                placeholder="Min Price"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-            />
-            <input
-                type="number"
-                placeholder="Max Price"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-            />
-            <button type="submit">Filter by Price</button>
-        </form>
-
-        {/* Sort Products by Ratings */}
-        <button onClick={sortProductsByRatings}>Sort by Ratings</button>
-
-        {/* List of Products */}
-        <ul className="admin-list">
-            {products.length === 0 ? (
-                <p>No products found</p>
-            ) : (
-                products.map(product => (
-                    <li key={product._id}>
-                        <p>{product.Name} - ${product.Price} - {product.Ratings} Stars</p>
-                        <button onClick={() => deleteProduct(product._id)}>Delete</button>
-                    </li>
-                ))
-            )}
-        </ul>
+        
     </div>
 )}
 

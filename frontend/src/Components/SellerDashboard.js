@@ -65,28 +65,29 @@ const SellerDashboard = () => {
         const handleSubmit = async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('token');
-            
+        
             // Log formProfile to ensure correct data is being sent
             console.log('FormProfile Data:', formProfile);
-    
+        
             try {
-                const response = await axios.put('http://localhost:5000/seller/myProfile', formProfile, {
+                const response = await axios.put('/seller/myProfile', formProfile, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
+        
                 console.log('Update Response:', response.data);
-                
-                // Update main profile state and display success message
                 setProfile(response.data.updatedSeller);
                 setUpdateMessage('Profile updated successfully');
                 setSuccess(true);
             } catch (error) {
                 console.error('Error updating profile:', error.response ? error.response.data : error.message);
-                setUpdateMessage('Error updating profile');
+                setUpdateMessage(error.response?.data?.message || 'Error updating profile');
                 setSuccess(false);
             }
         };
+        
+        
     
         // If profile is still loading or formProfile is empty, show a loading indicator
         if (!formProfile.email) {
@@ -104,11 +105,11 @@ const SellerDashboard = () => {
                 )}
                 <form onSubmit={handleSubmit}>
                     <div>
-                        <label>Email</label>
+                        <label>Username</label>
                         <input
-                            type="email"
-                            name="email"
-                            value={formProfile.email || ''}
+                            type="text"
+                            name="username"
+                            value={formProfile.username || ''}
                             onChange={handleChange}
                             required
                             style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
@@ -129,7 +130,7 @@ const SellerDashboard = () => {
                         <label>Name</label>
                         <input
                             type="text"
-                            name="businessName"
+                            name="name"
                             value={formProfile.name || ''}
                             onChange={handleChange}
                             required
@@ -140,7 +141,7 @@ const SellerDashboard = () => {
                         <label>Description</label>
                         <input
                             type="text"
-                            name="businessAddress"
+                            name="description"
                             value={formProfile.description || ''}
                             onChange={handleChange}
                             required
@@ -161,7 +162,7 @@ const SellerDashboard = () => {
     const fetchProducts = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.get('/sellers/products', {
+            const response = await axios.get('/seller/myproducts', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
