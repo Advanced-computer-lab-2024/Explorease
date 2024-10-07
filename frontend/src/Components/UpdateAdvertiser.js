@@ -80,8 +80,9 @@ if (formProfile.websiteLink && !urlPattern.test(formProfile.websiteLink)) {
         console.log('Cleaned Profile being sent:', cleanedProfile);
         try {
             
-            const response = await axios.put('/advertiser/updateProfile', cleanedProfile, {
-                headers: {
+
+            const response = await axios.put('/advertiser/updateProfile', formProfile, {
+      headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
