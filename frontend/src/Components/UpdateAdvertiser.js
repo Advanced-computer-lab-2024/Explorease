@@ -57,7 +57,7 @@ const UpdateAdvertiser = () => {
         const token = localStorage.getItem('token');
         try {
             
-            const response = await axios.put('http://localhost:5000/advertiser/updateProfile', formProfile, {
+            const response = await axios.put('/advertiser/updateProfile', formProfile, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

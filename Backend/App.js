@@ -27,8 +27,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials : true
   }));
-
-app.options('*', cors());
+  app.options('*', cors());  // Enable pre-flight across the board
 
 
 
@@ -59,11 +58,11 @@ app.use('/governor', governorRoutes);
 app.use('/seller', sellerRoutes);
 
 
-// Serve static files from the React frontend app
-app.use(express.static(path.join(__dirname, '../frontend/build')));
+// // Serve static files from the React frontend app
+// app.use(express.static(path.join(__dirname, '../frontend/build')));
 
-// The catch-all handler: for any request that doesn't match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-});
+// // The catch-all handler: for any request that doesn't match one above, send back React's index.html file.
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+// });
 

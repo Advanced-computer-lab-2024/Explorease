@@ -7,7 +7,7 @@ const { roleAuth } = require('../Middleware/authMiddleware'); // Assuming roleAu
 
 // Advertiser-specific routes
 router.get('/myProfile', roleAuth(['advertiser']), advertiserController.getAdvertiserById);  // Get own profile
-router.put('/updateProfile', roleAuth(['advertiser']), advertiserController.updateAdvertiser);
+router.put('/updateProfile',advertiserController.updateAdvertiser);
 router.delete('/deleteProfile', roleAuth(['advertiser']), advertiserController.deleteAdvertiser); // Delete own profile
 
 // Advertiser can create activities
