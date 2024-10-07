@@ -161,19 +161,70 @@ const TouristGovernorDashboard = () => {
                                         value={updatedPlaceData.Name || ''}
                                         onChange={(e) => handleInputChange(e, 'Name')}
                                         style={inputStyle}
+                                        placeholder="Name"
                                     />
                                     <textarea
                                         value={updatedPlaceData.Description || ''}
                                         onChange={(e) => handleInputChange(e, 'Description')}
                                         style={inputStyle}
+                                        placeholder="Description"
                                     />
                                     <input
                                         type="text"
                                         value={updatedPlaceData.Location || ''}
                                         onChange={(e) => handleInputChange(e, 'Location')}
                                         style={inputStyle}
+                                        placeholder="Location"
                                     />
-                                    {/* Additional fields can be added here */}
+                                    <input
+                                        type="text"
+                                        value={updatedPlaceData.OpeningHours || ''}
+                                        onChange={(e) => handleInputChange(e, 'OpeningHours')}
+                                        style={inputStyle}
+                                        placeholder="Opening Hours"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={updatedPlaceData.ClosingHours || ''}
+                                        onChange={(e) => handleInputChange(e, 'ClosingHours')}
+                                        style={inputStyle}
+                                        placeholder="Closing Hours"
+                                    />
+                                    <input
+                                        type="number"
+                                        value={updatedPlaceData.TicketPrices?.foreigner || ''}
+                                        onChange={(e) => handleInputChange(e, 'TicketPrices.foreigner')}
+                                        style={inputStyle}
+                                        placeholder="Ticket Price (Foreigner)"
+                                    />
+                                    <input
+                                        type="number"
+                                        value={updatedPlaceData.TicketPrices?.native || ''}
+                                        onChange={(e) => handleInputChange(e, 'TicketPrices.native')}
+                                        style={inputStyle}
+                                        placeholder="Ticket Price (Native)"
+                                    />
+                                    <input
+                                        type="number"
+                                        value={updatedPlaceData.TicketPrices?.student || ''}
+                                        onChange={(e) => handleInputChange(e, 'TicketPrices.student')}
+                                        style={inputStyle}
+                                        placeholder="Ticket Price (Student)"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={updatedPlaceData.Period || ''}
+                                        onChange={(e) => handleInputChange(e, 'Period')}
+                                        style={inputStyle}
+                                        placeholder="Historical Period"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={updatedPlaceData.Type || ''}
+                                        onChange={(e) => handleInputChange(e, 'Type')}
+                                        style={inputStyle}
+                                        placeholder="Type"
+                                    />
                                     <button
                                         onClick={() => handleUpdateSubmit(place._id)}
                                         style={saveButtonStyle}
@@ -187,7 +238,13 @@ const TouristGovernorDashboard = () => {
                                     <h3>{place.Name}</h3>
                                     <p><strong>Description:</strong> {place.Description}</p>
                                     <p><strong>Location:</strong> {place.Location}</p>
-                                    {/* Additional fields can be shown here */}
+                                    <p><strong>Opening Hours:</strong> {place.OpeningHours}</p>
+                                    <p><strong>Closing Hours:</strong> {place.ClosingHours}</p>
+                                    <p><strong>Ticket Price (Foreigner):</strong> {place.TicketPrices.foreigner}</p>
+                                    <p><strong>Ticket Price (Native):</strong> {place.TicketPrices.native}</p>
+                                    <p><strong>Ticket Price (Student):</strong> {place.TicketPrices.student}</p>
+                                    <p><strong>Period:</strong> {place.Period}</p>
+
                                     <button
                                         onClick={() => handleEditPlace(place)}
                                         style={buttonStyle}
@@ -210,6 +267,7 @@ const TouristGovernorDashboard = () => {
             )}
         </div>
     );
+    
 
     // Add useEffect to fetch historical places when activeComponent changes
     useEffect(() => {

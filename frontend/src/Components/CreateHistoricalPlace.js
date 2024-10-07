@@ -14,6 +14,7 @@ const CreateHistoricalPlace = () => {
             student: ''
         },
         Period: '',
+        Type: '',  // Add Type field here
         tags: ''
     });
 
@@ -49,10 +50,20 @@ const CreateHistoricalPlace = () => {
             return;
         }
 
+        // Prepare tags as an array from a comma-separated string
+        const tagsArray = formData.tags.split(',').map(tag => tag.trim());
+
+        // Prepare the final form data
+        const finalFormData = {
+            ...formData,
+            tags: tagsArray
+        };
+
         try {
-            const response = await axios.post('/governor/createHistoricalPlace', formData, {
+            const response = await axios.post('/governor/createHistoricalPlace', finalFormData, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             });
 
@@ -72,13 +83,15 @@ const CreateHistoricalPlace = () => {
                         student: ''
                     },
                     Period: '',
+                    Type: '',  // Reset the Type field as well
                     tags: ''
                 });
             } else {
                 setMessage('Failed to create Historical Place.');
             }
         } catch (error) {
-            setMessage('Error creating Historical Place: ' + error.message);
+            setMessage(`Error creating Historical Place: ${error.response?.data?.message || error.message}`);
+            console.error('Error:', error.response?.data || error.message);
         }
     };
 
@@ -176,6 +189,25 @@ const CreateHistoricalPlace = () => {
                         required
                     />
                 </div>
+
+                {/* New Type Field */}
+                <div>
+                    <label>Type:</label>
+                    <select
+                        name="Type"
+                        value={formData.Type}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select Type</option>
+                        <option value="Monument">Monument</option>
+                        <option value="Museum">Museum</option>
+                        <option value="Religious Site">Religious Site</option>
+                        <option value="Palace">Palace</option>
+                        <option value="Castle">Castle</option>
+                    </select>
+                </div>
+
                 <div>
                     <label>Tags (comma-separated):</label>
                     <input

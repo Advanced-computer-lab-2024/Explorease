@@ -12,6 +12,7 @@ const HistoricalPlaceSchema = new Schema({
         native: { type: Number, required: true },
         student: { type: Number, required: true }
     },
+    imageUrl : {type : String, required: false},
     Period: { type: String, required: true },
     managedBy: { type: Schema.Types.ObjectId, ref: 'TourismGovernor', required: true },
     tags: [{ 
