@@ -12,8 +12,10 @@ const TouristGovernorDashboard = () => {
     const [updateMessage, setUpdateMessage] = useState('');
     const [success, setSuccess] = useState(false);
 
-    const [editMode, setEditMode] = useState({}); // To track edit mode for each place
-    const [formValues, setFormValues] = useState({}); 
+    const [governorId, setGovernorId] = useState(null);
+
+    const [editingPlaceId, setEditingPlaceId] = useState(null); // Track the place being edited
+    const [updatedPlaceData, setUpdatedPlaceData] = useState({}); // Store updated place data
 
     // Fetch the tourist governor profile
     const fetchProfile = async () => {
@@ -27,11 +29,10 @@ const TouristGovernorDashboard = () => {
                 },
             });
 
-            console.log(response);
-
             if (response.data) {
                 setProfile(response.data);
                 setFormProfile(response.data.touristGovernor); // Set form profile for edit
+                setGovernorId(response.data._id); 
             } else {
                 setMessage('No profile data found');
             }
@@ -44,7 +45,7 @@ const TouristGovernorDashboard = () => {
     const fetchHistoricalPlaces = async () => {
         const token = localStorage.getItem('token');
         if (!token) return;
-    
+
         try {
             const response = await axios.get('/governor/getMyHistoricalPlaces', {
                 headers: {
@@ -52,8 +53,6 @@ const TouristGovernorDashboard = () => {
                 },
             });
 
-            console.log(response.data);
-    
             if (response.data && response.data.length) {
                 setHistoricalPlaces(response.data);
                 setMessage('');
@@ -64,7 +63,6 @@ const TouristGovernorDashboard = () => {
             setMessage('Error fetching historical places');
         }
     };
-    
 
     useEffect(() => {
         fetchProfile();
@@ -74,8 +72,6 @@ const TouristGovernorDashboard = () => {
     const handleChange = (e) => {
         setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
     };
-
-
 
     // Render the profile
     const renderProfile = () => (
@@ -93,12 +89,44 @@ const TouristGovernorDashboard = () => {
         </div>
     );
 
+    // Handle input change for historical place editing
+    const handleInputChange = (e, field) => {
+        setUpdatedPlaceData({ ...updatedPlaceData, [field]: e.target.value });
+    };
 
-    // Render historical places
+    // Enable edit mode for a specific historical place
+    const handleEditPlace = (place) => {
+        setEditingPlaceId(place._id); // Set the place to be edited
+        setUpdatedPlaceData(place);   // Pre-fill the form with current place data
+    };
+
+    // Handle submitting the updated historical place data
+    const handleUpdateSubmit = async (placeId) => {
+        const token = localStorage.getItem('token');
+        console.log('Updated Place Data:', updatedPlaceData);
+        console.log('Place ID:', placeId);
+        console.log('Governor ID:', governorId); // Log the governor ID for debugging
+        try {
+            const response = await axios.put(`/governor/updateHistoricalPlace/${placeId}`, updatedPlaceData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            
+    
+            console.log('Response:', response); // Log the response
+            setMessage('Historical place updated successfully');
+            setEditingPlaceId(null); // Exit edit mode
+            fetchHistoricalPlaces(); // Refetch places to update UI
+        } catch (error) {
+            setMessage('Error updating historical place');
+        }
+    };
+
     const handleDelete = async (placeId) => {
         const token = localStorage.getItem('token');
         if (!token) return;
-    
+
         try {
             await axios.delete(`/governor/deleteHistoricalPlace/:id/${placeId}`, {
                 headers: {
@@ -108,40 +136,11 @@ const TouristGovernorDashboard = () => {
             // Refetch the historical places after deletion
             fetchHistoricalPlaces();
         } catch (error) {
-            console.error('Error deleting historical place:', error);
             setMessage('Error deleting historical place');
         }
     };
-    
-    // Function to handle the update (This should ideally navigate to an update form/page)
-    const handleUpdate = async (placeId, updatedPlace) => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-    
-        try {
-            await axios.put(`/governor/updateHistoricalPlace/${placeId}`, updatedPlace, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            // Refetch the historical places after updating
-            fetchHistoricalPlaces();
-            setMessage('Historical place updated successfully');
-        } catch (error) {
-            console.error('Error updating historical place:', error);
-            setMessage('Error updating historical place');
-        }
-    };
-    
-    // Handle form changes for historical places
-    const handlePlaceChange = (e, placeId) => {
-        const { name, value } = e.target;
-        setHistoricalPlaces((prevPlaces) =>
-            prevPlaces.map((place) =>
-                place._id === placeId ? { ...place, [name]: value } : place
-            )
-        );
-    };
+
+    // Render historical places
     const renderHistoricalPlaces = () => (
         <div>
             <h2>My Historical Places</h2>
@@ -150,44 +149,55 @@ const TouristGovernorDashboard = () => {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
                     {historicalPlaces.map((place) => (
                         <div key={place._id} style={cardStyle}>
-                            <h3>Historical Place</h3>
-                            {/* Input field for editing the name */}
-                            <label>Name:</label>
-                            <input
-                                type="text"
-                                name="name"
-                                placeholder={place.Name}
-                                value={place.name || ''}
-                                onChange={(e) => handlePlaceChange(e, place._id)}
-                                style={inputStyle}
-                            />
-    
-                            {/* Input field for editing the description */}
-                            <label>Description:</label>
-                            <input
-                                type="text"
-                                name="description"
-                                placeholder={place.Description}
-                                value={place.description || ''}
-                                onChange={(e) => handlePlaceChange(e, place._id)}
-                                style={inputStyle}
-                            />
-    
-                            {/* Update and Delete buttons */}
-                            <div style={{ marginTop: '10px' }}>
-                                <button
-                                    style={buttonStyle}
-                                    onClick={() => handleUpdate(place._id, { name: place.name, description: place.description })}
-                                >
-                                    Update
-                                </button>
-                                <button
-                                    style={{ ...buttonStyle, backgroundColor: 'red' }}
-                                    onClick={() => handleDelete(place._id)}
-                                >
-                                    Delete
-                                </button>
-                            </div>
+                            {editingPlaceId === place._id ? (
+                                <>
+                                    {/* Render editable fields */}
+                                    <input
+                                        type="text"
+                                        value={updatedPlaceData.Name || ''}
+                                        onChange={(e) => handleInputChange(e, 'Name')}
+                                        style={inputStyle}
+                                    />
+                                    <textarea
+                                        value={updatedPlaceData.Description || ''}
+                                        onChange={(e) => handleInputChange(e, 'Description')}
+                                        style={inputStyle}
+                                    />
+                                    <input
+                                        type="text"
+                                        value={updatedPlaceData.Location || ''}
+                                        onChange={(e) => handleInputChange(e, 'Location')}
+                                        style={inputStyle}
+                                    />
+                                    {/* Additional fields can be added here */}
+                                    <button
+                                        onClick={() => handleUpdateSubmit(place._id)}
+                                        style={saveButtonStyle}
+                                    >
+                                        Save Changes
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    {/* Render normal fields */}
+                                    <h3>{place.Name}</h3>
+                                    <p><strong>Description:</strong> {place.Description}</p>
+                                    <p><strong>Location:</strong> {place.Location}</p>
+                                    {/* Additional fields can be shown here */}
+                                    <button
+                                        onClick={() => handleEditPlace(place)}
+                                        style={buttonStyle}
+                                    >
+                                        Edit Place
+                                    </button>
+                                </>
+                            )}
+                            <button
+                                style={{ ...buttonStyle, backgroundColor: 'red' }}
+                                onClick={() => handleDelete(place._id)}
+                            >
+                                Delete
+                            </button>
                         </div>
                     ))}
                 </div>
@@ -197,25 +207,25 @@ const TouristGovernorDashboard = () => {
         </div>
     );
 
-// Add useEffect to fetch historical places when activeComponent changes
-useEffect(() => {
-    if (activeComponent === 'viewHistoricalPlaces') {
-        fetchHistoricalPlaces();
-    }
-}, [activeComponent]);
+    // Add useEffect to fetch historical places when activeComponent changes
+    useEffect(() => {
+        if (activeComponent === 'viewHistoricalPlaces') {
+            fetchHistoricalPlaces();
+        }
+    }, [activeComponent]);
 
-const renderContent = () => {
-    switch (activeComponent) {
-        case 'profile':
-            return renderProfile();
-        case 'editProfile':
-            return <UpdateTouristGovernorProfile />;
-        case 'viewHistoricalPlaces':
-            return renderHistoricalPlaces();
-        default:
-            return <h2>Welcome to the Tourist Governor Dashboard</h2>;
-    }
-};
+    const renderContent = () => {
+        switch (activeComponent) {
+            case 'profile':
+                return renderProfile();
+            case 'editProfile':
+                return <UpdateTouristGovernorProfile />;
+            case 'viewHistoricalPlaces':
+                return renderHistoricalPlaces();
+            default:
+                return <h2>Welcome to the Tourist Governor Dashboard</h2>;
+        }
+    };
 
     const sidebarStyle = {
         width: '250px',
@@ -253,32 +263,40 @@ const renderContent = () => {
     );
 };
 
+// Styles for the card and buttons
+const cardStyle = {
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    padding: '20px',
+    width: '250px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#f9f9f9',
+};
 
-    
-    // Styles for the card and buttons
-    const cardStyle = {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '20px',
-        width: '250px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        backgroundColor: '#f9f9f9',
-    };
-    
-    const buttonStyle = {
-        padding: '10px',
-        marginRight: '10px',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    };
-    const inputStyle = {
-        width: '100%',
-        padding: '8px',
-        margin: '5px 0',
-        boxSizing: 'border-box',
-    };
+const buttonStyle = {
+    padding: '10px',
+    marginRight: '10px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+};
+
+const saveButtonStyle = {
+    padding: '10px',
+    backgroundColor: '#28a745',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+};
+
+const inputStyle = {
+    width: '100%',
+    padding: '8px',
+    margin: '5px 0',
+    boxSizing: 'border-box',
+};
 
 export default TouristGovernorDashboard;
