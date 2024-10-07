@@ -3,6 +3,8 @@ import axios from 'axios';
 import TouristNavbar from './TouristNavbar'; 
 import { useNavigate } from 'react-router-dom';
 import UpdateAdvertiser from './UpdateAdvertiser';
+import MyActivities from './MyActivities';  // Import the new component
+import CreateActivity from './CreateActivity';
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -85,9 +87,11 @@ const AdvertiserDashboard = () => {
                     </div>
                 );
             case 'viewActivities':
-                return <h2>Waiting</h2>;
+                return <MyActivities />; 
+            case 'createActivity':  // New case for Create Activity
+                return <CreateActivity />;
             case 'updateAdvertiser':
-                return <UpdateAdvertiser />
+                return <UpdateAdvertiser profile={profile} setProfile={setProfile} />;
             default:
                 return <h2>Welcome to Advertiser Dashboard</h2>;
         }
@@ -102,6 +106,7 @@ const AdvertiserDashboard = () => {
                     <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
                     <li onClick={() => setActiveComponent('updateAdvertiser')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Edit Profile</li>
                     <li onClick={() => setActiveComponent('viewActivities')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Get My Activities</li>
+                    <li onClick={() => setActiveComponent('createActivity')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Create Activity</li> {/* New Create Activity option */}
                 </ul>
             </div>
             <div style={contentStyle}>

@@ -108,23 +108,27 @@ const getHistoricalPlacesByType = async (req, res) => {
 
 // Get Historical Places created by a specific guide
 const getHistoricalPlaceByGov = async (req, res) => {
-    const govId  = req.user.id;
+    const govId  = req.user.id;  // Getting governor's ID from the logged-in user
 
     try {
         if (!govId) {
             return res.status(400).json({ message: 'Governor ID is required.' });
         }
 
-        const historicalPlaces = await HistoricalPlaceModel.find({ managedBy : govId }).populate('tags');
+        // Find historical places managed by the governor, using the managedBy field
+        const historicalPlaces = await HistoricalPlaceModel.find({ managedBy: govId }).populate('tags');
+        
         if (historicalPlaces.length === 0) {
-            return res.status(404).json({ message: 'No historical places found for this guide.' });
+            return res.status(404).json({ message: 'No historical places found for this governor.' });
         }
 
+        // Return the found historical places
         res.status(200).json(historicalPlaces);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching historical places', error: error.message });
     }
 };
+
 
 // Get all Historical Places
 const getallHistoricalPlaces = async (req, res) => {
@@ -141,41 +145,60 @@ const getallHistoricalPlaces = async (req, res) => {
 
 // Update Historical Place
 const updateHistoricalPlace = async (req, res) => {
-    const { id } = req.params;
-    const { tags, ...updateData } = req.body; // Extract tags and other update data
+    const { id } = req.params; // Get the place ID from req.params
+    const { TicketPrices, Period, OpeningHours, Name, Location, Description, ClosingHours } = req.body; // Extract update data
 
     try {
-        // Validate the tags (if provided)
-        if (tags && tags.length > 0) {
-            const tagDocs = await preferenceTagModel.find({ name: { $in: tags } });
-            if (tagDocs.length !== tags.length) {
-                return res.status(400).json({ message: 'One or more tags not found.' });
-            }
-            updateData.tags = tagDocs.map(tag => tag._id); // Add valid tag IDs to the update data
-        }
+        // Fetch the historical place
+        const historicalPlace = await HistoricalPlaceModel.findById(id);
 
-        // Update the historical place with new data
-        const updatedHistoricalPlace = await HistoricalPlaceModel.findByIdAndUpdate(id, updateData, { new: true }).lean();
-        
-        if (!updatedHistoricalPlace) {
+        if (!historicalPlace) {
             return res.status(404).json({ message: 'Historical Place not found.' });
         }
 
-        res.status(200).json({ message: 'Historical Place updated successfully', updatedHistoricalPlace });
+
+        // Update fields if provided
+        if (TicketPrices) historicalPlace.TicketPrices = TicketPrices;
+        if (Period) historicalPlace.Period = Period;
+        if (OpeningHours) historicalPlace.OpeningHours = OpeningHours;
+        if (Name) historicalPlace.Name = Name;
+        if (Location) historicalPlace.Location = Location;
+        if (Description) historicalPlace.Description = Description;
+        if (ClosingHours) historicalPlace.ClosingHours = ClosingHours;
+
+
+        //the validation for the tags is not working
+
+        // Validate and update tags if provided
+        // if (tags && tags.length > 0) {
+        //     const tagDocs = await preferenceTagModel.find({ name: { $in: tags } });
+        //     if (tagDocs.length !== tags.length) {
+        //         return res.status(400).json({ message: 'One or more tags not found.' });
+        //     }
+        //     historicalPlace.tags = tagDocs.map(tag => tag._id); // Add valid tag IDs
+        // }
+        // console.log(historicalPlace.tags)
+
+        // Save the updated historical place
+        await historicalPlace.save();
+
+        res.status(200).json({ message: 'Historical Place updated successfully', historicalPlace });
     } catch (error) {
         res.status(500).json({ message: 'Error updating Historical Place', error: error.message });
     }
 };
 
+
+
 // Delete Historical Place
 const deleteHistoricalPlace = async (req, res) => {
-    const { _id } = req.body;
+    const id = req.params.id;
     try {
-        if (!_id) {
+        if (!id) {
             return res.status(400).json({ message: 'Historical Place ID is required for deletion.' });
         }
 
-        const deletedHistoricalPlace = await HistoricalPlaceModel.findByIdAndDelete(_id);
+        const deletedHistoricalPlace = await HistoricalPlaceModel.findByIdAndDelete(id);
         if (!deletedHistoricalPlace) {
             return res.status(404).json({ message: 'Historical Place not found.' });
         }
