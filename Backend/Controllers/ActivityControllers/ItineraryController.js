@@ -138,6 +138,9 @@ const deleteItinerary = async (req, res) => {
         if (!itinerary.createdBy.equals(req.user.id)) {
             return res.status(403).json({ message: 'Not authorized to delete this Itinerary' });
         }
+        if(itinerary.BookedBy.length > 0){
+            return res.status(403).json({ message: 'Itinerary has been booked by user(s) and cannot be deleted' });
+        }
         await ItineraryModel.findByIdAndDelete(id);
         res.status(200).json({ message: 'Itinerary deleted successfully' });
     } catch (error) {

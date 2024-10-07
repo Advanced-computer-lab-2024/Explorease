@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
 import TouristNavbar from './TouristNavbar';
+import CreateHistoricalPlace from './CreateHistoricalPlace'; // Ensure this matches the actual file name
+
+
 
 const TouristGovernorDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -82,6 +85,7 @@ const TouristGovernorDashboard = () => {
                 <div>
                     <p><strong>Username:</strong> {profile.username}</p>
                     <p><strong>Email:</strong> {profile.email}</p>
+                    
                 </div>
             ) : (
                 <p>Loading profile...</p>
@@ -218,10 +222,10 @@ const TouristGovernorDashboard = () => {
         switch (activeComponent) {
             case 'profile':
                 return renderProfile();
-            case 'editProfile':
-                return <UpdateTouristGovernorProfile />;
             case 'viewHistoricalPlaces':
                 return renderHistoricalPlaces();
+            case 'createHistoricalPlaces':
+                return <CreateHistoricalPlace />;
             default:
                 return <h2>Welcome to the Tourist Governor Dashboard</h2>;
         }
@@ -252,8 +256,8 @@ const TouristGovernorDashboard = () => {
                 <h3>Dashboard</h3>
                 <ul style={{ listStyleType: 'none', padding: '0' }}>
                     <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
-                    <li onClick={() => setActiveComponent('editProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Edit Profile</li>
                     <li onClick={() => setActiveComponent('viewHistoricalPlaces')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Historical Places</li>
+                    <li onClick={() => setActiveComponent('createHistoricalPlaces')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Create Historical Places</li>
                 </ul>
             </div>
             <div style={contentStyle}>
