@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate for redirection
 
 const MultiRoleRegister = () => {
     const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const MultiRoleRegister = () => {
     });
 
     const [message, setMessage] = useState('');
+    const navigate = useNavigate(); // Import useNavigate from react-router-dom
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,8 +24,12 @@ const MultiRoleRegister = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`register`, formData);  // Adjust the API endpoint if necessary
-            setMessage('Registration successful!');
+            const response = await axios.post(`/register`, formData);  // Adjust the API endpoint if necessary
+            setMessage('Registration successful! Redirecting to login page...');
+            // Redirect to login page after successful registration
+            setTimeout(() => {
+                navigate('/login');  // Redirect to the login page
+            }, 2000);
         } catch (error) {
             setMessage('Error during registration. Please try again.');
             console.error(error);
