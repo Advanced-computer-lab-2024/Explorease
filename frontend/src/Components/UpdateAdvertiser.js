@@ -81,8 +81,10 @@ if (formProfile.websiteLink && !urlPattern.test(formProfile.websiteLink)) {
         try {
             
 
-            const response = await axios.put('/advertiser/updateProfile', formProfile, {
-      headers: {
+            // const response = await axios.put('/advertiser/updateProfile', formProfile, {
+
+            const response = await axios.put('/advertiser/updateProfile', cleanedProfile, {
+                headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
