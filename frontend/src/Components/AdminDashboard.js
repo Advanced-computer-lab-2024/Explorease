@@ -47,6 +47,7 @@ const [sellers, setSellers] = useState([]);
 const [advertisers, setAdvertisers] = useState([]);
 const [userMessage, setUserMessage] = useState('');  // For displaying success/error messages
 
+const [isGovernorAdded, setIsGovernorAdded] = useState(false);
 
     const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState('home');
@@ -92,6 +93,8 @@ const [userMessage, setUserMessage] = useState('');  // For displaying success/e
             setGovernorUsername('');
             setGovernorEmail('');
             setGovernorPassword('');
+            setIsGovernorAdded(true);
+
         } catch (error) {
             console.error('Error creating tourist governor:', error.response ? error.response.data : error.message);
             setMessage('Error creating tourist governor.');
@@ -544,7 +547,17 @@ const deleteUser = async (id, userType, setStateFunction) => {
                     className={activeSection === 'product' ? 'active' : ''}
                 >
                     Product
+
                 </button>
+
+                <button
+                    onClick={() => handleSectionChange('tourismGoverner')}
+                    className={activeSection === 'tourismGoverner' ? 'active' : ''}
+                >
+                    Add Tourism Governer
+                    
+                </button>
+
             </nav>
 
             {/* Conditionally render sections */}
@@ -801,6 +814,50 @@ const deleteUser = async (id, userType, setStateFunction) => {
         </ul>
     </div>
 )}
+
+{activeSection === 'tourismGoverner' && ( 
+    <div className="section">
+        <h2>Add Tourism Governer</h2>
+        {isGovernorAdded && (
+                    <div className="success-message">
+                        <p style={{ color: 'green' }}>Tourism Governor added successfully!</p>
+                    </div>
+                )}
+        <form onSubmit={handleAddGovernor}>
+            <div className="form-group">
+                <label>Tourism Governer Username:</label>
+                <input
+                    type="text"
+                    value={governorUsername}
+                    onChange={(e) => setGovernorUsername(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label>Tourism Governer Email:</label>
+                <input
+                    type="email"
+                    value={governorEmail}
+                    onChange={(e) => setGovernorEmail(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label>Tourism Governer Password:</label>
+                <input
+                    type="password"
+                    value={governorPassword}
+                    onChange={(e) => setGovernorPassword(e.target.value)}
+                    required
+                />
+            </div>
+            <button type="submit" className="submit-btn">Add Tourism Governer</button>
+        </form>
+
+        
+    </div>
+)}
+
 
 
 

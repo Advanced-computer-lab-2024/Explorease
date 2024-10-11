@@ -97,6 +97,25 @@ const deleteProduct = async (req, res) => {
     }
 };
 
+const deleteProduct2 = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        if (!id) {
+            return res.status(400).json({ message: "Product ID is required." });
+        }
+
+        const product = await productModel.findByIdAndDelete(id);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found." });
+        }
+
+        res.status(200).json({ message: "Product deleted successfully." });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to delete product.", error: error.message });
+    }
+};
+
 const updateProductDetails = async (req, res) => {
     const { id } = req.params;
     const { Price, AvailableQuantity } = req.body;
@@ -112,6 +131,26 @@ const updateProductDetails = async (req, res) => {
 
         if (userRole === 'seller' && !product.Seller.equals(userId)) {
             return res.status(403).json({ message: 'You are not authorized to edit this product.' });
+        }
+
+        if (Price) product.Price = Price;
+        if (AvailableQuantity) product.AvailableQuantity = AvailableQuantity;
+
+        await product.save();
+        res.status(200).json({ message: 'Product updated successfully', product });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating product', error: error.message });
+    }
+};
+
+const updateProductDetailsForAdmin = async (req, res) => {
+    const { id } = req.params;
+    const { Price, AvailableQuantity } = req.body;
+
+    try {
+        const product = await productModel.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found.' });
         }
 
         if (Price) product.Price = Price;
@@ -216,5 +255,7 @@ module.exports = {
     getMyProducts,
     updateProductDetails,
     getFilteredSortedProducts,
-    getFilteredSortedProductsBySeller
+    getFilteredSortedProductsBySeller,
+    deleteProduct2,
+    updateProductDetailsForAdmin
 };

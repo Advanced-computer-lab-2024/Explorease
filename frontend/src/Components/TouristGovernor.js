@@ -132,7 +132,7 @@ const TouristGovernorDashboard = () => {
         if (!token) return;
 
         try {
-            await axios.delete(`/governor/deleteHistoricalPlace/:id/${placeId}`, {
+            await axios.delete(`/governor/deleteHistoricalPlace/${placeId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -58,12 +58,14 @@ router.get('/products', authenticateAdmin, productController.getAllProducts);
 // router.get('/products', authenticateAdmin, productController.getAllProducts);
 // router.get('/products/filter', authenticateAdmin, productController.filterProductByPrice);  // Filter products by price
 // router.get('/products/sortByRating', authenticateAdmin, productController.sortProductsByRatings);
-router.put('/updateProduct/:id', authenticateAdmin, productController.updateProductDetails);
+router.put('/updateProduct/:id', authenticateAdmin, productController.updateProductDetailsForAdmin);
+router.delete('/deleteProduct/:id', authenticateAdmin, productController.deleteProduct2);
 
 
 router.get('/tourists', authenticateAdmin, adminController.getAllTourists);
 router.get('/sellers', authenticateAdmin, adminController.getAllSellers);
 router.get('/tourismGovernors', authenticateAdmin, adminController.getAllTourismGovernors);
+router.get('/addGoverner', authenticateAdmin, adminController.addTourismGovernor);
 router.get('/tourGuides', authenticateAdmin, adminController.getAllTourguides);
 router.get('/advertisers', authenticateAdmin, adminController.getAllAdvertisers);
 
