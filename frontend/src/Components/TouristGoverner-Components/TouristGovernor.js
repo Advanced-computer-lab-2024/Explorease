@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
-import TouristNavbar from './TouristNavbar';
+import TouristNavbar from '../MainPage-Components/TouristNavbar';
 import CreateHistoricalPlace from './CreateHistoricalPlace'; // Ensure this matches the actual file name
 
 

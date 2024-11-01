@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import TouristNavbar from './TouristNavbar'; // Assuming you're reusing the same navbar
+import TouristNavbar from '../MainPage-Components/TouristNavbar'; // Assuming you're reusing the same navbar
 
 const TourGuideDashboard = () => {
     const [profile, setProfile] = useState({});

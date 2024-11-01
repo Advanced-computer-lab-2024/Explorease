@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AdminDashboard.css'; // Import the CSS file
-import Products from './Products';
+import Products from '../Seller-Components/Products';  // Import the Products component
 
 const AdminDashboard = () => {
     const [newAdminUsername, setNewAdminUsername] = useState('');

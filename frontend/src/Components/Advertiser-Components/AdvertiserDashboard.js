@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TouristNavbar from './TouristNavbar'; 
+import TouristNavbar from '../MainPage-Components/TouristNavbar'; 
 import { useNavigate } from 'react-router-dom';
 import UpdateAdvertiser from './UpdateAdvertiser';
 import MyActivities from './MyActivities';  // Import the new component

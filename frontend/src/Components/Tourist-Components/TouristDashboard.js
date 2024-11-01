@@ -1,100 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import SellerNavbar from './TouristNavbar'; // Assume SellerNavbar is similar to TouristNavbar
-import Products from './Products'; // Component to manage seller's products
-import MyProducts from './MyProducts';
-import AddProduct from './AddProduct';
+import TouristNavbar from '../MainPage-Components/TouristNavbar';
+import Products from '../Seller-Components/Products'
 
-const SellerDashboard = () => {
+const TouristDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('profile'); // State to manage active component
-    const [products, setProducts] = useState([]); // State to manage products
-    const [productMessage, setProductMessage] = useState('');
     const navigate = useNavigate();
 
-    const fetchProfile = async () => {
-        const token = localStorage.getItem('token');
-        console.log('Token:', token); // Check if token is present
-
-        if (!token) {
-            navigate('/login');
-            return;
-        }
-
-        try {
-            const response = await axios.get('/seller/myProfile', {
-                headers: {
-                    Authorization: `Bearer ${token}` // Send token in request header
-                }
-            });
-
-
-            if (response.data && response.data.seller) {
-                setProfile(response.data.seller); // Update profile state with fetched data
-            } 
-        } catch (error) {
-            console.error('Error fetching profile:', error.response ? error.response.data : error.message);
-            setMessage('Error fetching profile');
-        }
-    };
-
     useEffect(() => {
-       
-        fetchProfile();
-    }, [navigate]);
-
-    // Function to handle updating the profile
-    const UpdateProfile = ({ profile, setProfile }) => {
-        const [formProfile, setFormProfile] = useState({});
-        const [updateMessage, setUpdateMessage] = useState('');
-        const [success, setSuccess] = useState(false); // New state to manage success status
-    
-        // Sync formProfile with profile whenever profile is updated
-        useEffect(() => {
-            if (profile) {
-                setFormProfile(profile);  // Only update formProfile if profile exists
-            }
-        }, [profile]);
-    
-        const handleChange = (e) => {
-            setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
-        };
-    
-        const handleSubmit = async (e) => {
-            e.preventDefault();
+        const fetchProfile = async () => {
             const token = localStorage.getItem('token');
-        
-            // Log formProfile to ensure correct data is being sent
-            console.log('FormProfile Data:', formProfile);
-        
+            if (!token) {
+                navigate('/login');  
+            }
+
             try {
-                const response = await axios.put('/seller/myProfile', formProfile, {
+                const response = await axios.get('/tourists/myProfile', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-        
-                console.log('Update Response:', response.data);
-                setProfile(response.data.updatedSeller);
-                setUpdateMessage('Profile updated successfully');
-                setSuccess(true);
-                fetchProfile();
+
+                if (response.data) {
+                    setProfile(response.data);
+                } else {
+                    setMessage('No profile data found');
+                }
+
             } catch (error) {
-                console.error('Error updating profile:', error.response ? error.response.data : error.message);
-                setUpdateMessage(error.response?.data?.message || 'Error updating profile');
+                console.error('Error fetching profile:', error.response ? error.response.data : error.message);
+                setMessage('Error fetching profile');
+            }
+        };
+    
+        fetchProfile();
+    }, [navigate]);
+
+    // Function to handle updating the profile
+    const UpdateProfile = () => {
+        const [formProfile, setFormProfile] = useState(profile);
+        const [updateMessage, setUpdateMessage] = useState('');
+        const [success, setSuccess] = useState(false); // New state to manage success status
+
+        const handleChange = (e) => {
+            setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
+        };
+
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            try {
+                const response = await axios.put('/tourists/myProfile', formProfile, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setUpdateMessage('Profile updated successfully');
+                setProfile(response.data.tourist);  // Update main profile state
+                setSuccess(true);
+            } catch (error) {
+                setUpdateMessage('Error updating profile');
                 setSuccess(false);
             }
-            
         };
-        
-        
-    
-        // If profile is still loading or formProfile is empty, show a loading indicator
-        if (!formProfile.email) {
-            return <div>Loading...</div>;
-        }
 
         return (
             <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
@@ -107,58 +78,72 @@ const SellerDashboard = () => {
                 )}
                 <form onSubmit={handleSubmit}>
                     <div>
-                        <label>Username</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formProfile.username || ''}
-                            onChange={handleChange}
+                        <label>Email</label>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            value={formProfile.email || ''} 
+                            onChange={handleChange} 
                             required
                             style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
                         />
                     </div>
                     <div>
                         <label>Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formProfile.password || ''}
-                            onChange={handleChange}
+                        <input 
+                            type="password" 
+                            name="password" 
+                            value={formProfile.password || ''} 
+                            onChange={handleChange} 
                             required
                             style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
                         />
                     </div>
                     <div>
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formProfile.name || ''}
-                            onChange={handleChange}
+                        <label>Mobile Number</label>
+                        <input 
+                            type="text" 
+                            name="mobileNumber" 
+                            value={formProfile.mobileNumber || ''} 
+                            onChange={handleChange} 
                             required
                             style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
                         />
                     </div>
                     <div>
-                        <label>Description</label>
-                        <input
-                            type="text"
-                            name="description"
-                            value={formProfile.description || ''}
-                            onChange={handleChange}
+                        <label>Job or Student</label>
+                        <select 
+                            name="jobOrStudent" 
+                            value={formProfile.jobOrStudent || ''} 
+                            onChange={handleChange} 
                             required
+                            style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
+                        >
+                            <option value="Job">Job</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Preferences (comma separated)</label>
+                        <input 
+                            type="text" 
+                            name="preferences" 
+                            value={formProfile.preferences || ''} 
+                            onChange={handleChange} 
+                            placeholder="e.g. museum, adventure"
                             style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
                         />
                     </div>
-                    <button
-                        type="submit"
+                    <button 
+                        type="submit" 
                         style={{ padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer', width: '100%' }}>
                         Update Profile
                     </button>
                 </form>
+                
             </div>
         );
-    };
+    }
 
     const sidebarStyle = {
         width: '250px',
@@ -170,7 +155,7 @@ const SellerDashboard = () => {
         left: '0',
         display: 'flex',
         flexDirection: 'column',
-        zIndex: '1'
+        zIndex : '1'
     };
 
     const contentStyle = {
@@ -178,6 +163,7 @@ const SellerDashboard = () => {
         padding: '20px',
     };
 
+    // Styling for the profile card
     const cardStyle = {
         border: '1px solid #ccc',
         borderRadius: '8px',
@@ -204,19 +190,20 @@ const SellerDashboard = () => {
 
     // Render content based on active component
     const renderContent = () => {
+        console.log('Active Component:', activeComponent);  // Debug to check active component state
         switch (activeComponent) {
             case 'profile':
                 return (
                     <>
-                        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Seller Profile</h2>
+                        <h2 style={{ textAlign: 'center', marginBottom: '20px'}}>Tourist Profile</h2>
                         {message && <p style={{ textAlign: 'center', color: 'red' }}>{message}</p>}
                         {profile && profile.username ? (
                             <div style={cardStyle}>
                                 <p><span style={labelStyle}>Username:</span> <span style={valueStyle}>{profile.username}</span></p>
                                 <p><span style={labelStyle}>Email:</span> <span style={valueStyle}>{profile.email}</span></p>
-                                <p><span style={labelStyle}>Name:</span> <span style={valueStyle}>{profile.name}</span></p>
-                                <p><span style={labelStyle}>Description:</span>
-                                <span style={valueStyle}>{profile.description}</span></p>
+                                <p><span style={labelStyle}>Date of Birth:</span> <span style={valueStyle}>{new Date(profile.dob).toLocaleDateString()}</span></p>
+                                <p><span style={labelStyle}>Nationality:</span> <span style={valueStyle}>{profile.nationality}</span></p>
+                                <p><span style={labelStyle}>Wallet Balance:</span> <span style={valueStyle}>{profile.wallet} USD</span></p>
                             </div>
                         ) : (
                             <p>Loading profile...</p>
@@ -224,17 +211,9 @@ const SellerDashboard = () => {
                     </>
                 );
             case 'viewProducts':
-                return <Products />;
+                return <Products />;  // Placeholder for the product list component
             case 'updateProfile':
-                // Pass the profile and setProfile to the UpdateProfile component
-                return <UpdateProfile profile={profile} setProfile={setProfile} />;  // Ensure profile and setProfile are passed
-            
-            case 'myProducts':
-                return <MyProducts />
-
-
-            case 'addProduct' :
-                    return <AddProduct />
+                return <UpdateProfile />; // Show the Update Profile form when 'Update Profile' is selected
             default:
                 return <h2>Welcome to the Dashboard</h2>;
         }
@@ -242,20 +221,18 @@ const SellerDashboard = () => {
 
     return (
         <div>
-            <SellerNavbar />  {/* Assuming SellerNavbar is a similar component to TouristNavbar */}
+            <TouristNavbar /> 
 
             <div style={sidebarStyle}>
                 <h3>Dashboard</h3>
                 <ul style={{ listStyleType: 'none', padding: '0' }}>
                     <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
                     <li onClick={() => setActiveComponent('viewProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View All Products</li>
-                    <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
-                    <li onClick={() => setActiveComponent('myProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View My Products</li>
-                    <li onClick={() => setActiveComponent('addProduct')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Add A Product</li>
-
+                    <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor
+                : 'pointer', marginBottom: '10px' }}>Update Profile</li>
                 </ul>
             </div>
-
+    
             <div style={contentStyle}>
                 {renderContent()}
             </div>
@@ -263,5 +240,4 @@ const SellerDashboard = () => {
     );
 };
 
-export default SellerDashboard;
-
+export default TouristDashboard;

@@ -1,19 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import AdminLogin from './Components/AdminLogin';
-import MultiRoleRegister from './Components/MultiRoleRegister';
-import AdminDashboard from './Components/AdminDashboard';
-import TouristDashboard from './Components/TouristDashboard';
-import Activities from './Components/Activities';
-import Itineraries from './Components/Itineraries';
-import HistoricalPlaces from './Components/HistoricalPlace';
-import TourGuideDashboard from './Components/TourGuideDashboard';  // Import the new dashboard
-import Login from './Components/Login';
-import HomePage from './Components/HomePage';
-import SellerDashboard from './Components/SellerDashboard';  // Import SellerDashboard
-import AdvertiserDashboard from './Components/AdvertiserDashboard';
-import TouristGovernorDashboard from './Components/TouristGovernor';
+import AdminLogin from './Components/Admin-Components/AdminLogin';
+import MultiRoleRegister from './Components/MainPage-Components/MultiRoleRegister';
+import AdminDashboard from './Components/Admin-Components/AdminDashboard';
+import TouristDashboard from './Components/Tourist-Components/TouristDashboard';
+import Activities from './Components/MainPage-Components/Activities';
+import Itineraries from './Components/MainPage-Components/Itineraries';
+import HistoricalPlaces from './Components/MainPage-Components/HistoricalPlace';
+import TourGuideDashboard from './Components/TourGuide-Components/TourGuideDashboard';  // Import the new dashboard
+import Login from './Components/MainPage-Components/Login';
+import HomePage from './Components/MainPage-Components/HomePage';
+import SellerDashboard from './Components/Seller-Components/SellerDashboard';  // Import SellerDashboard
+import AdvertiserDashboard from './Components/Advertiser-Components/AdvertiserDashboard';
+import TouristGovernorDashboard from './Components/TouristGoverner-Components/TouristGovernor';
+
 
 
 function App() {
