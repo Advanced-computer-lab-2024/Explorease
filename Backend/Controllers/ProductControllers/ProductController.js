@@ -80,22 +80,39 @@ const getMyProducts = async (req, res) => {
 // Delete a product by ID
 const deleteProduct = async (req, res) => {
     try {
-        const { _id } = req.body;
+        const { id } = req.params;
+        const userId = req.user.id;
+        const userRole = req.user.role;
 
-        if (!_id) {
+        if (!id) {
             return res.status(400).json({ message: "Product ID is required." });
         }
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required." });
+        }
 
-        const product = await productModel.findByIdAndDelete(_id);
+        // Find product by ID
+        const product = await productModel.findById(id);
+
+        // Check if the product exists
         if (!product) {
             return res.status(404).json({ message: "Product not found." });
         }
 
+        // Check if the user is the owner (seller) of the product
+        if (userRole === 'seller' && product.Seller.toString() !== userId) {
+            return res.status(403).json({ message: "Unauthorized to delete this product." });
+        }
+
+        // Delete the product
+        await productModel.findByIdAndDelete(id);
+        
         res.status(200).json({ message: "Product deleted successfully." });
     } catch (error) {
         res.status(500).json({ message: "Failed to delete product.", error: error.message });
     }
 };
+
 
 const deleteProduct2 = async (req, res) => {
     try {
@@ -118,7 +135,7 @@ const deleteProduct2 = async (req, res) => {
 
 const updateProductDetails = async (req, res) => {
     const { id } = req.params;
-    const { Price, AvailableQuantity } = req.body;
+    const { Name, Price, AvailableQuantity, Description } = req.body;
     const userId = req.user.id;
     const userRole = req.user.role;
     console.log(userId);

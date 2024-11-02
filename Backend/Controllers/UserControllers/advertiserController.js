@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const userModel = require('../../Models/UserModels/Advertiser');
 const { hashPassword, comparePassword, createToken } = require('../../utils/auth');
-
+const bcrypt = require('bcrypt');
 // Create a new advertiser
 const createAdvertiser = async (req, res) => {
     const { username, email, password, name, description } = req.body;
@@ -129,6 +129,32 @@ const loginAdvertiser = async (req, res) => {
     }
 };
 
+const updatePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+        const advertiser = await userModel.findById(req.user.id);
+        if (!advertiser) {
+            console.error("Advertiser not found");
+            return res.status(404).json({ message: 'Advertiser not found' });
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, advertiser.password);
+        if (!isMatch) {
+            console.error("Current password does not match");
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        }
+
+        advertiser.password = await bcrypt.hash(newPassword, 10);
+        await advertiser.save();
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error("Error updating password:", error);  // Log the error
+        res.status(500).json({ message: 'Failed to update password', error: error.message });
+    }
+};
+
+
 
 
 module.exports = {
@@ -138,4 +164,5 @@ module.exports = {
     deleteAdvertiser,
     getAllAdvertisers,
     loginAdvertiser,
+    updatePassword
 };

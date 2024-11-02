@@ -18,5 +18,7 @@ router.delete('/deleteActivity/:id', roleAuth(['advertiser']), activityControlle
 // Add the update activity route
 router.put('/updateActivity/:id', roleAuth(['advertiser']), activityController.updateActivity);
 
+router.put('/editPassword', roleAuth(['advertiser']), advertiserController.updatePassword);
+
 // Export the router
 module.exports = router;

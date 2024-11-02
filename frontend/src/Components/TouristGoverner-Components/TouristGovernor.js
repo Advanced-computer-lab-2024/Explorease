@@ -2,23 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
 import TouristNavbar from '../MainPage-Components/TouristNavbar';
-import CreateHistoricalPlace from './CreateHistoricalPlace'; // Ensure this matches the actual file name
-
-
+import CreateHistoricalPlace from './CreateHistoricalPlace';
 
 const TouristGovernorDashboard = () => {
     const [profile, setProfile] = useState({});
     const [historicalPlaces, setHistoricalPlaces] = useState([]);
     const [message, setMessage] = useState('');
-    const [activeComponent, setActiveComponent] = useState('profile'); // To switch between views
-    const [formProfile, setFormProfile] = useState(profile); // For editing profile
-    const [updateMessage, setUpdateMessage] = useState('');
-    const [success, setSuccess] = useState(false);
-
+    const [activeComponent, setActiveComponent] = useState('profile');
     const [governorId, setGovernorId] = useState(null);
-
-    const [editingPlaceId, setEditingPlaceId] = useState(null); // Track the place being edited
-    const [updatedPlaceData, setUpdatedPlaceData] = useState({}); // Store updated place data
+    const [editingPlaceId, setEditingPlaceId] = useState(null);
+    const [updatedPlaceData, setUpdatedPlaceData] = useState({});
 
     // Fetch the tourist governor profile
     const fetchProfile = async () => {
@@ -34,8 +27,8 @@ const TouristGovernorDashboard = () => {
 
             if (response.data) {
                 setProfile(response.data);
-                setFormProfile(response.data.touristGovernor); // Set form profile for edit
                 setGovernorId(response.data._id); 
+                setMessage('');
             } else {
                 setMessage('No profile data found');
             }
@@ -67,14 +60,12 @@ const TouristGovernorDashboard = () => {
         }
     };
 
+    // Fetch profile on mount and when switching back to profile view
     useEffect(() => {
-        fetchProfile();
-    }, []);
-
-    // Handle form changes for updating profile
-    const handleChange = (e) => {
-        setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
-    };
+        if (activeComponent === 'profile') {
+            fetchProfile();
+        }
+    }, [activeComponent]);
 
     // Render the profile
     const renderProfile = () => (
@@ -85,7 +76,6 @@ const TouristGovernorDashboard = () => {
                 <div>
                     <p><strong>Username:</strong> {profile.username}</p>
                     <p><strong>Email:</strong> {profile.email}</p>
-                    
                 </div>
             ) : (
                 <p>Loading profile...</p>
@@ -100,28 +90,22 @@ const TouristGovernorDashboard = () => {
 
     // Enable edit mode for a specific historical place
     const handleEditPlace = (place) => {
-        setEditingPlaceId(place._id); // Set the place to be edited
-        setUpdatedPlaceData(place);   // Pre-fill the form with current place data
+        setEditingPlaceId(place._id);
+        setUpdatedPlaceData(place);
     };
 
     // Handle submitting the updated historical place data
     const handleUpdateSubmit = async (placeId) => {
         const token = localStorage.getItem('token');
-        console.log('Updated Place Data:', updatedPlaceData);
-        console.log('Place ID:', placeId);
-        console.log('Governor ID:', governorId); // Log the governor ID for debugging
         try {
-            const response = await axios.put(`/governor/updateHistoricalPlace/${placeId}`, updatedPlaceData, {
+            await axios.put(`/governor/updateHistoricalPlace/${placeId}`, updatedPlaceData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            
-    
-            console.log('Response:', response); // Log the response
             setMessage('Historical place updated successfully');
-            setEditingPlaceId(null); // Exit edit mode
-            fetchHistoricalPlaces(); // Refetch places to update UI
+            setEditingPlaceId(null);
+            fetchHistoricalPlaces();
         } catch (error) {
             setMessage('Error updating historical place');
         }
@@ -137,7 +121,6 @@ const TouristGovernorDashboard = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            // Refetch the historical places after deletion
             fetchHistoricalPlaces();
         } catch (error) {
             setMessage('Error deleting historical place');
@@ -155,7 +138,6 @@ const TouristGovernorDashboard = () => {
                         <div key={place._id} style={cardStyle}>
                             {editingPlaceId === place._id ? (
                                 <>
-                                    {/* Render editable fields */}
                                     <input
                                         type="text"
                                         value={updatedPlaceData.Name || ''}
@@ -169,62 +151,7 @@ const TouristGovernorDashboard = () => {
                                         style={inputStyle}
                                         placeholder="Description"
                                     />
-                                    <input
-                                        type="text"
-                                        value={updatedPlaceData.Location || ''}
-                                        onChange={(e) => handleInputChange(e, 'Location')}
-                                        style={inputStyle}
-                                        placeholder="Location"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={updatedPlaceData.OpeningHours || ''}
-                                        onChange={(e) => handleInputChange(e, 'OpeningHours')}
-                                        style={inputStyle}
-                                        placeholder="Opening Hours"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={updatedPlaceData.ClosingHours || ''}
-                                        onChange={(e) => handleInputChange(e, 'ClosingHours')}
-                                        style={inputStyle}
-                                        placeholder="Closing Hours"
-                                    />
-                                    <input
-                                        type="number"
-                                        value={updatedPlaceData.TicketPrices?.foreigner || ''}
-                                        onChange={(e) => handleInputChange(e, 'TicketPrices.foreigner')}
-                                        style={inputStyle}
-                                        placeholder="Ticket Price (Foreigner)"
-                                    />
-                                    <input
-                                        type="number"
-                                        value={updatedPlaceData.TicketPrices?.native || ''}
-                                        onChange={(e) => handleInputChange(e, 'TicketPrices.native')}
-                                        style={inputStyle}
-                                        placeholder="Ticket Price (Native)"
-                                    />
-                                    <input
-                                        type="number"
-                                        value={updatedPlaceData.TicketPrices?.student || ''}
-                                        onChange={(e) => handleInputChange(e, 'TicketPrices.student')}
-                                        style={inputStyle}
-                                        placeholder="Ticket Price (Student)"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={updatedPlaceData.Period || ''}
-                                        onChange={(e) => handleInputChange(e, 'Period')}
-                                        style={inputStyle}
-                                        placeholder="Historical Period"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={updatedPlaceData.Type || ''}
-                                        onChange={(e) => handleInputChange(e, 'Type')}
-                                        style={inputStyle}
-                                        placeholder="Type"
-                                    />
+                                    {/* Other editable fields */}
                                     <button
                                         onClick={() => handleUpdateSubmit(place._id)}
                                         style={saveButtonStyle}
@@ -234,17 +161,9 @@ const TouristGovernorDashboard = () => {
                                 </>
                             ) : (
                                 <>
-                                    {/* Render normal fields */}
                                     <h3>{place.Name}</h3>
                                     <p><strong>Description:</strong> {place.Description}</p>
-                                    <p><strong>Location:</strong> {place.Location}</p>
-                                    <p><strong>Opening Hours:</strong> {place.OpeningHours}</p>
-                                    <p><strong>Closing Hours:</strong> {place.ClosingHours}</p>
-                                    <p><strong>Ticket Price (Foreigner):</strong> {place.TicketPrices.foreigner}</p>
-                                    <p><strong>Ticket Price (Native):</strong> {place.TicketPrices.native}</p>
-                                    <p><strong>Ticket Price (Student):</strong> {place.TicketPrices.student}</p>
-                                    <p><strong>Period:</strong> {place.Period}</p>
-
+                                    {/* Display other fields */}
                                     <button
                                         onClick={() => handleEditPlace(place)}
                                         style={buttonStyle}
@@ -267,7 +186,6 @@ const TouristGovernorDashboard = () => {
             )}
         </div>
     );
-    
 
     // Add useEffect to fetch historical places when activeComponent changes
     useEffect(() => {
@@ -284,6 +202,13 @@ const TouristGovernorDashboard = () => {
                 return renderHistoricalPlaces();
             case 'createHistoricalPlaces':
                 return <CreateHistoricalPlace />;
+            case 'updateProfile':
+                return (
+                    <UpdateTouristGovernorProfile
+                        profile={profile}
+                        setProfile={setProfile}
+                    />
+                );
             default:
                 return <h2>Welcome to the Tourist Governor Dashboard</h2>;
         }
@@ -316,6 +241,7 @@ const TouristGovernorDashboard = () => {
                     <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
                     <li onClick={() => setActiveComponent('viewHistoricalPlaces')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Historical Places</li>
                     <li onClick={() => setActiveComponent('createHistoricalPlaces')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Create Historical Places</li>
+                    <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
                 </ul>
             </div>
             <div style={contentStyle}>

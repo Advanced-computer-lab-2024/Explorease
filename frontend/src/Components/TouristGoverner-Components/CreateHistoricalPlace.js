@@ -14,7 +14,7 @@ const CreateHistoricalPlace = () => {
             student: ''
         },
         Period: '',
-        Type: '',  // Add Type field here
+        Type: '',  
         tags: ''
     });
 

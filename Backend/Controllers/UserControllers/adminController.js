@@ -298,6 +298,87 @@ const deleteUser = async (req, res) => {
 };
 
 
+const editMyPassword = async (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: "Authorization token missing" });
+    }
 
+    try {
+        // Verify the token and get the admin's ID
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const adminId = decoded.id;
+        const { currentPassword, newPassword } = req.body;
 
-module.exports = { deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins, getAllTourists, getAllSellers, getAllTourismGovernors, getAllTourguides, getAllAdvertisers , deleteUser};
+        // Check if both passwords are provided
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ message: "Current password and new password are required" });
+        }
+
+        const admin = await Admin.findById(adminId);
+        if (!admin) {
+            return res.status(404).json({ message: "Admin not found" });
+        }
+
+        // Verify the current password
+        const isMatch = await bcrypt.compare(currentPassword, admin.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Current password is incorrect" });
+        }
+
+        // Hash the new password before saving
+        const salt = await bcrypt.genSalt(10);
+        admin.password = await bcrypt.hash(newPassword, salt);
+
+        await admin.save();
+
+        res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+        console.error("Error updating password:", error);
+        res.status(500).json({ message: "Error updating password" });
+    }
+};
+
+const getPendingUsers = async (req, res) => {
+    try {
+        const pendingUsers = await Promise.all([
+            Seller.find({ isAccepted: false }),
+            Advertiser.find({ isAccepted: false }),
+            TourGuide.find({ isAccepted: false }),
+        ]);
+
+        res.status(200).json({ 
+            sellers: pendingUsers[0], 
+            advertisers: pendingUsers[1], 
+            tourGuides: pendingUsers[2] 
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching pending users', error: error.message });
+    }
+};
+
+// Accept a user by updating `isAccepted` status
+const acceptUser = async (req, res) => {
+    const { userId, userType } = req.body;
+    const Model = userType === 'Seller' ? Seller : userType === 'Advertiser' ? Advertiser : TourGuide;
+    try {
+        await Model.findByIdAndUpdate(userId, { isAccepted: true });
+        res.status(200).json({ message: `${userType} accepted successfully` });
+    } catch (error) {
+        res.status(500).json({ message: 'Error accepting user', error: error.message });
+    }
+};
+
+// Delete a user
+const rejectUser = async (req, res) => {
+    const { userId, userType } = req.body;
+    const Model = userType === 'Seller' ? Seller : userType === 'Advertiser' ? Advertiser : TourGuide;
+    try {
+        await Model.findByIdAndDelete(userId);
+        res.status(200).json({ message: `${userType} rejected and removed from the system` });
+    } catch (error) {
+        res.status(500).json({ message: 'Error rejecting user', error: error.message });
+    }
+};
+
+module.exports = { getPendingUsers, acceptUser, rejectUser, editMyPassword, deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins, getAllTourists, getAllSellers, getAllTourismGovernors, getAllTourguides, getAllAdvertisers , deleteUser};

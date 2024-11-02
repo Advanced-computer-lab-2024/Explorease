@@ -11,18 +11,14 @@
   {
     "username": "guide_maria",
     "email": "maria_guide@example.com",
-    "password": "MariaPassword456"
+    "password": "MariaPassword789"
   },
   {
     "username": "guide_alex",
     "email": "alex_guide@example.com",
     "password": "AlexPassword789"
   },
-  {
-    "username": "guide_clara",
-    "email": "clara_guide@example.com",
-    "password": "ClaraPassword101"
-  },
+ 
   {
     "username": "guide_dave",
     "email": "dave_guide@example.com",
@@ -64,7 +60,7 @@
   {
     "username": "seller_oliver",
     "email": "oliver_seller@example.com",
-    "password": "OliverPassword112",
+    "password": "OliverPassword121",
     "name": "Oliver's Outlet",
     "description": "Best souvenirs and gifts."
   }
@@ -90,7 +86,7 @@
   {
     "username": "advertiser_isabella",
     "email": "isabella_advertiser@example.com",
-    "password": "IsabellaPassword789",
+    "password": "IsabellaPassword878",
     "name": "Isabella's Travels",
     "description": "Exclusive travel offers."
   },
@@ -144,7 +140,7 @@
   {
     "username": "tourist_olivia",
     "email": "olivia_tourist@example.com",
-    "password": "OliviaPassword101",
+    "password": "OliviaPassword112",
     "mobileNumber": "2233445566",
     "nationality": "Australian",
     "dob": "1997-06-15",
@@ -166,7 +162,7 @@
     {
         "username": "governor_james",
         "email": "james.governor@example.com",
-        "password": "JamesPassword123",
+        "password": "JamesPassword687",
         "managedHistoricalPlaces": []
     },
     {
@@ -195,74 +191,14 @@
     }
 ]
 
-Main Dashboard (Guest) ->
-Login Button
-Register Button
-View All Activities
-View All Itineraries
-View All Historical Places
-Search Activities By Name or Category or Tag
-Search Historical Place By Name or Tag
-Search Itineraries By Name or Tag
-Filter All Activities Based on Budget/Date/Category/Rating
-Sort All Activities On Rating & Price
-Sort All Itineraries On Rating & Price
-Filter Itineraries on Budget/ Date/ Preference Tags / Language
-Filter Historical Places By Tag
-
-Tour Guide Dashboard ->
-Account Data 
-Update Profile
-Create Itinerary 
-Update Itinerary
-Delete My Itineraries
-Get My Itineraries
-
-Tourist Governor Dashboard -> 
-Create Historical Place
-Delete Historical Places I Added
-Update Historical Places I Added
-Get All Historical Places
-Get My Historical Places
-Create Tags
-
-Advertiser Dashboard ->
-Account Data (Change Dummy Data to Companies/Entities)
-Update Profile
-Get All Activities
-Get My Activities
-Update Activity
-Delete Activities
-
-Seller Dashboard ->
-Account Data
-Update Profile
-View A List of All Products
-Search for Product By Name
-Sort Products By Ratings
-Filter Products By Price
-Add Products 
-View My Products
-Edit My Products
-
-
-Tourist ->
-Account Data (Wallet)
-Update Profile 
-View A List of All Products
-Search for Product By Name
-Sort Products By Ratings
-Filter Products By Price
-+ All In Guest
-
-
-
-Admin Dashboard -> 
-Delete account off system
-Add tourism governor
-Add another admin
-Create Tags
-Create Activity Category for Activity
-View A List of All Products
-Search for Product By Name
-Add Product With
+## Admins
+[
+  {
+    email: "yousseffaizallah@gmail.com"
+    password : "Fizo1234"
+  },
+  {
+    email : "peteradelmakram@gmail.com"
+    password : "1234Peter"
+  }
+]

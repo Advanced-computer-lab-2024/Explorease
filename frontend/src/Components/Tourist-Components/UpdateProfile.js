@@ -1,52 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { Box, TextField, Button, Typography, InputAdornment, IconButton, CircularProgress } from '@mui/material';
+import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
-    const [formProfile, setFormProfile] = useState({
-        email: '',
-        mobileNumber: '',
-        yearsOfExperience: '',
-        previousWork: '',
-    });
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+const UpdateProfile = ({ profile, setProfile }) => {
+    const [formProfile, setFormProfile] = useState(profile);
     const [updateMessage, setUpdateMessage] = useState('');
-    const [passwordMessage, setPasswordMessage] = useState('');
     const [success, setSuccess] = useState(false);
     const [redirecting, setRedirecting] = useState(false);
-    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [passwordMessage, setPasswordMessage] = useState('');
+    const navigate = useNavigate(); // Initialize navigate
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false); 
+    const [showNewPassword, setShowNewPassword] = useState(false); 
 
-    useEffect(() => {
-        if (profile) {
-            setFormProfile({
-                email: profile.email || '',
-                
-            });
-        }
-    }, [profile]);
-    
-    useEffect(() => {
-        if (profile) {
-            setFormProfile(profile);
-        }
-    }, [profile]);
-
+    // Handle profile updates
     const handleChange = (e) => {
         setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
     };
 
-    const handleProfileSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.put('/governor/updateProfile', formProfile, {
+            const response = await axios.put('/tourists/myProfile', formProfile, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUpdateMessage('Profile updated successfully');
-            setProfile(response.data.updatedGovernor);
+            setProfile(response.data.tourist);  // Update main profile state
             setSuccess(true);
         } catch (error) {
             setUpdateMessage('Error updating profile');
@@ -54,25 +37,35 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
         }
     };
 
-    const handlePasswordSubmit = async (e) => {
+    // Handle password update
+    const handlePasswordUpdate = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            await axios.put('/governor/editPassword', { currentPassword, newPassword }, {
+            await axios.put('/tourists/editPassword', {
+                currentPassword,
+                newPassword
+            }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setPasswordMessage('Password updated successfully. Redirecting to login page...');
+            setPasswordMessage('Password updated successfully');
+            setCurrentPassword('');
+            setNewPassword('');
             setRedirecting(true);
-            setTimeout(() => (window.location.href = '/login'), 500);
+
+            setTimeout(() => {
+                navigate('/login');
+            }, 1000);
         } catch (error) {
             setPasswordMessage('Error updating password');
             setRedirecting(false);
+
         }
     };
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>Update Tourist Governor Profile</Typography>
+            <Typography variant="h4" gutterBottom>Update Profile</Typography>
 
             {updateMessage && (
                 <Typography color={success ? 'green' : 'red'} sx={{ mb: 2 }}>
@@ -80,22 +73,46 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                 </Typography>
             )}
 
-            <form onSubmit={handleProfileSubmit}>
+            <form onSubmit={handleSubmit}>
                 <TextField
                     label="Email"
                     name="email"
                     type="email"
-                    value={formProfile.email}
+                    value={formProfile.email || ''}
                     onChange={handleChange}
                     fullWidth
                     margin="normal"
                     required
                 />
                 <TextField
-                    label="Username"
-                    name="username"
-                    value={formProfile.username}
+                    label="Mobile Number"
+                    name="mobileNumber"
+                    value={formProfile.mobileNumber || ''}
                     onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Job or Student"
+                    name="jobOrStudent"
+                    select
+                    SelectProps={{ native: true }}
+                    value={formProfile.jobOrStudent || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                >
+                    <option value="Job">Job</option>
+                    <option value="Student">Student</option>
+                </TextField>
+                <TextField
+                    label="Preferences (comma separated)"
+                    name="preferences"
+                    value={formProfile.preferences || ''}
+                    onChange={handleChange}
+                    placeholder="e.g. museum, adventure"
                     fullWidth
                     margin="normal"
                 />
@@ -110,21 +127,22 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                 </Button>
             </form>
 
-            
-            <Box sx={{ mt: 4 }}>
+            {/* Update Password Section */}
+             <Box sx={{ mt: 4 }}>
                 <Typography variant="h5" gutterBottom>Update Password</Typography>
-
+                
                 {passwordMessage && (
                     <Typography color={redirecting ? 'primary' : 'error'} sx={{ mb: 2 }}>
                         {passwordMessage}
-                        {redirecting && <CircularProgress size={20} sx={{ ml: 1 }} />}
+                        {redirecting && <CircularProgress size={20} sx={{ ml: 1 }} />} {/* Loading spinner */}
                     </Typography>
                 )}
 
-                <form onSubmit={handlePasswordSubmit}>
+                <form onSubmit={handlePasswordUpdate}>
                     <TextField
                         label="Current Password"
                         type={showCurrentPassword ? 'text' : 'password'}
+                        name="currentPassword"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         fullWidth
@@ -133,7 +151,10 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={() => setShowCurrentPassword(!showCurrentPassword)}>
+                                    <IconButton
+                                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                        edge="end"
+                                    >
                                         {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
@@ -143,6 +164,7 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                     <TextField
                         label="New Password"
                         type={showNewPassword ? 'text' : 'password'}
+                        name="newPassword"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         fullWidth
@@ -151,7 +173,10 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={() => setShowNewPassword(!showNewPassword)}>
+                                    <IconButton
+                                        onClick={() => setShowNewPassword(!showNewPassword)}
+                                        edge="end"
+                                    >
                                         {showNewPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
@@ -173,4 +198,4 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
     );
 };
 
-export default UpdateTouristGovernorProfile;
+export default UpdateProfile;

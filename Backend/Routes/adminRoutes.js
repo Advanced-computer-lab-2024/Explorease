@@ -71,6 +71,10 @@ router.get('/advertisers', authenticateAdmin, adminController.getAllAdvertisers)
 
 // Delete user by ID (universal delete route for any user)
 router.delete('/deleteUser/:id/:userType', authenticateAdmin, adminController.deleteUser);
- 
+router.put('/editMyPassword', authenticateAdmin, adminController.editMyPassword);
+
+router.get('/pending-users', authenticateAdmin, adminController.getPendingUsers);
+router.post('/accept-user', authenticateAdmin, adminController.acceptUser);
+router.post('/reject-user', authenticateAdmin, adminController.rejectUser);
 
 module.exports = router;

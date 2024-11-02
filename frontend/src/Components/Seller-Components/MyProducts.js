@@ -67,6 +67,24 @@ const SellerProducts = () => {
         }
     };
 
+    // Handle deleting a product
+    const handleDeleteProduct = async (productId) => {
+        const token = localStorage.getItem('token');
+        try {
+            await axios.delete(`/seller/deleteProduct/${productId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            setProductMessage('Product deleted successfully');
+            setProducts(products.filter(product => product._id !== productId)); // Remove the deleted product from the UI
+        } catch (error) {
+            setProductMessage('Error deleting product');
+            console.error('Error deleting product:', error);
+        }
+    };
+
     // Fetch filtered, sorted, and searched seller products
     const fetchFilteredSellerProducts = async () => {
         try {
@@ -102,7 +120,6 @@ const SellerProducts = () => {
         e.preventDefault();
         fetchFilteredSellerProducts(); // Fetch products with the filter/sort/search when search is pressed
     };
-
 
     const renderProductCards = () => {
         if (!Array.isArray(products) || products.length === 0) {
@@ -159,11 +176,18 @@ const SellerProducts = () => {
                         >
                             Edit Product
                         </button>
+                        <button
+                            onClick={() => handleDeleteProduct(product._id)}
+                            style={deleteButtonStyle}
+                        >
+                            Delete Product
+                        </button>
                     </>
                 )}
             </div>
         ));
     };
+
     const inputStyle = {
         padding: '10px',
         marginBottom: '10px',
@@ -202,11 +226,23 @@ const SellerProducts = () => {
         marginTop: '10px',
     };
 
+    const deleteButtonStyle = {
+        padding: '10px 15px',
+        backgroundColor: '#dc3545',
+        color: '#fff',
+        border: 'none',
+        cursor: 'pointer',
+        borderRadius: '5px',
+        marginTop: '10px',
+        marginLeft: '10px',
+    };
+
     const imageStyle = {
         maxWidth: '100%',
         height: 'auto',
         marginBottom: '10px',
     };
+
     const productListStyle = {
         display: 'flex',
         flexWrap: 'wrap', // Allow wrapping of products

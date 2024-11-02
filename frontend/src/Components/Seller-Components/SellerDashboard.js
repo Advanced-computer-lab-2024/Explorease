@@ -5,6 +5,7 @@ import SellerNavbar from '../MainPage-Components/TouristNavbar'; // Assume Selle
 import Products from './Products'; // Component to manage seller's products
 import MyProducts from './MyProducts';
 import AddProduct from './AddProduct';
+import UpdateProfile from './UpdateProfile';
 
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -45,120 +46,6 @@ const SellerDashboard = () => {
         fetchProfile();
     }, [navigate]);
 
-    // Function to handle updating the profile
-    const UpdateProfile = ({ profile, setProfile }) => {
-        const [formProfile, setFormProfile] = useState({});
-        const [updateMessage, setUpdateMessage] = useState('');
-        const [success, setSuccess] = useState(false); // New state to manage success status
-    
-        // Sync formProfile with profile whenever profile is updated
-        useEffect(() => {
-            if (profile) {
-                setFormProfile(profile);  // Only update formProfile if profile exists
-            }
-        }, [profile]);
-    
-        const handleChange = (e) => {
-            setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
-        };
-    
-        const handleSubmit = async (e) => {
-            e.preventDefault();
-            const token = localStorage.getItem('token');
-        
-            // Log formProfile to ensure correct data is being sent
-            console.log('FormProfile Data:', formProfile);
-        
-            try {
-                const response = await axios.put('/seller/myProfile', formProfile, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-        
-                console.log('Update Response:', response.data);
-                setProfile(response.data.updatedSeller);
-                setUpdateMessage('Profile updated successfully');
-                setSuccess(true);
-                fetchProfile();
-            } catch (error) {
-                console.error('Error updating profile:', error.response ? error.response.data : error.message);
-                setUpdateMessage(error.response?.data?.message || 'Error updating profile');
-                setSuccess(false);
-            }
-            
-        };
-        
-        
-    
-        // If profile is still loading or formProfile is empty, show a loading indicator
-        if (!formProfile.email) {
-            return <div>Loading...</div>;
-        }
-
-        return (
-            <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-                <h2>Update Profile</h2>
-                {/* Display success message */}
-                {updateMessage && (
-                    <p style={{ color: success ? 'green' : 'red', marginBottom: '20px' }}>
-                        {updateMessage}
-                    </p>
-                )}
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Username</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formProfile.username || ''}
-                            onChange={handleChange}
-                            required
-                            style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                        />
-                    </div>
-                    <div>
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formProfile.password || ''}
-                            onChange={handleChange}
-                            required
-                            style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                        />
-                    </div>
-                    <div>
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formProfile.name || ''}
-                            onChange={handleChange}
-                            required
-                            style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                        />
-                    </div>
-                    <div>
-                        <label>Description</label>
-                        <input
-                            type="text"
-                            name="description"
-                            value={formProfile.description || ''}
-                            onChange={handleChange}
-                            required
-                            style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        style={{ padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer', width: '100%' }}>
-                        Update Profile
-                    </button>
-                </form>
-            </div>
-        );
-    };
 
     const sidebarStyle = {
         width: '250px',

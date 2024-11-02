@@ -113,3 +113,25 @@ exports.loginTouristGovernor = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error });
     }
 };
+
+exports.editPassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        // Find the governor
+        const governor = await userModel.findById(req.user.id);
+        if (!governor) return res.status(404).json({ message: 'Governor not found' });
+
+        // Verify current password
+        const isMatch = await bcrypt.compare(currentPassword, governor.password);
+        if (!isMatch) return res.status(400).json({ message: 'Incorrect current password' });
+
+        // Hash the new password and update
+        governor.password = await bcrypt.hash(newPassword, 10);
+        await governor.save();
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

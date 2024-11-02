@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, TextField, Button, Typography, InputAdornment, IconButton, CircularProgress } from '@mui/material';
+import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
+const UpdateProfile = ({ profile, setProfile, role = "seller" }) => {
     const [formProfile, setFormProfile] = useState({
+        username: '',
         email: '',
-        mobileNumber: '',
-        yearsOfExperience: '',
-        previousWork: '',
+        name: '',
+        description: '',
     });
+    const [updateMessage, setUpdateMessage] = useState('');
+    const [success, setSuccess] = useState(false);
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [updateMessage, setUpdateMessage] = useState('');
     const [passwordMessage, setPasswordMessage] = useState('');
-    const [success, setSuccess] = useState(false);
     const [redirecting, setRedirecting] = useState(false);
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -22,15 +22,11 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
     useEffect(() => {
         if (profile) {
             setFormProfile({
+                username: profile.username || '',
                 email: profile.email || '',
-                
+                name: profile.name || '',
+                description: profile.description || '',
             });
-        }
-    }, [profile]);
-    
-    useEffect(() => {
-        if (profile) {
-            setFormProfile(profile);
         }
     }, [profile]);
 
@@ -38,15 +34,17 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
         setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
     };
 
-    const handleProfileSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.put('/governor/updateProfile', formProfile, {
-                headers: { Authorization: `Bearer ${token}` }
+            const response = await axios.put(`/seller/updateProfile`, formProfile, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
             setUpdateMessage('Profile updated successfully');
-            setProfile(response.data.updatedGovernor);
+            setProfile(response.data.updatedSeller); // Update main profile state
             setSuccess(true);
         } catch (error) {
             setUpdateMessage('Error updating profile');
@@ -54,16 +52,22 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
         }
     };
 
-    const handlePasswordSubmit = async (e) => {
+    const handlePasswordUpdate = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            await axios.put('/governor/editPassword', { currentPassword, newPassword }, {
-                headers: { Authorization: `Bearer ${token}` }
+            await axios.put(`/seller/editPassword`, { currentPassword, newPassword }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
             setPasswordMessage('Password updated successfully. Redirecting to login page...');
+            setCurrentPassword('');
+            setNewPassword('');
             setRedirecting(true);
-            setTimeout(() => (window.location.href = '/login'), 500);
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 500);
         } catch (error) {
             setPasswordMessage('Error updating password');
             setRedirecting(false);
@@ -72,7 +76,7 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>Update Tourist Governor Profile</Typography>
+            <Typography variant="h4" gutterBottom>Update Profile</Typography>
 
             {updateMessage && (
                 <Typography color={success ? 'green' : 'red'} sx={{ mb: 2 }}>
@@ -80,17 +84,7 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                 </Typography>
             )}
 
-            <form onSubmit={handleProfileSubmit}>
-                <TextField
-                    label="Email"
-                    name="email"
-                    type="email"
-                    value={formProfile.email}
-                    onChange={handleChange}
-                    fullWidth
-                    margin="normal"
-                    required
-                />
+            <form onSubmit={handleSubmit}>
                 <TextField
                     label="Username"
                     name="username"
@@ -98,6 +92,34 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                     onChange={handleChange}
                     fullWidth
                     margin="normal"
+                    required
+                />
+                <TextField
+                    label="Email"
+                    name="email"
+                    value={formProfile.email}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Name"
+                    name="name"
+                    value={formProfile.name}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Description"
+                    name="description"
+                    value={formProfile.description}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
                 />
                 <Button
                     type="submit"
@@ -110,10 +132,10 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                 </Button>
             </form>
 
-            
+            {/* Password Update Section */}
             <Box sx={{ mt: 4 }}>
                 <Typography variant="h5" gutterBottom>Update Password</Typography>
-
+                
                 {passwordMessage && (
                     <Typography color={redirecting ? 'primary' : 'error'} sx={{ mb: 2 }}>
                         {passwordMessage}
@@ -121,7 +143,7 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                     </Typography>
                 )}
 
-                <form onSubmit={handlePasswordSubmit}>
+                <form onSubmit={handlePasswordUpdate}>
                     <TextField
                         label="Current Password"
                         type={showCurrentPassword ? 'text' : 'password'}
@@ -173,4 +195,4 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
     );
 };
 
-export default UpdateTouristGovernorProfile;
+export default UpdateProfile;

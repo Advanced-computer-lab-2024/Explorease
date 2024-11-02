@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+/* App.css */
+body {
+  background-color: white;
+  margin: 0; /* Remove any default margin */
+  padding: 0; /* Remove any default padding */
+}

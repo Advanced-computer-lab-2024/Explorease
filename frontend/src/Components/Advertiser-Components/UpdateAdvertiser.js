@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Assuming you are using react-router for navigation
-import { set } from 'mongoose';
+import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const UpdateAdvertiser = ({ profile, setProfile }) => {
     const [formProfile, setFormProfile] = useState({
@@ -10,50 +10,26 @@ const UpdateAdvertiser = ({ profile, setProfile }) => {
         websiteLink: '',
         hotline: '',
         companyProfile: '',
-        // currentPassword: '',  // Added current password field
-        // newPassword: '',      // Added new password field
-        // confirmPassword: '',  // New confirmation password field
     });
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [updateMessage, setUpdateMessage] = useState('');
-    const [success, setSuccess] = useState(false);
-    const navigate = useNavigate(); // To redirect after update
+    const [passwordMessage, setPasswordMessage] = useState('');
+    const [redirecting, setRedirecting] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
 
     useEffect(() => {
         if (profile) {
-            setFormProfile(profile);  // Only update formProfile if profile exists
+            setFormProfile({
+                username: profile.username || '',
+                companyName: profile.companyName || '',
+                websiteLink: profile.websiteLink || '',
+                hotline: profile.hotline || '',
+                companyProfile: profile.companyProfile || '',
+            });
         }
     }, [profile]);
-
-      // Fetch the advertiser's profile to fill placeholders
-      const fetchProfile = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        try {
-            const response = await axios.get('/advertiser/myProfile', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (response.data && response.data.advertiser) {
-                // Pre-fill the form with existing profile data, including password
-                setFormProfile({
-                    username: response.data.advertiser.username || '',
-                    password: response.data.advertiser.password || '', // Using the original password
-                    companyName: response.data.advertiser.companyName || '',
-                    websiteLink: response.data.advertiser.websiteLink || '',
-                    hotline: response.data.advertiser.hotline || '',
-                    companyProfile: response.data.advertiser.companyProfile || '',
-                });
-            }
-        } catch (error) {
-            setUpdateMessage('Error fetching profile');
-        }
-    };
-    useEffect(() => {
-        fetchProfile();
-    }, []);
 
     const handleChange = (e) => {
         setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
@@ -62,155 +38,163 @@ const UpdateAdvertiser = ({ profile, setProfile }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
-        console.log('FormProfile Data:', formProfile);
+        
+        if (formProfile.websiteLink && !/^(https?:\/\/)?([\w\-]+\.)+[a-z]{2,6}(\/[^\s]*)?$/.test(formProfile.websiteLink)) {
+            setUpdateMessage('Please enter a valid website URL');
+            return;
+        }
 
-        const cleanedProfile = { ...formProfile };
-        Object.keys(cleanedProfile).forEach(key => {
-            if (cleanedProfile[key] === '') delete cleanedProfile[key];
-        });
-
-        const urlPattern = new RegExp(/^(https?:\/\/)?([\w\-]+\.)+[a-z]{2,6}(\/[^\s]*)?$/);
-if (formProfile.websiteLink && !urlPattern.test(formProfile.websiteLink)) {
-    setUpdateMessage('Please enter a valid website URL');
-    return;
-}
-
-    
-        // Log cleaned profile
-        console.log('Cleaned Profile being sent:', cleanedProfile);
         try {
-            
-
-            // const response = await axios.put('/advertiser/updateProfile', formProfile, {
-
-            const response = await axios.put('/advertiser/updateProfile', cleanedProfile, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const response = await axios.put('/advertiser/updateProfile', formProfile, {
+                headers: { Authorization: `Bearer ${token}` }
             });
-            setProfile(response.data.updatedAdvertiser); // Update the profile
-
+            setProfile(response.data.updatedAdvertiser);
             setUpdateMessage('Profile updated successfully');
-            setSuccess(true);
-            
         } catch (error) {
             setUpdateMessage('Error updating profile');
-            setSuccess(false);
+        }
+    };
+
+    const handlePasswordUpdate = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+        try {
+            await axios.put(`/advertiser/editPassword`, { currentPassword, newPassword }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setPasswordMessage('Password updated successfully. Redirecting to login...');
+            setRedirecting(true);
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 500);
+        } catch (error) {
+            setPasswordMessage('Error updating password');
         }
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <h2>Edit Profile</h2>
-            {updateMessage && <p style={{ color: success ? 'green' : 'red' }}>{updateMessage}</p>}
+        <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+            <Typography variant="h4" gutterBottom>Edit Profile</Typography>
+
+            {updateMessage && (
+                <Typography color="primary" sx={{ mb: 2 }}>{updateMessage}</Typography>
+            )}
+
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username</label>
-                    <input
-                        type="text"
-                        name="username"
-                        value={formProfile.username || ''} // Default to empty string if undefined
-                        onChange={handleChange}
-                        placeholder="Enter username"
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                    />
-                </div>
-                
-
-                <div>
-                    <label>Company Name</label>
-                    <input
-                        type="text"
-                        name="companyName"
-                        value={formProfile.companyName || ''} // Default to empty string if undefined
-                        onChange={handleChange}
-                        placeholder="Enter company name"
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                    />
-                </div>
-                <div>
-                    <label>Website Link</label>
-                    <input
-                        type="text"
-                        name="websiteLink"
-                        value={formProfile.websiteLink || ''} // Default to empty string if undefined
-                        onChange={handleChange}
-                        placeholder="Enter website link"
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                    />
-                </div>
-                <div>
-                    <label>Hotline</label>
-                    <input
-                        type="text"
-                        name="hotline"
-                        value={formProfile.hotline || ''} // Default to empty string if undefined
-                        onChange={handleChange}
-                        placeholder="Enter hotline"
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                    />
-                </div>
-                <div>
-                    <label>Company Profile</label>
-                    <textarea
-                        name="companyProfile"
-                        value={formProfile.companyProfile || ''} // Default to empty string if undefined
-                        onChange={handleChange}
-                        placeholder="Enter company profile"
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                    />
-                </div>
-
-                {/* <div>
-                    <label>Current Password (required to change password)</label>
-                    <input
-                        type="password"
-                        name="currentPassword"
-                        value={formProfile.currentPassword || ''}
-                        onChange={handleChange}
-                        placeholder="Enter current password"
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                    />
-                </div>
-                <div>
-                    <label>New Password</label>
-                    <input
-                        type="password"
-                        name="newPassword"
-                        value={formProfile.newPassword || ''}
-                        onChange={handleChange}
-                        placeholder="Enter new password"
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                    />
-                </div>
-
-                <div>
-                    <label>Confirm New Password</label>
-                    <input
-                        type="password"
-                        name="confirmPassword"
-                        value={formProfile.confirmPassword || ''}
-                        onChange={handleChange}
-                        placeholder="Confirm new password"
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
-                    />
-                </div> */}
-
-                <button
+                <TextField
+                    label="Username"
+                    name="username"
+                    value={formProfile.username || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Company Name"
+                    name="companyName"
+                    value={formProfile.companyName || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Website Link"
+                    name="websiteLink"
+                    value={formProfile.websiteLink || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                />
+                <TextField
+                    label="Hotline"
+                    name="hotline"
+                    value={formProfile.hotline || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                />
+                <TextField
+                    label="Company Profile"
+                    name="companyProfile"
+                    value={formProfile.companyProfile || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    multiline
+                    rows={4}
+                    margin="normal"
+                />
+                <Button
                     type="submit"
-                    style={{
-                        padding: '10px',
-                        backgroundColor: '#007bff',
-                        color: '#fff',
-                        border: 'none',
-                        cursor: 'pointer',
-                        width: '100%',
-                    }}
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{ mt: 2 }}
                 >
                     Update Profile
-                </button>
+                </Button>
             </form>
-        </div>
+
+            <Box sx={{ mt: 4 }}>
+                <Typography variant="h5" gutterBottom>Update Password</Typography>
+
+                {passwordMessage && (
+                    <Typography color="primary" sx={{ mb: 2 }}>
+                        {passwordMessage}
+                        {redirecting && <CircularProgress size={20} sx={{ ml: 1 }} />}
+                    </Typography>
+                )}
+
+                <form onSubmit={handlePasswordUpdate}>
+                    <TextField
+                        label="Current Password"
+                        type={showCurrentPassword ? 'text' : 'password'}
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        fullWidth
+                        margin="normal"
+                        required
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowCurrentPassword(!showCurrentPassword)}>
+                                        {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
+                    />
+                    <TextField
+                        label="New Password"
+                        type={showNewPassword ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        fullWidth
+                        margin="normal"
+                        required
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowNewPassword(!showNewPassword)}>
+                                        {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
+                    />
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                    >
+                        Update Password
+                    </Button>
+                </form>
+            </Box>
+        </Box>
     );
 };
 

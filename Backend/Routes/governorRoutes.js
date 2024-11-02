@@ -34,6 +34,6 @@ router.put('/updateProfile', roleAuth(['touristGovernor']), touristGovernorContr
 // Delete My Profile
 router.delete('/deleteProfile', roleAuth(['touristGovernor']), touristGovernorController.deleteTouristGovernor);
 
-
+router.put('/editPassword', roleAuth(['touristGovernor']), touristGovernorController.editPassword);
 
 module.exports = router;

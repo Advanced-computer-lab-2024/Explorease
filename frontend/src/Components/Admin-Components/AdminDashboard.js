@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AdminDashboard.css'; // Import the CSS file
 import Products from '../Seller-Components/Products';  // Import the Products component
+import CreateAdminForm from './AdminManagement';
+import ManageUsers from './ManageUser';
+import EditMyPassword from './EditPassword';
+import UserApproval from './UserApproval';
 
 const AdminDashboard = () => {
-    const [newAdminUsername, setNewAdminUsername] = useState('');
-    const [newAdminEmail, setNewAdminEmail] = useState('');
-    const [newAdminPassword, setNewAdminPassword] = useState('');
-    const [admins, setAdmins] = useState([]);
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [governorUsername, setGovernorUsername] = useState('');
@@ -40,13 +40,6 @@ const [newTagName, setNewTagName] = useState('');
 const [editedTag, setEditedTag] = useState({});
 const [tagMessage, setTagMessage] = useState('');
 
-const [tourists, setTourists] = useState([]);  
-const [tourGuides, setTourGuides] = useState([]);
-const [tourismGovernors, setTourismGovernors] = useState([]);
-const [sellers, setSellers] = useState([]);
-const [advertisers, setAdvertisers] = useState([]);
-const [userMessage, setUserMessage] = useState('');  // For displaying success/error messages
-
 const [isGovernorAdded, setIsGovernorAdded] = useState(false);
 
     const navigate = useNavigate();
@@ -56,26 +49,7 @@ const [isGovernorAdded, setIsGovernorAdded] = useState(false);
         setActiveSection(section);
     };
 
-    const createNewAdmin = async (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem('token');
-        try {
-            await axios.post('/admins/add', {
-                username: newAdminUsername,
-                email: newAdminEmail,
-                password: newAdminPassword,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            setMessage('New admin created successfully!');
-            fetchAdmins();
-        } catch (error) {
-            setMessage('Error creating new admin.');
-        }
-    };
-
+    
     const handleAddGovernor = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
@@ -101,36 +75,9 @@ const [isGovernorAdded, setIsGovernorAdded] = useState(false);
         }
     };
 
-    const fetchAdmins = async () => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await axios.get('/admins/all', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            setAdmins(response.data);
-            setLoading(false);
-        } catch (error) {
-            setMessage('Error fetching admins.');
-            setLoading(false);
-        }
-    };
+ 
 
-    const deleteAdmin = async (adminId) => {
-        const token = localStorage.getItem('token');
-        try {
-            await axios.delete(`/admins/delete/${adminId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            setMessage('Admin deleted successfully!');
-            fetchAdmins();
-        } catch (error) {
-            setMessage('Error deleting admin.');
-        }
-    };
+
 
     // Create Activity Category
 const createCategory = async (e) => {
@@ -374,117 +321,6 @@ const handleTagChange = (id, newName) => {
 };
 
 
-// Fetch tourists
-const fetchTourists = async () => {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await axios.get('/admins/tourists', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setTourists(response.data);  // Store fetched tourists in state
-    } catch (error) {
-        setUserMessage('Error fetching tourists.');
-    }
-};
-
-// Fetch sellers
-const fetchSellers = async () => {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await axios.get('/admins/sellers', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setSellers(response.data);  // Store fetched sellers in state
-    } catch (error) {
-        setUserMessage('Error fetching sellers.');
-    }
-};
-
-// Fetch tour guides
-const fetchTourGuides = async () => {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await axios.get('/admins/tourGuides', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setTourGuides(response.data);  // Store fetched tour guides in state
-    } catch (error) {
-        setUserMessage('Error fetching tour guides.');
-    }
-};
-
-// Fetch tourism governors
-const fetchTourismGovernors = async () => {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await axios.get('/admins/tourismGovernors', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setTourismGovernors(response.data);  // Store fetched tourism governors in state
-    } catch (error) {
-        setUserMessage('Error fetching tourism governors.');
-    }
-};
-
-// Fetch advertisers
-const fetchAdvertisers = async () => {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await axios.get('/admins/advertisers', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setAdvertisers(response.data);  // Store fetched advertisers in state
-    } catch (error) {
-        setUserMessage('Error fetching advertisers.');
-    }
-};
-
-
-const deleteUser = async (id, userType, setStateFunction) => {
-    const token = localStorage.getItem('token');
-    try {
-        await axios.delete(`/admins/deleteUser/${id}/${userType}`, {  // Relative URL
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setUserMessage(`${userType} deleted successfully!`);
-        
-        // Re-fetch users after deletion
-        switch (userType) {
-            case 'tourist':
-                fetchTourists();
-                break;
-            case 'seller':
-                fetchSellers();
-                break;
-            case 'tourGuide':
-                fetchTourGuides();
-                break;
-            case 'tourismGovernor':
-                fetchTourismGovernors();
-                break;
-            case 'advertiser':
-                fetchAdvertisers();
-                break;
-            default:
-                break;
-        }
-    } catch (error) {
-        console.error(`Error deleting ${userType}:`, error.response ? error.response.data : error.message);
-        setUserMessage(`Error deleting ${userType}.`);
-    }
-};
 
 
 
@@ -494,22 +330,12 @@ const deleteUser = async (id, userType, setStateFunction) => {
         if (!token) {
             navigate('/admin/login');
         } else {
-            fetchAdmins();
             fetchCategories();
             fetchProducts();
             fetchTags();  // Fetch tags when the component loads
-
-            fetchTourists();
-        fetchSellers();
-        fetchTourGuides();
-        fetchTourismGovernors();
-        fetchAdvertisers();
         }
     }, [navigate]);
 
-    if (loading) {
-        return <p>Loading admins...</p>;
-    }
 
     return (
         <div className="container">
@@ -523,6 +349,12 @@ const deleteUser = async (id, userType, setStateFunction) => {
                     className={activeSection === 'home' ? 'active' : ''}
                 >
                     Home
+                </button>
+                <button
+                    onClick={() => handleSectionChange('editPassword')}
+                    className={activeSection === 'editPassword' ? 'active' : ''}
+                >
+                    Edit Password
                 </button>
                 <button
                     onClick={() => handleSectionChange('deleteAccounts')}
@@ -557,167 +389,25 @@ const deleteUser = async (id, userType, setStateFunction) => {
                     Add Tourism Governer
                     
                 </button>
-
+                <button
+                    onClick={() => handleSectionChange('ReviewUsers')}
+                    className={activeSection === 'ReviewUsers' ? 'active' : ''}
+                >
+                    Review Registering Users
+                </button>
             </nav>
 
             {/* Conditionally render sections */}
             {activeSection === 'home' && (
-                <div className="section">
-                    <h2>Create New Admin</h2>
-                    <form onSubmit={createNewAdmin}>
-                        <div className="form-group">
-                            <label>New Admin Username:</label>
-                            <input
-                                type="text"
-                                value={newAdminUsername}
-                                onChange={(e) => setNewAdminUsername(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>New Admin Email:</label>
-                            <input
-                                type="email"
-                                value={newAdminEmail}
-                                onChange={(e) => setNewAdminEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>New Admin Password:</label>
-                            <input
-                                type="password"
-                                value={newAdminPassword}
-                                onChange={(e) => setNewAdminPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="submit-btn">Create Admin</button>
-                    </form>
-
-                    <h2>Manage Admins</h2>
-                    <ul className="admin-list">
-                        {admins.length === 0 ? (
-                            <p>{message}</p>
-                        ) : (
-                            admins.map(admin => (
-                                <li key={admin._id}>
-                                    {admin.username} ({admin.email})
-                                    <button onClick={() => deleteAdmin(admin._id)}>Delete</button>
-                                </li>
-                            ))
-                        )}
-                    </ul>
-                </div>
-            )}
-
-{activeSection === 'deleteAccounts' && (
     <div className="section">
-        <h2>Manage Users</h2>
-
-        {/* Tourists */}
-        <h3>Tourists</h3>
-        <ul className="admin-list">
-            {Array.isArray(tourists) && tourists.length === 0 ? (
-                <p>No tourists found</p>
-            ) : (
-                Array.isArray(tourists) && tourists.map(user => (
-                    <li key={user._id}>
-                        <p>{user.username} - {user.email}</p>
-                        <button 
-                            onClick={() => deleteUser(user._id, 'tourist', setTourists)} 
-                            style={{ backgroundColor: 'red', color: 'white', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}
-                        >
-                            Delete Tourist
-                        </button>
-                    </li>
-                ))
-            )}
-        </ul>
-
-        {/* Sellers */}
-        <h3>Sellers</h3>
-        <ul className="admin-list">
-            {Array.isArray(sellers) && sellers.length === 0 ? (
-                <p>No sellers found</p>
-            ) : (
-                Array.isArray(sellers) && sellers.map(user => (
-                    <li key={user._id}>
-                        <p>{user.username} - {user.email}</p>
-                        <button 
-                            onClick={() => deleteUser(user._id, 'seller', setSellers)} 
-                            style={{ backgroundColor: 'red', color: 'white', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}
-                        >
-                            Delete Seller
-                        </button>
-                    </li>
-                ))
-            )}
-        </ul>
-
-        {/* Tourism Governors */}
-        <h3>Tourism Governors</h3>
-        <ul className="admin-list">
-            {Array.isArray(tourismGovernors) && tourismGovernors.length === 0 ? (
-                <p>No tourism governors found</p>
-            ) : (
-                Array.isArray(tourismGovernors) && tourismGovernors.map(user => (
-                    <li key={user._id}>
-                        <p>{user.username} - {user.email}</p>
-                        <button 
-                            onClick={() => deleteUser(user._id, 'tourismGovernor', setTourismGovernors)} 
-                            style={{ backgroundColor: 'red', color: 'white', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}
-                        >
-                            Delete Tourism Governor
-                        </button>
-                    </li>
-                ))
-            )}
-        </ul>
-
-        {/* Tour Guides */}
-        <h3>Tour Guides</h3>
-        <ul className="admin-list">
-            {Array.isArray(tourGuides) && tourGuides.length === 0 ? (
-                <p>No tour guides found</p>
-            ) : (
-                Array.isArray(tourGuides) && tourGuides.map(user => (
-                    <li key={user._id}>
-                        <p>{user.username} - {user.email}</p>
-                        <button 
-                            onClick={() => deleteUser(user._id, 'tourGuide', setTourGuides)} 
-                            style={{ backgroundColor: 'red', color: 'white', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}
-                        >
-                            Delete Tour Guide
-                        </button>
-                    </li>
-                ))
-            )}
-        </ul>
-
-        {/* Advertisers */}
-        <h3>Advertisers</h3>
-        <ul className="admin-list">
-            {Array.isArray(advertisers) && advertisers.length === 0 ? (
-                <p>No advertisers found</p>
-            ) : (
-                Array.isArray(advertisers) && advertisers.map(user => (
-                    <li key={user._id}>
-                        <p>{user.username} - {user.email}</p>
-                        <button 
-                            onClick={() => deleteUser(user._id, 'advertiser', setAdvertisers)} 
-                            style={{ backgroundColor: 'red', color: 'white', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}
-                        >
-                            Delete Advertiser
-                        </button>
-                    </li>
-                ))
-            )}
-        </ul>
+        <CreateAdminForm />
     </div>
 )}
 
+{activeSection === 'deleteAccounts' && ( <ManageUsers />) }
+{activeSection === 'ReviewUsers' && ( <UserApproval />) }
 
+{activeSection === 'editPassword' && ( <EditMyPassword />) }
 
 {activeSection === 'preferenceTag' && (
     <div className="section">

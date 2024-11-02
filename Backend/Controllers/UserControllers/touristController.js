@@ -137,6 +137,37 @@ const loginTourist = async (req, res) => {
     }
 };
 
+const editPassword = async(req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const touristId = req.user.id; // Assuming the tourist's ID is retrieved from the token
+
+        // Find the tourist
+        const tourist = await userModel.findById(touristId);
+        if (!tourist) {
+            return res.status(404).json({ message: 'Tourist not found' });
+        }
+
+        // Check if the current password is correct
+        const isMatch = await bcrypt.compare(currentPassword, tourist.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Incorrect current password' });
+        }
+
+        // Hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update the password
+        tourist.password = hashedPassword;
+        await tourist.save();
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating password', error: error.message });
+    }
+}
+
 
 module.exports = {
     createTourist,
@@ -146,5 +177,6 @@ module.exports = {
     getAllTourists,
     sortAllByPrice,
     sortAllByRating,
-    loginTourist
+    loginTourist,
+    editPassword
 };

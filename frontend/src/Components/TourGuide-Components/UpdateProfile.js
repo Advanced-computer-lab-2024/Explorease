@@ -1,52 +1,36 @@
+// components/UpdateProfile.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, TextField, Button, Typography, InputAdornment, IconButton, CircularProgress } from '@mui/material';
+import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
-    const [formProfile, setFormProfile] = useState({
-        email: '',
-        mobileNumber: '',
-        yearsOfExperience: '',
-        previousWork: '',
-    });
+const UpdateProfile = ({ profile, setProfile }) => {
+    const [formProfile, setFormProfile] = useState(profile);
+    const [updateMessage, setUpdateMessage] = useState('');
+    const [success, setSuccess] = useState(false);
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [updateMessage, setUpdateMessage] = useState('');
     const [passwordMessage, setPasswordMessage] = useState('');
-    const [success, setSuccess] = useState(false);
     const [redirecting, setRedirecting] = useState(false);
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
-    useEffect(() => {
-        if (profile) {
-            setFormProfile({
-                email: profile.email || '',
-                
-            });
-        }
-    }, [profile]);
-    
-    useEffect(() => {
-        if (profile) {
-            setFormProfile(profile);
-        }
-    }, [profile]);
-
+  
     const handleChange = (e) => {
         setFormProfile({ ...formProfile, [e.target.name]: e.target.value });
     };
 
-    const handleProfileSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.put('/governor/updateProfile', formProfile, {
-                headers: { Authorization: `Bearer ${token}` }
+            const response = await axios.put(`/tourguide/updateProfile`, formProfile, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
             setUpdateMessage('Profile updated successfully');
-            setProfile(response.data.updatedGovernor);
+            setProfile(response.data);  // Update main profile state
             setSuccess(true);
         } catch (error) {
             setUpdateMessage('Error updating profile');
@@ -54,16 +38,22 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
         }
     };
 
-    const handlePasswordSubmit = async (e) => {
+    const handlePasswordUpdate = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            await axios.put('/governor/editPassword', { currentPassword, newPassword }, {
-                headers: { Authorization: `Bearer ${token}` }
+            await axios.put(`/tourguide/editPassword`, { currentPassword, newPassword }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
             setPasswordMessage('Password updated successfully. Redirecting to login page...');
+            setCurrentPassword('');
+            setNewPassword('');
             setRedirecting(true);
-            setTimeout(() => (window.location.href = '/login'), 500);
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 500);
         } catch (error) {
             setPasswordMessage('Error updating password');
             setRedirecting(false);
@@ -72,7 +62,7 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>Update Tourist Governor Profile</Typography>
+            <Typography variant="h4" gutterBottom>Update Profile</Typography>
 
             {updateMessage && (
                 <Typography color={success ? 'green' : 'red'} sx={{ mb: 2 }}>
@@ -80,7 +70,7 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                 </Typography>
             )}
 
-            <form onSubmit={handleProfileSubmit}>
+            <form onSubmit={handleSubmit}>
                 <TextField
                     label="Email"
                     name="email"
@@ -92,9 +82,27 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                     required
                 />
                 <TextField
-                    label="Username"
-                    name="username"
-                    value={formProfile.username}
+                    label="Mobile Number"
+                    name="mobileNumber"
+                    value={formProfile.mobileNumber}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Years of Experience"
+                    name="yearsOfExperience"
+                    type="number"
+                    value={formProfile.yearsOfExperience}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                />
+                <TextField
+                    label="Previous Work"
+                    name="previousWork"
+                    value={formProfile.previousWork}
                     onChange={handleChange}
                     fullWidth
                     margin="normal"
@@ -110,10 +118,10 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                 </Button>
             </form>
 
-            
+            {/* Password Update Section */}
             <Box sx={{ mt: 4 }}>
                 <Typography variant="h5" gutterBottom>Update Password</Typography>
-
+                
                 {passwordMessage && (
                     <Typography color={redirecting ? 'primary' : 'error'} sx={{ mb: 2 }}>
                         {passwordMessage}
@@ -121,10 +129,11 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                     </Typography>
                 )}
 
-                <form onSubmit={handlePasswordSubmit}>
+                <form onSubmit={handlePasswordUpdate}>
                     <TextField
                         label="Current Password"
                         type={showCurrentPassword ? 'text' : 'password'}
+                        name="currentPassword"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         fullWidth
@@ -143,6 +152,7 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                     <TextField
                         label="New Password"
                         type={showNewPassword ? 'text' : 'password'}
+                        name="newPassword"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         fullWidth
@@ -173,4 +183,4 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
     );
 };
 
-export default UpdateTouristGovernorProfile;
+export default UpdateProfile;

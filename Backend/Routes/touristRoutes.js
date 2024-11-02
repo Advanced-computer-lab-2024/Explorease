@@ -29,7 +29,7 @@ router.get('/itineraries/filter-sort-search', optionalAuth(['tourist', 'guest'])
 router.get('/historical-places/filter-sort-search', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.filterSortSearchHistoricalPlaces);  // Search historical places by tag
 
 // Filter routes for activities, itineraries, and historical places
-
+router.put('/editPassword', roleAuth(['tourist']), touristControllers.editPassword);
 
 
 module.exports = router;

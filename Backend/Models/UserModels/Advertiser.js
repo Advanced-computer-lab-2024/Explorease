@@ -11,7 +11,11 @@ const advertiserSchema = new mongoose.Schema({
     hotline: { type: String, required: false },
     companyProfile: { type: String, required: false },
     isAccepted: { type: Boolean, default: false },
-    createdActivities: [{ type: Schema.Types.ObjectId, ref: 'Activity' }]
+    createdActivities: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
+    documents: {
+        ID: { type: String, required : false },  // URL to the uploaded ID document
+        TaxationRegistry: { type: String, required : false },  // URL to the uploaded Taxation Registry document
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Advertiser', advertiserSchema);

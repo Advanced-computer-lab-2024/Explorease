@@ -5,7 +5,31 @@ const tourGuideController = require('../Controllers/UserControllers/tourGuideCon
 const { roleAuth } = require('../Middleware/authMiddleware');
 
 // Routes for Tour Guide to create, read, update, and delete itineraries
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
+// Ensure Cloudinary is configured as before
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Set up Cloudinary storage specifically for PDFs
+const pdfStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'tourguide-documents', // Store PDFs in a "documents" folder
+        resource_type: 'raw', // Allows non-image files such as PDFs
+        allowedFormats: ['pdf'],
+    },
+});
+
+
+const uploadPDF = multer({ storage: pdfStorage });
+
+module.exports = uploadPDF;
 // Create Itinerary (Tour Guide specific)
 router.post('/createItinerary', roleAuth(['tourGuide']), itineraryController.createItinerary);
 
@@ -27,4 +51,6 @@ router.get('/myProfile', roleAuth(['tourGuide']), tourGuideController.getTourGui
 // Update the tour guide's profile
 router.put('/updateProfile', roleAuth(['tourGuide']), tourGuideController.updateTourGuide);
 
+router.put('/editPassword', roleAuth(['tourGuide']), tourGuideController.updatePassword);
+router.get('/getall', tourGuideController.getAllTourGuides);
 module.exports = router;

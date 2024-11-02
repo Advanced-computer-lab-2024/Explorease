@@ -9,9 +9,6 @@ const Products = () => {
     const [maxPrice, setMaxPrice] = useState('');
     const [sortByRatings, setSortByRatings] = useState('');
 
-    const [editingProductId, setEditingProductId] = useState(null);  // State to track the editing product
-    const [editedProduct, setEditedProduct] = useState({});
-
     // Fetch all products initially
     const fetchAllProducts = async () => {
         try {
@@ -74,81 +71,6 @@ const Products = () => {
         fetchFilteredProducts(); // Fetch products with the filter/sort/search when search is pressed
     };
 
-    const handleAddToCart = (productId) => {
-        console.log('Adding product to cart:', productId);
-    };
-
-    const handleDeleteProduct = async(productId) => {
-        
-        try {
-            const token = localStorage.getItem('token');
-
-            // Delete product by ID
-            const response = await axios.delete(`/admins/deleteProduct/${productId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            setProducts(prevProducts => prevProducts.filter(product => product._id !== productId));
-
-        setProductMessage('Product deleted successfully!');
-        } catch (error) {
-            setProductMessage('Error fetching products');
-            console.error('Error fetching products:', error);
-        }
-    };
-
-    const handleEditProduct = (product) => {
-        setEditingProductId(product._id);  // Set the product to be edited
-        setEditedProduct({
-            Name: product.Name,
-            Price: product.Price,
-            Description: product.Description
-        });
-    };
-
-    // Handle changes to the input fields
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditedProduct(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleUpdateProduct = async (productId) => {
-        try {
-            const token = localStorage.getItem('token');  // Ensure token is being retrieved correctly
-            if (!token) {
-                setProductMessage('No authentication token found');
-                return;
-            }
-    
-            const updatedProductData = {
-                Price: editedProduct.Price,
-                AvailableQuantity: editedProduct.AvailableQuantity,
-            };
-    
-            // Make sure you are passing the token correctly in the headers
-            await axios.put(`/admins/updateProduct/${productId}`, updatedProductData, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Ensure token is prefixed with "Bearer"
-                    'Content-Type': 'application/json'
-                }
-            });
-    
-            fetchAllProducts();  // Refetch products after successful update
-            setProductMessage('Product updated successfully!');
-            setEditingProductId(null);  // Exit edit mode
-        } catch (error) {
-            setProductMessage('Error updating product');
-            console.error('Error updating product:', error);
-        }
-    };
-    
-    
-
     const renderProductCards = () => {
         if (!Array.isArray(products) || products.length === 0) {
             return <p>No products available</p>;
@@ -157,44 +79,10 @@ const Products = () => {
         return products.map((product) => (
             <div key={product._id} className="product-card" style={cardStyle}>
                 <img src={product.imageUrl} alt={product.Name} style={imageStyle} />
-                {editingProductId === product._id ? (
-                    <>
-                        <input
-                            type="text"
-                            name="Name"
-                            value={editedProduct.Name}
-                            onChange={handleInputChange}
-                            placeholder="Product Name"
-                            style={inputStyle}
-                        />
-                        <input
-                            type="number"
-                            name="Price"
-                            value={editedProduct.Price}
-                            onChange={handleInputChange}
-                            placeholder="Product Price"
-                            style={inputStyle}
-                        />
-                        <input
-                            type="text"
-                            name="Description"
-                            value={editedProduct.Description}
-                            onChange={handleInputChange}
-                            placeholder="Product Description"
-                            style={inputStyle}
-                        />
-                        <button onClick={() => handleUpdateProduct(product._id)} style={buttonStyle}>Save</button>
-                    </>
-                ) : (
-                    <>
-                        <h3>{product.Name}</h3>
-                        <p><strong>Price:</strong> ${product.Price}</p>
-                        <p><strong>Description:</strong> {product.Description}</p>
-                        <p><strong>Ratings:</strong> {'★'.repeat(product.Ratings)}{'☆'.repeat(5 - product.Ratings)}</p>
-                        <button onClick={() => handleDeleteProduct(product._id)} style={deletebuttonStyle}>Delete</button>
-                        <button onClick={() => handleEditProduct(product)} style={buttonStyle}>Edit</button>
-                    </>
-                )}
+                <h3>{product.Name}</h3>
+                <p><strong>Price:</strong> ${product.Price}</p>
+                <p><strong>Description:</strong> {product.Description}</p>
+                <p><strong>Ratings:</strong> {'★'.repeat(product.Ratings)}{'☆'.repeat(5 - product.Ratings)}</p>
             </div>
         ));
     };
@@ -216,17 +104,6 @@ const Products = () => {
         marginTop: '10px',
     };
 
-    const deletebuttonStyle = {
-        padding: '10px 15px',
-    backgroundColor: 'red',  // Red background for delete button
-    color: '#fff',
-    border: 'none',
-    cursor: 'pointer',
-    borderRadius: '5px',
-    marginTop: '10px',
-    marginRight: '10px'
-    };
-
     const imageStyle = {
         maxWidth: '100%',
         height: 'auto',
@@ -242,14 +119,6 @@ const Products = () => {
         backgroundColor: '#f9f9f9',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         textAlign: 'center',
-    };
-
-    const inputStyle = {
-        padding: '10px',
-        marginBottom: '10px',
-        width: '100%',
-        borderRadius: '5px',
-        border: '1px solid #ccc'
     };
 
     return (

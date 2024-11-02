@@ -57,8 +57,29 @@ app.use('/admins', adminRoutes);
 app.use('/governor', governorRoutes);
 app.use('/seller', sellerRoutes);
 
+const checkStatusController = require('./Controllers/checkUserStatus');
+app.post('/check-user-status' , checkStatusController.checkUserStatus );
 
-// // Serve static files from the React frontend app
+// Routes to upload documents for specific user types
+const { uploadPDF, uploadSellerDocuments, uploadAdvertiserDocuments, uploadTourGuideDocuments } = require('./Controllers/uploadController');
+
+app.post('/upload-documents/seller', uploadPDF.fields([
+    { name: 'ID', maxCount: 1 },
+    { name: 'TaxationRegistry', maxCount: 1 }
+]), uploadSellerDocuments);
+
+// Advertiser document upload route
+app.post('/upload-documents/advertiser', uploadPDF.fields([
+    { name: 'ID', maxCount: 1 },
+    { name: 'TaxationRegistry', maxCount: 1 }
+]), uploadAdvertiserDocuments);
+
+// Tour Guide document upload route
+app.post('/upload-documents/tourguide', uploadPDF.fields([
+    { name: 'ID', maxCount: 1 },
+    { name: 'Certificates', maxCount: 1 }
+]), uploadTourGuideDocuments);
+
 // app.use(express.static(path.join(__dirname, '../frontend/build')));
 
 // // The catch-all handler: for any request that doesn't match one above, send back React's index.html file.
