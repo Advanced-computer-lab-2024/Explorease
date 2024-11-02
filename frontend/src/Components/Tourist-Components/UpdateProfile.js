@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment } from '@mui/material';
+import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment, MenuItem, select } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
@@ -110,12 +110,23 @@ const UpdateProfile = ({ profile, setProfile }) => {
                 <TextField
                     label="Preferences (comma separated)"
                     name="preferences"
+                    select
+                    SelectProps={{ native: true }}
                     value={formProfile.preferences || ''}
                     onChange={handleChange}
                     placeholder="e.g. museum, adventure"
                     fullWidth
                     margin="normal"
-                />
+                >
+                    <option value="Bazaars">Bazaars</option>
+                    <option value="Concert">Concert</option>
+                    <option value="Castle">Castle</option>
+                    <option value="Palace">Palace</option>
+                    <option value="Party">Party</option>
+                    <option value="Park">Park</option>
+                    <option value="Exhibitions">Exhibitions</option>
+                    <option value="Monument">Monument</option>
+                </TextField>
                 <Button
                     type="submit"
                     variant="contained"
