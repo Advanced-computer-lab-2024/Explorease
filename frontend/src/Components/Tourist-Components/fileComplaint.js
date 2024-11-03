@@ -22,7 +22,7 @@ const FileComplaint = () => {
 
         try {
             const response = await axios.post(
-                'tourists/addComplaint',
+                '/tourists/addComplaint',
                 { title, body, date },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -5,6 +5,7 @@ const productControllers = require('../Controllers/ProductControllers/ProductCon
 const activityControllers = require('../Controllers/ActivityControllers/ActivityController');
 const itineraryControllers = require('../Controllers/ActivityControllers/ItineraryController');
 const historicalPlaceControllers = require('../Controllers/ActivityControllers/HistoricalPlacesController');
+const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
 const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');  // For tourist-specific routes
   // For tourist/guest shared routes
 
@@ -31,5 +32,7 @@ router.get('/historical-places/filter-sort-search', optionalAuth(['tourist', 'gu
 // Filter routes for activities, itineraries, and historical places
 router.put('/editPassword', roleAuth(['tourist']), touristControllers.editPassword);
 
+// Tourist can file a complaint
+router.post('/addComplaint', roleAuth(['tourist']), complaintControllers.addComplaint);   
 
 module.exports = router;
