@@ -39,7 +39,7 @@ const createTourist = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);  // Hash the password
 
-        const tourist = await userModel.create({
+        const tourist1 = await userModel.create({
             username,
             email,
             password: hashedPassword,
@@ -50,7 +50,7 @@ const createTourist = async (req, res) => {
         });
 
 
-        res.status(201).json({ tourist });
+        res.status(201).json({ tourist1 });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
