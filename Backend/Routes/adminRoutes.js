@@ -7,7 +7,9 @@ const authenticateAdmin = require('../Middleware/adminAuthMiddleware');
 const tagController = require('../Controllers/ActivityControllers/PreferenceTagsController');
 const activityController = require('../Controllers/ActivityControllers/ActivityCategoryController');
 const productController = require('../Controllers/ProductControllers/ProductController'); // Ensure correct path
+const ItineraryController = require('../Controllers/ActivityControllers/ItineraryController');
 const {optionalAuth} = require('../Middleware/authMiddleware');
+const Itinerary = require('../Models/ActivityModels/Itinerary');
 // Admin Routes
 
 // Add Main Admin (can be used once to create the first admin)
@@ -60,6 +62,10 @@ router.get('/products', authenticateAdmin, productController.getAllProducts);
 // router.get('/products/sortByRating', authenticateAdmin, productController.sortProductsByRatings);
 router.put('/updateProduct/:id', authenticateAdmin, productController.updateProductDetailsForAdmin);
 router.delete('/deleteProduct/:id', authenticateAdmin, productController.deleteProduct2);
+
+router.get('/itineraries', authenticateAdmin, ItineraryController.getAllItinerary);
+router.put('/flagItineraries/:id', authenticateAdmin, ItineraryController.flagItinerary);
+router.put('/unflagItineraries/:id', authenticateAdmin, ItineraryController.unflagItinerary);
 
 
 router.get('/tourists', authenticateAdmin, adminController.getAllTourists);

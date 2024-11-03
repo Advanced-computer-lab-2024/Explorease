@@ -140,6 +140,44 @@ const updateItinerary = async (req, res) => {
 };
 
 
+// Flag Itinerary
+const flagItinerary = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const itinerary = await ItineraryModel.findById(id);
+        if (!itinerary) {
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+        if (itinerary.isFlagged === true) {
+            return res.status(403).json({ message: 'Itinerary has already been flagged' });
+        }
+        itinerary.isFlagged = true;
+        await itinerary.save();
+        res.status(200).json({ message: 'Itinerary flagged successfully', isFlagged: true });
+    } catch (error) {
+        res.status(500).json({ message: 'Error flagging itinerary', error: error.message });
+    }
+};
+
+// Unflag Itinerary
+const unflagItinerary = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const itinerary = await ItineraryModel.findById(id);
+        if (!itinerary) {
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+        if (itinerary.isFlagged === false) {
+            return res.status(403).json({ message: 'Itinerary has already been unflagged' });
+        }
+        itinerary.isFlagged = false;
+        await itinerary.save();
+        res.status(200).json({ message: 'Itinerary unflagged successfully', isFlagged: false });
+    } catch (error) {
+        res.status(500).json({ message: 'Error unflagging itinerary', error: error.message });
+    }
+};
+
 // Delete Itinerary
 const deleteItinerary = async (req, res) => {
     const { id } = req.params;
@@ -334,5 +372,7 @@ module.exports = {
     filterSortSearchItineraries,
     activateItinerary,
     deactivateItinerary,
-    getAllActivatedItinerary
+    getAllActivatedItinerary,
+    flagItinerary,
+    unflagItinerary
 };
