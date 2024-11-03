@@ -124,6 +124,50 @@ const TourGuideDashboard = () => {
             const selectedTags = Array.from(e.target.selectedOptions, (option) => option.value);
             setUpdatedItineraryData({ ...updatedItineraryData, tags: selectedTags });
         };
+
+        const handleActivate = async (id) => {
+            const token = localStorage.getItem('token');
+        
+            try {
+                await axios.put(`/tourguide/activateItinerary/${id}`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setMessage('Itinerary activated successfully');
+                await fetchItineraries(); // Refetch itineraries to update UI
+            } catch (error) {
+                console.error('Error activating itinerary:', error.response ? error.response.data : error.message);
+                setMessage('Error activating itinerary');
+            }
+        };
+           
+
+        const handleDeactivate = async (id) => {
+            const confirmDe = window.confirm('Are you sure you want to deactivate this itinerary?');
+            if (!confirmDe) return; // Exit function if user cancels
+        
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setMessage('Authorization token missing. Please log in again.');
+                return;
+            }
+        
+            try {
+                // Notice the empty object `{}` as the second parameter to indicate no data is being sent
+                await axios.put(`/tourguide/deactivateItinerary/${id}`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setMessage('Itinerary deactivated successfully');
+                await fetchItineraries(); // Refetch itineraries to update UI
+            } catch (error) {
+                console.error('Error Deactivating itinerary:', error.response ? error.response.data : error.message);
+                setMessage('Error Deactivating itinerary');
+            }
+        };
+          
     
         const handleUpdateSubmit = async (id) => {
             console.log('Updated Itinerary Data:', updatedItineraryData); // Log data before making request
@@ -231,6 +275,23 @@ const TourGuideDashboard = () => {
                             >
                                 Update Itinerary
                             </button>
+                            <p> </p>
+                            {/* Conditionally render the "Activate" button if itinerary.isActivated is false */}
+                            {!itinerary.isActivated && (
+                                <button 
+                                    onClick={() => handleActivate(itinerary._id)}
+                                    style={buttonStyle2}
+                                >
+                                    Activate
+                                </button>
+                            )}
+                            <button onClick={() => handleDeactivate(itinerary._id)}
+                                style={deleteButtonStyle}
+                                >
+                                    Deactivate
+                            </button>
+                                
+
                         </>
                     )}
                 </div>
@@ -254,7 +315,17 @@ const TourGuideDashboard = () => {
             marginBottom: '10px',
             width: '100%',
         };
-    
+        const buttonStyle2 = {
+            padding: '10px 15px',
+            backgroundColor: '#33dd33',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            borderRadius: '5px',
+            marginTop: '10px',
+            marginRight: '10px', // Add some space between delete and update buttons
+        };
+
         const buttonStyle = {
             padding: '10px 15px',
             backgroundColor: '#007bff',

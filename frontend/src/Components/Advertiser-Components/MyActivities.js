@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+
+const mapContainerStyle = {
+    width: '100%',
+    height: '200px',
+};
+
+
+
 
 const MyActivities = () => {
     const [activities, setActivities] = useState([]); // Ensure this is initialized as an array
@@ -16,6 +25,10 @@ const MyActivities = () => {
     const [order, setOrder] = useState('asc');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY", // Replace with your actual API key
+    });
 
     // Fetch the activities when the component mounts
     const fetchActivities = async () => {
@@ -265,7 +278,16 @@ const MyActivities = () => {
                                 <>
                                     <h3>{activity.name}</h3>
                                     <p><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
-                                    <p><strong>Location:</strong> {activity.location}</p>
+                                    {isLoaded && activity.latitude && activity.longitude && (
+                                        <GoogleMap
+                                            mapContainerStyle={mapContainerStyle}
+                                            zoom={10}
+                                            center={{ lat: activity.latitude, lng: activity.longitude }}
+                                        >
+                                            <Marker position={{ lat: activity.latitude, lng: activity.longitude }} />
+                                        </GoogleMap>
+                                    )}
+
                                     <p><strong>Price:</strong> ${activity.price}</p>
                                     <div style={buttonContainerStyle}>
                                         <button onClick={() => enableEdit(activity._id)} style={buttonStyle}>Edit</button>

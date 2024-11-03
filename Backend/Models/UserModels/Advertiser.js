@@ -16,6 +16,7 @@ const advertiserSchema = new mongoose.Schema({
         ID: { type: String, required : false },  // URL to the uploaded ID document
         TaxationRegistry: { type: String, required : false },  // URL to the uploaded Taxation Registry document
     },
+    imageUrl : {type : String, required: false},
 }, { timestamps: true });
 
 module.exports = mongoose.model('Advertiser', advertiserSchema);

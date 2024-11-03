@@ -15,6 +15,7 @@ const ItinerarySchema = new Schema({
     createdBy: { type: Schema.Types.ObjectId, ref: 'TourGuide', required: true },
     tags: [{ type: Schema.Types.ObjectId, ref: 'PreferenceTag' }],
     BookedBy: { type: Schema.Types.ObjectId, ref: 'Tourist', default: null }, // Null when not booked
+    isActivated: { type: Boolean, default: false },
 }, { timestamps: true });
 
 

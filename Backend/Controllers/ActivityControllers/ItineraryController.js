@@ -29,7 +29,7 @@ const createItinerary = async (req, res) => {
         if (!tagDocs || tagDocs.length !== tags.length) {
             return res.status(400).json({ message: 'One or more tags not found.' });
         }
-
+        const isActivated = false;
         // Create the new itinerary
         const itinerary = new ItineraryModel({
             name, 
@@ -43,7 +43,8 @@ const createItinerary = async (req, res) => {
             PickUpLocation,
             DropOffLocation,
             createdBy,
-            tags: tagDocs.map(tag => tag._id) // Save the tag IDs
+            tags: tagDocs.map(tag => tag._id), // Save the tag IDs
+            isActivated
         });
 
         await itinerary.save();
@@ -272,11 +273,52 @@ const filterSortSearchItineraries = async (req, res) => {
     }
 };
 
+const activateItinerary = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const itinerary = await ItineraryModel.findById(id);
+        if (!itinerary) {
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+        if (!itinerary.createdBy.equals(req.user.id)) {
+            return res.status(403).json({ message: 'Not authorized to activate this Itinerary' });
+        }
+        if(itinerary.BookedBy !== null){
+            return res.status(403).json({ message: 'Itinerary has been booked by user(s) and cannot be activated' });
+        }
+        itinerary.isActivated = true;
+        await itinerary.save();
+        res.status(200).json({ message: 'Itinerary activated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error activating Itinerary', error: error.message });
+    }
+};
+
+const deactivateItinerary = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const itinerary = await ItineraryModel.findById(id);
+        if (!itinerary) {
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+        if (!itinerary.createdBy.equals(req.user.id)) {
+            return res.status(403).json({ message: 'Not authorized to deactivate this Itinerary' });
+        }
+        itinerary.isActivated = false;
+        await itinerary.save();
+        res.status(200).json({ message: 'Itinerary deactivated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deactivating Itinerary', error: error.message });
+    }
+};
+
 module.exports = {
     createItinerary,
     readItinerary,
     getAllItinerary,
     updateItinerary,
     deleteItinerary,
-    filterSortSearchItineraries
+    filterSortSearchItineraries,
+    activateItinerary,
+    deactivateItinerary
 };

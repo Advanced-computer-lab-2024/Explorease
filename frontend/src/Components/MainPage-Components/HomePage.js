@@ -34,19 +34,39 @@ const HomePage = () => {
                 </Typography>
                 
                 <Box>
-                    <Button 
+                <Button 
                         onClick={handleLogin} 
                         variant="contained" 
-                        color="primary" 
-                        sx={{ mx: 1, px: 4 }}
+                        sx={{ 
+                            backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            }, 
+                            mx: 1, 
+                            px: 4 
+                        }}
                     >
                         Login
                     </Button>
+
+
                     <Button 
                         onClick={handleRegister} 
                         variant="outlined" 
                         color="primary" 
-                        sx={{ mx: 1, px: 4 }}
+                        sx={{ backgroundColor: 'white', 
+                            color: '#111E56', 
+                            border: '1px solid #111E56',
+                            '&:hover': { 
+                                backgroundColor: '#111E56', 
+                                color: 'white',
+                                
+                            }, 
+                            mx: 1, 
+                            px: 4 }}
                     >
                         Register
                     </Button>

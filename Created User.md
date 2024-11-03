@@ -195,7 +195,7 @@
 [
   {
     email: "yousseffaizallah@gmail.com"
-    password : "Fizo1234"
+    password : "Fizo12345"
   },
   {
     email : "peteradelmakram@gmail.com"

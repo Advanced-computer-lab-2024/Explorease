@@ -14,7 +14,8 @@ const tourGuideSchema = new mongoose.Schema({
     documents: {
         ID : { type: String, required: false }, // URL or path to ID PDF
         Certificates: { type: String, required: false }, // URL or path to Certificate PDF
-    }
+    },
+    imageUrl : {type : String, required: false},
 }, { timestamps: true });
 
 const TourGuide = mongoose.model('TourGuide', tourGuideSchema);

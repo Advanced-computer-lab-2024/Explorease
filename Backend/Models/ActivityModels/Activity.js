@@ -6,6 +6,8 @@ const ActivitySchema = new Schema({
     date: { type: Date, required: true },
     time: { type: String, required: true },
     location: { type: String, required: true },
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
     price: { type: Number, required: true },
     tags: { type: [String], required: false, default: [] },
     specialDiscounts: { type: String, required: true },

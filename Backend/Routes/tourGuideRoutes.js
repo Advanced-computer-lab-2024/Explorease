@@ -41,6 +41,8 @@ router.get('/allItineraries', itineraryController.getAllItinerary);
 
 // Update an itinerary
 router.put('/updateItinerary/:id', roleAuth(['tourGuide']), itineraryController.updateItinerary);
+router.put('/activateItinerary/:id', roleAuth(['tourGuide']), itineraryController.activateItinerary);
+router.put('/deactivateItinerary/:id', roleAuth(['tourGuide']), itineraryController.deactivateItinerary);
 
 // Delete an itinerary
 router.delete('/deleteItinerary/:id', roleAuth(['tourGuide']), itineraryController.deleteItinerary);
@@ -50,6 +52,8 @@ router.get('/myProfile', roleAuth(['tourGuide']), tourGuideController.getTourGui
 
 // Update the tour guide's profile
 router.put('/updateProfile', roleAuth(['tourGuide']), tourGuideController.updateTourGuide);
+
+
 
 router.put('/editPassword', roleAuth(['tourGuide']), tourGuideController.updatePassword);
 router.get('/getall', tourGuideController.getAllTourGuides);

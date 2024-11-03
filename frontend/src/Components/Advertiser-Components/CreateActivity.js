@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+
+const mapContainerStyle = {
+    width: "100%",
+    height: "400px",
+};
+
+const center = {
+    lat: 31.205753, // Default latitude (e.g., Cairo, Egypt)
+    lng: 29.924526, // Default longitude
+};
 
 const CreateActivity = () => {
     const [formData, setFormData] = useState({
@@ -7,13 +18,29 @@ const CreateActivity = () => {
         date: '',
         time: '',
         location: '',
+        latitude: 0,
+        longitude: 0,
         price: '',
         category: '',
-        tags: '',  // Single tag selection
+        tags: '',
         specialDiscounts: '',
         bookingOpen: false,
         duration: ''
     });
+
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY", // Replace with your API key
+    });
+
+    const handleMapClick = (event) => {
+        setFormData({
+            ...formData,
+            latitude: event.latLng.lat(),
+            longitude: event.latLng.lng(),
+            location: `${event.latLng.lat()}, ${event.latLng.lng()}`, // Save location as a string
+        });
+    };
+
     const [categories, setCategories] = useState([]);  // Initialize categories as an empty array
     const [tags, setTags] = useState([]);  // Initialize tags as an empty array
     const [message, setMessage] = useState('');
@@ -69,7 +96,6 @@ const CreateActivity = () => {
         setFormData({ ...formData, tags: selectedTags });  // Set the tags as an array of selected values
     };
     
-
     const handleCheckboxChange = (e) => {
         setFormData({ ...formData, bookingOpen: e.target.checked });
     };
@@ -78,7 +104,11 @@ const CreateActivity = () => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         if (!token) return;
-        console.log('Form Data:', formData);
+
+        if (!formData.latitude || !formData.longitude) {
+            setMessage('Please select a location on the map.');
+            return;
+        }
 
         try {
             const response = await axios.post('/advertiser/createActivity', formData, {
@@ -88,6 +118,20 @@ const CreateActivity = () => {
             });
             if (response.status === 201) {
                 setMessage('Activity created successfully');
+                setFormData({
+                    name: '',
+                    date: '',
+                    time: '',
+                    location: '',
+                    latitude: 0,
+                    longitude: 0,
+                    price: '',
+                    category: '',
+                    tags: '',
+                    specialDiscounts: '',
+                    bookingOpen: false,
+                    duration: ''
+                });
             } else {
                 setMessage('Error creating activity');
             }
@@ -151,7 +195,13 @@ const CreateActivity = () => {
         marginTop: '20px'
     };
     
-    const messageStyle = {
+    const errorStyle = {
+        marginBottom: '15px',
+        color: 'red',
+        fontWeight: 'bold'
+    };
+    
+    const successStyle = {
         marginBottom: '15px',
         color: 'green',
         fontWeight: 'bold'
@@ -160,7 +210,7 @@ const CreateActivity = () => {
     return (
         <div style={formStyle}>
             <h2>Create Activity</h2>
-            {message && <p style={messageStyle}>{message}</p>}
+            {message && <p style={message.includes("Error") ? errorStyle : successStyle}>{message}</p>}
             <form onSubmit={handleSubmit}>
                 <div style={formGroupStyle}>
                     <label style={labelStyle}>Name:</label>
@@ -175,9 +225,23 @@ const CreateActivity = () => {
                     <input type="time" name="time" value={formData.time} onChange={handleChange} required style={inputStyle} />
                 </div>
                 <div style={formGroupStyle}>
-                    <label style={labelStyle}>Location:</label>
-                    <input type="text" name="location" value={formData.location} onChange={handleChange} required style={inputStyle} />
+                    <label style={labelStyle}>Select Location on Map:</label>
+                    {isLoaded ? (
+                        <GoogleMap
+                            mapContainerStyle={mapContainerStyle}
+                            zoom={10}
+                            center={center}
+                            onClick={handleMapClick}
+                        >
+                            {formData.latitude && formData.longitude && (
+                                <Marker position={{ lat: formData.latitude, lng: formData.longitude }} />
+                            )}
+                        </GoogleMap>
+                    ) : (
+                        <p>Loading map...</p>
+                    )}
                 </div>
+                
                 <div style={formGroupStyle}>
                     <label style={labelStyle}>Price:</label>
                     <input type="number" name="price" value={formData.price} onChange={handleChange} required style={inputStyle} />
