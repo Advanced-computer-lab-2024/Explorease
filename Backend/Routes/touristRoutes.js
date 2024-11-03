@@ -32,7 +32,10 @@ router.get('/historical-places/filter-sort-search', optionalAuth(['tourist', 'gu
 // Filter routes for activities, itineraries, and historical places
 router.put('/editPassword', roleAuth(['tourist']), touristControllers.editPassword);
 
+
 // Tourist can file a complaint
 router.post('/addComplaint', roleAuth(['tourist']), complaintControllers.addComplaint);   
+router.get('/getComplaintsByTouristAndStatus', roleAuth(['tourist']), complaintControllers.getComplaintsByTouristAndStatus); 
+router.delete('/deleteComplaint', roleAuth(['tourist']), complaintControllers.deleteComplaint);  
 
 module.exports = router;
