@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import TouristNavbar from '../MainPage-Components/TouristNavbar';
+import TouristNavbar from './TouristNavbar';
 import Products from '../Seller-Components/Products';
-import UpdateProfile from './UpdateProfile'; // Import the refactored UpdateProfile component
+import UpdateProfile from './UpdateProfile';
+// import Cart from './Cart';
+// import Wallet from './Wallet';
 import { Typography, Box } from '@mui/material';
 
 const TouristDashboard = () => {
@@ -17,7 +19,7 @@ const TouristDashboard = () => {
         const fetchProfile = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
-                navigate('/login');  
+                navigate('/login');
             }
 
             try {
@@ -35,7 +37,7 @@ const TouristDashboard = () => {
                 setMessage('Error fetching profile');
             }
         };
-    
+
         fetchProfile();
     }, [navigate]);
 
@@ -53,7 +55,7 @@ const TouristDashboard = () => {
     };
 
     const contentStyle = {
-        marginLeft: '260px', // Space for the sidebar
+        marginLeft: '260px',
         padding: '20px',
     };
 
@@ -81,6 +83,20 @@ const TouristDashboard = () => {
                 return <Products />;
             case 'updateProfile':
                 return <UpdateProfile profile={profile} setProfile={setProfile} />;
+            case 'fileComplaint':
+                return <h2> Still Implementing Complaint System! </h2>;
+            case 'cart':
+                return <h2> Still Implementing Cart!</h2>;
+            case 'wallet':
+                return <h2> Still Implementing Wallet!</h2>;
+            case 'bookFlight':
+                return <h2> Still Implementing Flight Booking!</h2>;
+            case 'bookHotel':
+                return <h2> Still Implementing Hotel Booking!</h2>;
+            case 'bookActivity':
+                return <h2> Still Implementing Activity Booking!</h2>;
+            case 'bookItinerary':
+                return <h2> Still Implementing Itinerary Booking!</h2>;
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
@@ -88,17 +104,17 @@ const TouristDashboard = () => {
 
     return (
         <div>
-            <TouristNavbar /> 
+            <TouristNavbar setActiveComponent={setActiveComponent} />
 
             <Box sx={sidebarStyle}>
                 <Typography variant="h6">Dashboard</Typography>
-                <ul style={{ listStyleType: 'none', padding: '0'}}>
+                <ul style={{ listStyleType: 'none', padding: '0' }}>
                     <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
-                    <li onClick={() => setActiveComponent('viewProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View All Products</li>
                     <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
+                    <li onClick={() => setActiveComponent('fileComplaint')} style={{ cursor: 'pointer', marginBottom: '10px' }}>File Complaint</li>
                 </ul>
             </Box>
-    
+
             <Box sx={contentStyle}>
                 {renderContent()}
             </Box>

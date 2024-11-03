@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+    Box,
+    Card,
+    CardContent,
+    CardMedia,
+    Typography,
+    TextField,
+    Button,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel,
+} from '@mui/material';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
@@ -9,23 +22,15 @@ const Products = () => {
     const [maxPrice, setMaxPrice] = useState('');
     const [sortByRatings, setSortByRatings] = useState('');
 
-    // Fetch all products initially
     const fetchAllProducts = async () => {
         try {
             const token = localStorage.getItem('token');
-
-            // Fetch products without filters (initial load)
             const response = await axios.get('/tourists/products', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-
-            if (response.data) {
-                setProducts(response.data);
-            } else {
-                setProductMessage('No products found');
-            }
+            setProducts(response.data || []);
         } catch (error) {
             setProductMessage('Error fetching products');
             console.error('Error fetching products:', error);
@@ -33,33 +38,24 @@ const Products = () => {
     };
 
     useEffect(() => {
-        fetchAllProducts(); // Fetch all products on component mount
+        fetchAllProducts();
     }, []);
 
-    // Fetch filtered, sorted, and searched products
     const fetchFilteredProducts = async () => {
         try {
             const token = localStorage.getItem('token');
-
-            // Construct query string for filtering, searching, and sorting
             let queryString = '';
             if (searchQuery) queryString += `name=${searchQuery}&`;
             if (minPrice) queryString += `minPrice=${minPrice}&`;
             if (maxPrice) queryString += `maxPrice=${maxPrice}&`;
-            if (sortByRatings) queryString += `sortByRatings=${sortByRatings}&`;  // For sorting by ratings
+            if (sortByRatings) queryString += `sortByRatings=${sortByRatings}&`;
 
-            // Fetch products with the query string
             const response = await axios.get(`/tourists/products/filter-sort-search?${queryString}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-
-            if (response.data) {
-                setProducts(response.data);
-            } else {
-                setProductMessage('No products found');
-            }
+            setProducts(response.data || []);
         } catch (error) {
             setProductMessage('Error fetching products');
             console.error('Error fetching products:', error);
@@ -68,97 +64,92 @@ const Products = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        fetchFilteredProducts(); // Fetch products with the filter/sort/search when search is pressed
+        fetchFilteredProducts();
     };
 
     const renderProductCards = () => {
         if (!Array.isArray(products) || products.length === 0) {
-            return <p>No products available</p>;
+            return <Typography>No products available</Typography>;
         }
 
         return products.map((product) => (
-            <div key={product._id} className="product-card" style={cardStyle}>
-                <img src={product.imageUrl} alt={product.Name} style={imageStyle} />
-                <h3>{product.Name}</h3>
-                <p><strong>Price:</strong> ${product.Price}</p>
-                <p><strong>Description:</strong> {product.Description}</p>
-                <p><strong>Ratings:</strong> {'★'.repeat(product.Ratings)}{'☆'.repeat(5 - product.Ratings)}</p>
-            </div>
+            <Card key={product._id} sx={{ width: '100%', maxWidth: 280, m: 2, boxShadow: 3, flexGrow: 1 }}>
+                <CardMedia
+                    component="img"
+                    height="250"
+                    image={product.imageUrl}
+                    alt={product.Name}
+                    sx={{ objectFit: 'contain', padding: 1 }}
+                />
+                <CardContent>
+                    <Typography variant="h6">{product.Name}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        <strong>Price:</strong> ${product.Price}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        <strong>Description:</strong> {product.Description}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        <strong>Ratings:</strong> {'★'.repeat(product.Ratings)}{'☆'.repeat(5 - product.Ratings)}
+                    </Typography>
+                    <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth>
+                        Add to Cart
+                    </Button>
+                </CardContent>
+            </Card>
         ));
     };
 
-    const productListStyle = {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '20px',
-        justifyContent: 'center',
-    };
-
-    const buttonStyle = {
-        padding: '10px 15px',
-        backgroundColor: '#28a745',
-        color: '#fff',
-        border: 'none',
-        cursor: 'pointer',
-        borderRadius: '5px',
-        marginTop: '10px',
-    };
-
-    const imageStyle = {
-        maxWidth: '100%',
-        height: 'auto',
-        marginBottom: '10px',
-    };
-
-    const cardStyle = {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '20px',
-        maxWidth: '400px',
-        margin: '0 auto',
-        backgroundColor: '#f9f9f9',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-    };
-
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>All Products</h2>
-
+        <Box sx={{ p: 3 }}>
+            <Typography variant="h4" sx={{ mb: 3 }}>All Products</Typography>
             <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
-                <div>
-                    <label>Search by Name: </label>
-                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                </div>
+                <Box display="flex" flexWrap="wrap" gap={2} mb={3}>
+                    <TextField
+                        label="Search by Name"
+                        variant="outlined"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Min Price"
+                        variant="outlined"
+                        type="number"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Max Price"
+                        variant="outlined"
+                        type="number"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        fullWidth
+                    />
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel>Sort by Ratings</InputLabel>
+                        <Select
+                            value={sortByRatings}
+                            onChange={(e) => setSortByRatings(e.target.value)}
+                            label="Sort by Ratings"
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            <MenuItem value="asc">Ascending</MenuItem>
+                            <MenuItem value="desc">Descending</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <Button type="submit" variant="contained" color="primary">Search</Button>
+                </Box>
 
-                <div>
-                    <label>Min Price: </label>
-                    <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
-                </div>
-
-                <div>
-                    <label>Max Price: </label>
-                    <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
-                </div>
-
-                <div>
-                    <label>Sort by Ratings: </label>
-                    <select value={sortByRatings} onChange={(e) => setSortByRatings(e.target.value)}>
-                        <option value="">Select</option>
-                        <option value="asc">Ascending</option>
-                        <option value="desc">Descending</option>
-                    </select>
-                </div>
-
-                <button type="submit" style={buttonStyle}>Search</button>
+                {productMessage && <Typography color="error">{productMessage}</Typography>}
             </form>
 
-            {productMessage && <p>{productMessage}</p>}
-
-            <div className="product-list" style={productListStyle}>
+            <Box display="flex" flexWrap="wrap" justifyContent="center" sx={{ gap: 3 }}>
                 {renderProductCards()}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 };
 

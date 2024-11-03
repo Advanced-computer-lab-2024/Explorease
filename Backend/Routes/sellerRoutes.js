@@ -50,5 +50,14 @@ router.put('/editPassword', roleAuth(['seller']), sellerController.updatePasswor
 
 // router.get('/searchProduct', roleAuth(['seller']) , productController.searchProductByName);
 router.get('/getall', sellerController.getAllSellers);
+
+
+router.post(
+    '/upload-photo',
+    roleAuth(['seller']), // Role authentication for sellers only
+    sellerController.upload.single('photo'), // Single file upload middleware with field 'photo'
+    sellerController.uploadSellerPhoto // Controller method for uploading
+);
+
 // Export only the router
 module.exports = router;

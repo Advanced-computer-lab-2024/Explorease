@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Box, Container } from '@mui/material';
-import TouristNavbar from './TouristNavbar'; // Reuse the TouristNavbar component
+import TouristNavbar from './GuestNavbar'; // Reuse the TouristNavbar component
 import logo from '../../Misc/logo2.png'; // Replace with the actual path to your logo file
 import { Link } from 'react-router-dom';
 

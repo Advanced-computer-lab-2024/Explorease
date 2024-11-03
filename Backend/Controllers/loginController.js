@@ -24,8 +24,7 @@ const unifiedLoginController = async (req, res) => {
                 const isMatch = await bcrypt.compare(password, user.password);
                 if (isMatch) {
                     const token = jwt.sign({ id: user.id, role: userType }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                    return { user, token, role: userType };  // Include the role explicitly here
-                }
+                    return { user, token, role: userType, isAccepted: user.isAccepted, canLogin : user.canLogin };                }
             }
             return null;
         };
@@ -48,7 +47,7 @@ const unifiedLoginController = async (req, res) => {
 
         res.status(200).json({
             message: 'Login successful',
-            user: { id: user._id, email: user.email, role },  // Send the role explicitly
+            user: { id: user._id, email: user.email, role, isAccepted : user.isAccepted, canLogin : user.canLogin },  // Send the role explicitly
             token
         });
     } catch (error) {

@@ -19,6 +19,12 @@ router.delete('/deleteActivity/:id', roleAuth(['advertiser']), activityControlle
 router.put('/updateActivity/:id', roleAuth(['advertiser']), activityController.updateActivity);
 
 router.put('/editPassword', roleAuth(['advertiser']), advertiserController.updatePassword);
+router.post(
+    '/upload-photo',
+    roleAuth(['advertiser']),
+    advertiserController.upload.single('photo'),  // Use `upload` directly here
+    advertiserController.uploadAdvertiserPhoto
+);
 
 // Export the router
 module.exports = router;

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TouristNavbar from '../MainPage-Components/TouristNavbar'; 
+import TouristNavbar from '../MainPage-Components/GuestNavbar'; 
 import { useNavigate } from 'react-router-dom';
 import UpdateAdvertiser from './UpdateAdvertiser';
 import MyActivities from './MyActivities';  // Import the new component
 import CreateActivity from './CreateActivity';
+import UploadLogo from './UploadLogo';
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -68,30 +69,44 @@ const AdvertiserDashboard = () => {
     const renderContent = () => {
         switch (activeComponent) {
             case 'profile':
-                return (
-                    <div>
-                        <h2>Advertiser Profile</h2>
-                        {message && <p>{message}</p>}
-                        {profile && profile.username ? (
-                            <div style={cardStyle}>
-                                <p><strong>Username:</strong> {profile.username}</p>
-                                <p><strong>Email:</strong> {profile.email}</p>
-                                <p><strong>Company Name:</strong> {profile.companyName}</p>
-                                <p><strong>Website Link:</strong> <a href={profile.websiteLink} target="_blank" rel="noopener noreferrer">{profile.websiteLink}</a></p>
-                                <p><strong>Hotline:</strong> {profile.hotline}</p>
-                                <p><strong>Company Profile:</strong> {profile.companyProfile}</p>
-                            </div>
-                        ) : (
-                            <p>Loading profile...</p>
-                        )}
-                    </div>
-                );
+    return (
+        <div>
+            <h2>Advertiser Profile</h2>
+            {message && <p>{message}</p>}
+            {profile && profile.username ? (
+                <div style={cardStyle}>
+                    {profile.imageUrl && (
+                        <img
+                            src={profile.imageUrl}
+                            alt="Advertiser Logo"
+                            style={{
+                                width: '100px',
+                                height: '100px',
+                                borderRadius: '8px',
+                                marginBottom: '10px'
+                            }}
+                        />
+                    )}
+                    <p><strong>Username:</strong> {profile.username}</p>
+                    <p><strong>Email:</strong> {profile.email}</p>
+                    <p><strong>Company Name:</strong> {profile.companyName}</p>
+                    <p><strong>Website Link:</strong> <a href={profile.websiteLink} target="_blank" rel="noopener noreferrer">{profile.websiteLink}</a></p>
+                    <p><strong>Hotline:</strong> {profile.hotline}</p>
+                    <p><strong>Company Profile:</strong> {profile.companyProfile}</p>
+                </div>
+            ) : (
+                <p>Loading profile...</p>
+            )}
+        </div>
+    );
             case 'viewActivities':
                 return <MyActivities />; 
             case 'createActivity':  // New case for Create Activity
                 return <CreateActivity />;
             case 'updateAdvertiser':
                 return <UpdateAdvertiser profile={profile} setProfile={setProfile} />;
+            case 'uploadLogo':
+                return <UploadLogo setProfile={setProfile} />;
             default:
                 return <h2>Welcome to Advertiser Dashboard</h2>;
         }
@@ -106,7 +121,9 @@ const AdvertiserDashboard = () => {
                     <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
                     <li onClick={() => setActiveComponent('updateAdvertiser')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Edit Profile</li>
                     <li onClick={() => setActiveComponent('viewActivities')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Get My Activities</li>
-                    <li onClick={() => setActiveComponent('createActivity')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Create Activity</li> {/* New Create Activity option */}
+                    <li onClick={() => setActiveComponent('createActivity')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Create Activity</li>
+                    <li onClick={() => setActiveComponent('uploadLogo')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Upload a Logo!</li> {/* New Create Activity option */}
+                    {/* New Create Activity option */}
                 </ul>
             </div>
             <div style={contentStyle}>

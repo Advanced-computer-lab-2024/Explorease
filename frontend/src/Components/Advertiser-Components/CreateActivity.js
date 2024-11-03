@@ -16,7 +16,7 @@ const CreateActivity = () => {
     const [formData, setFormData] = useState({
         name: '',
         date: '',
-        time: '',
+        time: '', 
         location: '',
         latitude: 0,
         longitude: 0,

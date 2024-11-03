@@ -1,7 +1,8 @@
 const userModel = require('../../Models/UserModels/Seller');
 const { hashPassword, comparePassword, createToken } = require('../../utils/auth');
 const bcrypt = require('bcrypt');
-
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
 // Create a new seller
 const createSeller = async (req, res) => {
     const { username, email, password, name, description } = req.body;
@@ -124,7 +125,54 @@ const updatePassword = async (req, res) => {
     }
 };
 
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Multer memory storage for temporary file storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const uploadSellerPhoto = async (req, res) => {
+    const { id } = req.user; // Assuming `req.user` contains the authenticated user's ID
+
+    try {
+        const seller = await userModel.findById(id);
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        if (req.file) {
+            // Upload photo to Cloudinary using a Promise and upload_stream
+            const result = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    { folder: 'seller-photos' }, // Folder for organization
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                ).end(req.file.buffer); // Use buffer from the file uploaded in memory
+            });
+
+            // Update Seller model with the secure URL from Cloudinary
+            seller.imageUrl = result.secure_url;
+            await seller.save();
+
+            res.status(200).json({ message: 'Photo uploaded successfully', photoUrl: result.secure_url });
+        } else {
+            res.status(400).json({ message: 'No file uploaded' });
+        }
+    } catch (error) {
+        console.error('Error uploading photo:', error);
+        res.status(500).json({ message: 'Failed to upload photo', error: error.message });
+    }
+};
+
+
 module.exports = {
+    upload,
+    uploadSellerPhoto,
     createSeller,
     getSellerById,
     updateSeller,

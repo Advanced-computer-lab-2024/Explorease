@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import SellerNavbar from '../MainPage-Components/TouristNavbar'; // Assume SellerNavbar is similar to TouristNavbar
+import SellerNavbar from '../MainPage-Components/GuestNavbar'; // Assume SellerNavbar is similar to TouristNavbar
 import Products from './Products'; // Component to manage seller's products
 import MyProducts from './MyProducts';
 import AddProduct from './AddProduct';
 import UpdateProfile from './UpdateProfile';
+import UploadLogo from './UploadLogo';
 
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -93,23 +94,36 @@ const SellerDashboard = () => {
     const renderContent = () => {
         switch (activeComponent) {
             case 'profile':
-                return (
-                    <>
-                        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Seller Profile</h2>
-                        {message && <p style={{ textAlign: 'center', color: 'red' }}>{message}</p>}
-                        {profile && profile.username ? (
-                            <div style={cardStyle}>
-                                <p><span style={labelStyle}>Username:</span> <span style={valueStyle}>{profile.username}</span></p>
-                                <p><span style={labelStyle}>Email:</span> <span style={valueStyle}>{profile.email}</span></p>
-                                <p><span style={labelStyle}>Name:</span> <span style={valueStyle}>{profile.name}</span></p>
-                                <p><span style={labelStyle}>Description:</span>
-                                <span style={valueStyle}>{profile.description}</span></p>
-                            </div>
-                        ) : (
-                            <p>Loading profile...</p>
-                        )}
-                    </>
-                );
+    return (
+        <>
+            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Seller Profile</h2>
+            {message && <p style={{ textAlign: 'center', color: 'red' }}>{message}</p>}
+            {profile && profile.username ? (
+                <div style={cardStyle}>
+                    {/* Display profile image if available */}
+                    {profile.imageUrl && (
+                        <img
+                            src={profile.imageUrl}
+                            alt="Profile Logo"
+                            style={{
+                                width: '100px',
+                                height: '100px',
+                                borderRadius: '8px',
+                                marginBottom: '10px'
+                            }}
+                        />
+                    )}
+                    <p><span style={labelStyle}>Username:</span> <span style={valueStyle}>{profile.username}</span></p>
+                    <p><span style={labelStyle}>Email:</span> <span style={valueStyle}>{profile.email}</span></p>
+                    <p><span style={labelStyle}>Name:</span> <span style={valueStyle}>{profile.name}</span></p>
+                    <p><span style={labelStyle}>Description:</span>
+                    <span style={valueStyle}>{profile.description}</span></p>
+                </div>
+            ) : (
+                <p>Loading profile...</p>
+            )}
+        </>
+    );
             case 'viewProducts':
                 return <Products />;
             case 'updateProfile':
@@ -122,6 +136,9 @@ const SellerDashboard = () => {
 
             case 'addProduct' :
                     return <AddProduct />
+
+         case 'addLogo' :
+                        return <UploadLogo setProfile={setProfile} />
             default:
                 return <h2>Welcome to the Dashboard</h2>;
         }
@@ -139,10 +156,10 @@ const SellerDashboard = () => {
                     <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
                     <li onClick={() => setActiveComponent('myProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View My Products</li>
                     <li onClick={() => setActiveComponent('addProduct')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Add A Product</li>
+                    <li onClick={() => setActiveComponent('addLogo')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Add A Logo!</li>
 
                 </ul>
             </div>
-
             <div style={contentStyle}>
                 {renderContent()}
             </div>

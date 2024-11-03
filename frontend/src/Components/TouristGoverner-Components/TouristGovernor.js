@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
-import TouristNavbar from '../MainPage-Components/TouristNavbar';
+import TouristNavbar from '../MainPage-Components/GuestNavbar';
 import CreateHistoricalPlace from './CreateHistoricalPlace';
 
 const TouristGovernorDashboard = () => {

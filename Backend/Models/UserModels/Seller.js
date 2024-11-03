@@ -15,6 +15,7 @@ const sellerSchema = new Schema({
         TaxationRegistry: { type: String , required : false },  // URL to the uploaded Taxation Registry document
     },
     imageUrl : {type : String, required: false},
+    canLogin : {type : Boolean , required : false, default : false},
 }, { timestamps: true });
 
 const Seller = mongoose.model('Seller', sellerSchema);

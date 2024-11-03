@@ -112,9 +112,62 @@ const updatePassword = async (req, res) => {
     }
 };
 
-module.exports = { updatePassword };
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Configure Multer with Cloudinary Storage for images
+const imageStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'tour-guide-photos',
+        allowed_formats: ['jpg', 'jpeg', 'png'], // Allowed image formats
+    },
+});
+
+
+
+const uploadTourGuidePhoto = async (req, res) => {
+    const { id } = req.user; // Assuming `req.user` contains the authenticated user's ID
+
+    try {
+        // Find the tour guide by ID
+        const tourGuide = await userModel.findById(id);
+        if (!tourGuide) {
+            return res.status(404).json({ message: 'Tour Guide not found' });
+        }
+
+        // Check if a file is uploaded
+        if (req.file) {
+            const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+            // Upload the file to Cloudinary
+            const result = await cloudinary.uploader.upload(base64Image, {
+                folder: 'tour-guide-photos',  // Optional: organize your images in a specific folder
+            });
+            
+            // Get the secure URL from Cloudinary response
+            tourGuide.imageUrl = result.secure_url;
+            await tourGuide.save();
+
+            res.status(200).json({ message: 'Photo uploaded successfully', photoUrl: result.secure_url });
+        } else {
+            res.status(400).json({ message: 'No file uploaded' });
+        }
+    } catch (error) {
+        console.error('Error uploading photo:', error);
+        res.status(500).json({ message: 'Failed to upload photo', error: error.message });
+    }
+};
 
 module.exports = {
+    uploadTourGuidePhoto,
     createTourGuide,
     getTourGuideById,
     updateTourGuide,

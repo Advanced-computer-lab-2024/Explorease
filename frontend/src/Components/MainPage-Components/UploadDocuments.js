@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, TextField, Typography, Box, Card, CardContent, Grid } from '@mui/material';
+import { Navigate } from 'react-router-dom';
 
 const UploadDocument = () => {
     const [email, setEmail] = useState('');
@@ -13,7 +14,12 @@ const UploadDocument = () => {
     const checkUserStatus = async () => {
         try {
             const response = await axios.post('/check-user-status', { email });
-            const { message, requiredDocuments, userType } = response.data;
+            const { message, requiredDocuments, userType , isAccepted} = response.data;
+            if(isAccepted){
+                setMessage('Documents have been reviewed and you are accepted. Redirecting to login page.');
+                Navigate('/login');
+                return;
+            }
             setMessage(message);
             setRequiredDocuments(requiredDocuments || []);
             setUserType(userType);

@@ -1,11 +1,24 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Typography,
+    TextField,
+    IconButton,
+    InputAdornment,
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -14,112 +27,157 @@ const Login = () => {
             const response = await axios.post('/login', { email, password });
             const { token, user } = response.data;
 
-            // Save token in local storage
+            // Save token and user role in local storage
             localStorage.setItem('token', token);
             localStorage.setItem('role', user.role);
-
-            // Redirect based on role
-            switch (user.role) {
-                case 'tourist':
-                    navigate('/tourist/');
-                    break;
-                case 'tourGuide':
-                    navigate('/tourguide/');
-                    break;
-                case 'seller':
-                    navigate('/seller/');
-                    break;
-                case 'advertiser':
-                    navigate('/advertiser/');
-                    break;
-                case 'admin':
-                    navigate('/admin/');
-                    break;
-                case 'touristGovernor':
-                    navigate('/governor/');
-                    break;
-                default:
-                    setError('Unknown user role');
+            if (user.role === 'tourist' || user.role === 'touristGovernor') {
+                navigateToDashboard(user.role);
+                return;
             }
+    
+            if (!user.isAccepted) {
+                setError('Your account is not yet approved. Please upload the required documents.');
+                setTimeout(() => navigate('/uploadDocuments'), 3000);
+                return;
+            }
+
+            if (!user.canLogin) {
+                setShowTerms(true);
+                return;
+            }
+
+            // If user is accepted and can log in, navigate to dashboard
+            navigateToDashboard(user.role);
         } catch (err) {
             setError('Invalid email or password');
         }
     };
 
-    // Basic styles for the form
-    const formStyle = {
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-        border: '1px solid #ccc',
-        borderRadius: '10px',
-        backgroundColor: '#f9f9f9',
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+    const handleAcceptTerms = async () => {
+        const token = localStorage.getItem('token'); // Retrieve token from local storage
+        try {
+            const response = await axios.post(
+                '/accept-terms',
+                { email },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Send token in headers
+                    },
+                }
+            );
+
+            if (response.data.canLogin) {
+                navigateToDashboard(localStorage.getItem('role'));
+            } else {
+                setError('Failed to accept terms. Please try again.');
+            }
+        } catch (error) {
+            setError('Error accepting terms. Please try again.');
+        }
     };
 
-    const inputStyle = {
-        width: '95%',
-        padding: '10px',
-        marginBottom: '15px',
-        border: '1px solid #ccc',
-        borderRadius: '5px',
-        fontSize: '16px',
-    };
-
-    const buttonStyle = {
-        width: '100%',
-        padding: '10px',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '16px',
-    };
-
-    const errorStyle = {
-        color: 'red',
-        textAlign: 'center',
-        marginBottom: '15px',
-    };
-
-    const titleStyle = {
-        textAlign: 'center',
-        marginBottom: '20px',
-        fontSize: '24px',
-        fontWeight: 'bold',
+    const navigateToDashboard = (role) => {
+        switch (role) {
+            case 'tourist':
+                navigate('/tourist/');
+                break;
+            case 'tourGuide':
+                navigate('/tourguide/');
+                break;
+            case 'seller':
+                navigate('/seller/');
+                break;
+            case 'advertiser':
+                navigate('/advertiser/');
+                break;
+            case 'admin':
+                navigate('/admin/');
+                break;
+            case 'touristGovernor':
+                navigate('/governor/');
+                break;
+            default:
+                setError('Unknown user role');
+        }
     };
 
     return (
-        <div style={{ padding: '40px' }}>
-            <div style={formStyle}>
-                <h2 style={titleStyle}>Login</h2>
-                {error && <p style={errorStyle}>{error}</p>}
-                <form onSubmit={handleLogin}>
-                    <div>
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
-                    <div>
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            style={inputStyle}
-                        />
-                    </div>
-                    <button type="submit" style={buttonStyle}>Login</button>
-                </form>
-            </div>
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <Card sx={{ maxWidth: 400, p: 3, boxShadow: 3 }}>
+                <CardContent>
+                    <Typography variant="h4" align="center" gutterBottom>
+                        Login
+                    </Typography>
+                    {error && (
+                        <Typography color="error" align="center" sx={{ mb: 2 }}>
+                            {error}
+                        </Typography>
+                    )}
+                    {showTerms ? (
+                        <>
+                            <Typography variant="body1" sx={{ mb: 2 }}>
+                                Please read and accept the terms and conditions to proceed.
+                            </Typography>
+                            <Box>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    onClick={handleAcceptTerms}
+                                >
+                                    Accept Terms and Continue
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    fullWidth
+                                    sx={{ mt: 1 }}
+                                    onClick={() => navigate('/')}
+                                >
+                                    Decline and Go Back
+                                </Button>
+                            </Box>
+                        </>
+                    ) : (
+                        <form onSubmit={handleLogin}>
+                            <TextField
+                                label="Email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                fullWidth
+                                required
+                                sx={{ mb: 2 }}
+                            />
+                            <TextField
+                                label="Password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                fullWidth
+                                required
+                                sx={{ mb: 2 }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setShowPassword((prev) => !prev)}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            <Button type="submit" variant="contained" color="primary" fullWidth>
+                                Login
+                            </Button>
+                        </form>
+                    )}
+                </CardContent>
+            </Card>
+        </Box>
     );
 };
 

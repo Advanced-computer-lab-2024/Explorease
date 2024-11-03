@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const userModel = require('../../Models/UserModels/Advertiser');
 const { hashPassword, comparePassword, createToken } = require('../../utils/auth');
 const bcrypt = require('bcrypt');
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
 // Create a new advertiser
 const createAdvertiser = async (req, res) => {
     const { username, email, password, name, description } = req.body;
@@ -154,10 +156,56 @@ const updatePassword = async (req, res) => {
     }
 };
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage });  // Make sure to use memory storage or configure as needed
 
+// Cloudinary configuration (if not set globally)
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Controller to handle photo upload for Advertiser
+const uploadAdvertiserPhoto = async (req, res) => {
+    const { id } = req.user; // Assuming `req.user` has the authenticated user's ID
+
+    try {
+        const advertiser = await userModel.findById(id);
+        if (!advertiser) {
+            return res.status(404).json({ message: 'Advertiser not found' });
+        }
+
+        if (req.file) {
+            // Upload the file to Cloudinary
+            const result = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    { folder: 'advertiser-photos' },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                ).end(req.file.buffer);
+            });
+
+            // Update Advertiser model with the secure URL from Cloudinary response
+            advertiser.imageUrl = result.secure_url;
+            await advertiser.save();
+
+            res.status(200).json({ message: 'Photo uploaded successfully', photoUrl: result.secure_url });
+        } else {
+            res.status(400).json({ message: 'No file uploaded' });
+        }
+    } catch (error) {
+        console.error('Error uploading photo:', error);
+        res.status(500).json({ message: 'Failed to upload photo', error: error.message });
+    }
+};
 
 
 module.exports = {
+    upload, 
+    uploadAdvertiserPhoto,
     createAdvertiser,
     getAdvertiserById,
     updateAdvertiser,

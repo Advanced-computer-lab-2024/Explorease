@@ -30,7 +30,7 @@ const UpdateProfile = ({ profile, setProfile }) => {
                 }
             });
             setUpdateMessage('Profile updated successfully');
-            setProfile(response.data);  // Update main profile state
+            setProfile(response.data.tourGuide);
             setSuccess(true);
         } catch (error) {
             setUpdateMessage('Error updating profile');

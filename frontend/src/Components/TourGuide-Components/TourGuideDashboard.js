@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import TouristNavbar from '../MainPage-Components/TouristNavbar'; // Assuming you're reusing the same navbar
+import TouristNavbar from '../MainPage-Components/GuestNavbar'; // Assuming you're reusing the same navbar
 import UpdateProfile from './UpdateProfile';
+import AddPhoto from './AddPhoto';
 
 const TourGuideDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -623,6 +624,18 @@ const TourGuideDashboard = () => {
                         {message && <p style={{ textAlign: 'center', color: 'red' }}>{message}</p>}
                         {profile && profile.username ? (
                             <div style={cardStyle}>
+                                {profile.imageUrl && (
+                                    <img
+                                        src={profile.imageUrl}
+                                        alt="Profile"
+                                        style={{
+                                            width: '300px',
+                                            height: '300px',
+                                            borderRadius: '80%',
+                                            marginBottom: '10px'
+                                        }}
+                                    />
+                                )}
                                 <p><span style={labelStyle}>Username:</span> <span style={valueStyle}>{profile.username}</span></p>
                                 <p><span style={labelStyle}>Email:</span> <span style={valueStyle}>{profile.email}</span></p>
                                 <p><span style={labelStyle}>Years Of Experience:</span> <span style={valueStyle}>{profile.yearsOfExperience}</span></p>
@@ -639,8 +652,8 @@ const TourGuideDashboard = () => {
                 return <CreateItineraryForm />
             case 'updateProfile':
                 return <UpdateProfile profile={profile} setProfile={setProfile}/>;
-            case 'updateItinerary':
-                return <h2>Update Itinerary (to be implemented)</h2>; // Placeholder for the update itinerary component
+            case 'uploadProfilePicture':
+                return <AddPhoto setProfile = {setProfile} /> // Placeholder for the update itinerary component
             default:
                 return <h2>Welcome to the Tour Guide Dashboard</h2>;
         }
@@ -657,6 +670,8 @@ const TourGuideDashboard = () => {
                     <li onClick={() => setActiveComponent('viewActivities')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View My Itineraries</li>
                     <li onClick={() => setActiveComponent('createActivity')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Create An Itinerary</li>
                     <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
+                    <li onClick={() => setActiveComponent('uploadProfilePicture')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Upload Profile Picture</li>
+
                 </ul>
             </div>
 

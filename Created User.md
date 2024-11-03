@@ -1,28 +1,11 @@
 # Created Users Thus Far : (Dummy Data)
 
 ## Tour Guides : 
-
 [
-  {
-    "username": "guide_john",
-    "email": "john_guide@example.com",
-    "password": "JohnPassword123"
-  },
   {
     "username": "guide_maria",
     "email": "maria_guide@example.com",
     "password": "MariaPassword789"
-  },
-  {
-    "username": "guide_alex",
-    "email": "alex_guide@example.com",
-    "password": "AlexPassword789"
-  },
- 
-  {
-    "username": "guide_dave",
-    "email": "dave_guide@example.com",
-    "password": "DavePassword112"
   }
 ]
 
@@ -30,65 +13,26 @@
 ## Seller : 
 [
   {
-    "username": "seller_emma",
-    "email": "emma_seller@example.com",
-    "password": "EmmaPassword123",
-    "name": "Emma's Emporium",
-    "description": "A wide range of local products."
-  },
-  {
-    "username": "seller_liam",
-    "email": "liam_seller@example.com",
-    "password": "LiamPassword456",
-    "name": "Liam's Goods",
-    "description": "Handmade goods and souvenirs."
-  },
-  {
-    "username": "seller_noah",
-    "email": "noah_seller@example.com",
-    "password": "NoahPassword789",
-    "name": "Noah's Store",
-    "description": "Exclusive local items and crafts."
-  },
-  {
-    "username": "seller_ava",
-    "email": "ava_seller@example.com",
-    "password": "AvaPassword101",
-    "name": "Ava's Market",
-    "description": "Unique items from the region."
-  },
-  {
     "username": "seller_oliver",
     "email": "oliver_seller@example.com",
     "password": "OliverPassword121",
     "name": "Oliver's Outlet",
     "description": "Best souvenirs and gifts."
+  },
+  {
+    email : peter_seller@gmail.com,
+    password: peter1234
   }
 ]
 
 ## Advertiser : 
-
 [
-  {
-    "username": "advertiser_sophia",
-    "email": "sophia_advertiser@example.com",
-    "password": "SophiaPassword123",
-    "name": "Sophia's Promotions",
-    "description": "Travel promotions and offers."
-  },
   {
     "username": "advertiser_james",
     "email": "james_advertiser@example.com",
     "password": "JamesPassword456",
     "name": "James' Deals",
     "description": "Special travel discounts."
-  },
-  {
-    "username": "advertiser_isabella",
-    "email": "isabella_advertiser@example.com",
-    "password": "IsabellaPassword878",
-    "name": "Isabella's Travels",
-    "description": "Exclusive travel offers."
   },
   {
     "username": "advertiser_benjamin",
@@ -106,28 +50,9 @@
   }
 ]
 
-
 ## Tourists : 
 
 [
-  {
-    "username": "tourist_jack",
-    "email": "jack_tourist@example.com",
-    "password": "JackPassword123",
-    "mobileNumber": "1234567890",
-    "nationality": "American",
-    "dob": "1995-08-20",
-    "jobOrStudent": "Student"
-  },
-  {
-    "username": "tourist_amelia",
-    "email": "amelia_tourist@example.com",
-    "password": "AmeliaPassword456",
-    "mobileNumber": "0987654321",
-    "nationality": "British",
-    "dob": "1990-02-12",
-    "jobOrStudent": "Job"
-  },
   {
     "username": "tourist_lucas",
     "email": "lucas12@example.com",
@@ -145,15 +70,6 @@
     "nationality": "Australian",
     "dob": "1997-06-15",
     "jobOrStudent": "Student"
-  },
-  {
-    "username": "tourist_eli",
-    "email": "eli_tourist@example.com",
-    "password": "EliPassword112",
-    "mobileNumber": "3344556677",
-    "nationality": "New Zealander",
-    "dob": "1988-10-10",
-    "jobOrStudent": "Job"
   }
 ]
 

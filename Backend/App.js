@@ -57,9 +57,9 @@ app.use('/admins', adminRoutes);
 app.use('/governor', governorRoutes);
 app.use('/seller', sellerRoutes);
 
-const checkStatusController = require('./Controllers/checkUserStatus');
-app.post('/check-user-status' , checkStatusController.checkUserStatus );
-
+const {checkUserStatus, acceptTermsAndConditions }= require('./Controllers/checkUserStatus');
+app.post('/check-user-status' , checkUserStatus );
+app.post('/accept-terms', acceptTermsAndConditions);
 // Routes to upload documents for specific user types
 const { uploadPDF, uploadSellerDocuments, uploadAdvertiserDocuments, uploadTourGuideDocuments } = require('./Controllers/uploadController');
 

@@ -53,6 +53,15 @@ router.get('/myProfile', roleAuth(['tourGuide']), tourGuideController.getTourGui
 // Update the tour guide's profile
 router.put('/updateProfile', roleAuth(['tourGuide']), tourGuideController.updateTourGuide);
 
+const storage = multer.memoryStorage(); // Use memory storage if you're only uploading to Cloudinary
+const upload = multer({ storage });
+
+// Define the route
+router.post(
+    '/upload-photo', roleAuth(['tourGuide']),
+    upload.single('photo'), // Use `single` middleware for single-file upload with field name `photo`
+    tourGuideController.uploadTourGuidePhoto
+);
 
 
 router.put('/editPassword', roleAuth(['tourGuide']), tourGuideController.updatePassword);
