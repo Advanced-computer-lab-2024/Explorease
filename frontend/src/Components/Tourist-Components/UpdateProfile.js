@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment, MenuItem, select } from '@mui/material';
+import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment, FormControl, InputLabel, Select, MenuItem, Chip } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
@@ -63,6 +63,17 @@ const UpdateProfile = ({ profile, setProfile }) => {
         }
     };
 
+    const handlePreferencesChange = (event) => {
+        const {
+            target: { value },
+        } = event;
+        setFormProfile({
+            ...formProfile,
+            preferences: typeof value === 'string' ? value.split(',') : value,
+        });
+    };
+    
+
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
             <Typography variant="h4" gutterBottom>Update Profile</Typography>
@@ -107,26 +118,29 @@ const UpdateProfile = ({ profile, setProfile }) => {
                     <option value="Job">Job</option>
                     <option value="Student">Student</option>
                 </TextField>
-                <TextField
-                    label="Preferences (comma separated)"
-                    name="preferences"
-                    select
-                    SelectProps={{ native: true }}
-                    value={formProfile.preferences || ''}
-                    onChange={handleChange}
-                    placeholder="e.g. museum, adventure"
-                    fullWidth
-                    margin="normal"
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Preferences</InputLabel>
+                <Select
+                        label="Preferences"
+                        name="preferences"
+                        multiple
+                        value={formProfile.preferences || []}
+                        onChange={handlePreferencesChange}
+                        renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map((value) => (
+                                    <Chip key={value} label={value} />
+                                ))}
+                            </Box>
+                        )}
                 >
-                    <option value="Bazaars">Bazaars</option>
-                    <option value="Concert">Concert</option>
-                    <option value="Castle">Castle</option>
-                    <option value="Palace">Palace</option>
-                    <option value="Party">Party</option>
-                    <option value="Park">Park</option>
-                    <option value="Exhibitions">Exhibitions</option>
-                    <option value="Monument">Monument</option>
-                </TextField>
+                    {['Bazaars', 'Concert', 'Castle', 'Palace', 'Party', 'Park', 'Exhibitions', 'Monument'].map((preference) => (
+                        <MenuItem key={preference} value={preference}>
+                            {preference}
+                        </MenuItem>
+                    ))}
+                </Select>
+                </FormControl>
                 <Button
                     type="submit"
                     variant="contained"
