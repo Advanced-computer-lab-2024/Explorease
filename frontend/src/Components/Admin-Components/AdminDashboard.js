@@ -8,6 +8,8 @@ import ManageUsers from './ManageUser';
 import EditMyPassword from './EditPassword';
 import UserApproval from './UserApproval';
 import BlockItinerary from './BlockItinerary';
+import Complaints from './Complaints';
+
 
 const AdminDashboard = () => {
     const [message, setMessage] = useState('');
@@ -403,6 +405,13 @@ const handleTagChange = (id, newName) => {
                 >
                     Block Event
                 </button>
+                
+                <button
+                    onClick={() => handleSectionChange('Complaints')}
+                    className={activeSection === 'Complaints' ? 'active' : ''}
+                >
+                    Complaints
+                </button>
             </nav>
 
             {/* Conditionally render sections */}
@@ -415,6 +424,7 @@ const handleTagChange = (id, newName) => {
 {activeSection === 'deleteAccounts' && ( <ManageUsers />) }
 {activeSection === 'ReviewUsers' && ( <UserApproval />) }
 {activeSection === 'Block event' && ( <BlockItinerary />) }
+{activeSection === 'Complaints' && ( <Complaints />) }
 
 {activeSection === 'editPassword' && ( <EditMyPassword />) }
 
