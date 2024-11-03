@@ -20,7 +20,7 @@ router.get('/products/filter-sort-search', optionalAuth(['tourist']), productCon
 // Tourist shared routes for viewing and filtering
 // Guest shared routes for viewing and filtering
 router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.filterSortSearchActivities );  // View all activities
-router.get('/itineraries', optionalAuth(['tourist', 'guest']), itineraryControllers.getAllItinerary);  // View all itineraries
+router.get('/itineraries', optionalAuth(['tourist', 'guest']), itineraryControllers.getAllActivatedItinerary);  // View all itineraries
 router.get('/historical-places', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.getallHistoricalPlaces);  // View all historical places
 
 // Filtering and searching (Activities, Itineraries, Historical Places)

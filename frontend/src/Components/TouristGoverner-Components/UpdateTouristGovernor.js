@@ -104,7 +104,13 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                     variant="contained"
                     color="primary"
                     fullWidth
-                    sx={{ mt: 2 }}
+                    sx={{ backgroundColor: '#111E56', 
+                        color: 'white', 
+                        '&:hover': { 
+                            backgroundColor: 'white', 
+                            color: '#111E56',
+                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                        },mt: 2 }}
                 >
                     Update Profile
                 </Button>
@@ -163,7 +169,13 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
                         variant="contained"
                         color="primary"
                         fullWidth
-                        sx={{ mt: 2 }}
+                        sx={{ backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },mt: 2 }}
                     >
                         Update Password
                     </Button>

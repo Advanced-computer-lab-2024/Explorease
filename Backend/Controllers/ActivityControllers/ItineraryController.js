@@ -70,6 +70,19 @@ const readItinerary = async (req, res) => {
         res.status(500).json({ message: 'Error fetching itineraries', error: error.message });
     }
 };
+//this method to check if the itineraries are activated and not flagged
+const getAllActivatedItinerary = async (req, res) => {
+    try {
+        const itineraries = await ItineraryModel.find({}).populate('tags activities createdBy BookedBy');
+        const activatedItineraries = itineraries.filter(itinerary => itinerary.isActivated === true && itinerary.isFlagged === false);
+        if (activateItinerary.length === 0) {
+            return res.status(404).json({ message: 'No itineraries found' });
+        }
+        res.status(200).json(activatedItineraries);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching itineraries', error: error.message });
+    }
+};
 
 // Get All Itineraries
 const getAllItinerary = async (req, res) => {
@@ -320,5 +333,6 @@ module.exports = {
     deleteItinerary,
     filterSortSearchItineraries,
     activateItinerary,
-    deactivateItinerary
+    deactivateItinerary,
+    getAllActivatedItinerary
 };
