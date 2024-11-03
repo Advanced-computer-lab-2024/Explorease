@@ -8,6 +8,7 @@ const tagController = require('../Controllers/ActivityControllers/PreferenceTags
 const activityController = require('../Controllers/ActivityControllers/ActivityCategoryController');
 const productController = require('../Controllers/ProductControllers/ProductController'); // Ensure correct path
 const ItineraryController = require('../Controllers/ActivityControllers/ItineraryController');
+const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
 const {optionalAuth} = require('../Middleware/authMiddleware');
 const Itinerary = require('../Models/ActivityModels/Itinerary');
 // Admin Routes
@@ -82,5 +83,14 @@ router.put('/editMyPassword', authenticateAdmin, adminController.editMyPassword)
 router.get('/pending-users', authenticateAdmin, adminController.getPendingUsers);
 router.post('/accept-user', authenticateAdmin, adminController.acceptUser);
 router.post('/reject-user', authenticateAdmin, adminController.rejectUser);
+
+
+
+//complaint
+router.get('/getAllComplaints', authenticateAdmin, complaintControllers.getAllComplaints); 
+router.get('/getComplaintsByStatus', authenticateAdmin, complaintControllers.getComplaintsByStatus); 
+router.get('/getComplaintsByDate', authenticateAdmin, complaintControllers.getComplaintsByDate); 
+router.put('/adminRespondToComplaint', authenticateAdmin, complaintControllers.adminRespondToComplaint); 
+router.delete('/deleteComplaint', authenticateAdmin, complaintControllers.deleteComplaint); 
 
 module.exports = router;
