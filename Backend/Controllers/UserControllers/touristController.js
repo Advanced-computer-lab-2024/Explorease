@@ -1,5 +1,11 @@
 const userModel = require('../../Models/UserModels/Tourist');
+
+const Loyalty = require('../../Models/UserModels/Loyalty.js');
+const Badge = require('../../Models/UserModels/Badge.js');
+const { default: mongoose } = require('mongoose');
+
 const bcrypt = require('bcrypt');
+
 const jwt = require('jsonwebtoken');
 
 // Utility function to handle JWT token creation
@@ -12,6 +18,25 @@ const createTourist = async (req, res) => {
     const { username, email, password, mobileNumber, nationality, dob, jobOrStudent } = req.body;
 
     try {
+
+        const tourist = await userModel.create({ username, email, password, mobileNumber, nationality, dob, jobOrStudent });
+
+        const touristId = tourist._id;
+
+          Loyalty = new Loyalty({
+            touristId,
+            points: 0,
+            redeemableAmount: 0
+          });
+          await Loyalty.save();
+
+          Badge = new Badge({
+            touristId,
+            level: 'explorer',
+            awardedAt: new Date()
+          });
+          await Badge.save();
+
         const hashedPassword = await bcrypt.hash(password, 10);  // Hash the password
 
         const tourist = await userModel.create({
@@ -23,6 +48,7 @@ const createTourist = async (req, res) => {
             dob,
             jobOrStudent
         });
+
 
         res.status(201).json({ tourist });
     } catch (error) {
