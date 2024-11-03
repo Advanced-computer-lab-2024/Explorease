@@ -1,13 +1,14 @@
 // TouristDashboard.js
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import TouristNavbar from './TouristNavbar';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Products from '../Seller-Components/Products';
+import FileComplaint from './fileComplaint';
+import TouristNavbar from './TouristNavbar';
 import UpdateProfile from './UpdateProfile';
 // import Cart from './Cart';
 // import Wallet from './Wallet';
-import { Typography, Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 const TouristDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -84,7 +85,7 @@ const TouristDashboard = () => {
             case 'updateProfile':
                 return <UpdateProfile profile={profile} setProfile={setProfile} />;
             case 'fileComplaint':
-                return <h2> Still Implementing Complaint System! </h2>;
+                return < FileComplaint />;
             case 'cart':
                 return <h2> Still Implementing Cart!</h2>;
             case 'wallet':
