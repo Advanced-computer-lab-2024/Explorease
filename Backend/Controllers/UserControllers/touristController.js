@@ -1,4 +1,6 @@
 const userModel = require('../../Models/UserModels/Tourist');
+const Loyalty = require('../../Models/UserModels/Loyalty.js');
+const Badge = require('../../Models/UserModels/Badge.js');
 const { default: mongoose } = require('mongoose');
 const jwt = require('jsonwebtoken');
 
@@ -8,6 +10,24 @@ const createTourist = async(req, res) => {
 
     try {
         const tourist = await userModel.create({ username, email, password, mobileNumber, nationality, dob, jobOrStudent });
+
+        const touristId = tourist._id;
+
+          Loyalty = new Loyalty({
+            touristId,
+            points: 0,
+            redeemableAmount: 0
+          });
+          await Loyalty.save();
+
+          Badge = new Badge({
+            touristId,
+            level: 'explorer',
+            awardedAt: new Date()
+          });
+          await Badge.save();
+
+
         res.status(201).json({ tourist });
     } catch (error) {
         res.status(400).json({ error: error.message });
