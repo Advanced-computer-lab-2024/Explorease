@@ -85,6 +85,27 @@ const SellerProducts = () => {
         }
     };
 
+    const handleArchiveProduct = async (productId) => {
+        const token = localStorage.getItem('token');
+        try {
+            // Find the product to get its current Archived status
+            const product = products.find(p => p._id === productId);
+            
+            // Toggle Archived status
+            await axios.put(`/seller/archiveProduct/${productId}`, { Archived: !product.Archived }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+    
+            setProductMessage(product.Archived ? 'Product unarchived successfully' : 'Product archived successfully');
+            fetchSellerProducts(); // Refresh product list after toggling archive status
+        } catch (error) {
+            setProductMessage('Error updating archive status');
+            console.error('Error updating archive status:', error);
+        }
+    };
+    
     // Fetch filtered, sorted, and searched seller products
     const fetchFilteredSellerProducts = async () => {
         try {
@@ -177,6 +198,13 @@ const SellerProducts = () => {
                             Edit Product
                         </button>
                         <button
+                            onClick={() => handleArchiveProduct(product._id)}
+                            style={archiveButtonStyle}
+                        >
+                            {product.Archived ? 'Unarchive Product' : 'Archive Product'}
+                        </button>
+
+                        <button
                             onClick={() => handleDeleteProduct(product._id)}
                             style={deleteButtonStyle}
                         >
@@ -226,6 +254,17 @@ const SellerProducts = () => {
         marginTop: '10px',
     };
 
+    const archiveButtonStyle = {
+        padding: '10px 15px',
+        backgroundColor: '#6c757d', // Grey color for archive button
+        color: '#fff',
+        border: 'none',
+        cursor: 'pointer',
+        borderRadius: '5px',
+        marginTop: '10px',
+        marginLeft: '10px',
+    };
+    
     const deleteButtonStyle = {
         padding: '10px 15px',
         backgroundColor: '#dc3545',
