@@ -7,6 +7,7 @@ import CreateAdminForm from './AdminManagement';
 import ManageUsers from './ManageUser';
 import EditMyPassword from './EditPassword';
 import UserApproval from './UserApproval';
+import BlockItinerary from './BlockItinerary';
 
 const AdminDashboard = () => {
     const [message, setMessage] = useState('');
@@ -395,6 +396,13 @@ const handleTagChange = (id, newName) => {
                 >
                     Review Registering Users
                 </button>
+
+                <button
+                    onClick={() => handleSectionChange('Block event')}
+                    className={activeSection === 'Block event' ? 'active' : ''}
+                >
+                    Block Event
+                </button>
             </nav>
 
             {/* Conditionally render sections */}
@@ -406,6 +414,7 @@ const handleTagChange = (id, newName) => {
 
 {activeSection === 'deleteAccounts' && ( <ManageUsers />) }
 {activeSection === 'ReviewUsers' && ( <UserApproval />) }
+{activeSection === 'Block event' && ( <BlockItinerary />) }
 
 {activeSection === 'editPassword' && ( <EditMyPassword />) }
 
