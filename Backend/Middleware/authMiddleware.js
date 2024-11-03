@@ -1,49 +1,35 @@
 const jwt = require('jsonwebtoken');
-const Advertiser = require('../Models/UserModels/Advertiser.js');
-const TourGuide = require('../Models/UserModels/TourGuide.js');
-const Seller = require('../Models/UserModels/Seller.js');
-const Tourist = require('../Models/UserModels/Tourist.js');
 
-const authenticate = async(req, res, next) => {
-    const token = req.headers['authorization'];
-
-    if (!token) {
-        return res.status(401).json({ message: 'No token provided, authorization denied' });
-    }
-
-    try {
-        // Extract token by removing 'Bearer ' from the string
-        const actualToken = token.split(' ')[1];
-
-        // Verify token using the same secret
-        const decoded = jwt.verify(actualToken, process.env.JWT_SECRET);
-
-        // Check if the user is an Advertiser or a Tour Guide
-        let user = await Advertiser.findById(decoded.id);
-        if (!user) {
-            user = await TourGuide.findById(decoded.id); // If not an advertiser, try finding a tour guide
-        }
-
-        // If not an advertiser nor a tour guide, must be a seller.
-        if(!user){
-            user = await Seller.findById(decoded.id);
-        }
-
-        // If not an advertiser, nor a tour guide, nor a seller, must be a tourist. 
-        if(!user){
-            user = await Tourist.findById(decoded.id);
-        }
-
-        // Otheriwse, the user is not found. 
-        if (!user) {
-            return res.status(401).json({ message: 'User not found' });
-        }
-
-        req.user = user; // Attach the user (We attach the user to the request) to the request
-        next(); // Proceed to the next middleware or route handler
-    } catch (error) {
-        return res.status(401).json({ message: 'Token is not valid', error });
-    }
+const optionalAuth = (allowedRoles) => {
+    return (req, res, next) => {
+        next();
+    };
 };
 
-module.exports = authenticate;
+const roleAuth = (allowedRoles) => {
+    return (req, res, next) => {
+        const token = req.headers['authorization'];
+        
+        if (!token || !token.startsWith('Bearer ')) {
+            return res.status(401).json({ message: 'Authorization token missing or invalid format' });
+        }
+
+        try {
+            const actualToken = token.split(' ')[1];  // Extract token
+            const decoded = jwt.verify(actualToken, process.env.JWT_SECRET);  // Verify token
+            
+
+            if (!allowedRoles.includes(decoded.role)) {
+                return res.status(403).json({ message: 'Access denied: insufficient permissions' });
+            }
+
+            req.user = { id: decoded.id, role: decoded.role };  // Attach user info to req
+
+            next();
+        } catch (error) {
+            return res.status(401).json({ message: 'Invalid or expired token', error: error.message });
+        }
+    };
+};
+
+module.exports = { roleAuth, optionalAuth };

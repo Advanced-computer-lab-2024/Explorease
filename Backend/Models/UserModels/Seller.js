@@ -9,7 +9,11 @@ const sellerSchema = new Schema({
     name: { type: String, required: false },
     description: { type: String, required: false },
     isAccepted: { type: Boolean, default: false },
-    createdProduct : [{type : Schema.Types.ObjectId , ref : 'Product'}]
+    createdProduct : [{type : Schema.Types.ObjectId , ref : 'Product'}],
+    documents: {
+        ID: { type: String , required : false},  // URL to the uploaded ID document
+        TaxationRegistry: { type: String , required : false },  // URL to the uploaded Taxation Registry document
+    },
 }, { timestamps: true });
 
 const Seller = mongoose.model('Seller', sellerSchema);

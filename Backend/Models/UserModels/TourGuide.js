@@ -10,7 +10,11 @@ const tourGuideSchema = new mongoose.Schema({
     yearsOfExperience: { type: Number, required: false },
     previousWork: { type: String, required: false },
     isAccepted: { type: Boolean, default: false },
-    createdItineraries: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }]
+    createdItineraries: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }],
+    documents: {
+        ID : { type: String, required: false }, // URL or path to ID PDF
+        Certificates: { type: String, required: false }, // URL or path to Certificate PDF
+    }
 }, { timestamps: true });
 
 const TourGuide = mongoose.model('TourGuide', tourGuideSchema);

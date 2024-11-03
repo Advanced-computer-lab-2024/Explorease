@@ -1,149 +1,89 @@
-// Dependecies Export
-const { check } = require('express-validator');
+// Dependencies Import
 const express = require('express');
 const mongoose = require('mongoose');
-const authenticate = require('./Middleware/authMiddleware.js');
-const authenticateAdmin = require('./Middleware/adminAuthMiddleware');
-const touristControllers = require('./Controllers/UserControllers/touristController');
-const sellerController = require('./Controllers/UserControllers/sellerController');
-const tourGuideController = require('./Controllers/UserControllers/tourGuideController');
-const advertiserController = require('./Controllers/UserControllers/advertiserController');
-const adminController = require('./Controllers/UserControllers/adminController');
-const activityControllers = require('./Controllers/ActivityControllers/ActivityController');
-const historicLocationController = require('./Controllers/ActivityControllers/HistoricalPlacesController');
-const productControllers = require('./Controllers/ProductControllers/ProductController');
-const iteniraryControllers = require('./Controllers/ActivityControllers/IteniraryController');
-const activityCategoryController = require('./Controllers/ActivityControllers/ActivityCategoryController');
-const preferenceTagController = require('./Controllers/ActivityControllers/PreferenceTagsController.js');
-const TourismGovernorController = require('./Controllers/UserControllers/tourismGovernerController.js');
+const path = require('path');
+const cors = require('cors');
+
+// User Routes
+// const roleAuth = require('../Middleware/AuthMiddleware');
+const touristRoutes = require('./Routes/touristRoutes');
+const tourGuideRoutes = require('./Routes/tourGuideRoutes');
+const sellerRoutes = require('./Routes/sellerRoutes');
+const advertiserRoutes = require('./Routes/advertiserRoutes');
+const adminRoutes = require('./Routes/adminRoutes');
+const governorRoutes = require('./Routes/governorRoutes');
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
 
 // App Variables
 const app = express();
-const port = 3000;
+app.use(express.json());
+const port = 5000;
+
+app.use(cors({
+    origin: 'http://localhost:3000',  // Allow requests from the frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials : true
+  }));
+  app.options('*', cors());  // Enable pre-flight across the board
 
 
+
+// MongoDB Connection
 mongoose.connect(process.env.Mongo_URI)
     .then(() => {
-        console.log("MongoDB is now connected!");
+        console.log("MongoDB connected successfully!");
         app.listen(port, () => {
-            console.log(`Listening to requests on http://localhost:${port}`);
+            console.log(`Server is running at http://localhost:${port}`);
         });
     }).catch(err => console.log(err));
 
-app.use(express.json());
+// Middleware
 
+// Unified Registration Route
+const registerController = require('./Controllers/registerController');
+app.post('/register', registerController.registerUser);
 
-// Tourist Routers 
-app.post('/createTourist', touristControllers.createTourist);
-app.get('/getTourists', touristControllers.getAllTourists);
-app.put('/updateTourist/:id', touristControllers.updateTourist);
-app.delete('/deleteTourist/:id', touristControllers.deleteTourist);
-app.get('/getTourist/:id', touristControllers.getTouristById);
-app.post('/loginTourist',  touristControllers.loginTourist);
+// Unified Login Route
+const unifiedLoginController = require('./Controllers/loginController');
+app.post('/login', unifiedLoginController);
 
-// Tourist Guide Routers
-app.post('/createGuide', tourGuideController.createTourGuide);
-app.get('/getTourGuides', tourGuideController.getAllTourGuides);
-app.get('/getTourGuide/:id', tourGuideController.getTourGuideById);
-app.put('/updateGuide/:id', tourGuideController.updateTourGuide);
-app.delete('/deleteGuide/:id', tourGuideController.deleteTourGuide);
-app.post('/loginTourGuide', tourGuideController.loginTourGuide);
+app.use('/tourguide', tourGuideRoutes);
+app.use('/tourists', touristRoutes);
+app.use('/advertiser', advertiserRoutes);
+app.use('/admins', adminRoutes);
+app.use('/governor', governorRoutes);
+app.use('/seller', sellerRoutes);
 
+const checkStatusController = require('./Controllers/checkUserStatus');
+app.post('/check-user-status' , checkStatusController.checkUserStatus );
 
-// Seller Routers
-app.post('/createSeller', sellerController.createSeller);
-app.get('/getSellers', sellerController.getAllSellers);
-app.get('/getSeller/:id', sellerController.getSellerById);
-app.put('/updateSeller/:id', sellerController.updateSeller);
-app.delete('/deleteSeller/:id', sellerController.deleteSeller);
-app.post('/loginSeller',  sellerController.loginSeller);
+// Routes to upload documents for specific user types
+const { uploadPDF, uploadSellerDocuments, uploadAdvertiserDocuments, uploadTourGuideDocuments } = require('./Controllers/uploadController');
 
-// Advertiser Routers 
-app.post('/createAdvertiser', advertiserController.createAdvertiser);
-app.get('/getAdvertisers', advertiserController.getAllAdvertisers);
-app.get('/getAdvertiser/:id', advertiserController.getAdvertiserById);
-app.put('/updateAdvertiser/:id', advertiserController.updateAdvertiser);
-app.delete('/deleteAdvertiser/:id', advertiserController.deleteAdvertiser);
-app.post('/loginAdvertiser', advertiserController.loginAdvertiser);
+app.post('/upload-documents/seller', uploadPDF.fields([
+    { name: 'ID', maxCount: 1 },
+    { name: 'TaxationRegistry', maxCount: 1 }
+]), uploadSellerDocuments);
 
+// Advertiser document upload route
+app.post('/upload-documents/advertiser', uploadPDF.fields([
+    { name: 'ID', maxCount: 1 },
+    { name: 'TaxationRegistry', maxCount: 1 }
+]), uploadAdvertiserDocuments);
 
-// Admin Activity Category Routers
-app.post('/category', authenticateAdmin, activityCategoryController.createCategory); // Admin can create a category
-app.get('/categories', activityCategoryController.getAllCategories); // Anyone can get all categories
-app.put('/category/:id', authenticateAdmin, activityCategoryController.updateCategory); // Admin can update a category
-app.delete('/category/:id', authenticateAdmin, activityCategoryController.deleteCategory); // Admin can delete a category
+// Tour Guide document upload route
+app.post('/upload-documents/tourguide', uploadPDF.fields([
+    { name: 'ID', maxCount: 1 },
+    { name: 'Certificates', maxCount: 1 }
+]), uploadTourGuideDocuments);
 
-//Activity Routers 
-app.post('/createActivity', authenticate, activityControllers.createActivity); // Protected route with authentication
-app.get('/getActivities', activityControllers.readActivities); // Open route
-app.put('/updateActivity/:id', authenticate, activityControllers.updateActivity); // Protected route
-app.delete('/deleteActivity/:id', authenticate, activityControllers.deleteActivity); // Protected route
+// app.use(express.static(path.join(__dirname, '../frontend/build')));
 
- //Filter activity by budget and date
- app.get('/filterUpcomingActivityByBudget', activityControllers.filterUpcomingActivityByBudget); 
- app.get('/filterUpcomingActivityByDate', activityControllers.filterUpcomingActivityByDate); 
+// // The catch-all handler: for any request that doesn't match one above, send back React's index.html file.
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+// });
 
-
-//Historic Location Router
-app.post('/createLocation', authenticate, historicLocationController.createHistoricalPlace);
-app.get('/getHistoricLocations', historicLocationController.getHistoricalPlaces);
-app.get('/getTicketPrice', historicLocationController.getTicketPrice);
-app.get('/getHistoricLocationsByType', historicLocationController.getHistoricalPlacesByType);
-app.put('/updateHistoricalLocation/:id', historicLocationController.updateHistoricalPlace);
-app.delete('/deleteHistoricLocation', historicLocationController.deleteHistoricalPlace);
-
-
-//Product Routers
-app.post('/createProduct', authenticate, productControllers.postProduct);
-app.get('/getProducts', productControllers.getAllProducts);
-app.put('/updateProductPriceDetails', productControllers.putProductPriceandDetails);
-app.delete('/deleteProduct', productControllers.deleteProduct);
-
-// Itenirary Routers
-app.post('/createItenirary', authenticate, iteniraryControllers.createItenirary);
-app.get('/getItenraries', iteniraryControllers.readItenirary);
-app.put('/updateItenirary/:id', iteniraryControllers.updateItenirary);
-app.delete('/deleteItenirary/:id', iteniraryControllers.deleteItenirary);
-
-//filter Itenirary by date and language
-app.get('/FilterUpcomingItinerariesByDate', iteniraryControllers.FilterUpcomingItinerariesByDate);
-app.get('/FilterUpcomingItinerariesByLanguage', iteniraryControllers.FilterUpcomingItinerariesByLanguage);
-app.get('/FilterUpcomingItinerariesByBudget', iteniraryControllers.FilterUpcomingItinerariesByBudget);
-
-
-
-
-//Admin Routers
-app.delete('/deleteAdmin/:id', authenticateAdmin, adminController.deleteAdminAccount);
-app.post('/loginAdmin', adminController.loginAdmin);
-app.post('/addAdmin',
-    authenticateAdmin, [
-        check('username').notEmpty().withMessage('Username is required'),
-        check('email').isEmail().withMessage('Enter a valid email'),
-        check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-    ],
-    adminController.addAdmin);
-
-app.post('/addTourismGovernor',
-    authenticateAdmin, [
-        check('username').notEmpty().withMessage('Username is required'),
-        check('email').isEmail().withMessage('Enter a valid email'),
-        check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-    ],
-    adminController.addTourismGovernor);
-
-app.post('/createMainAdmin', adminController.createMainAdmin);
-
-// preference tags routers
-app.post('/createTag', preferenceTagController.createTag);
-app.get('/tags', preferenceTagController.getAllTags);
-app.get('/tags/:id', preferenceTagController.getTagById);
-app.put('/updateTag', preferenceTagController.updateTag);
-app.delete('/deleteTag/:id', preferenceTagController.deleteTag);
-
-
-//Tourist Governor Login
-app.post('/loginGovernor',TourismGovernorController.loginTouristGovernor);
