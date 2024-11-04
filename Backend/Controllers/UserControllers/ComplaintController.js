@@ -133,7 +133,7 @@ const getComplaintsByStatus=  async (req, res) => {
         {
           adminResponse,
           adminId,
-          status: 'Responded',
+          status: 'Resolved',
           $set: { updatedAt: new Date() }
         },
         { new: true, runValidators: true }

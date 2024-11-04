@@ -5,37 +5,66 @@ const Complaints = () => {
     const [complaints, setComplaints] = useState([]);
     const [selectedComplaint, setSelectedComplaint] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
+    const [responseText, setResponseText] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
+    const [sortOrder, setSortOrder] = useState('newest');
 
-    // Fetch complaints on component mount
     useEffect(() => {
-        const fetchComplaints = async () => {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await axios.get('/admins/getAllComplaints', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setComplaints(response.data);
-            } catch (error) {
-                setErrorMessage('Error fetching complaints.');
-            }
-        };
-
         fetchComplaints();
     }, []);
 
+    const fetchComplaints = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.get('/admins/getAllComplaints', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setComplaints(response.data);
+        } catch (error) {
+            setErrorMessage('Error fetching complaints.');
+        }
+    };
+
     const handleComplaintClick = (complaint) => {
         setSelectedComplaint(complaint);
+        setResponseText('');
     };
 
     const closeComplaintDetails = () => {
         setSelectedComplaint(null);
     };
 
+    const handleResponseSubmit = async (complaintId) => {
+        const token = localStorage.getItem('token');
+        try {
+            await axios.put(`/admins/adminRespondToComplaint/${complaintId}`, 
+                { response: responseText},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            setComplaints(prevComplaints => 
+                prevComplaints.map(complaint => 
+                    complaint._id === complaintId 
+                        ? {...complaint, status: 'Resolved'} 
+                        : complaint
+                )
+            );
+            setSelectedComplaint(null);
+        } catch (error) {
+            setErrorMessage('Error submitting response.');
+        }
+    };
+
     const containerStyle = {
         padding: '20px',
         textAlign: 'center',
+        maxWidth: '800px',
+        margin: '0 auto',
     };
 
     const listStyle = {
@@ -49,11 +78,10 @@ const Complaints = () => {
         border: '1px solid #ccc',
         borderRadius: '8px',
         padding: '20px',
-        maxWidth: '400px',
-        margin: '0 auto',
+        width: '100%',
         backgroundColor: '#f9f9f9',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
+        textAlign: 'left',
         cursor: 'pointer',
     };
 
@@ -116,19 +144,78 @@ const Complaints = () => {
         marginBottom: '20px',
     };
 
+    const textareaStyle = {
+        width: '80%',
+        minHeight: '100px',
+        padding: '10px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+    };
+
+    const submitButtonStyle = {
+        backgroundColor: '#007bff',
+        color: '#fff',
+        padding: '10px 15px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+    };
+
+    const filterSortStyle = {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '20px',
+    };
+
+    const selectStyle = {
+        padding: '5px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+    };
+
+    const filteredComplaints = complaints
+        .filter(complaint => statusFilter === 'All' || complaint.status === statusFilter)
+        .sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+        });
+
     return (
         <div style={containerStyle}>
             <h2>Complaints</h2>
             {errorMessage && <p style={errorMessageStyle}>{errorMessage}</p>}
             
+            <div style={filterSortStyle}>
+                <select 
+                    style={selectStyle}
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="All">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+                <select 
+                    style={selectStyle}
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                </select>
+            </div>
+            
             <div style={listStyle}>
-                {complaints.map((complaint) => (
+                {filteredComplaints.map((complaint) => (
                     <div
                         key={complaint._id}
                         style={cardStyle}
                         onClick={() => handleComplaintClick(complaint)}
                     >
-                        <h3>
+                        <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             {complaint.title}
                             <span
                                 style={complaint.status === 'Pending' ? pendingStyle : resolvedStyle}
@@ -136,7 +223,7 @@ const Complaints = () => {
                                 {complaint.status}
                             </span>
                         </h3>
-                       
+
                     </div>
                 ))}
             </div>
@@ -150,6 +237,18 @@ const Complaints = () => {
                         <p><strong>Details:</strong> {selectedComplaint.body}</p>
                         <p><strong>Submitted by:</strong> {selectedComplaint.touristId.username}</p>
                         <p><strong>Date:</strong> {new Date(selectedComplaint.date).toLocaleString()}</p>
+                        <textarea
+                            style={textareaStyle}
+                            value={responseText}
+                            onChange={(e) => setResponseText(e.target.value)}
+                            placeholder="Type your response here..."
+                        />
+                        <button
+                            style={submitButtonStyle}
+                            onClick={() => handleResponseSubmit(selectedComplaint._id)}
+                        >
+                            Submit Response
+                        </button>
                     </div>
                 </div>
             )}
