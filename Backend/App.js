@@ -12,6 +12,7 @@ const sellerRoutes = require('./Routes/sellerRoutes');
 const advertiserRoutes = require('./Routes/advertiserRoutes');
 const adminRoutes = require('./Routes/adminRoutes');
 const governorRoutes = require('./Routes/governorRoutes');
+const flightsRoute = require('./Routes/flights');
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
@@ -79,6 +80,8 @@ app.post('/upload-documents/tourguide', uploadPDF.fields([
     { name: 'ID', maxCount: 1 },
     { name: 'Certificates', maxCount: 1 }
 ]), uploadTourGuideDocuments);
+
+app.use('/api/flights', flightsRoute);
 
 // app.use(express.static(path.join(__dirname, '../frontend/build')));
 
