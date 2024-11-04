@@ -148,6 +148,7 @@ const Login = () => {
                                 fullWidth
                                 required
                                 sx={{ mb: 2 }}
+                                
                             />
                             <TextField
                                 label="Password"
@@ -170,7 +171,13 @@ const Login = () => {
                                     ),
                                 }}
                             />
-                            <Button type="submit" variant="contained" color="primary" fullWidth>
+                            <Button  type="submit" variant="contained" color="primary" fullWidth sx={{ backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },mb: 2 }}>
                                 Login
                             </Button>
                         </form>

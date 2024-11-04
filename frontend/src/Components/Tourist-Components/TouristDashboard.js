@@ -7,8 +7,13 @@ import FileComplaint from './fileComplaint';
 import TouristNavbar from './TouristNavbar';
 import UpdateProfile from './UpdateProfile';
 import ViewComplaints from './ViewComplaints';
-// import Cart from './Cart';
-// import Wallet from './Wallet';
+import BookFlight from './BookFlight';
+import BookHotel from './BookHotel';
+import BookTransport from './BookTransportation';
+import Cart from './Cart';
+import Wallet from './Wallet';
+// import BookActivity from './BookActivity';
+// import BookItinerary from './BookItinerary';
 import { Box, Typography } from '@mui/material';
 
 const TouristDashboard = () => {
@@ -94,9 +99,9 @@ const TouristDashboard = () => {
             case 'wallet':
                 return <h2> Still Implementing Wallet!</h2>;
             case 'bookFlight':
-                return <h2> Still Implementing Flight Booking!</h2>;
+                return <BookFlight />;
             case 'bookHotel':
-                return <h2> Still Implementing Hotel Booking!</h2>;
+                return <BookHotel />;
             case 'bookActivity':
                 return <h2> Still Implementing Activity Booking!</h2>;
             case 'bookItinerary':
