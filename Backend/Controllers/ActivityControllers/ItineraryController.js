@@ -200,26 +200,6 @@ const deleteItinerary = async (req, res) => {
     }
 };
 
-// // Sort Itinerary by Price
-// const sortItineraryByPrice = async (req, res) => {
-//     try {
-//         const sortedItineraries = await ItineraryModel.find().sort({ price: 1 }).populate('tags')  // 1 for ascending order
-//         res.status(200).json(sortedItineraries);
-//     } catch (err) {
-//         res.status(500).json({ error: 'Failed to fetch and sort itineraries by price', err: err.message });
-//     }
-// };
-
-// // Sort Itinerary by Rating
-// const sortItineraryByRating = async (req, res) => {
-//     try {
-//         const sortedItineraries = await ItineraryModel.find().sort({ rating: -1 }).populate('tags');  // -1 for descending order
-//         res.status(200).json(sortedItineraries);
-//     } catch (err) {
-//         res.status(500).json({ error: 'Failed to fetch and sort itineraries by rating', err: err.message });
-//     }
-// };
-
 const filterSortSearchItineraries = async (req, res) => {
     try {
         const {

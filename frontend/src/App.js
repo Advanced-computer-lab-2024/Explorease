@@ -15,7 +15,6 @@ import SellerDashboard from './Components/Seller-Components/SellerDashboard';  /
 import AdvertiserDashboard from './Components/Advertiser-Components/AdvertiserDashboard';
 import TouristGovernorDashboard from './Components/TouristGoverner-Components/TouristGovernor';
 import UploadDocuments from './Components/MainPage-Components/UploadDocuments';
-
 function App() {
             // All paths needed
   return (
@@ -37,6 +36,7 @@ function App() {
           <Route path="/historical-places" element={<HistoricalPlaces />} />
           <Route path="/login" element={<Login />} />  {/* Login route */}
           <Route path="/uploadDocuments" element={<UploadDocuments />} />
+
         </Routes>
       </div>
     </Router>

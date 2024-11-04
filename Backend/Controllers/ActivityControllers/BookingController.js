@@ -68,7 +68,7 @@ const getMyBookings = async (req, res) => {
     const touristId = req.user.id; // Assume req.user is set by authentication middleware
 
     try {
-        const bookings = await bookingModel.find({ Tourist: touristId });
+        const bookings = await bookingModel.find({ Tourist: touristId }).populate('Activity');
 
         if (bookings.length === 0) {
             return res.status(404).json({ message: 'No bookings found for this tourist.' });
@@ -83,27 +83,32 @@ const getMyBookings = async (req, res) => {
 
 const deleteBooking = async (req, res) => {
     const { bookingId } = req.params;
+    console.log(`Canceling booking with ID: ${bookingId}`); // Log to verify
 
     try {
         const booking = await bookingModel.findById(bookingId);
+        
         if (!booking) {
+            console.log('Booking not found');
             return res.status(404).json({ message: 'Booking not found' });
         }
 
-        // Check if the cancellation deadline has passed
         if (new Date() > booking.CancellationDeadline) {
+            console.log('Cancellation deadline has passed');
             return res.status(400).json({ message: 'Cancellation deadline has passed, booking cannot be canceled' });
         }
 
-        // Update the status to 'Cancelled'
-        booking.status = 'Cancelled';
+        booking.Status = 'Cancelled';
         await booking.save();
 
+        console.log('Booking canceled successfully');
         res.status(200).json({ message: 'Booking canceled successfully', booking });
     } catch (error) {
+        console.error('Error during booking cancellation:', error);
         res.status(500).json({ message: 'Error canceling booking', error: error.message });
     }
 };
+
 
 module.exports = {
     createBooking,

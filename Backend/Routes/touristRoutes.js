@@ -6,6 +6,7 @@ const activityControllers = require('../Controllers/ActivityControllers/Activity
 const itineraryControllers = require('../Controllers/ActivityControllers/ItineraryController');
 const historicalPlaceControllers = require('../Controllers/ActivityControllers/HistoricalPlacesController');
 const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
+const bookingController = require('../Controllers/ActivityControllers/BookingController');
 const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');  // For tourist-specific routes
   // For tourist/guest shared routes
 
@@ -39,4 +40,9 @@ router.get('/getComplaintsByTouristAndStatus', roleAuth(['tourist']), complaintC
 router.get('/getComplaintsByTourist', roleAuth(['tourist']), complaintControllers.getComplaintsByTourist); 
 router.delete('/deleteComplaint', roleAuth(['tourist']), complaintControllers.deleteComplaint);  
 
+router.post('/activities/book/:activityId', roleAuth(['tourist']), activityControllers.bookActivity);
+router.get('/activities/:id', roleAuth(['tourist']), activityControllers.getActivityById);
+
+router.get('/bookings', roleAuth(['tourist']), bookingController.getMyBookings );
+router.post('/bookings/cancelBooking/:bookingId', roleAuth(['tourist']), bookingController.deleteBooking);
 module.exports = router;
