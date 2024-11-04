@@ -13,6 +13,7 @@ const advertiserRoutes = require('./Routes/advertiserRoutes');
 const adminRoutes = require('./Routes/adminRoutes');
 const governorRoutes = require('./Routes/governorRoutes');
 const flightsRoute = require('./Routes/flights');
+const hotelsRoute = require('./Routes/hotel'); // Add this line
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
@@ -82,6 +83,9 @@ app.post('/upload-documents/tourguide', uploadPDF.fields([
 ]), uploadTourGuideDocuments);
 
 app.use('/api/flights', flightsRoute);
+// backend/App.js
+app.use('/api/hotels', hotelsRoute); // Register the new route
+
 
 
 // app.use(express.static(path.join(__dirname, '../frontend/build')));
