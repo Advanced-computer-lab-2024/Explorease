@@ -314,22 +314,28 @@ const bookActivity = async (req, res) => {
     const touristId = req.user.id; // Assuming `req.user` is set by authentication middleware
 
     try {
+        console.log(activityId);
         // Find the activity and tourist
         const activity = await activityModel.findById(activityId);
         const tourist = await Tourist.findById(touristId);
 
+     
         if (!activity) {
+            console.error(`Activity with ID ${activityId} not found`);
             return res.status(404).json({ message: 'Activity not found' });
         }
         if (!tourist) {
+            console.error(`Tourist with ID ${touristId} not found`);
             return res.status(404).json({ message: 'Tourist not found' });
         }
-
+        
         const { price } = activity;
         const { wallet } = tourist;
 
         // Check if tourist has sufficient balance
         if (wallet < price) {
+            console.error(`Insufficient funds: Wallet has ${wallet}, but price is ${price}`);
+
             return res.status(400).json({ message: 'Insufficient balance in wallet' });
         }
 
