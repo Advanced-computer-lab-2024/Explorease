@@ -84,7 +84,6 @@ const getComplaintsByStatus=  async (req, res) => {
         .sort({ createdAt: -1 }) // Sort by creation date, with the newest first
         .exec();
   
-      // Send the found complaints as a JSON response
       res.status(200).json(complaints);
     } catch (error) {
       // If there's an error, send a 500 status with the error message

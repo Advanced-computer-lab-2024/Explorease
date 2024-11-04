@@ -165,18 +165,23 @@ const ViewComplaints = () => {
 )}
 
 
-            {selectedComplaint && (
-                <div style={overlayStyle}>
-                    <div style={modalStyle}>
-                        <button style={closeButtonStyle} onClick={closeComplaintDetails}>X</button>
-                        <h3>{selectedComplaint.title}</h3>
-                        <p><strong>Status:</strong> {selectedComplaint.status}</p>
-                        <p><strong>Details:</strong> {selectedComplaint.body}</p>
-                        <p><strong>Submitted by:</strong> {selectedComplaint.touristId.username}</p>
-                        <p><strong>Date:</strong> {new Date(selectedComplaint.date).toLocaleString()}</p>
-                    </div>
-                </div>
+{selectedComplaint && (
+    <div style={overlayStyle}>
+        <div style={modalStyle}>
+            <button style={closeButtonStyle} onClick={closeComplaintDetails}>X</button>
+            <h3>{selectedComplaint.title}</h3>
+            <p><strong>Status:</strong> {selectedComplaint.status}</p>
+            <p><strong>Details:</strong> {selectedComplaint.body}</p>
+            <p><strong>Date:</strong> {new Date(selectedComplaint.date).toLocaleString()}</p>
+
+            {/* Display admin response if it exists */}
+            {selectedComplaint.adminResponse && (
+                <p><strong>Admin Response:</strong> {selectedComplaint.adminResponse}</p>
             )}
+        </div>
+    </div>
+)}
+
         </div>
     );
 };
