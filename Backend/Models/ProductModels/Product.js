@@ -9,6 +9,8 @@ const ProductSchema = new Schema({
     Ratings: { type: Number, min: 1, max: 5, default: 1, required: false },
     Reviews: { type: [String], default: "" },
     AvailableQuantity: { type: Number, required: true },
+    Archived: { type: Boolean, default: false },
+    Sales: { type: Number, default: 0 },
     imageUrl : {type : String, required: true}
 });
 const Product = mongoose.model('Product', ProductSchema);

@@ -160,6 +160,26 @@ const updateProductDetails = async (req, res) => {
     }
 };
 
+// Update (archive/unarchive) product's Archived status
+const toggleProductArchiveStatus = async (req, res) => {
+    const { id } = req.params; // Use id from params
+    try {
+        // Find the product by ID
+        const product = await productModel.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        product.Archived = !product.Archived; 
+
+        await product.save();
+        res.status(200).json({ message: 'Product archive status updated', product });
+    } catch (error) {
+        console.error('Error updating product archive status:', error);
+        res.status(500).json({ message: 'Error updating product archive status' });
+    }
+};
+
 const updateProductDetailsForAdmin = async (req, res) => {
     const { id } = req.params;
     const { Price, AvailableQuantity } = req.body;
@@ -271,6 +291,7 @@ module.exports = {
     deleteProduct,
     getMyProducts,
     updateProductDetails,
+    toggleProductArchiveStatus,
     getFilteredSortedProducts,
     getFilteredSortedProductsBySeller,
     deleteProduct2,

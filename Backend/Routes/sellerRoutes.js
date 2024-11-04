@@ -46,6 +46,7 @@ router.get('/')
 // Update a product
 router.put('/updateProduct/:id', roleAuth(['seller']), productController.updateProductDetails);
 router.delete('/deleteProduct/:id', roleAuth(['seller']), productController.deleteProduct);
+router.put('/archiveProduct/:id', roleAuth(['seller']), productController.toggleProductArchiveStatus);
 router.put('/editPassword', roleAuth(['seller']), sellerController.updatePassword);
 
 // router.get('/searchProduct', roleAuth(['seller']) , productController.searchProductByName);
