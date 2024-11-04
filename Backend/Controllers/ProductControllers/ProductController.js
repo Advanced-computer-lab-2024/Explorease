@@ -170,12 +170,9 @@ const toggleProductArchiveStatus = async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        // Toggle the Archived status
-        product.Archived = !product.Archived; // Switch the current value
+        product.Archived = !product.Archived; 
 
-        // Save the updated product
         await product.save();
-
         res.status(200).json({ message: 'Product archive status updated', product });
     } catch (error) {
         console.error('Error updating product archive status:', error);

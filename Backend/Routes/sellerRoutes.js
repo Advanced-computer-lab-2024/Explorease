@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const sellerController = require('../Controllers/UserControllers/sellerController');
 const productController = require('../Controllers/ProductControllers/ProductController');  // Ensure correct path
-//const  toggleProductArchiveStatus  = require('../Controllers/ProductControllers/ProductController');
-//const authenticate = require('../middleware/authenticate');
 const { roleAuth } = require('../Middleware/authMiddleware');
 
 const cloudinary = require('cloudinary').v2;
@@ -48,7 +46,6 @@ router.get('/')
 // Update a product
 router.put('/updateProduct/:id', roleAuth(['seller']), productController.updateProductDetails);
 router.delete('/deleteProduct/:id', roleAuth(['seller']), productController.deleteProduct);
-// Route for archiving/unarchiving a product
 router.put('/archiveProduct/:id', roleAuth(['seller']), productController.toggleProductArchiveStatus);
 router.put('/editPassword', roleAuth(['seller']), sellerController.updatePassword);
 
