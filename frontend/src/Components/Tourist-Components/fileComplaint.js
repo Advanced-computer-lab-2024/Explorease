@@ -1,7 +1,6 @@
 import { Box, Button, CircularProgress, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const FileComplaint = () => {
     const [title, setTitle] = useState('');
@@ -10,7 +9,6 @@ const FileComplaint = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
