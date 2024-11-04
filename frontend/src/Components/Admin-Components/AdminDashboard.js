@@ -9,6 +9,7 @@ import EditMyPassword from './EditPassword';
 import UserApproval from './UserApproval';
 import BlockItinerary from './BlockItinerary';
 import Complaints from './Complaints';
+import MyProducts from './AdminProducts'
 
 
 const AdminDashboard = () => {
@@ -299,6 +300,27 @@ const updateTag = async (id, newName) => {
         fetchTags();  // Refresh the tag list after updating
     } catch (error) {
         setTagMessage('Error updating tag.');
+    }
+};
+
+const handleArchiveProduct = async (productId) => {
+    const token = localStorage.getItem('token');
+    try {
+        // Find the product to get its current Archived status
+        const product = products.find(p => p._id === productId);
+        
+        // Toggle Archived status
+        await axios.put(`/seller/archiveProduct/${productId}`, { Archived: !product.Archived }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        setProductMessage(product.Archived ? 'Product unarchived successfully' : 'Product archived successfully');
+        fetchProducts(); // Refresh product list after toggling archive status
+    } catch (error) {
+        setProductMessage('Error updating archive status');
+        console.error('Error updating archive status:', error);
     }
 };
 
@@ -622,7 +644,7 @@ const handleTagChange = (id, newName) => {
             </div>
             <button type="submit" className="submit-btn">Create Product</button>
         </form>
-        <Products products={products} productMessage={productMessage} />
+        <MyProducts products={products} productMessage={productMessage} />
 
         
     </div>

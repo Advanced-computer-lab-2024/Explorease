@@ -35,7 +35,8 @@ router.put('/editPassword', roleAuth(['tourist']), touristControllers.editPasswo
 
 // Tourist can file a complaint
 router.post('/addComplaint', roleAuth(['tourist']), complaintControllers.addComplaint);   
-router.get('/getComplaintsByTouristAndStatus', roleAuth(['tourist']), complaintControllers.getComplaintsByTouristAndStatus); 
+router.get('/getComplaintsByTouristAndStatus', roleAuth(['tourist']), complaintControllers.getComplaintsByTouristAndStatus);
+router.get('/getComplaintsByTourist', roleAuth(['tourist']), complaintControllers.getComplaintsByTourist); 
 router.delete('/deleteComplaint', roleAuth(['tourist']), complaintControllers.deleteComplaint);  
 
 module.exports = router;

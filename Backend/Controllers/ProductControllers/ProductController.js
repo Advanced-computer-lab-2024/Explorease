@@ -53,6 +53,23 @@ const getAllProducts = async (req, res) => {
         if (products.length === 0) {
             return res.status(404).json({ message: "No products found." });
         }
+        const filteredProduct = products.filter(product => !product.Archived);
+        if(filteredProduct.length === 0){
+            return res.status(404).json({ message: "No products found." });
+        }
+
+        res.status(200).json(filteredProduct);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to load products.", error: error.message });
+    }
+};
+
+const getAllProductsAdmin = async (req, res) => {
+    try {
+        const products = await productModel.find({});
+        if (products.length === 0) {
+            return res.status(404).json({ message: "No products found." });
+        }
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: "Failed to load products.", error: error.message });
@@ -295,5 +312,6 @@ module.exports = {
     getFilteredSortedProducts,
     getFilteredSortedProductsBySeller,
     deleteProduct2,
-    updateProductDetailsForAdmin
+    updateProductDetailsForAdmin,
+    getAllProductsAdmin
 };

@@ -6,6 +6,7 @@ import Products from '../Seller-Components/Products';
 import FileComplaint from './fileComplaint';
 import TouristNavbar from './TouristNavbar';
 import UpdateProfile from './UpdateProfile';
+import ViewComplaints from './ViewComplaints';
 // import Cart from './Cart';
 // import Wallet from './Wallet';
 import { Box, Typography } from '@mui/material';
@@ -86,6 +87,8 @@ const TouristDashboard = () => {
                 return <UpdateProfile profile={profile} setProfile={setProfile} />;
             case 'fileComplaint':
                 return < FileComplaint />;
+            case 'ViewComplaints':
+                return <ViewComplaints />
             case 'cart':
                 return <h2> Still Implementing Cart!</h2>;
             case 'wallet':
@@ -113,6 +116,7 @@ const TouristDashboard = () => {
                     <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
                     <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
                     <li onClick={() => setActiveComponent('fileComplaint')} style={{ cursor: 'pointer', marginBottom: '10px' }}>File Complaint</li>
+                    <li onClick={() => setActiveComponent('ViewComplaints')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Complaints</li>
                 </ul>
             </Box>
 

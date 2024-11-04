@@ -75,6 +75,23 @@ const getComplaintsByStatus=  async (req, res) => {
     }
   };
 
+  const getComplaintsByTourist = async (req, res) => {
+    const touristId = req.user.id; // Get the authenticated tourist's ID from req.user
+    
+    try {
+      // Query the database for complaints that match the touristId
+      const complaints = await Complaint.find({ touristId })
+        .sort({ createdAt: -1 }) // Sort by creation date, with the newest first
+        .exec();
+  
+      // Send the found complaints as a JSON response
+      res.status(200).json(complaints);
+    } catch (error) {
+      // If there's an error, send a 500 status with the error message
+      res.status(500).json({ message: 'Error retrieving complaints', error: error.message });
+    }
+  };
+  
 
   const addComplaint = async (req, res) => {
     try {
@@ -118,16 +135,26 @@ const getComplaintsByStatus=  async (req, res) => {
     }
   };
 
-  const adminRespondToComplaint= async (req, res) => {
+  const adminRespondToComplaint = async (req, res) => {
     try {
       const { complaintId } = req.params;
       const { adminResponse } = req.body;
-      const adminId = req.user.id; // Assuming the admin ID is stored in req.user.id
-
+      const adminId = req.user && req.user.id; // Ensure req.user exists
+  
+      console.log("User ID:", adminId);
+      console.log("Complaint ID:", complaintId);
+  
       if (!adminResponse) {
         return res.status(400).json({ message: 'Admin response is required' });
       }
-
+  
+      // Check if the complaint exists
+      const complaint = await Complaint.findById(complaintId);
+      if (!complaint) {
+        return res.status(404).json({ message: 'Complaint not found' });
+      }
+  
+      // Update the complaint
       const updatedComplaint = await Complaint.findByIdAndUpdate(
         complaintId,
         {
@@ -138,16 +165,14 @@ const getComplaintsByStatus=  async (req, res) => {
         },
         { new: true, runValidators: true }
       );
-
-      if (!updatedComplaint) {
-        return res.status(404).json({ message: 'Complaint not found' });
-      }
-
+  
       res.status(200).json(updatedComplaint);
     } catch (error) {
+      console.error("Error in adminRespondToComplaint:", error);
       res.status(500).json({ message: 'Error responding to complaint', error: error.message });
     }
   };
+  
 
   const getAllComplaints= async (req, res) => {
       try {
@@ -164,4 +189,4 @@ const getComplaintsByStatus=  async (req, res) => {
   
 
 
-module.exports = { getComplaintsByStatus,getComplaintsByDate, getComplaintsByTouristAndStatus , addComplaint ,deleteComplaint,adminRespondToComplaint,getAllComplaints };
+module.exports = { getComplaintsByStatus,getComplaintsByDate, getComplaintsByTouristAndStatus , addComplaint ,deleteComplaint,adminRespondToComplaint,getAllComplaints , getComplaintsByTourist};

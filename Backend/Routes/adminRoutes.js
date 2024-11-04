@@ -56,7 +56,8 @@ router.put('/updateCategory/:id', authenticateAdmin, activityController.updateCa
 router.get('/getCategories', optionalAuth(['guest']), activityController.getAllCategories);
 router.delete('/deleteCategory/:id', authenticateAdmin, activityController.deleteCategory);
 
-router.get('/products', authenticateAdmin, productController.getAllProducts);
+router.get('/products', authenticateAdmin, productController.getAllProductsAdmin);
+router.put('/archiveProduct/:id',authenticateAdmin, productController.toggleProductArchiveStatus);
 // router.get('/searchProductByName', authenticateAdmin, productController.searchProductByName);
 // router.get('/products', authenticateAdmin, productController.getAllProducts);
 // router.get('/products/filter', authenticateAdmin, productController.filterProductByPrice);  // Filter products by price
@@ -90,7 +91,7 @@ router.post('/reject-user', authenticateAdmin, adminController.rejectUser);
 router.get('/getAllComplaints', authenticateAdmin, complaintControllers.getAllComplaints); 
 router.get('/getComplaintsByStatus', authenticateAdmin, complaintControllers.getComplaintsByStatus); 
 router.get('/getComplaintsByDate', authenticateAdmin, complaintControllers.getComplaintsByDate); 
-router.put('/adminRespondToComplaint', authenticateAdmin, complaintControllers.adminRespondToComplaint); 
+router.put('/adminRespondToComplaint/:complaintId', authenticateAdmin, complaintControllers.adminRespondToComplaint); 
 router.delete('/deleteComplaint', authenticateAdmin, complaintControllers.deleteComplaint); 
 
 module.exports = router;
