@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AdminDashboard.css'; // Import the CSS file
-import Products from '../Seller-Components/Products';  // Import the Products component
 import CreateAdminForm from './AdminManagement';
 import ManageUsers from './ManageUser';
 import EditMyPassword from './EditPassword';
@@ -14,7 +13,6 @@ import MyProducts from './AdminProducts'
 
 const AdminDashboard = () => {
     const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(true);
     const [governorUsername, setGovernorUsername] = useState('');
     const [governorEmail, setGovernorEmail] = useState('');
     const [governorPassword, setGovernorPassword] = useState('');
@@ -31,9 +29,7 @@ const [productName, setProductName] = useState('');
 const [productPrice, setProductPrice] = useState('');
 const [productDescription, setProductDescription] = useState('');
 const [availableQuantity, setAvailableQuantity] = useState('');
-const [minPrice, setMinPrice] = useState('');
-const [maxPrice, setMaxPrice] = useState('');
-const [searchQuery, setSearchQuery] = useState('');
+
 const [productMessage, setProductMessage] = useState('');
 const [imageFile, setImageFile] = useState(null);  // File upload for image
 
@@ -88,7 +84,7 @@ const createCategory = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.post('/admins/createCategory', { name: newCategoryName }, {
+        await axios.post('/admins/createCategory', { name: newCategoryName }, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -164,7 +160,7 @@ const createProduct = async (e) => {
     formData.append('image', imageFile);  // Append the image file
 
     try {
-        const response = await axios.post('/admins/products', formData, {
+        await axios.post('/admins/products', formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data'
@@ -193,74 +189,74 @@ const fetchProducts = async () => {
 };
 
 // Search for a product by name
-const searchProductByName = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-    try {
-        const response = await axios.get(`/admins/products/searchProductByName?name=${searchQuery}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setProducts(response.data);
-    } catch (error) {
-        setProductMessage('Error searching for products.');
-    }
-};
+// const searchProductByName = async (e) => {
+//     e.preventDefault();
+//     const token = localStorage.getItem('token');
+//     try {
+//         const response = await axios.get(`/admins/products/searchProductByName?name=${searchQuery}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`,
+//             },
+//         });
+//         setProducts(response.data);
+//     } catch (error) {
+//         setProductMessage('Error searching for products.');
+//     }
+// };
 
 // Filter products by price
-const filterProductByPrice = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-    try {
-        const response = await axios.get(`/admins/products/filter?minPrice=${minPrice}&maxPrice=${maxPrice}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setProducts(response.data);
-    } catch (error) {
-        setProductMessage('Error filtering products by price.');
-    }
-};
+// const filterProductByPrice = async (e) => {
+//     e.preventDefault();
+//     const token = localStorage.getItem('token');
+//     try {
+//         const response = await axios.get(`/admins/products/filter?minPrice=${minPrice}&maxPrice=${maxPrice}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`,
+//             },
+//         });
+//         setProducts(response.data);
+//     } catch (error) {
+//         setProductMessage('Error filtering products by price.');
+//     }
+// };
 
-// Delete a product
-const deleteProduct = async (id) => {
-    const token = localStorage.getItem('token');
-    try {
-        await axios.delete(`/admins/deleteProduct/${id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setProductMessage('Product deleted successfully!');
-        fetchProducts();
-    } catch (error) {
-        setProductMessage('Error deleting product.');
-    }
-};
+// // Delete a product
+// const deleteProduct = async (id) => {
+//     const token = localStorage.getItem('token');
+//     try {
+//         await axios.delete(`/admins/deleteProduct/${id}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`,
+//             },
+//         });
+//         setProductMessage('Product deleted successfully!');
+//         fetchProducts();
+//     } catch (error) {
+//         setProductMessage('Error deleting product.');
+//     }
+// };
 
 // Sort products by ratings
-const sortProductsByRatings = async () => {
-    const token = localStorage.getItem('token');
-    try {
-        const response = await axios.get('/admins/products/sortByRating', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setProducts(response.data);
-    } catch (error) {
-        setProductMessage('Error sorting products by ratings.');
-    }
-};
+// const sortProductsByRatings = async () => {
+//     const token = localStorage.getItem('token');
+//     try {
+//         const response = await axios.get('/admins/products/sortByRating', {
+//             headers: {
+//                 Authorization: `Bearer ${token}`,
+//             },
+//         });
+//         setProducts(response.data);
+//     } catch (error) {
+//         setProductMessage('Error sorting products by ratings.');
+//     }
+// };
 
 // Create a new preference tag
 const createTag = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-        const response = await axios.post('/admins/createTags', { name: newTagName }, {
+        await axios.post('/admins/createTags', { name: newTagName }, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -303,26 +299,26 @@ const updateTag = async (id, newName) => {
     }
 };
 
-const handleArchiveProduct = async (productId) => {
-    const token = localStorage.getItem('token');
-    try {
-        // Find the product to get its current Archived status
-        const product = products.find(p => p._id === productId);
+// const handleArchiveProduct = async (productId) => {
+//     const token = localStorage.getItem('token');
+//     try {
+//         // Find the product to get its current Archived status
+//         const product = products.find(p => p._id === productId);
         
-        // Toggle Archived status
-        await axios.put(`/seller/archiveProduct/${productId}`, { Archived: !product.Archived }, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+//         // Toggle Archived status
+//         await axios.put(`/seller/archiveProduct/${productId}`, { Archived: !product.Archived }, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
 
-        setProductMessage(product.Archived ? 'Product unarchived successfully' : 'Product archived successfully');
-        fetchProducts(); // Refresh product list after toggling archive status
-    } catch (error) {
-        setProductMessage('Error updating archive status');
-        console.error('Error updating archive status:', error);
-    }
-};
+//         setProductMessage(product.Archived ? 'Product unarchived successfully' : 'Product archived successfully');
+//         fetchProducts(); // Refresh product list after toggling archive status
+//     } catch (error) {
+//         setProductMessage('Error updating archive status');
+//         console.error('Error updating archive status:', error);
+//     }
+// };
 
 // Delete a preference tag
 const deleteTag = async (id) => {

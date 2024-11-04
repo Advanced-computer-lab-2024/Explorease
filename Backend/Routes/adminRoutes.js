@@ -64,6 +64,7 @@ router.put('/archiveProduct/:id',authenticateAdmin, productController.toggleProd
 // router.get('/products/sortByRating', authenticateAdmin, productController.sortProductsByRatings);
 router.put('/updateProduct/:id', authenticateAdmin, productController.updateProductDetailsForAdmin);
 router.delete('/deleteProduct/:id', authenticateAdmin, productController.deleteProduct2);
+router.get('/myproducts/filter-sort-search', authenticateAdmin, productController.getFilteredSortedProductsBySeller);
 
 router.get('/itineraries', authenticateAdmin, ItineraryController.getAllItinerary);
 router.put('/flagItineraries/:id', authenticateAdmin, ItineraryController.flagItinerary);

@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,6 @@ const ViewComplaints = () => {
     const [complaints, setComplaints] = useState([]);
     const [selectedComplaint, setSelectedComplaint] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [responseText, setResponseText] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [sortOrder, setSortOrder] = useState('newest');
     const [loading, setLoading] = useState(false);

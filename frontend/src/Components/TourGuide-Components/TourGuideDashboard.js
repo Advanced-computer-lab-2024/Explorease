@@ -11,34 +11,34 @@ const TourGuideDashboard = () => {
     const [activeComponent, setActiveComponent] = useState('profile'); // State to manage active component
     const navigate = useNavigate();
     
-    const fetchProfile = async () => {
-        const token = localStorage.getItem('token');  
-        if (!token) {
-            navigate('/login');  
-        }
-
-        try {
-            const response = await axios.get('/tourguide/myProfile', {  // Placeholder endpoint
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (response.data && response.data.tourguide) {
-                setProfile(response.data.tourguide);
-            } else {
-                setMessage('No profile data found');
-            }
-
-        } catch (error) {
-            console.error('Error fetching profile:', error.response ? error.response.data : error.message);
-            setMessage('Error fetching profile');
-        }
-    };
-    
     useEffect(() => {
+        const fetchProfile = async () => {
+            const token = localStorage.getItem('token');  
+            if (!token) {
+                navigate('/login');  
+            }
+    
+            try {
+                const response = await axios.get('/tourguide/myProfile', {  // Placeholder endpoint
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+    
+                if (response.data && response.data.tourguide) {
+                    setProfile(response.data.tourguide);
+                } else {
+                    setMessage('No profile data found');
+                }
+    
+            } catch (error) {
+                console.error('Error fetching profile:', error.response ? error.response.data : error.message);
+                setMessage('Error fetching profile');
+            }
+        };
         fetchProfile();
-    }, []);
+    }, [navigate]);
+    
     const ViewMyItineraries = () => {
         const [itineraries, setItineraries] = useState([]);
         const [message, setMessage] = useState('');
@@ -426,7 +426,7 @@ const TourGuideDashboard = () => {
             const token = localStorage.getItem('token');
     
             try {
-                const response = await axios.post('/tourguide/createItinerary', itineraryData, {
+                await axios.post('/tourguide/createItinerary', itineraryData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json'

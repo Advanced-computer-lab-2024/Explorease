@@ -39,7 +39,7 @@ const UpdateAdvertiser = ({ profile, setProfile }) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         
-        if (formProfile.websiteLink && !/^(https?:\/\/)?([\w\-]+\.)+[a-z]{2,6}(\/[^\s]*)?$/.test(formProfile.websiteLink)) {
+        if (formProfile.websiteLink && !/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,6}(\/[^\s]*)?$/.test(formProfile.websiteLink)) {
             setUpdateMessage('Please enter a valid website URL');
             return;
         }

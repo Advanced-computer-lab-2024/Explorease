@@ -52,7 +52,7 @@ const SellerProducts = () => {
     const handleUpdateSubmit = async (productId) => {
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.put(`/seller/updateProduct/${productId}`, updatedProductData, {
+            await axios.put(`/seller/updateProduct/${productId}`, updatedProductData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

@@ -15,7 +15,6 @@ import SellerDashboard from './Components/Seller-Components/SellerDashboard';  /
 import AdvertiserDashboard from './Components/Advertiser-Components/AdvertiserDashboard';
 import TouristGovernorDashboard from './Components/TouristGoverner-Components/TouristGovernor';
 import UploadDocuments from './Components/MainPage-Components/UploadDocuments';
-import Products from './Components/Seller-Components/Products';
 
 function App() {
             // All paths needed

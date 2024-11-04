@@ -21,7 +21,7 @@ const FileComplaint = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await axios.post(
+             await axios.post(
                 '/tourists/addComplaint',
                 { title, body, date },
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -31,6 +31,8 @@ const FileComplaint = () => {
             setTitle('');
             setBody('');
             setDate('');
+            setIsLoading(false);
+
             
         
         } catch (error) {

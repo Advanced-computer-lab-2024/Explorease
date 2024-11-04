@@ -24,7 +24,7 @@ const MultiRoleRegister = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`/register`, formData);  // Adjust the API endpoint if necessary
+            await axios.post(`/register`, formData);  // Adjust the API endpoint if necessary
             setMessage('Registration successful! Redirecting to login page...');
             // Redirect to login page after successful registration
             setTimeout(() => {

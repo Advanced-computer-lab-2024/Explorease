@@ -17,9 +17,7 @@ const CreateHistoricalPlace = () => {
         Type: '',  
         tags: ''
     });
-
     const [message, setMessage] = useState('');
-    const [success, setSuccess] = useState(false);
 
     // Handle input changes for simple text fields
     const handleChange = (e) => {
@@ -68,7 +66,6 @@ const CreateHistoricalPlace = () => {
             });
 
             if (response.status === 201) {
-                setSuccess(true);
                 setMessage('Historical Place created successfully!');
                 // Reset the form after successful submission
                 setFormData({

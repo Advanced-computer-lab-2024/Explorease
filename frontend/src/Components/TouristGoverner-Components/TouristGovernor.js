@@ -9,7 +9,6 @@ const TouristGovernorDashboard = () => {
     const [historicalPlaces, setHistoricalPlaces] = useState([]);
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('profile');
-    const [governorId, setGovernorId] = useState(null);
     const [editingPlaceId, setEditingPlaceId] = useState(null);
     const [updatedPlaceData, setUpdatedPlaceData] = useState({});
 
@@ -27,7 +26,6 @@ const TouristGovernorDashboard = () => {
 
             if (response.data) {
                 setProfile(response.data);
-                setGovernorId(response.data._id); 
                 setMessage('');
             } else {
                 setMessage('No profile data found');

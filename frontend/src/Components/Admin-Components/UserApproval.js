@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useMemo } from 'react';
 import axios from 'axios';
 import { Button, Typography, Box, Card, CardContent, Stack } from '@mui/material';
 
@@ -8,11 +8,11 @@ const UserApproval = () => {
 
     const token = localStorage.getItem('token');
 
-    const axiosConfig = {
+    const axiosConfig = useMemo(() => ({
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    };
+    }), [token]);
 
     useEffect(() => {
         const fetchPendingUsers = async () => {
@@ -29,7 +29,7 @@ const UserApproval = () => {
         };
 
         fetchPendingUsers();
-    }, []);
+    }, [axiosConfig]);
 
     const handleAccept = async (userId, userType) => {
         try {

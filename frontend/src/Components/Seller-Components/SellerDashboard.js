@@ -12,38 +12,34 @@ const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('profile'); // State to manage active component
-    const [products, setProducts] = useState([]); // State to manage products
-    const [productMessage, setProductMessage] = useState('');
     const navigate = useNavigate();
 
-    const fetchProfile = async () => {
-        const token = localStorage.getItem('token');
-        console.log('Token:', token); // Check if token is present
-
-        if (!token) {
-            navigate('/login');
-            return;
-        }
-
-        try {
-            const response = await axios.get('/seller/myProfile', {
-                headers: {
-                    Authorization: `Bearer ${token}` // Send token in request header
-                }
-            });
-
-
-            if (response.data && response.data.seller) {
-                setProfile(response.data.seller); // Update profile state with fetched data
-            } 
-        } catch (error) {
-            console.error('Error fetching profile:', error.response ? error.response.data : error.message);
-            setMessage('Error fetching profile');
-        }
-    };
-
     useEffect(() => {
-       
+        const fetchProfile = async () => {
+            const token = localStorage.getItem('token');
+            console.log('Token:', token); // Check if token is present
+    
+            if (!token) {
+                navigate('/login');
+                return;
+            }
+    
+            try {
+                const response = await axios.get('/seller/myProfile', {
+                    headers: {
+                        Authorization: `Bearer ${token}` // Send token in request header
+                    }
+                });
+    
+    
+                if (response.data && response.data.seller) {
+                    setProfile(response.data.seller); // Update profile state with fetched data
+                } 
+            } catch (error) {
+                console.error('Error fetching profile:', error.response ? error.response.data : error.message);
+                setMessage('Error fetching profile');
+            }
+        };
         fetchProfile();
     }, [navigate]);
 

@@ -52,7 +52,7 @@ const AdminProducts = () => {
     const handleUpdateSubmit = async (productId) => {
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.put(`/seller/updateProduct/${productId}`, updatedProductData, {
+            const response = await axios.put(`/admins/updateProduct/${productId}`, updatedProductData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -71,7 +71,7 @@ const AdminProducts = () => {
     const handleDeleteProduct = async (productId) => {
         const token = localStorage.getItem('token');
         try {
-            await axios.delete(`/seller/deleteProduct/${productId}`, {
+            await axios.delete(`/admins/deleteProduct/${productId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -119,7 +119,7 @@ const AdminProducts = () => {
             if (sortByRatings) queryString += `sortByRatings=${sortByRatings}&`;  // For sorting by ratings
 
             // Fetch products with the query string
-            const response = await axios.get(`/seller/myproducts/filter-sort-search?${queryString}`, {
+            const response = await axios.get(`/admins/myproducts/filter-sort-search?${queryString}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
