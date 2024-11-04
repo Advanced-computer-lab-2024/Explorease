@@ -12,8 +12,8 @@ import BookHotel from './BookHotel';
 import BookTransport from './BookTransportation';
 import Cart from './Cart';
 import Wallet from './Wallet';
-// import BookActivity from './BookActivity';
-// import BookItinerary from './BookItinerary';
+import BookActivity from './BookActivity';
+import BookItinerary from './BookItinerary';
 import { Box, Typography } from '@mui/material';
 
 const TouristDashboard = () => {
@@ -103,9 +103,9 @@ const TouristDashboard = () => {
             case 'bookHotel':
                 return <BookHotel />;
             case 'bookActivity':
-                return <h2> Still Implementing Activity Booking!</h2>;
+                return <BookActivity />
             case 'bookItinerary':
-                return <h2> Still Implementing Itinerary Booking!</h2>;
+                return <BookItinerary />
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }

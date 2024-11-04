@@ -1,7 +1,8 @@
 const activityModel = require('../../Models/ActivityModels/Activity.js');
 const activityCategoryModel = require('../../Models/ActivityModels/ActivityCategory.js')
 const preferenceTagModel = require('../../Models/ActivityModels/PreferenceTags.js');
-
+const Tourist = require('../../Models/UserModels/Tourist.js');
+const Booking = require('../../Models/ActivityModels/Booking.js');
 // Create Activity
 const createActivity = async (req, res) => {
     const { name, date, time, location, price, category, tags, specialDiscounts, bookingOpen, duration } = req.body;
@@ -308,9 +309,79 @@ const filterSortSearchActivitiesByAdvertiser = async (req, res) => {
     }
 };
 
+const bookActivity = async (req, res) => {
+    const { activityId } = req.params;
+    const touristId = req.user.id; // Assuming `req.user` is set by authentication middleware
 
+    try {
+        // Find the activity and tourist
+        const activity = await activityModel.findById(activityId);
+        const tourist = await Tourist.findById(touristId);
+
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+        if (!tourist) {
+            return res.status(404).json({ message: 'Tourist not found' });
+        }
+
+        const { price } = activity;
+        const { wallet } = tourist;
+
+        // Check if tourist has sufficient balance
+        if (wallet < price) {
+            return res.status(400).json({ message: 'Insufficient balance in wallet' });
+        }
+
+        // Deduct the activity price from wallet
+        tourist.wallet -= price;
+        await tourist.save();
+
+        // Set cancellation deadline to 48 hours before the activity date
+        const activityDate = activity.date;
+        const cancellationDeadline = new Date(activityDate.getTime() - 48 * 60 * 60 * 1000); // 48 hours before
+
+        // Create the booking
+        const newBooking = new Booking({
+            Tourist: touristId,
+            Activity: activityId,
+            Status: 'Active',
+            BookedAt: new Date(),
+            CancellationDeadline: cancellationDeadline
+        });
+        await newBooking.save();
+
+        res.status(201).json({
+            message: 'Booking successful',
+            booking: newBooking,
+            walletBalance: tourist.wallet
+        });
+    } catch (error) {
+        console.error('Error during booking:', error);
+        res.status(500).json({ message: 'Error processing booking', error: error.message });
+    }
+};
+
+const getActivityById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const activity = await activityModel.findById(id);
+        
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
+        res.status(200).json(activity);
+    } catch (error) {
+        console.error('Error fetching activity:', error);
+        res.status(500).json({ message: 'Error fetching activity', error: error.message });
+    }
+};
 
 module.exports = {
+    getActivityById,
+    bookActivity,
     createActivity,
     readActivities,
     getAllActivity,

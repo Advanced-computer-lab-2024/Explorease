@@ -39,4 +39,7 @@ router.get('/getComplaintsByTouristAndStatus', roleAuth(['tourist']), complaintC
 router.get('/getComplaintsByTourist', roleAuth(['tourist']), complaintControllers.getComplaintsByTourist); 
 router.delete('/deleteComplaint', roleAuth(['tourist']), complaintControllers.deleteComplaint);  
 
+router.post('/activities/:activityId/book', roleAuth(['tourist']), activityControllers.bookActivity);
+router.get('/activities/:id', roleAuth(['tourist']), activityControllers.getActivityById);
+
 module.exports = router;

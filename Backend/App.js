@@ -83,6 +83,7 @@ app.post('/upload-documents/tourguide', uploadPDF.fields([
 
 app.use('/api/flights', flightsRoute);
 
+
 // app.use(express.static(path.join(__dirname, '../frontend/build')));
 
 // // The catch-all handler: for any request that doesn't match one above, send back React's index.html file.
