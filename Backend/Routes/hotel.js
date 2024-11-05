@@ -1,12 +1,15 @@
-// backend/routes/hotels.js
+// Import necessary modules
 const express = require('express');
-const router = express.Router();
-const { getAccessToken } = require('../utils/amadeusAPI'); // Assuming you already have this function set up in amadeusAPI.js
 const axios = require('axios');
+const { getAccessToken } = require('../utils/amadeusAPI');
+const router = express.Router();
 
-// Route to search for hotel offers
 router.get('/search', async (req, res) => {
-    const { cityCode, checkInDate, checkOutDate, currency = 'USD' } = req.query;
+    const { checkInDate, checkOutDate, adults } = req.query;
+
+    if (!checkInDate || !checkOutDate || !adults) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+    }
 
     try {
         const accessToken = await getAccessToken();
@@ -14,24 +17,20 @@ router.get('/search', async (req, res) => {
             return res.status(500).json({ error: 'Failed to authenticate with Amadeus API' });
         }
 
+        // Pass hotelIds as a string
         const response = await axios.get('https://test.api.amadeus.com/v3/shopping/hotel-offers', {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
+            headers: { Authorization: `Bearer ${accessToken}` },
             params: {
-                cityCode,
+                hotelIds: 'MCLONGHM', // Pass as string, not array
                 checkInDate,
                 checkOutDate,
-                currency,
-                adults: 1,
+                adults: parseInt(adults, 10),
             },
         });
-
-        console.log('Amadeus API Response:', response.data); // Log the response data
-
-        res.json(response.data.data);
+        console.log('Amadeus API response:', response.data);
+        res.json(response.data.data); // Ensure the data key exists in the response
     } catch (error) {
-        console.error('Error fetching hotel offers:', error.response?.data || error.message);
+        console.error('Error in /api/hotels/search route:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Error fetching hotel offers' });
     }
 });
