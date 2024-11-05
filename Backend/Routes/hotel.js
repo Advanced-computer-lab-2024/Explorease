@@ -1,12 +1,15 @@
-// backend/routes/hotels.js
+// Import necessary modules
 const express = require('express');
-const router = express.Router();
-const { getAccessToken } = require('../utils/amadeusAPI'); // Assuming you already have this function set up in amadeusAPI.js
 const axios = require('axios');
+const { getAccessToken } = require('../utils/amadeusAPI');
+const router = express.Router();
 
-// Route to search for hotel offers
 router.get('/search', async (req, res) => {
-    const { cityCode, checkInDate, checkOutDate, currency = 'USD' } = req.query;
+    const { cityName, radius = 5, radiusUnit = 'KM' } = req.query;
+
+    if (!cityName) {
+        return res.status(400).json({ error: 'City name is required' });
+    }
 
     try {
         const accessToken = await getAccessToken();
@@ -14,25 +17,27 @@ router.get('/search', async (req, res) => {
             return res.status(500).json({ error: 'Failed to authenticate with Amadeus API' });
         }
 
-        const response = await axios.get('https://test.api.amadeus.com/v3/shopping/hotel-offers', {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-                cityCode,
-                checkInDate,
-                checkOutDate,
-                currency,
-                adults: 1,
-            },
+        // First, get the IATA code for the city
+        const iataResponse = await axios.get('https://test.api.amadeus.com/v1/reference-data/locations', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+            params: { keyword: cityName, subType: 'CITY' },
         });
 
-        console.log('Amadeus API Response:', response.data); // Log the response data
+        const cityCode = iataResponse.data.data[0]?.iataCode;
+        if (!cityCode) {
+            return res.status(404).json({ error: 'City not found' });
+        }
 
-        res.json(response.data.data);
+        // Use the cityCode to search for hotels
+        const hotelResponse = await axios.get('https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+            params: { cityCode, radius, radiusUnit },
+        });
+
+        res.json(hotelResponse.data.data || []);
     } catch (error) {
-        console.error('Error fetching hotel offers:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Error fetching hotel offers' });
+        console.error('Error in /api/hotels/search route:', error.response ? error.response.data : error.message);
+        res.status(500).json({ error: 'Error fetching hotels' });
     }
 });
 

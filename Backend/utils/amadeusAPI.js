@@ -47,4 +47,5 @@ async function getIATACode(city) {
     }
 }
 
-module.exports = { getAccessToken, getIATACode };
+
+module.exports = { getAccessToken, getIATACode};
