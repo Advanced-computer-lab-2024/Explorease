@@ -1,16 +1,17 @@
-// src/Components/Tourist-Components/BookFlight.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Typography, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Button, Typography, Box, FormControl, InputLabel, Select, MenuItem, CircularProgress } from '@mui/material';
 
 const BookFlight = () => {
     const [origin, setOrigin] = useState('');
     const [destination, setDestination] = useState('');
     const [departureDate, setDepartureDate] = useState('');
-    const [currency, setCurrency] = useState('USD'); // Set default currency to 'USD'
+    const [currency, setCurrency] = useState('USD'); // Default currency to 'USD'
     const [flights, setFlights] = useState([]);
     const [error, setError] = useState('');
-    const [displayedCurrency, setDisplayedCurrency] = useState('USD'); // State to store currency for display
+    const [displayedCurrency, setDisplayedCurrency] = useState('USD'); // State to store display currency
+    const [loading, setLoading] = useState(false); // Loading state
+    const [searchTriggered, setSearchTriggered] = useState(false); // Search triggered state
 
     // Function to get IATA code from the backend
     const getIATACode = async (city) => {
@@ -23,17 +24,16 @@ const BookFlight = () => {
         }
     };
 
-        // Function to handle booking logic
-        const handleBookNow = (flight) => {
-            // This is a placeholder for booking functionality
-            alert(`Booking flight with ID: ${flight.id}`);
-            // Here, you could send a request to your backend or Amadeus API to book the flight
-        };
+    // Function to handle booking logic
+    const handleBookNow = (flight) => {
+        alert(`Booking flight with ID: ${flight.id}`);
+    };
 
     const handleSearchFlights = async () => {
-        // Clear previous results and errors
         setFlights([]);
         setError('');
+        setLoading(true);
+        setSearchTriggered(true);
 
         try {
             // Fetch the IATA codes for origin and destination
@@ -42,6 +42,7 @@ const BookFlight = () => {
 
             if (!originCode || !destinationCode) {
                 setError('Could not find airport codes for the specified cities.');
+                setLoading(false);
                 return;
             }
 
@@ -56,14 +57,14 @@ const BookFlight = () => {
             });
             
             // Set new flight data and update the displayed currency
-            setFlights(response.data);
-            setDisplayedCurrency(currency); // Update displayed currency on search
+            setFlights(response.data || []);
+            setDisplayedCurrency(currency);
         } catch (err) {
             setError('Error fetching flights. Please try again.');
             console.error('API Error:', err);
+        } finally {
+            setLoading(false);
         }
-
-        
     };
 
     return (
@@ -92,8 +93,6 @@ const BookFlight = () => {
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
             />
-            {/* Currency Dropdown */}
-           {/* Currency Dropdown */}
             <FormControl fullWidth margin="normal">
                 <InputLabel shrink>Currency</InputLabel>
                 <Select
@@ -115,56 +114,58 @@ const BookFlight = () => {
                     '&:hover': { 
                         backgroundColor: 'white', 
                         color: '#111E56',
-                        border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                    },mt: 2 }}
+                        border: '1px solid #111E56'
+                    }, mt: 2 }}
             >
                 Search Flights
             </Button>
 
-            {error && <Typography color="error">{error}</Typography>}
+            {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
+
+            {loading ? (
+                <Box sx={{ mt: 4 }}>
+                    <CircularProgress />
+                    <Typography>Loading flights...</Typography>
+                </Box>
+            ) : (
+                searchTriggered && flights.length === 0 && (
+                    <Typography sx={{ mt: 4 }}>No flights found for the specified criteria.</Typography>
+                )
+            )}
+
             {flights.length > 0 && (
                 <Box sx={{ mt: 4 }}>
                     <Typography variant="h6">Available Flights</Typography>
                     {flights.map((flight, index) => (
-    <Box key={index} sx={{ mt: 2, p: 2, border: '1px solid #ccc', borderRadius: '8px', textAlign: 'center' }}>
-        {/* Departure Information */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1 }}>
-            <Typography><strong>Departure Date:</strong> {flight.itineraries[0].segments[0].departure.at.split('T')[0]}</Typography>
-            <Typography><strong>Time:</strong> {flight.itineraries[0].segments[0].departure.at.split('T')[1]}</Typography>
-        </Box>
-
-        {/* Arrival Information */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1 }}>
-            <Typography><strong>Arrival Date:</strong> {flight.itineraries[0].segments[0].arrival.at.split('T')[0]}</Typography>
-            <Typography><strong>Time:</strong> {flight.itineraries[0].segments[0].arrival.at.split('T')[1]}</Typography>
-        </Box>
-
-        {/* Price Information */}
-        <Typography sx={{ mt: 2 }}>
-            <strong>Price:</strong> {displayedCurrency} {flight.price.total}
-        </Typography>
-
-        {/* Carrier Information */}
-        <Typography><strong>Carrier:</strong> {flight.validatingAirlineCodes.join(', ')}</Typography>
-
-        {/* Book Now Button */}
-        <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleBookNow(flight)}
-            sx={{ backgroundColor: '#111E56', 
-                color: 'white', 
-                '&:hover': { 
-                    backgroundColor: 'white', 
-                    color: '#111E56',
-                    border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                },mt: 2 }}
-        >
-            Book Now
-        </Button>
-    </Box>
-))}
-
+                        <Box key={index} sx={{ mt: 2, p: 2, border: '1px solid #ccc', borderRadius: '8px', textAlign: 'center' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1 }}>
+                                <Typography><strong>Departure Date:</strong> {flight.itineraries[0].segments[0].departure.at.split('T')[0]}</Typography>
+                                <Typography><strong>Time:</strong> {flight.itineraries[0].segments[0].departure.at.split('T')[1]}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1 }}>
+                                <Typography><strong>Arrival Date:</strong> {flight.itineraries[0].segments[0].arrival.at.split('T')[0]}</Typography>
+                                <Typography><strong>Time:</strong> {flight.itineraries[0].segments[0].arrival.at.split('T')[1]}</Typography>
+                            </Box>
+                            <Typography sx={{ mt: 2 }}>
+                                <strong>Price:</strong> {displayedCurrency} {flight.price.total}
+                            </Typography>
+                            <Typography><strong>Carrier:</strong> {flight.validatingAirlineCodes.join(', ')}</Typography>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleBookNow(flight)}
+                                sx={{ backgroundColor: '#111E56', 
+                                    color: 'white', 
+                                    '&:hover': { 
+                                        backgroundColor: 'white', 
+                                        color: '#111E56',
+                                        border: '1px solid #111E56'
+                                    }, mt: 2 }}
+                            >
+                                Book Now
+                            </Button>
+                        </Box>
+                    ))}
                 </Box>
             )}
         </Box>
