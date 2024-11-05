@@ -5,10 +5,10 @@ const { getAccessToken } = require('../utils/amadeusAPI');
 const router = express.Router();
 
 router.get('/search', async (req, res) => {
-    const { checkInDate, checkOutDate, adults } = req.query;
+    const { cityName, radius = 5, radiusUnit = 'KM' } = req.query;
 
-    if (!checkInDate || !checkOutDate || !adults) {
-        return res.status(400).json({ error: 'Missing required parameters' });
+    if (!cityName) {
+        return res.status(400).json({ error: 'City name is required' });
     }
 
     try {
@@ -17,21 +17,27 @@ router.get('/search', async (req, res) => {
             return res.status(500).json({ error: 'Failed to authenticate with Amadeus API' });
         }
 
-        // Pass hotelIds as a string
-        const response = await axios.get('https://test.api.amadeus.com/v3/shopping/hotel-offers', {
+        // First, get the IATA code for the city
+        const iataResponse = await axios.get('https://test.api.amadeus.com/v1/reference-data/locations', {
             headers: { Authorization: `Bearer ${accessToken}` },
-            params: {
-                hotelIds: 'MCLONGHM', // Pass as string, not array
-                checkInDate,
-                checkOutDate,
-                adults: parseInt(adults, 10),
-            },
+            params: { keyword: cityName, subType: 'CITY' },
         });
-        console.log('Amadeus API response:', response.data);
-        res.json(response.data.data); // Ensure the data key exists in the response
+
+        const cityCode = iataResponse.data.data[0]?.iataCode;
+        if (!cityCode) {
+            return res.status(404).json({ error: 'City not found' });
+        }
+
+        // Use the cityCode to search for hotels
+        const hotelResponse = await axios.get('https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+            params: { cityCode, radius, radiusUnit },
+        });
+
+        res.json(hotelResponse.data.data || []);
     } catch (error) {
         console.error('Error in /api/hotels/search route:', error.response ? error.response.data : error.message);
-        res.status(500).json({ error: 'Error fetching hotel offers' });
+        res.status(500).json({ error: 'Error fetching hotels' });
     }
 });
 
