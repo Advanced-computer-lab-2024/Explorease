@@ -2,8 +2,10 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-const API_TOKEN = 'dbff005947c84451a8e8f71e5254d8b3';
-const PARTNER_ID = '585688';
+const API_TOKEN = process.env.API_TOKEN;
+const PARTNER_ID = process.env.PARTNER_ID;
+
+
 
 // Endpoint to fetch hotels by city name, check-in, and check-out dates
 router.get('/search', async (req, res) => {

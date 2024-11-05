@@ -10,7 +10,7 @@ const BookHotel = () => {
     const [hotels, setHotels] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-
+    
     const handleSearchHotels = async () => {
         if (!location || !checkIn || !checkOut) {
             setError("Please fill in all required fields.");
@@ -75,10 +75,11 @@ const BookHotel = () => {
 
             {/* Currency Dropdown */}
             <FormControl fullWidth margin="normal">
-                <InputLabel>Currency</InputLabel>
+                <InputLabel shrink>Currency</InputLabel>
                 <Select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
+                    label="Currency"
                 >
                     <MenuItem value="USD">USD</MenuItem>
                     <MenuItem value="EUR">EUR</MenuItem>
@@ -87,6 +88,7 @@ const BookHotel = () => {
                     {/* Add more currencies as needed */}
                 </Select>
             </FormControl>
+
 
             <Button
                 variant="contained"
