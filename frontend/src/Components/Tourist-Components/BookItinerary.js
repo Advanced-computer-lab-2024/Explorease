@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Card, CardContent, Button, TextField, Typography, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Box, Card, CardContent, Button, TextField, Typography, MenuItem, Select, InputLabel, FormControl, Alert } from '@mui/material';
 
-const BookItineraries = () => {
+const BookItinerariesPage = () => {
     const [itineraries, setItineraries] = useState([]);
     const [message, setMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
@@ -14,13 +13,16 @@ const BookItineraries = () => {
     const [order, setOrder] = useState('asc');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [language, setLanguage] = useState('');
-    const [accessibility, setAccessibility] = useState('');
-    const [tag, setTag] = useState('');
-    const navigate = useNavigate();
+    const [language, setLanguage] = useState(''); 
+    const [walletBalance, setWalletBalance] = useState(0);
+    const [activeComponent, setActiveComponent] = useState('BookItinerary');
+    const [selectedItinerary, setSelectedItinerary] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         fetchItineraries();
+        fetchWalletBalance();
     }, []);
 
     const fetchItineraries = async () => {
@@ -36,6 +38,24 @@ const BookItineraries = () => {
         }
     };
 
+    const fetchWalletBalance = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/tourists/myProfile', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const wallet = response.data.wallet;
+            
+            if (!isNaN(wallet)) { 
+                setWalletBalance(wallet);
+            } else {
+                setWalletBalance(0);
+            }
+        } catch (error) {
+            console.error('Error fetching wallet balance:', error);
+        }
+    };
+
     const handleSearch = async (e) => {
         e.preventDefault();
         let queryString = '';
@@ -45,9 +65,6 @@ const BookItineraries = () => {
         if (startDate) queryString += `startDate=${startDate}&`;
         if (endDate) queryString += `endDate=${endDate}&`;
         if (minRating) queryString += `minRating=${minRating}&`;
-        if (language) queryString += `language=${language}&`;
-        if (accessibility) queryString += `accessibility=${accessibility}&`;
-        if (tag) queryString += `tags=${tag}&`;
         if (sortBy) queryString += `sortBy=${sortBy}&order=${order}`;
 
         try {
@@ -62,9 +79,74 @@ const BookItineraries = () => {
         }
     };
 
-    const handleBookItinerary = (itineraryId) => {
-        navigate(`/payment/itinerary/${itineraryId}`);
+    const handleBookItinerary = (itinerary) => {
+        if (walletBalance === null || isNaN(walletBalance)) {
+            setErrorMessage('Error: Wallet balance is not available.');
+            return;
+        }
+        
+        setSelectedItinerary(itinerary);
+        setActiveComponent('PayForItinerary');
     };
+
+    const handleItineraryPayment = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(`/tourists/itineraries/book/${selectedItinerary._id}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSuccessMessage('Payment successful! Itinerary booked.');
+            setWalletBalance(response.data.walletBalance);
+    
+            // Reset back to itinerary booking list after 3 seconds
+            setTimeout(() => {
+                setActiveComponent('BookItinerary');
+                setSelectedItinerary(null);
+                setSuccessMessage('');
+            }, 3000);
+        } catch (error) {
+            console.error('Payment error:', error);
+            setErrorMessage(error.response?.data?.message || 'Payment failed');
+        }
+    };
+    
+    if (activeComponent === 'PayForItinerary' && selectedItinerary) {
+        return (
+            <Box sx={{ maxWidth: 600, margin: '0 auto', padding: '20px' }}>
+                <Typography variant="h4" gutterBottom>Pay for Itinerary</Typography>
+                
+                {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
+                {successMessage && <Alert severity="success" sx={{ mb: 2 }}>{successMessage}</Alert>}
+
+                <Typography variant="h6" gutterBottom>Itinerary Details</Typography>
+                <Typography><strong>Itinerary:</strong> {selectedItinerary.name}</Typography>
+                <Typography><strong>Total Price:</strong> ${selectedItinerary.totalPrice}</Typography>
+                <Typography><strong>Current Wallet Balance:</strong> ${Number(walletBalance)}</Typography>
+                <Typography><strong>Balance After Payment:</strong> ${Number(walletBalance) - Number(selectedItinerary.totalPrice)}</Typography>
+
+                {walletBalance >= selectedItinerary.totalPrice ? (
+                    <Button 
+                        variant="contained" 
+                        color="primary" 
+                        onClick={handleItineraryPayment}
+                        sx={{ mt: 2 }}
+                    >
+                        Pay and Book
+                    </Button>
+                ) : (
+                    <Typography color="error" sx={{ mt: 2 }}>Insufficient funds in wallet. Please add more funds.</Typography>
+                )}
+                <Button 
+                    variant="outlined" 
+                    color="secondary" 
+                    onClick={() => setActiveComponent('BookItinerary')}
+                    sx={{ mt: 2 }}
+                >
+                    Back to Itineraries
+                </Button>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -155,18 +237,14 @@ const BookItineraries = () => {
                             <Typography variant="h6">{itinerary.name}</Typography>
                             <Typography><strong>Total Price:</strong> ${itinerary.totalPrice}</Typography>
                             <Typography><strong>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}</Typography>
-                            <Typography><strong>Pick-Up Location:</strong> {itinerary.PickUpLocation}</Typography>
-                            <Typography><strong>Drop-Off Location:</strong> {itinerary.DropOffLocation}</Typography>
-                            <Typography><strong>Accessibility:</strong> {itinerary.accessibility}</Typography>
-                            {itinerary.tags && (
-                                <Typography><strong>Tags:</strong> {itinerary.tags.map(tag => tag.name).join(', ')}</Typography>
-                            )}
-                            <Typography><strong>Available Dates:</strong> {itinerary.AvailableDates.map(date => new Date(date).toLocaleDateString()).join(', ')}</Typography>
+                            <Typography><strong>Date :</strong> {itinerary.AvailableDates[0]}</Typography>
+
+                            {/* Add other itinerary details here */}
                         </CardContent>
                         <Button
                             variant="contained"
                             color="secondary"
-                            onClick={() => handleBookItinerary(itinerary._id)}
+                            onClick={() => handleBookItinerary(itinerary)}
                             sx={{ marginTop: 2 }}
                         >
                             Book Now
@@ -180,4 +258,4 @@ const BookItineraries = () => {
     );
 };
 
-export default BookItineraries;
+export default BookItinerariesPage;

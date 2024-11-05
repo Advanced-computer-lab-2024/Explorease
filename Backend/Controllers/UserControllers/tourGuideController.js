@@ -38,6 +38,21 @@ const getTourGuideById = async (req, res) => {
     }
 };
 
+const getTourGuideByIdParam = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id))
+            return res.status(404).send('No user with that id');
+
+        const tourguide = await userModel.findById(id);
+        if (!tourguide) return res.status(404).send('No user with that id');
+        
+        res.status(200).json({ tourguide });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // Update a tour guide by ID
 const updateTourGuide = async (req, res) => {
     try {
@@ -167,6 +182,7 @@ const uploadTourGuidePhoto = async (req, res) => {
 };
 
 module.exports = {
+    getTourGuideByIdParam,
     uploadTourGuidePhoto,
     createTourGuide,
     getTourGuideById,

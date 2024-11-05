@@ -83,34 +83,92 @@ const getMyBookings = async (req, res) => {
 
 const deleteBooking = async (req, res) => {
     const { bookingId } = req.params;
-    console.log(`Canceling booking with ID: ${bookingId}`); // Log to verify
 
     try {
         const booking = await bookingModel.findById(bookingId);
-        
         if (!booking) {
-            console.log('Booking not found');
             return res.status(404).json({ message: 'Booking not found' });
         }
 
+        // Check if the cancellation deadline has passed
         if (new Date() > booking.CancellationDeadline) {
-            console.log('Cancellation deadline has passed');
             return res.status(400).json({ message: 'Cancellation deadline has passed, booking cannot be canceled' });
         }
 
+        // Update the status to 'Cancelled'
         booking.Status = 'Cancelled';
         await booking.save();
 
-        console.log('Booking canceled successfully');
         res.status(200).json({ message: 'Booking canceled successfully', booking });
     } catch (error) {
-        console.error('Error during booking cancellation:', error);
         res.status(500).json({ message: 'Error canceling booking', error: error.message });
+    }
+};
+
+// Set a rating for an activity booking (one-time only)
+const setRatingForActivityBooking = async (req, res) => {
+    const { bookingId } = req.params;
+    const { rating } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ error: 'Rating should be between 1 and 5.' });
+    }
+
+    try {
+        // Find the booking and check if a rating already exists
+        const booking = await bookingModel.findById(bookingId);
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found.' });
+        }
+
+        if (booking.rating !== undefined) {
+            return res.status(400).json({ error: 'Rating has already been set and cannot be updated.' });
+        }
+
+        // Set the rating
+        booking.rating = rating;
+        await booking.save();
+
+        return res.status(200).json({ message: 'Rating set successfully.', rating: booking.rating });
+    } catch (error) {
+        return res.status(500).json({ error: 'An error occurred while setting the rating.' });
+    }
+};
+
+// Set a comment for an activity booking (one-time only)
+const setCommentForActivityBooking = async (req, res) => {
+    const { bookingId } = req.params;
+    const { comment } = req.body;
+
+    if (!comment || typeof comment !== 'string') {
+        return res.status(400).json({ error: 'Comment is required and should be a string.' });
+    }
+
+    try {
+        // Find the booking and check if a comment already exists
+        const booking = await bookingModel.findById(bookingId);
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found.' });
+        }
+
+        if (booking.comment) {
+            return res.status(400).json({ error: 'Comment has already been set and cannot be updated.' });
+        }
+
+        // Set the comment
+        booking.comment = comment;
+        await booking.save();
+
+        return res.status(200).json({ message: 'Comment set successfully.', comment: booking.comment });
+    } catch (error) {
+        return res.status(500).json({ error: 'An error occurred while setting the comment.' });
     }
 };
 
 
 module.exports = {
+    setRatingForActivityBooking,
+    setCommentForActivityBooking,
     createBooking,
     getAllBookings,
     getAllBookingsforActivity,

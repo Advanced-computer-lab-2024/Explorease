@@ -17,6 +17,8 @@ const tourGuideSchema = new mongoose.Schema({
     },
     imageUrl : {type : String, required: false},
     canLogin : {type : Boolean , required : false, default : false},
+    comments: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }, comment: String}],
+    ratings : [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }, rating: Number}],
 }, { timestamps: true });
 
 const TourGuide = mongoose.model('TourGuide', tourGuideSchema);

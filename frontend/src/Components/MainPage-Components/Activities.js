@@ -21,7 +21,7 @@ const Activities = () => {
             const token = localStorage.getItem('token');
             const response = await axios.get('tourists/activities', {
                 headers: {
-                    Authorization: `Bearer ${token}`  // Send the JWT token if logged in
+                    Authorization: `Bearer ${token}` 
                 }
             });
             console.log('API Response:', response.data);
