@@ -7,7 +7,9 @@ const itineraryControllers = require('../Controllers/ActivityControllers/Itinera
 const historicalPlaceControllers = require('../Controllers/ActivityControllers/HistoricalPlacesController');
 const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
 const bookingController = require('../Controllers/ActivityControllers/BookingController');
-const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');  // For tourist-specific routes
+const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');  
+const itineraryBookingController = require('../Controllers/ActivityControllers/BookingItenController');
+const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
   // For tourist/guest shared routes
 
 // Tourist-specific routes
@@ -41,8 +43,23 @@ router.get('/getComplaintsByTourist', roleAuth(['tourist']), complaintController
 router.delete('/deleteComplaint', roleAuth(['tourist']), complaintControllers.deleteComplaint);  
 
 router.post('/activities/book/:activityId', roleAuth(['tourist']), activityControllers.bookActivity);
+router.post('/itineraries/book/:itineraryId', roleAuth(['tourist']), itineraryControllers.bookItinerary);
+
+router.get('/itineraries/bookings', roleAuth(['tourist']), itineraryBookingController.getMyItineraryBookings );
+router.get('/activities/bookings', roleAuth(['tourist']), bookingController.getMyBookings );
+
+
 router.get('/activities/:id', roleAuth(['tourist']), activityControllers.getActivityById);
 
-router.get('/bookings', roleAuth(['tourist']), bookingController.getMyBookings );
 router.post('/bookings/cancelBooking/:bookingId', roleAuth(['tourist']), bookingController.deleteBooking);
+router.post('/bookings/cancelBookingItinerary/:bookingId', roleAuth(['tourist']), itineraryBookingController.cancelBookingItinerary);
+
+router.post('/activity-bookings/add-rating/:bookingId', roleAuth(['tourist']), bookingController.setRatingForActivityBooking);
+router.post('/activity-bookings/add-comment/:bookingId', roleAuth(['tourist']), bookingController.setCommentForActivityBooking);
+
+// Itinerary Booking Routes
+router.post('/itinerary-bookings/add-rating/:bookingId', roleAuth(['tourist']), itineraryBookingController.setRatingForItineraryBooking);
+router.post('/itinerary-bookings/add-comment/:bookingId', roleAuth(['tourist']), itineraryBookingController.setCommentForItineraryBooking);
+
+router.get('/get-my-guides/:id',roleAuth(['tourist']), tourGuideController.getTourGuideByIdParam );
 module.exports = router;

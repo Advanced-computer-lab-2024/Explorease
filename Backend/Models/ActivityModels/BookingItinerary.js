@@ -7,6 +7,8 @@ const BookingItinerarySchema = new Schema({
     Status: { type: String, enum: ['Active', 'Cancelled'], default: 'Cancelled' },
     BookedAt: { type: Date, default: Date.now, required: true },
     CancellationDeadline: { type: Date, required: true },
+    rating: { type: Number, min: 1, max: 5 },
+    comment: { type: String }
 }, { timestamps: true });
 
 const BookingItinerary = mongoose.model('BookingItinerary', BookingItinerarySchema);

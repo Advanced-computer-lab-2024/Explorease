@@ -2,6 +2,8 @@ const ItineraryModel = require('../../Models/ActivityModels/Itinerary');
 const preferenceTagModel = require('../../Models/ActivityModels/PreferenceTags');
 const ActivityModel = require('../../Models/ActivityModels/Activity');
 const { default: mongoose } = require('mongoose');
+const BookingItinerary = require('../../Models/ActivityModels/BookingItinerary');
+const Tourist = require('../../Models/UserModels/Tourist');
 
 // Create Itinerary
 const createItinerary = async (req, res) => {
@@ -343,7 +345,67 @@ const deactivateItinerary = async (req, res) => {
     }
 };
 
+const bookItinerary = async (req, res) => {
+    const { itineraryId } = req.params;
+    const touristId = req.user.id; // Assuming `req.user` is set by authentication middleware
+
+    try {
+        // Find the itinerary and tourist
+        const itinerary = await ItineraryModel.findById(itineraryId);
+        const tourist = await Tourist.findById(touristId);
+
+        if (!itinerary) {
+            console.error(`Itinerary with ID ${itineraryId} not found`);
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+        if (!tourist) {
+            console.error(`Tourist with ID ${touristId} not found`);
+            return res.status(404).json({ message: 'Tourist not found' });
+        }
+
+        const { totalPrice } = itinerary;
+        const { wallet } = tourist;
+
+        // Check if tourist has sufficient balance
+        if (wallet < totalPrice) {
+            console.error(`Insufficient funds: Wallet has ${wallet}, but itinerary price is ${totalPrice}`);
+            return res.status(400).json({ message: 'Insufficient balance in wallet' });
+        }
+
+        // Deduct the itinerary price from wallet
+        tourist.wallet -= totalPrice;
+        await tourist.save();
+
+        // Set cancellation deadline to 48 hours before the itinerary start date
+        const itineraryStartDate = itinerary.AvailableDates[0];
+        const cancellationDeadline = new Date(itineraryStartDate.getTime() - 48 * 60 * 60 * 1000); // 48 hours before
+
+        // Create the booking
+        const newBooking = new BookingItinerary({
+            Tourist: touristId,
+            Itinerary: itineraryId,
+            Status: 'Active',
+            BookedAt: new Date(),
+            CancellationDeadline: cancellationDeadline
+        });
+        await newBooking.save();
+
+        res.status(201).json({
+            message: 'Itinerary booking successful',
+            booking: newBooking,
+            walletBalance: tourist.wallet
+        });
+    } catch (error) {
+        console.error('Error during itinerary booking:', error);
+        res.status(500).json({ message: 'Error processing itinerary booking', error: error.message });
+    }
+};
+
+
+
+
 module.exports = {
+    bookItinerary,
     createItinerary,
     readItinerary,
     getAllItinerary,

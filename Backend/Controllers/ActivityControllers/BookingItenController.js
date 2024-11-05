@@ -74,7 +74,7 @@ const getMyItineraryBookings = async (req, res) => {
     const touristId = req.user.id;
 
     try {
-        const bookings = await BookingItinerary.find({ Tourist: touristId });
+        const bookings = await BookingItinerary.find({ Tourist: touristId }).populate('Itinerary');
         if (bookings.length === 0) {
             return res.status(404).json({ message: 'No itinerary bookings found for this tourist.' });
         }
@@ -110,7 +110,65 @@ const cancelBookingItinerary = async (req, res) => {
     }
 };
 
+
+const setRatingForItineraryBooking = async (req, res) => {
+    const { bookingId } = req.params;
+    const { rating } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ error: 'Rating should be between 1 and 5.' });
+    }
+
+    try {
+        const booking = await BookingItinerary.findById(bookingId);
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found.' });
+        }
+
+        if (booking.rating !== undefined) {
+            return res.status(400).json({ error: 'Rating has already been set and cannot be updated.' });
+        }
+
+        booking.rating = rating;
+        await booking.save();
+
+        return res.status(200).json({ message: 'Rating set successfully.', rating: booking.rating });
+    } catch (error) {
+        return res.status(500).json({ error: 'An error occurred while setting the rating.' });
+    }
+};
+
+const setCommentForItineraryBooking = async (req, res) => {
+    const { bookingId } = req.params;
+    const { comment } = req.body;
+
+    if (!comment || typeof comment !== 'string') {
+        return res.status(400).json({ error: 'Comment is required and should be a string.' });
+    }
+
+    try {
+        const booking = await BookingItinerary.findById(bookingId);
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found.' });
+        }
+
+        if (booking.comment) {
+            return res.status(400).json({ error: 'Comment has already been set and cannot be updated.' });
+        }
+
+        booking.comment = comment;
+        await booking.save();
+
+        return res.status(200).json({ message: 'Comment set successfully.', comment: booking.comment });
+    } catch (error) {
+        return res.status(500).json({ error: 'An error occurred while setting the comment.' });
+    }
+};
+
+
 module.exports = {
+    setRatingForItineraryBooking,
+    setCommentForItineraryBooking,
     createBookingItinerary,
     getAllBookingsForItinerary,
     getAllBookingsItineraries,

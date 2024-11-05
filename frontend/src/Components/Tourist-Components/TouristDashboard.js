@@ -15,6 +15,7 @@ import Wallet from './Wallet';
 import BookActivity from './BookActivity';
 import BookItinerary from './BookItinerary';
 import ViewBookings from './ViewBookings';
+import ReviewGuides from './ReviewGuides';
 import { Box, Typography } from '@mui/material';
 
 const TouristDashboard = () => {
@@ -109,6 +110,8 @@ const TouristDashboard = () => {
                 return <BookItinerary />
             case 'ViewBookings':
                     return <ViewBookings />
+            case 'reviewGuides':
+                    return <ReviewGuides />
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
@@ -126,7 +129,7 @@ const TouristDashboard = () => {
                     <li onClick={() => setActiveComponent('fileComplaint')} style={{ cursor: 'pointer', marginBottom: '10px' }}>File Complaint</li>
                     <li onClick={() => setActiveComponent('ViewComplaints')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Complaints</li>
                     <li onClick={() => setActiveComponent('ViewBookings')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Bookings</li>
-
+                    <li onClick={() => setActiveComponent('reviewGuides')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Review Tour Guides</li>
                 </ul>
             </Box>
 
