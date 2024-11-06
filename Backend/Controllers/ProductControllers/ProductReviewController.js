@@ -1,24 +1,23 @@
 const productreviewModel = require('../../Models/ProductModels/ProductReview.js');
 const { default: mongoose } = require('mongoose');
-const Tourist = require('../Models/UserModels/Tourist.js');
-const Product = require('../../Models/ProductModels/Product.js')
+const Product = require('../../Models/ProductModels/Product.js');
+const Tourist = require('../../Models/UserModels/Tourist.js');
 
 
 const createProductReview = async (req, res) => {
-    const { Rating, Details, CreatedAt } = req.body;
-    const Tourist = req.user.id;
-    const Product = req.params;
-    
+    const { Rating, Details} = req.body;
+    const touristid = req.params.id;
+    const productid =req.params.id;
 
     try {
         // Validate that required fields are provided
-        if (!Rating || !Details  ) {
+        if (!Details || !Rating ) {
             return res.status(400).json({ message: 'All fields (Rating & Details) are required.' });
         }
 
-        const review = new productReviewModel({
-            Tourist,
-            Product,
+        const review = new productreviewModel({
+            touristid,
+            productid,
             Rating,
             Details,
             CreatedAt: new Date()
@@ -47,7 +46,7 @@ const getAllReviews = async (req, res) => {
 
 //get all of my reviews
 const getMyReviews = async (req, res) => {
-    const touristId = req.user.id; // Assume req.user is set by authentication middleware
+    const touristId = req.params.id; // Assume req.user is set by authentication middleware
 
     try {
         const reviews = await productreviewModel.find({ Tourist: touristId });
@@ -63,12 +62,14 @@ const getMyReviews = async (req, res) => {
 };
 
 const updateReviewDetails = async (req, res) => {
-    const { id } = req.params;
+   
+  //  const touristid = req.params.id;
+    const productid =req.params.id;
     const { Rating, Details } = req.body;
 
     
     try {
-        const review = await productreviewModel.findById(id);
+        const review = await productreviewModel.findById(productid);
         if (!review) {
             return res.status(404).json({ message: 'Review not found.' });
         }

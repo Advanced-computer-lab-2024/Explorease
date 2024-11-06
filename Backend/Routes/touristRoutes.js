@@ -10,6 +10,7 @@ const bookingController = require('../Controllers/ActivityControllers/BookingCon
 const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');  
 const itineraryBookingController = require('../Controllers/ActivityControllers/BookingItenController');
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
+const ProductReviewControllers = require('../Controllers/ProductControllers/ProductReviewController');
   // For tourist/guest shared routes
 
 // Tourist-specific routes
@@ -19,6 +20,14 @@ router.put('/myProfile', roleAuth(['tourist']), touristControllers.updateTourist
 // Tourist-specific routes for products
 router.get('/products', optionalAuth(['tourist']), productControllers.getAllProducts);  // View all products
 router.get('/products/filter-sort-search', optionalAuth(['tourist']), productControllers.getFilteredSortedProducts);  // Search products by name
+
+
+//product review
+router.get('/getAllReviews',optionalAuth(['tourist']), ProductReviewControllers.getAllReviews); 
+router.get('/getMyReviews', optionalAuth(['tourist']), ProductReviewControllers.getMyReviews);
+router.post('/createProductReview', optionalAuth(['tourist']), ProductReviewControllers.createProductReview);
+router.put('/updateReviewDetails', optionalAuth(['tourist']), ProductReviewControllers.updateReviewDetails);
+router.delete('/deleteReview', optionalAuth(['tourist']), ProductReviewControllers.deleteReview);
 
 
 // Tourist shared routes for viewing and filtering
