@@ -1,8 +1,8 @@
-//const Tourist = require('../Models/UserModels/Tourist');
+const Tourist = require('../Models/UserModels/Tourist');
 const TourGuide = require('../Models/UserModels/TourGuide');
 const Seller = require('../Models/UserModels/Seller');
 const Advertiser = require('../Models/UserModels/Advertiser');
-//const touristController = require('./UserControllers/touristController');
+const touristController = require('./UserControllers/touristController');
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
 const sellerController = require('../Controllers/UserControllers/sellerController');
 const advertiserController = require('../Controllers/UserControllers/advertiserController');
@@ -42,7 +42,7 @@ const RequestTodeleteAdvertiser = async (req, res) => {
         if (await hasUpcomingEvents(req.user.id, 'advertiser')) {
             res.status(200).json({ message: 'Cannot delete account now as you have upcoming events.' });
         } else {
-            advertiser.deleteRequest= true;
+            advertiser.deleteRequest = true;
             await advertiser.save;
             console.log(advertiser.deleteRequest);
             return res.status(200).json({ message: 'Request submitted successfully.' });
@@ -59,7 +59,7 @@ const RequestTodeleteSeller = async (req, res) => {
         if (!seller) {
             return res.status(404).json({ message: 'Seller not found' });
         }
-        seller.deleteRequest= true;
+        seller.deleteRequest = true;
         await seller.save;
         console.log(seller.deleteRequest);
         return res.status(200).json({ message: 'Request submitted successfully.' });
@@ -96,11 +96,11 @@ const RequestTodeleteTourGuide = async (req, res) => {
         if (!tourGuide) {
             return res.status(404).json({ message: 'Tour guide not found' });
         }
-        
-      if (await hasUpcomingEvents(req.user.id, 'tourGuide')) {
+
+        if (await hasUpcomingEvents(req.user.id, 'tourGuide')) {
             return res.status(200).json({ message: 'Cannot delete account now as you have upcoming events.' });
         } else {
-            tourGuide.deleteRequest= true;
+            tourGuide.deleteRequest = true;
             await tourGuide.save;
             console.log(tourGuide.deleteRequest);
             return res.status(200).json({ message: 'Request submitted successfully.' });
