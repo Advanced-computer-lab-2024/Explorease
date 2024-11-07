@@ -65,6 +65,25 @@ const AdvertiserDashboard = () => {
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         textAlign: 'center',
     };
+    const handleDeleteAccountRequest = async () => {
+        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+            try {
+                const token = localStorage.getItem('token');
+                await axios.put('/advertiser/deleteAdvertiserRequest',{}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setMessage('Account deletion request sent successfully.');
+                // Optionally, you can log the user out and redirect them
+                // localStorage.removeItem('token');
+                // navigate('/login');
+            } catch (error) {
+                console.error('Error requesting account deletion:', error);
+                setMessage('Failed to request account deletion. Please try again.');
+            }
+        }
+    };
 
     const renderContent = () => {
         switch (activeComponent) {
@@ -93,6 +112,13 @@ const AdvertiserDashboard = () => {
                     <p><strong>Website Link:</strong> <a href={profile.websiteLink} target="_blank" rel="noopener noreferrer">{profile.websiteLink}</a></p>
                     <p><strong>Hotline:</strong> {profile.hotline}</p>
                     <p><strong>Company Profile:</strong> {profile.companyProfile}</p>
+                    <button 
+                                    onClick={handleDeleteAccountRequest}
+                                    variant="destructive"
+                                    
+                                >
+                                    Delete Account
+                                </button>
                 </div>
             ) : (
                 <p>Loading profile...</p>

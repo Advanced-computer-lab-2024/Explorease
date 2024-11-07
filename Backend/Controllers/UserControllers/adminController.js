@@ -381,4 +381,24 @@ const rejectUser = async (req, res) => {
     }
 };
 
-module.exports = { getPendingUsers, acceptUser, rejectUser, editMyPassword, deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins, getAllTourists, getAllSellers, getAllTourismGovernors, getAllTourguides, getAllAdvertisers , deleteUser};
+const getAllDeleteRequests = async (req, res) => {
+    try {
+        const RequestedDeleteUsers = await Promise.all([
+            Seller.find({ deleteRequest: true }),
+            Advertiser.find({ deleteRequest: true }),
+            TourGuide.find({ deleteRequest: true }),
+            Tourist.find({ deleteRequest: true }),
+        ]);
+
+        res.status(200).json({ 
+            sellers: RequestedDeleteUsers[0], 
+            advertisers: RequestedDeleteUsers[1], 
+            tourGuides: RequestedDeleteUsers[2],
+            tourists: RequestedDeleteUsers[3]
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching users', error: error.message });
+    }
+};
+
+module.exports = { getPendingUsers, acceptUser, rejectUser, editMyPassword, deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins, getAllTourists, getAllSellers, getAllTourismGovernors, getAllTourguides, getAllAdvertisers , deleteUser,getAllDeleteRequests};
