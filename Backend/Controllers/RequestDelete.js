@@ -11,22 +11,59 @@ const BookingItinerary = require('../Models/ActivityModels/BookingItinerary');
 
 
 // Helper function to check for upcoming events
-const hasUpcomingEvents = async (userId, userType) => {
+/*const hasUpcomingEvents = async (userId, userType) => {
     const currentDate = new Date();
     switch (userType) {
         case 'advertiser':
-            return await Activity.exists({ createdBy: userId, date: { $gt: currentDate } });
+            const act = Activity.exists({ createdBy: userId});
+            const activityBookings = await Booking.exists({ Activity: act.id, Status: 'Active', CancellationDeadline: { $gt: currentDate } });
+            return activityBookings;
         case 'tourist':
             const activeBookings = await Booking.exists({ Tourist: userId, Status: 'Active', CancellationDeadline: { $gt: currentDate } });
             const activeItineraries = await BookingItinerary.exists({ Tourist: userId, Status: 'Active', CancellationDeadline: { $gt: currentDate } });
             return activeBookings || activeItineraries;
         case 'tourGuide':
-            return await Itinerary.exists({ createdBy: userId, AvailableDates: { $gt: currentDate }, BookedBy: { $ne: null } });
+            const itin = Itinerary.exists({ createdBy: userId});
+             const ItinerariesBooking = await BookingItinerary.exists({ Tourist: itin.id, Status: 'Active', CancellationDeadline: { $gt: currentDate } });
+            return ItinerariesBooking;
         default:
             return false;
     }
-};
-
+};*/
+const hasUpcomingEvents = async (userId, userType, session) => {
+    const currentDate = new Date();
+    
+    switch (userType) {
+      case 'advertiser':
+        return await Activity.exists({
+          createdBy: userId,
+          date: { $gt: currentDate },
+          bookingOpen: true,
+          'bookings.isPaid': true
+        }).session(session);
+      case 'tourGuide':
+        return await Itinerary.exists({
+          createdBy: userId,
+          AvailableDates: { $gt: currentDate },
+          BookedBy: { $ne: null }
+        }).session(session);
+      case 'tourist':
+        const activeBookings = await Booking.exists({
+          Tourist: userId,
+          Status: 'Active',
+          CancellationDeadline: { $gt: currentDate }
+        }).session(session);
+        const activeItineraries = await BookingItinerary.exists({
+          Tourist: userId,
+          Status: 'Active',
+          CancellationDeadline: { $gt: currentDate }
+        }).session(session);
+        return activeBookings || activeItineraries;
+      default:
+        return false;
+    }
+  };
+  
 // Delete an advertiser
 const RequestTodeleteAdvertiser = async (req, res) => {
     try {
