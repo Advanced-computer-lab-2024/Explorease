@@ -11,10 +11,14 @@ const LoyaltySchema = new Schema({
     type: Number,
     default: 0
   },
-  redeemableAmount: {
+  level: {
+    type: Number,
+    default: 1
+  },
+  TotalPointsEarned: {
     type: Number,
     default: 0
-  }
+  },
 }, { timestamps: true });
 
 const Loyalty = mongoose.model('Loyalty', LoyaltySchema);
