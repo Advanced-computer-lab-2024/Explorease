@@ -67,6 +67,17 @@ const MultiRoleRegister = () => {
         fontSize: '16px',
     };
 
+    const buttonStyle2 = {
+        width: '100%',
+        padding: '10px',
+        backgroundColor: '#111E56',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '16px',
+    };
+
     const errorStyle = {
         color: 'red',
         textAlign: 'center',
@@ -190,11 +201,12 @@ const MultiRoleRegister = () => {
                         </>
                     )}
 
-                    <button type="submit" style={buttonStyle}>Register</button>
+                    <button type="submit" style={buttonStyle2}>Register</button>
                 </form>
             </div>
         </div>
     );
 };
+
 
 export default MultiRoleRegister;
