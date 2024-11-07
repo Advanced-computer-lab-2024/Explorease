@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sellerController = require('../Controllers/UserControllers/sellerController');
 const productController = require('../Controllers/ProductControllers/ProductController');  // Ensure correct path
+const reqdeleteController = require('../Controllers/RequestDelete'); 
 const { roleAuth } = require('../Middleware/authMiddleware');
 
 const cloudinary = require('cloudinary').v2;
@@ -39,7 +40,7 @@ router.post('/createProduct', roleAuth(['seller']), upload.single('image'), prod
 
 //Get my products
 router.get('/myproducts', roleAuth(['seller']), productController.getMyProducts);
-router.get('/products', roleAuth(['seller']), productController.getAllProducts);
+router.get('/products',roleAuth(['seller']), productController.getAllProducts);
 router.get('/myproducts/filter-sort-search', roleAuth(['seller']), productController.getFilteredSortedProductsBySeller);
 router.get('/')
 
@@ -52,6 +53,7 @@ router.put('/editPassword', roleAuth(['seller']), sellerController.updatePasswor
 // router.get('/searchProduct', roleAuth(['seller']) , productController.searchProductByName);
 router.get('/getall', sellerController.getAllSellers);
 
+router.put('/deleteSellerRequest' , roleAuth(['seller']), reqdeleteController.RequestTodeleteSeller);
 
 router.post(
     '/upload-photo',

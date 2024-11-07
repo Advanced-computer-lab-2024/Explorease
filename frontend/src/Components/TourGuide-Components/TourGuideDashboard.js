@@ -38,7 +38,27 @@ const TourGuideDashboard = () => {
         };
         fetchProfile();
     }, [navigate]);
-    
+    const handleDeleteAccountRequest = async () => {
+        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+            try {
+                const token = localStorage.getItem('token');
+                await axios.put('/tourguide/deletetourGuideRequest',{}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setMessage('Account deletion request sent successfully.');
+                // Optionally, you can log the user out and redirect them
+                // localStorage.removeItem('token');
+                // navigate('/login');
+            } catch (error) {
+                console.error('Error requesting account deletion:', error);
+                setMessage('Failed to request account deletion. Please try again.');
+            }
+        }
+    };
+
+
     const ViewMyItineraries = () => {
         const [itineraries, setItineraries] = useState([]);
         const [message, setMessage] = useState('');
@@ -188,6 +208,7 @@ const TourGuideDashboard = () => {
                 setMessage('Error updating itinerary');
             }
         };
+    
     
         const renderItineraryCards = () => {
             if (!Array.isArray(itineraries) || itineraries.length === 0) {
@@ -640,6 +661,13 @@ const TourGuideDashboard = () => {
                                 <p><span style={labelStyle}>Email:</span> <span style={valueStyle}>{profile.email}</span></p>
                                 <p><span style={labelStyle}>Years Of Experience:</span> <span style={valueStyle}>{profile.yearsOfExperience}</span></p>
                                 <p><span style={labelStyle}>Mobile Number:</span> <span style={valueStyle}>{profile.mobileNumber}</span></p>
+                                <button 
+                                    onClick={handleDeleteAccountRequest}
+                                    variant="destructive"
+                                    
+                                >
+                                    Delete Account
+                                </button>
                             </div>
                         ) : (
                             <p>Loading profile...</p>

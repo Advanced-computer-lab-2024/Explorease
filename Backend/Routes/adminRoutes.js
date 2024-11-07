@@ -94,5 +94,5 @@ router.get('/getComplaintsByStatus', authenticateAdmin, complaintControllers.get
 router.get('/getComplaintsByDate', authenticateAdmin, complaintControllers.getComplaintsByDate); 
 router.put('/adminRespondToComplaint/:complaintId', authenticateAdmin, complaintControllers.adminRespondToComplaint); 
 router.delete('/deleteComplaint', authenticateAdmin, complaintControllers.deleteComplaint); 
-
+router.get('/getRequesteddeleteUsers', authenticateAdmin, adminController.getAllDeleteRequests);
 module.exports = router;

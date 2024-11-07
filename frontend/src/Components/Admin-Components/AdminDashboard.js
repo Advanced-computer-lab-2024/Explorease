@@ -9,6 +9,7 @@ import UserApproval from './UserApproval';
 import BlockItinerary from './BlockItinerary';
 import Complaints from './Complaints';
 import MyProducts from './AdminProducts'
+import DeleteRequests from './DeleteRequests';
 
 
 const AdminDashboard = () => {
@@ -430,6 +431,12 @@ const handleTagChange = (id, newName) => {
                 >
                     Complaints
                 </button>
+                <button
+                    onClick={() => handleSectionChange('Delete Requests')}
+                    className={activeSection === 'Delete Requests' ? 'active' : ''}
+                >
+                    User Delete Requests
+                </button>
             </nav>
 
             {/* Conditionally render sections */}
@@ -443,7 +450,7 @@ const handleTagChange = (id, newName) => {
 {activeSection === 'ReviewUsers' && ( <UserApproval />) }
 {activeSection === 'Block event' && ( <BlockItinerary />) }
 {activeSection === 'Complaints' && ( <Complaints />) }
-
+{activeSection === 'Delete Requests' && ( <DeleteRequests />) }
 {activeSection === 'editPassword' && ( <EditMyPassword />) }
 
 {activeSection === 'preferenceTag' && (
