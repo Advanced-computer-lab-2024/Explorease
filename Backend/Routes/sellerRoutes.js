@@ -40,7 +40,7 @@ router.post('/createProduct', roleAuth(['seller']), upload.single('image'), prod
 
 //Get my products
 router.get('/myproducts', roleAuth(['seller']), productController.getMyProducts);
-router.get('/products', roleAuth(['seller']), productController.getAllProducts);
+router.get('/products',roleAuth(['seller']), productController.getAllProducts);
 router.get('/myproducts/filter-sort-search', roleAuth(['seller']), productController.getFilteredSortedProductsBySeller);
 router.get('/')
 
