@@ -17,6 +17,7 @@ import BookItinerary from './BookItinerary';
 import ViewBookings from './ViewBookings';
 import ReviewGuides from './ReviewGuides';
 import PurchasedProduct from './PurchasedProduct';
+import MyPoints from './MyPoints';
 import { Box, Typography } from '@mui/material';
 
 const TouristDashboard = () => {
@@ -115,7 +116,9 @@ const TouristDashboard = () => {
                     return <ReviewGuides />
             
             case 'PurchasedProduct':
-                    return <PurchasedProduct />   
+                    return <PurchasedProduct />
+            case 'MyPoints':
+                    return <MyPoints />    
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
@@ -135,6 +138,7 @@ const TouristDashboard = () => {
                     <li onClick={() => setActiveComponent('ViewBookings')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Bookings</li>
                     <li onClick={() => setActiveComponent('reviewGuides')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Review Tour Guides</li>
                     <li onClick={() => setActiveComponent('PurchasedProduct')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Review Purchased Product</li>
+                    <li onClick={() => setActiveComponent('MyPoints')} style={{ cursor: 'pointer', marginBottom: '10px' }}>My Points</li>
                 </ul>
             </Box>
 

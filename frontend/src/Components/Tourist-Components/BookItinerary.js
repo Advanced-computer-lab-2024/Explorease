@@ -92,13 +92,22 @@ const BookItinerariesPage = () => {
     const handleItineraryPayment = async () => {
         try {
             const token = localStorage.getItem('token');
+            
+            // First, make the booking request
             const response = await axios.post(`/tourists/itineraries/book/${selectedItinerary._id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+
             setSuccessMessage('Payment successful! Itinerary booked.');
             setWalletBalance(response.data.walletBalance);
-    
-            // Reset back to itinerary booking list after 3 seconds
+
+            // After successful booking, add points based on the itinerary's total price
+            const amountPaid = selectedItinerary.totalPrice; // Rename for consistency with backend
+            await axios.post('/tourists/addpoints', { amountPaid }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Reset to itinerary booking list after 3 seconds
             setTimeout(() => {
                 setActiveComponent('BookItinerary');
                 setSelectedItinerary(null);
@@ -129,21 +138,35 @@ const BookItinerariesPage = () => {
                         variant="contained" 
                         color="primary" 
                         onClick={handleItineraryPayment}
-                        sx={{ mt: 2 }}
+                        sx={{ backgroundColor: 'white', 
+                            color: '#111E56', 
+                            '&:hover': { 
+                                backgroundColor: '#111E56', 
+                                color: 'white',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },mt: 2 }}
                     >
                         Pay and Book
                     </Button>
                 ) : (
                     <Typography color="error" sx={{ mt: 2 }}>Insufficient funds in wallet. Please add more funds.</Typography>
                 )}
+                <Box mt={2}> 
                 <Button 
                     variant="outlined" 
                     color="secondary" 
                     onClick={() => setActiveComponent('BookItinerary')}
-                    sx={{ mt: 2 }}
+                    sx={{ backgroundColor: '#111E56', 
+                        color: 'white', 
+                        '&:hover': { 
+                            backgroundColor: 'white', 
+                            color: '#111E56',
+                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                        },mt: 2 }}
                 >
                     Back to Itineraries
                 </Button>
+                </Box> 
             </Box>
         );
     }

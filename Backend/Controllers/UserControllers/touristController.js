@@ -1,7 +1,6 @@
 const userModel = require('../../Models/UserModels/Tourist');
 
 const Loyalty = require('../../Models/UserModels/Loyalty.js');
-const Badge = require('../../Models/UserModels/Badge.js');
 const { default: mongoose } = require('mongoose');
 
 const bcrypt = require('bcrypt');
@@ -12,34 +11,20 @@ const jwt = require('jsonwebtoken');
 const createToken = (user) => {
     return jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
-
-// Create a new tourist
 const createTourist = async (req, res) => {
     const { username, email, password, mobileNumber, nationality, dob, jobOrStudent } = req.body;
 
     try {
+        // Check if all required fields are provided
+        if (!username || !email || !password || !mobileNumber || !nationality || !dob || !jobOrStudent) {
+            return res.status(400).json({ error: 'All fields are required.' });
+        }
 
-        const tourist = await userModel.create({ username, email, password, mobileNumber, nationality, dob, jobOrStudent });
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        const touristId = tourist._id;
-
-          Loyalty = new Loyalty({
-            touristId,
-            points: 0,
-            redeemableAmount: 0
-          });
-          await Loyalty.save();
-
-          Badge = new Badge({
-            touristId,
-            level: 'explorer',
-            awardedAt: new Date()
-          });
-          await Badge.save();
-
-        const hashedPassword = await bcrypt.hash(password, 10);  // Hash the password
-
-        const tourist1 = await userModel.create({
+        // Create the tourist
+        const tourist = await userModel.create({
             username,
             email,
             password: hashedPassword,
@@ -50,11 +35,27 @@ const createTourist = async (req, res) => {
         });
 
 
-        res.status(201).json({ tourist1 });
+        // Create the loyalty record for the tourist
+        const loyalty = new Loyalty({
+            touristId: tourist._id,
+            points: 0,
+            level: 1,
+            TotalPointsEarned: 0
+        });
+        await loyalty.save();
+
+        const loyaltyId = loyalty._id;
+        tourist.loyaltyId = loyaltyId;
+        await tourist.save();
+        
+
+        res.status(201).json({ tourist });
     } catch (error) {
+        console.error('Error during tourist creation:', error.message);
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Get a tourist by ID
 const getTouristById = async (req, res) => {

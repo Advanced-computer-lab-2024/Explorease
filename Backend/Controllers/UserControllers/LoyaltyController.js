@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Loyalty = require('../../Models/UserModels/Loyalty.js');
 const Tourist = require('../../Models/UserModels/Tourist.js');
 
@@ -129,87 +131,175 @@ const Tourist = require('../../Models/UserModels/Tourist.js');
 //     }
 //   };
 
-  const addPoints = async (req, res) => {
-    try{
-        const { touristId } = req.user.id;
-        const { amountPaid } = req.body;
-        if (!amountPaid || amountPaid <= 0) {
+const addPoints = async (req, res) => {
+  try {
+      // Convert req.user.id to ObjectId
+      const touristId = new mongoose.Types.ObjectId(req.user.id);
+      const { amountPaid } = req.body;
+
+      // Check if amountPaid is valid
+      if (!amountPaid || amountPaid <= 0) {
           return res.status(400).json({ message: 'Invalid amount paid' });
-        }
-        const loyalty = await Loyalty.findOne({ touristId });
-        if (!loyalty) {
+      }
+
+      // Find the Loyalty record using touristId
+      const loyalty = await Loyalty.findOne({ touristId });
+      if (!loyalty) {
+          console.log("Loyalty record not found for touristId:", touristId);
           return res.status(404).json({ message: 'Loyalty record not found for this tourist' });
-        }
-        let pointsMultiplier; // Determine the points multiplier based on the loyalty level
-        switch (loyalty.level) {
+      }
+
+      // Determine points multiplier based on loyalty level
+      let pointsMultiplier;
+      switch (loyalty.level) {
           case 1:
-            pointsMultiplier = 0.5;
-            break;
+              pointsMultiplier = 0.5;
+              break;
           case 2:
-            pointsMultiplier = 1;
-            break;
+              pointsMultiplier = 1;
+              break;
           case 3:
-            pointsMultiplier = 1.5;
-            break;
+              pointsMultiplier = 1.5;
+              break;
           default:
-            pointsMultiplier = 0.5; // Default to bronze level if unknown
-        }
-        if(loyalty.TotalPointsEarned > 100000 && loyalty.TotalPointsEarned <= 500000){
+              pointsMultiplier = 0.5; // Default to level 1 multiplier if unknown
+      }
+
+      // Update loyalty level based on TotalPointsEarned
+      if (loyalty.TotalPointsEarned > 100000 && loyalty.TotalPointsEarned <= 500000) {
           loyalty.level = 2;
-        }
-        else if(loyalty.TotalPointsEarned > 500000){
+      } else if (loyalty.TotalPointsEarned > 500000) {
           loyalty.level = 3;
-        }
+      }
 
-        const pointsToAdd = Math.floor(amountPaid * pointsMultiplier);
-        loyalty.points += pointsToAdd;
-        loyalty.TotalPointsEarned += pointsToAdd;
-        await loyalty.save();
-    }
-    catch(error){
-        console.error('Error adding points:', error);
-        res.status(500).json({ message: 'Internal server error', error: error.message });
-    }
+      // Calculate and add points based on amountPaid and pointsMultiplier
+      const pointsToAdd = Math.floor(amountPaid * pointsMultiplier);
+      loyalty.points += pointsToAdd;
+      loyalty.TotalPointsEarned += pointsToAdd;
+
+      // Save the updated loyalty record
+      await loyalty.save();
+
+      res.status(200).json({
+          message: 'Points added successfully',
+          addedPoints: pointsToAdd,
+          totalPoints: loyalty.points,
+          newLevel: loyalty.level
+      });
+  } catch (error) {
+      console.error('Error adding points:', error);
+      res.status(500).json({ message: 'Internal server error', error: error.message });
   }
-
+};
   
 
   const convertPointsToRedeemableAmount = async (req, res) => {
-    try{
-        const { touristId } = req.user.id;
+    try {
+        // Convert req.user.id to ObjectId
+        const touristId = new mongoose.Types.ObjectId(req.user.id);
         const { money } = req.body;
+
+        // Check if money is valid
         if (!money || money <= 0) {
-          return res.status(400).json({ message: 'Invalid amount' });
+            return res.status(400).json({ message: 'Invalid amount' });
         }
+
+        // Find the Loyalty record using touristId
         const loyalty = await Loyalty.findOne({ touristId });
-        const tourist = await Tourist.findById(touristId);
         if (!loyalty) {
-          return res.status(404).json({ message: 'Loyalty record not found for this tourist' });
+            
+            return res.status(404).json({ message: 'Loyalty record not found for this tourist' });
         }
+
+        // Find the Tourist document using touristId
+        const tourist = await Tourist.findById(touristId);
         if (!tourist) {
-          return res.status(404).json({ message: 'Tourist not found' });
+           
+            return res.status(404).json({ message: 'Tourist not found' });
         }
+
+        // Calculate points required for the given money amount
         const moneytopoints = money * 100;
         if (loyalty.points < moneytopoints) {
-          return res.status(400).json({ message: 'Insufficient points' });
+            return res.status(400).json({ message: 'Insufficient points' });
         }
+
+        // Deduct points and add money to the tourist's wallet
         loyalty.points -= moneytopoints;
         tourist.wallet += money;
+
+        // Save changes
         await loyalty.save();
         await tourist.save();
-        res.status(200).json({
-          message: 'Points converted to money successfully',
-          convertedPoints: moneytopoints,
-          remainingPoints: loyalty.points,
-          wallet: tourist.wallet
-        }); 
-    }
-    catch(error){
-      console.error('Error converting points to redeemable amount:', error);
-      res.status(500).json({ message: 'Internal server error', error: error.message });
-    }
-  }
-    
-  
 
-module.exports = { convertPointsToRedeemableAmount,addPoints};
+        res.status(200).json({
+            message: 'Points converted to money successfully',
+            convertedPoints: moneytopoints,
+            remainingPoints: loyalty.points,
+            wallet: tourist.wallet
+        });
+    } catch (error) {
+        console.error('Error converting points to redeemable amount:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+  
+  const getPoints = async (req, res) => {
+      try {
+
+          // Convert req.user.id to an ObjectId
+          const touristId = new mongoose.Types.ObjectId(req.user.id);
+  
+          // Check if the tourist exists
+          const tourist = await Tourist.findById(touristId);
+          if (!tourist) {
+              console.log("Tourist not found with ID:", touristId);
+              return res.status(404).json({ message: 'Tourist not found' });
+          }
+  
+          // Find the Loyalty record using touristId
+          const loyalty = await Loyalty.findOne({ touristId });
+          if (!loyalty) {
+              return res.status(404).json({ message: 'Loyalty record not found for this tourist' });
+          }
+  
+          // Return the points in the response
+          res.status(200).json({ points: loyalty.points });
+      } catch (error) {
+          console.error('Error fetching points:', error);
+          res.status(500).json({ message: 'Internal server error', error: error.message });
+      }
+  };
+
+  const getBadge = async (req, res) => {
+    try {
+        const touristId = new mongoose.Types.ObjectId(req.user.id);
+        const loyalty = await Loyalty.findOne({ touristId });
+        if (!loyalty) {
+            return res.status(404).json({ message: 'Loyalty record not found for this tourist' });
+        }
+
+        let badge;
+        switch (loyalty.level) {
+            case 1:
+                badge = 'Explorer';
+                break;
+            case 2:
+                badge = 'Money Fellow';
+                break;
+            case 3:
+                badge = 'Money Talks';
+                break;
+            default:
+                badge = 'Explorer'; // Default to level 1 badge if unknown
+        }
+
+        res.status(200).json({ badge });
+    } catch (error) {
+        console.error('Error fetching badge:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+module.exports = { convertPointsToRedeemableAmount,addPoints,getPoints,getBadge };

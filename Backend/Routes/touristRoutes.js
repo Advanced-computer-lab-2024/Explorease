@@ -7,6 +7,7 @@ const itineraryControllers = require('../Controllers/ActivityControllers/Itinera
 const historicalPlaceControllers = require('../Controllers/ActivityControllers/HistoricalPlacesController');
 const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
 const bookingController = require('../Controllers/ActivityControllers/BookingController');
+const loyaltyController = require('../Controllers/UserControllers/LoyaltyController');
 const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');  
 const itineraryBookingController = require('../Controllers/ActivityControllers/BookingItenController');
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
@@ -71,4 +72,14 @@ router.post('/itinerary-bookings/add-rating/:bookingId', roleAuth(['tourist']), 
 router.post('/itinerary-bookings/add-comment/:bookingId', roleAuth(['tourist']), itineraryBookingController.setCommentForItineraryBooking);
 
 router.get('/get-my-guides/:id',roleAuth(['tourist']), tourGuideController.getTourGuideByIdParam );
+
+// Points and Loyalty Routes
+router.get('/myPoints', roleAuth(['tourist']), loyaltyController.getPoints);
+router.post('/addpoints', roleAuth(['tourist']), loyaltyController.addPoints);
+router.post('/convertPointsToRedeemableAmount', roleAuth(['tourist']), loyaltyController.convertPointsToRedeemableAmount);
+
+router.get('/myBadge', roleAuth(['tourist']), loyaltyController.getBadge);
+
+
+
 module.exports = router;

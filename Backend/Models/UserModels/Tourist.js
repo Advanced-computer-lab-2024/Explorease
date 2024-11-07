@@ -11,7 +11,7 @@ const touristSchema = new mongoose.Schema({
     jobOrStudent: { type: String, required: true },
     wallet: { type: Number, default: 0 },
     preferences: { type: [String], default: [] }, // Array of preference tags for activities/ iteneraries
-    loyaltyPoints : {type : Number, required : false},
+    loyaltyId: { type: Schema.Types.ObjectId, ref: 'Loyalty' }, // Reference to the loyalty record
     bookedActivities : [{type : Schema.Types.ObjectId , ref : 'Activity' }], 
     previousActivities : [{type : Schema.Types.ObjectId, ref : 'Activity'}], 
     bookedIteniraries : [{type : Schema.Types.ObjectId, ref : 'Itenirary'}], 
