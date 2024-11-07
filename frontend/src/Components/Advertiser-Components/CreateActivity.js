@@ -29,7 +29,7 @@ const CreateActivity = () => {
     });
 
     const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY", // Replace with your API key
+        googleMapsApiKey: "AIzaSyDUP5fw3jw8bvJ7yj9OskV5wdm5sNUbII4", // Replace with your API key
     });
 
     const handleMapClick = (event) => {
