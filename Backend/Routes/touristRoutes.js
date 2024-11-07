@@ -12,6 +12,7 @@ const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');
 const itineraryBookingController = require('../Controllers/ActivityControllers/BookingItenController');
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
 const ProductReviewControllers = require('../Controllers/ProductControllers/ProductReviewController');
+const reqdeleteController = require('../Controllers/RequestDelete');
   // For tourist/guest shared routes
 
 // Tourist-specific routes
@@ -79,7 +80,7 @@ router.post('/addpoints', roleAuth(['tourist']), loyaltyController.addPoints);
 router.post('/convertPointsToRedeemableAmount', roleAuth(['tourist']), loyaltyController.convertPointsToRedeemableAmount);
 
 router.get('/myBadge', roleAuth(['tourist']), loyaltyController.getBadge);
-
+router.put('/deleteTouristRequest', roleAuth(['tourist']), reqdeleteController.RequestTodeleteTourist);
 
 
 module.exports = router;

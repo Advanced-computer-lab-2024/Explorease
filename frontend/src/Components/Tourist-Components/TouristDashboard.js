@@ -51,6 +51,25 @@ const TouristDashboard = () => {
 
         fetchProfile();
     }, [navigate]);
+    const handleDeleteAccountRequest = async () => {
+        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+            try {
+                const token = localStorage.getItem('token');
+                await axios.put('/tourists/deleteTouristRequest',{}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setMessage('Account deletion request sent successfully.');
+                // Optionally, you can log the user out and redirect them
+                // localStorage.removeItem('token');
+                // navigate('/login');
+            } catch (error) {
+                console.error('Error requesting account deletion:', error);
+                setMessage('Failed to request account deletion. Please try again.');
+            }
+        }
+    };
 
     const sidebarStyle = {
         width: '250px',
@@ -84,6 +103,13 @@ const TouristDashboard = () => {
                                 <p><strong>Date of Birth:</strong> {new Date(profile.dob).toLocaleDateString()}</p>
                                 <p><strong>Nationality:</strong> {profile.nationality}</p>
                                 <p><strong>Wallet Balance:</strong> {profile.wallet} USD</p>
+                                <button 
+                                    onClick={handleDeleteAccountRequest}
+                                    variant="destructive"
+                                    
+                                >
+                                    Delete Account
+                                </button>
                             </Box>
                         ) : (
                             <Typography align="center">Loading profile...</Typography>

@@ -2,10 +2,6 @@ const Tourist = require('../Models/UserModels/Tourist');
 const TourGuide = require('../Models/UserModels/TourGuide');
 const Seller = require('../Models/UserModels/Seller');
 const Advertiser = require('../Models/UserModels/Advertiser');
-const touristController = require('./UserControllers/touristController');
-const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
-const sellerController = require('../Controllers/UserControllers/sellerController');
-const advertiserController = require('../Controllers/UserControllers/advertiserController');
 const Activity = require('../Models/ActivityModels/Activity');
 const Itinerary = require('../Models/ActivityModels/Itinerary');
 const Booking = require('../Models/ActivityModels/Booking');
@@ -69,7 +65,7 @@ const RequestTodeleteSeller = async (req, res) => {
 };
 
 // Delete a tourist
-/*const RequestTodeleteTourist = async (req, res) => {
+const RequestTodeleteTourist = async (req, res) => {
     try {
         const tourist = await Tourist.findById(req.user.id);
         if (!tourist) {
@@ -88,7 +84,7 @@ const RequestTodeleteSeller = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-*/
+
 // Delete a tour guide
 const RequestTodeleteTourGuide = async (req, res) => {
     try {
@@ -113,6 +109,6 @@ const RequestTodeleteTourGuide = async (req, res) => {
 module.exports = {
     RequestTodeleteAdvertiser,
     RequestTodeleteSeller,
-    //RequestTodeleteTourist,
+    RequestTodeleteTourist,
     RequestTodeleteTourGuide
 };

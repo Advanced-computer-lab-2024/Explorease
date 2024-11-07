@@ -664,7 +664,6 @@ const TourGuideDashboard = () => {
                                 <button 
                                     onClick={handleDeleteAccountRequest}
                                     variant="destructive"
-                                    
                                 >
                                     Delete Account
                                 </button>
