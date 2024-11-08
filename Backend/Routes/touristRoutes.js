@@ -13,7 +13,8 @@ const itineraryBookingController = require('../Controllers/ActivityControllers/B
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
 const ProductReviewControllers = require('../Controllers/ProductControllers/ProductReviewController');
 const reqdeleteController = require('../Controllers/RequestDelete');
-  // For tourist/guest shared routes
+const TourGuideReviewController = require('../Controllers/TourGuideReview');
+
 
 // Tourist-specific routes
 router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristById);  // Tourist can read their own profile
@@ -34,7 +35,7 @@ router.delete('/deleteReview', optionalAuth(['tourist']), ProductReviewControlle
 
 // Tourist shared routes for viewing and filtering
 // Guest shared routes for viewing and filtering
-router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.filterSortSearchActivities );  // View all activities
+router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.getAllActivity );  // View all activities
 router.get('/itineraries', optionalAuth(['tourist', 'guest']), itineraryControllers.getAllActivatedItinerary);  // View all itineraries
 router.get('/historical-places', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.getallHistoricalPlaces);  // View all historical places
 
@@ -82,5 +83,11 @@ router.post('/convertPointsToRedeemableAmount', roleAuth(['tourist']), loyaltyCo
 router.get('/myBadge', roleAuth(['tourist']), loyaltyController.getBadge);
 router.put('/deleteTouristRequest', roleAuth(['tourist']), reqdeleteController.RequestTodeleteTourist);
 
+// Route to add a review (accessible by tourists only)
+router.post('/tourguideRev/add', roleAuth(['tourist']), TourGuideReviewController.addReview);
+
+// Route to get all reviews for a specific tour guide
+router.get('getTGRevAll/:tourGuideId' , TourGuideReviewController.getReviewsForGuide);
+router.get('getTGRev/:tourGuideId',roleAuth(['tourist']), TourGuideReviewController.getReviewByTouristForGuide);
 
 module.exports = router;

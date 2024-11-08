@@ -181,6 +181,8 @@ const uploadTourGuidePhoto = async (req, res) => {
     }
 };
 
+
+
 module.exports = {
     getTourGuideByIdParam,
     uploadTourGuidePhoto,

@@ -30,8 +30,12 @@ const ViewBookings = () => {
             setItineraryBookings(itineraryResponse.data);
 
         } catch (error) {
-            console.error('Error fetching bookings:', error);
-            setErrorMessage('Error loading bookings.');
+            if (error.response && error.response.status === 404) {
+                setErrorMessage('No Bookings Found');
+            } else {
+                console.error('Error fetching guides:', error);
+                setErrorMessage('Error loading guides for review.');
+            }
         }
     };
 

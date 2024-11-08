@@ -7,7 +7,10 @@ const ReviewGuides = () => {
     const [guides, setGuides] = useState([]);
     const [ratings, setRatings] = useState({});
     const [comments, setComments] = useState({});
+    const [reviews, setReviews] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
+
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
         fetchGuides();
@@ -15,21 +18,15 @@ const ReviewGuides = () => {
 
     const fetchGuides = async () => {
         try {
-            const token = localStorage.getItem('token');
-
             const response = await axios.get('/tourists/itineraries/bookings', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            const currentDate = new Date();
-            const guideIds = new Set();
-
-            response.data.forEach(booking => {
-                const itinerary = booking.Itinerary;
-                if (itinerary && booking.Status !== 'Cancelled' && new Date(itinerary.AvailableDates[0]) < currentDate) {
-                    guideIds.add(itinerary.createdBy);
-                }
-            });
+            const guideIds = new Set(
+                response.data
+                    .filter(booking => booking.Status !== 'Cancelled' && new Date(booking.Itinerary.AvailableDates[0]) < new Date())
+                    .map(booking => booking.Itinerary.createdBy)
+            );
 
             const guideDetailsPromises = Array.from(guideIds).map(async (guideId) => {
                 try {
@@ -37,7 +34,9 @@ const ReviewGuides = () => {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     
-                    return guideResponse.data.tourguide;
+                    const guide = guideResponse.data.tourguide;
+                    await fetchReviewsForGuide(guideId);
+                    return guide;
                 } catch (error) {
                     console.error(`Error fetching guide with ID ${guideId}:`, error);
                     return null;
@@ -46,9 +45,26 @@ const ReviewGuides = () => {
 
             const guidesData = await Promise.all(guideDetailsPromises);
             setGuides(guidesData.filter(guide => guide !== null));
+
+            if (guidesData.length === 0) {
+                setErrorMessage('No tour guides available for review.');
+            }
         } catch (error) {
+            setErrorMessage(error.response?.status === 404 ? 'No Itinerary Bookings Found' : 'Error loading guides for review.');
             console.error('Error fetching guides:', error);
-            setErrorMessage('Error loading guides for review.');
+        }
+    };
+
+    const fetchReviewsForGuide = async (guideId) => {
+        try {
+            const response = await axios.get(`/tourists/getTGRev/${guideId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            console.log(`Fetched reviews for guide ${guideId}:`, response.data); // Log to check data structure
+            setReviews(prev => ({ ...prev, [guideId]: response.data }));
+        } catch (error) {
+            console.error(`Error fetching reviews for guide ${guideId}:`, error);
         }
     };
 
@@ -67,13 +83,19 @@ const ReviewGuides = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            await axios.post(`/tourists/guides/${guideId}/add-review`, 
-                { rating: ratings[guideId], comment: comments[guideId] }, 
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const response = await axios.post(`/tourists/tourguideRev/add`, 
+                { tourGuideId: guideId, rating: ratings[guideId], review: comments[guideId] }, 
+                { headers: { Authorization: `Bearer ${token}` }
+            });
 
+            const newReview = response.data.review;
             alert("Review submitted successfully!");
+
+            setReviews(prev => ({
+                ...prev,
+                [guideId]: [...(prev[guideId] || []), newReview]
+            }));
+
             setRatings(prev => ({ ...prev, [guideId]: '' }));
             setComments(prev => ({ ...prev, [guideId]: '' }));
         } catch (error) {
@@ -89,45 +111,64 @@ const ReviewGuides = () => {
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}
 
             {guides.length > 0 ? (
-                guides.map(guide => (
-                    <Card key={guide._id} sx={{ mb: 2 }}>
-                        <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar
-                                alt={guide.username}
-                                src={guide.imageUrl}
-                                sx={{ width: 56, height: 56, mr: 2 }}
-                            />
-                            <Box>
-                                <Typography variant="h6">{guide.username}</Typography>
-                                
-                                <Rating
-                                    value={ratings[guide._id] || 0}
-                                    onChange={(event, newValue) => handleRatingChange(guide._id, newValue)}
-                                />
+                guides.map(guide => {
+                    const guideReviews = reviews[guide._id] || [];
+                    console.log(`Reviews for guide ${guide._id}:`, guideReviews); // Log to check if reviews are loaded correctly
 
-                                <TextField
-                                    label="Comment"
-                                    multiline
-                                    rows={3}
-                                    value={comments[guide._id] || ''}
-                                    onChange={(e) => handleCommentChange(guide._id, e.target.value)}
-                                    fullWidth
-                                    sx={{ mt: 1, mb: 1 }}
-                                />
+                    // Check if there is an existing review by this tourist for this guide
+                    const currentReview = guideReviews.find(review => review.tourGuideId === guide._id);
 
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => submitReview(guide._id)}
-                                >
-                                    Submit Review
-                                </Button>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                ))
+                    return (
+                        <Card key={guide._id} sx={{ mb: 2 }}>
+                            <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Avatar
+                                    alt={guide.username}
+                                    src={guide.imageUrl}
+                                    sx={{ width: 56, height: 56, mr: 2 }}
+                                />
+                                <Box>
+                                    <Typography variant="h6">{guide.username}</Typography>
+
+                                    {currentReview ? (
+                                        <Box sx={{ mt: 2, p: 2, border: '1px solid #ddd', borderRadius: '4px' }}>
+                                            <Typography variant="subtitle2" color="textSecondary">
+                                                {currentReview.rating} Stars
+                                            </Typography>
+                                            <Typography variant="body2">{currentReview.review}</Typography>
+                                        </Box>
+                                    ) : (
+                                        <>
+                                            <Rating
+                                                value={ratings[guide._id] || 0}
+                                                onChange={(event, newValue) => handleRatingChange(guide._id, newValue)}
+                                            />
+
+                                            <TextField
+                                                label="Comment"
+                                                multiline
+                                                rows={3}
+                                                value={comments[guide._id] || ''}
+                                                onChange={(e) => handleCommentChange(guide._id, e.target.value)}
+                                                fullWidth
+                                                sx={{ mt: 1, mb: 1 }}
+                                            />
+
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={() => submitReview(guide._id)}
+                                            >
+                                                Submit Review
+                                            </Button>
+                                        </>
+                                    )}
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    );
+                })
             ) : (
-                <Typography>No tour guides available for review.</Typography>
+                !errorMessage && <Typography>No tour guides available for review.</Typography>
             )}
         </Box>
     );

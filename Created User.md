@@ -54,22 +54,16 @@
 
 [
   {
-    "username": "tourist_lucas",
     "email": "lucas12@example.com",
     "password": "LucasPassword789",
-    "mobileNumber": "1122334455",
-    "nationality": "Canadian",
-    "dob": "1992-11-03",
-    "jobOrStudent": "Job"
   },
   {
-    "username": "tourist_olivia",
     "email": "olivia_tourist@example.com",
     "password": "OliviaPassword112",
-    "mobileNumber": "2233445566",
-    "nationality": "Australian",
-    "dob": "1997-06-15",
-    "jobOrStudent": "Student"
+  },
+  {
+    email : Fizo@gmail.com,
+    password : fizo1234
   }
 ]
 
