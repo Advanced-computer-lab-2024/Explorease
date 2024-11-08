@@ -125,7 +125,7 @@ const TouristDashboard = () => {
             case 'ViewComplaints':
                 return <ViewComplaints />
             case 'cart':
-                return <h2> Still Implementing Cart!</h2>;
+                return <Cart />;
             case 'wallet':
                 return <h2> Still Implementing Wallet!</h2>;
             case 'bookFlight':

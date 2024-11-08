@@ -76,7 +76,7 @@ const RequestTodeleteAdvertiser = async (req, res) => {
             res.status(200).json({ message: 'Cannot delete account now as you have upcoming events.' });
         } else {
             advertiser.deleteRequest = true;
-            await advertiser.save;
+            await advertiser.save();
             console.log(advertiser.deleteRequest);
             return res.status(200).json({ message: 'Request submitted successfully.' });
         }

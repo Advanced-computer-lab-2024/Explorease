@@ -1,66 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { 
-  Button, Typography, Box, TextField, Rating, Card, CardContent, 
+  Button, Typography, Box, Rating, Card, CardContent, 
   CardActions, Grid, Container, Dialog, DialogTitle, DialogContent, 
-  DialogActions, CircularProgress, Divider
+  DialogActions, CircularProgress, TextField
 } from '@mui/material';
 
 export default function PurchasedProduct() {
-  const [products, setProducts] = useState([]);
-  const [reviews, setReviews] = useState({});
+  const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openReviewDialog, setOpenReviewDialog] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null);
+  const [currentPurchase, setCurrentPurchase] = useState(null);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewDetails, setReviewDetails] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchPurchases = async () => {
       try {
-        const response = await axios.get('/tourists/products');
-        const productsWithSpecificAttributes = response.data.map(product => ({
-          id: product._id,
-          name: product.Name,
-          price: product.Price,
-          description: product.Description
-        }));
-        setProducts(productsWithSpecificAttributes);
+        const response = await axios.get('/tourists/purchases/my-purchases', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setPurchases(response.data);
         setLoading(false);
-
-        // Fetch reviews for each product after loading products
-        await fetchReviewsForProducts(productsWithSpecificAttributes);
       } catch (err) {
-        setError('Failed to fetch products. Please try again later.');
+        setError('Failed to fetch purchases. Please try again later.');
         setLoading(false);
       }
     };
 
-    const fetchReviewsForProducts = async (products) => {
-      try {
-        const reviewsPromises = products.map(product =>
-          axios.get(`/tourists/getMyReviews`, { params: { productId: product.id } })
-        );
-        const reviewsResponses = await Promise.all(reviewsPromises);
+    fetchPurchases();
+  }, [token]);
 
-        // Map the response into a reviews object for easy lookup
-        const reviewsData = reviewsResponses.reduce((acc, response, index) => {
-          acc[products[index].id] = response.data.reviews || [];
-          return acc;
-        }, {});
-        setReviews(reviewsData);
-      } catch (err) {
-        setError('Failed to fetch reviews. Please try again later.');
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  const handleReviewOpen = (product) => {
-    setCurrentProduct(product);
+  const handleReviewOpen = (purchase) => {
+    setCurrentPurchase(purchase);
     setOpenReviewDialog(true);
   };
 
@@ -68,27 +44,33 @@ export default function PurchasedProduct() {
     setOpenReviewDialog(false);
     setReviewRating(0);
     setReviewDetails('');
-    setCurrentProduct(null);
+    setCurrentPurchase(null);
   };
 
   const handleReviewSubmit = async () => {
-    if (!reviewRating || !reviewDetails.trim()) {
-      alert('All fields (Rating & Details) are required.');
+    if (!reviewRating && !reviewDetails.trim()) {
+      alert('Please add either a rating or a review.');
       return;
     }
 
     setSubmitting(true);
     try {
-      const response = await axios.post(`/tourists/createProductReview`, {
-        productId: currentProduct.id,
-        Rating: reviewRating,
-        Details: reviewDetails
+      const response = await axios.put(`/tourists/purchase/${currentPurchase._id}/review`, {
+        rating: reviewRating,
+        review: reviewDetails
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      // Update reviews state to include the new review
-      setReviews(prevReviews => ({
-        ...prevReviews,
-        [currentProduct.id]: [...prevReviews[currentProduct.id], response.data.review]
-      }));
+
+      // Update the purchases array to include the new review
+      setPurchases(prevPurchases =>
+        prevPurchases.map(purchase =>
+          purchase._id === currentPurchase._id
+            ? { ...purchase, rating: reviewRating, review: reviewDetails }
+            : purchase
+        )
+      );
+
       handleReviewClose();
     } catch (err) {
       setError('Failed to submit review. Please try again.');
@@ -119,38 +101,41 @@ export default function PurchasedProduct() {
         <Typography variant="h4" component="h1" gutterBottom>
           Your Purchased Products
         </Typography>
-        {products.map((product) => (
-          <Card key={product.id} sx={{ mb: 4 }}>
+        {purchases.map((purchase) => (
+          <Card key={purchase._id} sx={{ mb: 4 }}>
             <Grid container>
               <Grid item xs={12} md={6}>
                 <CardContent>
                   <Typography variant="h6" component="h2">
-                    {product.name}
+                    {purchase.productId.Name}
                   </Typography>
                   <Typography color="textSecondary" gutterBottom>
-                    Price: ${product.price}
+                    Price: ${purchase.productId.Price}
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Description: {product.description}
+                    Description: {purchase.productId.Description}
                   </Typography>
                   <CardActions sx={{ justifyContent: 'flex-end' }}>
-                    <Button size="small" color="primary" onClick={() => handleReviewOpen(product)}>
-                      Write a Review
-                    </Button>
+                    {purchase.review || purchase.rating ? (
+                      <Typography variant="body2" color="textSecondary">
+                        Review already submitted.
+                      </Typography>
+                    ) : (
+                      <Button size="small" color="primary" onClick={() => handleReviewOpen(purchase)}>
+                        Write a Review
+                      </Button>
+                    )}
                   </CardActions>
                 </CardContent>
               </Grid>
               <Grid item xs={12} md={6}>
                 <CardContent>
-                  <Typography variant="subtitle1" gutterBottom>Reviews:</Typography>
-                  {reviews[product.id] && reviews[product.id].length > 0 ? (
-                    reviews[product.id].map((review, index) => (
-                      <Box key={index} mb={2}>
-                        <Rating value={review.Rating} readOnly size="small" />
-                        <Typography variant="body2">{review.Details}</Typography>
-                        {index < reviews[product.id].length - 1 && <Divider sx={{ my: 1 }} />}
-                      </Box>
-                    ))
+                  <Typography variant="subtitle1" gutterBottom>Review:</Typography>
+                  {purchase.review || purchase.rating ? (
+                    <Box mb={2}>
+                      <Rating value={purchase.rating || 0} readOnly size="small" />
+                      <Typography variant="body2">{purchase.review}</Typography>
+                    </Box>
                   ) : (
                     <Typography variant="body2">No reviews yet.</Typography>
                   )}

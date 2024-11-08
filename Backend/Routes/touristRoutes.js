@@ -11,10 +11,10 @@ const loyaltyController = require('../Controllers/UserControllers/LoyaltyControl
 const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');  
 const itineraryBookingController = require('../Controllers/ActivityControllers/BookingItenController');
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
-const ProductReviewControllers = require('../Controllers/ProductControllers/ProductReviewController');
+const PurchaseController = require('../Controllers/ProductControllers/PurchaseController');
 const reqdeleteController = require('../Controllers/RequestDelete');
 const TourGuideReviewController = require('../Controllers/TourGuideReview');
-
+const cartController = require('../Controllers/ProductControllers/cartController');
 
 // Tourist-specific routes
 router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristById);  // Tourist can read their own profile
@@ -26,11 +26,23 @@ router.get('/products/filter-sort-search', optionalAuth(['tourist']), productCon
 
 
 //product review
-router.get('/getAllReviews',optionalAuth(['tourist']), ProductReviewControllers.getAllReviews); 
-router.get('/getMyReviews', optionalAuth(['tourist']), ProductReviewControllers.getMyReviews);
-router.post('/createProductReview', optionalAuth(['tourist']), ProductReviewControllers.createProductReview);
-router.put('/updateReviewDetails', optionalAuth(['tourist']), ProductReviewControllers.updateReviewDetails);
-router.delete('/deleteReview', optionalAuth(['tourist']), ProductReviewControllers.deleteReview);
+router.post('product/purchase', roleAuth(['tourist']), PurchaseController.createPurchase);
+router.put('/purchase/:purchaseId/review', roleAuth(['tourist']), PurchaseController.addReviewAndRating);
+router.get('/purchases/my-purchases', roleAuth(['tourist']), PurchaseController.getPurchasesByUser);
+
+//cart functions
+router.post('/cart/add', roleAuth(['tourist']), cartController.addToCart);
+router.get('/cart', roleAuth(['tourist']), cartController.viewCart);
+router.delete('/cart/:productId', roleAuth(['tourist']), cartController.removeFromCart);
+router.delete('/cart', roleAuth(['tourist']), cartController.clearCart);
+router.post('/cart/checkout', roleAuth(['tourist']), cartController.checkoutCart);
+
+
+// router.get('/getAllReviews',optionalAuth(['tourist']), ProductReviewControllers.getAllReviews); 
+// router.get('/getMyReviews', optionalAuth(['tourist']), ProductReviewControllers.getMyReviews);
+// router.post('/createProductReview', optionalAuth(['tourist']), ProductReviewControllers.createProductReview);
+// router.put('/updateReviewDetails', optionalAuth(['tourist']), ProductReviewControllers.updateReviewDetails);
+// router.delete('/deleteReview', optionalAuth(['tourist']), ProductReviewControllers.deleteReview);
 
 
 // Tourist shared routes for viewing and filtering
@@ -87,7 +99,7 @@ router.put('/deleteTouristRequest', roleAuth(['tourist']), reqdeleteController.R
 router.post('/tourguideRev/add', roleAuth(['tourist']), TourGuideReviewController.addReview);
 
 // Route to get all reviews for a specific tour guide
-router.get('getTGRevAll/:tourGuideId' , TourGuideReviewController.getReviewsForGuide);
-router.get('getTGRev/:tourGuideId',roleAuth(['tourist']), TourGuideReviewController.getReviewByTouristForGuide);
+router.get('/getTGRevAll/:tourGuideId' , TourGuideReviewController.getReviewsForGuide);
+router.get('/getTGRev/:tourGuideId',roleAuth(['tourist']), TourGuideReviewController.getReviewByTouristForGuide);
 
 module.exports = router;

@@ -25,9 +25,9 @@ const addReview = async (req, res) => {
 // Get all reviews for a specific tour guide
 const getReviewsForGuide = async (req, res) => {
     const { tourGuideId } = req.params;
-    console.log(tourGuideId);
+    
     try {
-        const reviews = await Review.find({ tourGuideId : tourGuideId }).populate('touristId', 'username');
+        const reviews = await Review.find({ tourGuideId : tourGuideId });
         res.status(200).json(reviews);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching reviews', error: error.message });
@@ -38,10 +38,10 @@ const getReviewsForGuide = async (req, res) => {
 const getReviewByTouristForGuide = async (req, res) => {
     const { tourGuideId } = req.params;
     const touristId = req.user.id; // Ensure this is the logged-in tourist's ID from the request
-
+    
     try {
         const review = await Review.findOne({ 
-            tourGuideId: tgId,
+            tourGuideId: tourGuideId,
             touristId: touristId 
         });
 

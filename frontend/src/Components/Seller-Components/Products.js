@@ -67,6 +67,22 @@ const Products = () => {
         fetchFilteredProducts();
     };
 
+    const addToCart = async (productId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post('/tourists/cart/add', { productId, quantity: 1 }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setProductMessage('Product added to cart!');
+        } catch (error) {
+            setProductMessage('Error adding product to cart');
+            console.error('Error adding product to cart:', error);
+        }
+    };
+    
+
     const renderProductCards = () => {
         if (!Array.isArray(products) || products.length === 0) {
             return <Typography>No products available</Typography>;
@@ -92,7 +108,8 @@ const Products = () => {
                     <Typography variant="body2" color="text.secondary">
                         <strong>Ratings:</strong> {'★'.repeat(product.Ratings)}{'☆'.repeat(5 - product.Ratings)}
                     </Typography>
-                    <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth>
+                    <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth
+                    onClick={() => addToCart(product._id)}>
                         Add to Cart
                     </Button>
                 </CardContent>

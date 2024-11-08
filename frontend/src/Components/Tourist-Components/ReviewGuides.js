@@ -98,6 +98,7 @@ const ReviewGuides = () => {
 
             setRatings(prev => ({ ...prev, [guideId]: '' }));
             setComments(prev => ({ ...prev, [guideId]: '' }));
+            fetchReviewsForGuide();
         } catch (error) {
             console.error('Error submitting review:', error);
             setErrorMessage('Error submitting review.');
@@ -116,8 +117,8 @@ const ReviewGuides = () => {
                     console.log(`Reviews for guide ${guide._id}:`, guideReviews); // Log to check if reviews are loaded correctly
 
                     // Check if there is an existing review by this tourist for this guide
-                    const currentReview = guideReviews.find(review => review.tourGuideId === guide._id);
-
+                    const hasReviews = guideReviews.length === 0 ? false : true;
+                    const currentReview = guideReviews;
                     return (
                         <Card key={guide._id} sx={{ mb: 2 }}>
                             <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
@@ -129,7 +130,7 @@ const ReviewGuides = () => {
                                 <Box>
                                     <Typography variant="h6">{guide.username}</Typography>
 
-                                    {currentReview ? (
+                                    {hasReviews ? (
                                         <Box sx={{ mt: 2, p: 2, border: '1px solid #ddd', borderRadius: '4px' }}>
                                             <Typography variant="subtitle2" color="textSecondary">
                                                 {currentReview.rating} Stars

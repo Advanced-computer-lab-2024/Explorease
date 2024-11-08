@@ -6,6 +6,10 @@
     "username": "guide_maria",
     "email": "maria_guide@example.com",
     "password": "MariaPassword789"
+  },
+  {
+    "username" : ahmedguide@example.com
+    "password" : ahmed1
   }
 ]
 
@@ -62,7 +66,7 @@
     "password": "OliviaPassword112",
   },
   {
-    email : Fizo@gmail.com,
+    email : fizo@gmail.com,
     password : fizo1234
   }
 ]
