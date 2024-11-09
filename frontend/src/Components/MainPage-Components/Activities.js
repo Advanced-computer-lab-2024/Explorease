@@ -36,6 +36,27 @@ const Activities = () => {
             console.error('Error fetching activities:', error);
         }
     };
+
+        // New function to handle copying link (Added lines)
+        const handleCopyLink = (activityId) => {  
+            const link = `${window.location.origin}/activity/${activityId}`;  
+            navigator.clipboard.writeText(link)  
+                .then(() => {  
+                    alert('Link copied to clipboard!');  
+                })  
+                .catch((err) => {  
+                    console.error('Error copying link:', err);  
+                });  
+        };  
+    
+        // New function to handle sharing via email (Added lines)
+        const handleShareEmail = (activity) => {  
+            const subject = `Check out this activity: ${activity.name}`;  
+            const body = `Here is an activity you might be interested in:\n\nName: ${activity.name}\nDate: ${new Date(activity.date).toLocaleDateString()}\nLocation: ${activity.location}\nPrice: $${activity.price}\n\nCheck it out here: ${window.location.origin}/activity/${activity._id}`;  
+            const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;  
+            window.location.href = mailtoLink;  
+        };  
+    
     const handleSearch = async (e) => {
         e.preventDefault();
     
@@ -85,6 +106,14 @@ const Activities = () => {
                         <p><strong>Tags:</strong> {activity.tags.map(tag => tag.name).join(', ')}</p>
                     )}
                     <p><strong>Special Discounts:</strong> {activity.specialDiscounts}</p>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                        <button onClick={() => handleCopyLink(activity._id)} title="Copy Link" style={shareButtonStyle}>
+                            <span role="img" aria-label="link">🔗</span> <span>Copy Link</span>
+                        </button>
+                        <button onClick={() => handleShareEmail(activity)} title="Share via Email" style={shareButtonStyle}>
+                            <span role="img" aria-label="email">📧</span> <span>Share via Email</span>
+                        </button>
+                    </div>
                 </div>
             );
         }
@@ -92,7 +121,26 @@ const Activities = () => {
         return activityCards;
     };
     
+            // Styling for the share buttons (Added lines)
+            const shareButtonStyle = {
+                padding: '8px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                cursor: 'pointer',
+                fontSize: '14px',
+                backgroundColor: '#f9f9f9',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                color: '#333',
+                opacity: 1, // Ensure text is fully opaque
+                visibility: 'visible' // Ensure the text is visible
+            };
+            
+            
+
     // Styling for the card layout
+    
     const cardStyle = {
         border: '1px solid #ccc',
         borderRadius: '8px',

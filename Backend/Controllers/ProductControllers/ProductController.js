@@ -10,6 +10,41 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+const createProductAdmin = async (req, res) => {
+    const { Name, Price, Description, AvailableQuantity } = req.body;
+    const Admin = req.admin.id;
+    let imageUrl;
+
+    try {
+        // If an image file is provided, upload it to Cloudinary
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'products',  // Optional: organize your images in folders
+            });
+            imageUrl = result.secure_url;  // Store the image URL
+        }
+
+        // Validate that required fields are provided
+        if (!Name || !Price || !Description || !AvailableQuantity || !imageUrl) {
+            return res.status(400).json({ message: 'All fields (Name, Price, Description, AvailableQuantity, Image) are required.' });
+        }
+
+        const product = new productModel({
+            Name,
+            Price,
+            Description,
+            Admin,
+            AvailableQuantity,
+            imageUrl  // Save the image URL
+        });
+
+        await product.save();
+        res.status(201).json({ message: 'Product created successfully', product });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating product', error: error.message });
+    }
+};
+
 const createProduct = async (req, res) => {
     const { Name, Price, Description, AvailableQuantity } = req.body;
     const Seller = req.user.id;
@@ -75,11 +110,26 @@ const getAllProductsAdmin = async (req, res) => {
         res.status(500).json({ message: "Failed to load products.", error: error.message });
     }
 };
+const getMyAdminProducts = async (req, res) => {
+    const AdminId = req.admin.id // Assume req.user is set by authentication middleware
+
+    try {
+        const products = await productModel.find({ Admin: AdminId });
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: 'No products found for this seller.' });
+        }
+
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching products', error: error.message });
+    }
+};
 
 
 //Get my products
 const getMyProducts = async (req, res) => {
-    const sellerId = req.user.id; // Assume req.user is set by authentication middleware
+    const sellerId = req.user.id; 
 
     try {
         const products = await productModel.find({ Seller: sellerId });
@@ -155,7 +205,7 @@ const updateProductDetails = async (req, res) => {
     const { Name, Price, AvailableQuantity, Description } = req.body;
     const userId = req.user.id;
     const userRole = req.user.role;
-    console.log(userId);
+
     
     try {
         const product = await productModel.findById(id);
@@ -313,5 +363,7 @@ module.exports = {
     getFilteredSortedProductsBySeller,
     deleteProduct2,
     updateProductDetailsForAdmin,
-    getAllProductsAdmin
+    getAllProductsAdmin,
+    getMyAdminProducts,
+    createProductAdmin
 };

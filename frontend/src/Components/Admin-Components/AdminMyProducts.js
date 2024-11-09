@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const AdminProducts = () => {
+const AdminMyProducts = () => {
     const [products, setProducts] = useState([]);
     const [productMessage, setProductMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
@@ -10,8 +10,6 @@ const AdminProducts = () => {
     const [sortByRatings, setSortByRatings] = useState('');
     const [editingProductId, setEditingProductId] = useState(null); // Track which product is being edited
     const [updatedProductData, setUpdatedProductData] = useState({}); // Store updated product data
-    const [viewQuantity, setViewQuantity] = useState(null);
-    const [viewSales, setViewSales] = useState(null);
 
     // Fetch all products initially for the seller
     const fetchProducts = async () => {
@@ -19,7 +17,7 @@ const AdminProducts = () => {
             const token = localStorage.getItem('token');
 
             // Fetch seller products without filters (initial load)
-            const response = await axios.get('/admins/products', {
+            const response = await axios.get('/admins/adminproducts', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -43,20 +41,6 @@ const AdminProducts = () => {
     const handleInputChange = (e, field) => {
         setUpdatedProductData({ ...updatedProductData, [field]: e.target.value });
     };
-
-        // Handle viewing quantity
-        const handleViewQuantity = (productId) => {
-            const product = products.find(p => p._id === productId);
-            setViewQuantity(product.AvailableQuantity);
-            alert(`Available Quantity: ${product.AvailableQuantity}`);
-        };
-    
-        // Handle viewing sales
-        const handleViewSales = (productId) => {
-            const product = products.find(p => p._id === productId);
-            setViewSales(product.Sales);
-            alert(`Total Sales: ${product.Sales}`);
-        };
 
     // Handle clicking the "Edit" button
     const handleEditProduct = (product) => {
@@ -225,25 +209,6 @@ const AdminProducts = () => {
                         >
                             Delete Product
                         </button>
-
-            {/* New buttons for viewing quantity and sales */}
-            <button
-                onClick={() => handleViewSales(product._id)}
-                style={{
-                    display: 'inline-block',
-                    padding: '10px 15px',
-                    backgroundColor: '#007bff',
-                    color: '#fff',
-                    border: 'none',
-                    cursor: 'pointer',
-                    borderRadius: '5px',
-                    marginTop: '10px',
-                    marginLeft: '10px', // Add space to the right
-                }}
-            >
-                View Sales
-            </button>
-
                     </>
                 )}
             </div>
@@ -325,7 +290,7 @@ const AdminProducts = () => {
 
     return (
         <div style={{ padding: '20px' }}>
-            <h2>All Products</h2>
+            <h2>My Products</h2>
 
             <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
                 <div>
@@ -364,4 +329,4 @@ const AdminProducts = () => {
     );
 };
 
-export default AdminProducts;
+export default AdminMyProducts;

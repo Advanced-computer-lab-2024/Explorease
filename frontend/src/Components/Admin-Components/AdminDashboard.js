@@ -9,6 +9,7 @@ import UserApproval from './UserApproval';
 import BlockItinerary from './BlockItinerary';
 import Complaints from './Complaints';
 import MyProducts from './AdminProducts'
+import MyAdminProducts from './AdminMyProducts'
 import DeleteRequests from './DeleteRequests';
 
 
@@ -161,18 +162,33 @@ const createProduct = async (e) => {
     formData.append('image', imageFile);  // Append the image file
 
     try {
-        await axios.post('/admins/products', formData, {
+        const response = await axios.post('/admins/addProduct', formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data'
             }
         });
-        setProductMessage('Product created successfully!');
-        fetchProducts();
+
+        // Check if the response was successful
+        if (response.status === 201) {
+            setProductMessage('Product created successfully!');
+            setProductName('');
+            setProductPrice('');
+            setProductDescription('');
+            setAvailableQuantity('');
+            setImageFile(null);  // Reset file input
+            fetchProducts();  // Refetch products after creation
+        }
     } catch (error) {
-        setProductMessage('Error creating product.');
+        // Handle error message
+        if (error.response && error.response.status === 400) {
+            setProductMessage(error.response.data.message || 'Cannot create product, fields are missing.');
+        } else {
+            setProductMessage('Error creating product.');
+        }
     }
 };
+
 
 // Fetch all products
 const fetchProducts = async () => {
@@ -598,7 +614,10 @@ const handleTagChange = (id, newName) => {
 {activeSection === 'product' && (
     <div className="section">
         <h2>Manage Products</h2>
-        
+
+        {/* Display message for success or error */}
+        {productMessage && <p style={{ color: productMessage.includes('successfully') ? 'green' : 'red' }}>{productMessage}</p>}
+
         {/* Create New Product */}
         <form onSubmit={createProduct} encType="multipart/form-data">
             <div className="form-group">
@@ -647,11 +666,13 @@ const handleTagChange = (id, newName) => {
             </div>
             <button type="submit" className="submit-btn">Create Product</button>
         </form>
-        <MyProducts products={products} productMessage={productMessage} />
 
-        
+        {/* List of products */}
+        <MyAdminProducts products={products} productMessage={productMessage} />
+        <MyProducts products={products} productMessage={productMessage} />
     </div>
 )}
+
 
         </div>
     );

@@ -43,6 +43,25 @@ const Itineraries = () => {
         }
     };
 
+    const handleCopyLink = (itineraryId) => {
+        const link = `${window.location.origin}/itinerary/${itineraryId}`;
+        navigator.clipboard.writeText(link)
+            .then(() => {
+                alert('Link copied to clipboard!');
+            })
+            .catch((err) => {
+                console.error('Error copying link:', err);
+            });
+    };
+
+    // New function to handle sharing via email
+    const handleShareEmail = (itinerary) => {
+        const subject = `Check out this itinerary: ${itinerary.name}`;
+        const body = `Here is an itinerary you might be interested in:\n\nName: ${itinerary.name}\nTotal Price: $${itinerary.totalPrice}\nLanguages: ${itinerary.LanguageOfTour.join(', ')}\nPick-Up Location: ${itinerary.PickUpLocation}\nDrop-Off Location: ${itinerary.DropOffLocation}\n\nCheck it out here: ${window.location.origin}/itinerary/${itinerary._id}`;
+        const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoLink;
+    };
+
     const handleSearch = async (e) => {
         e.preventDefault();
     
@@ -92,11 +111,36 @@ const Itineraries = () => {
                         <p><strong>Tags:</strong> {itinerary.tags.map(tag => tag.name).join(', ')}</p>
                     )}
                     <p><strong>Available Dates:</strong> {itinerary.AvailableDates.map(date => new Date(date).toLocaleDateString()).join(', ')}</p>
+                     {/* New share functionality added here */}
+                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                        <button onClick={() => handleCopyLink(itinerary._id)} title="Copy Link" style={shareButtonStyle}>
+                            <span role="img" aria-label="link">🔗</span> <span>Copy Link</span>
+                        </button>
+                        <button onClick={() => handleShareEmail(itinerary)} title="Share via Email" style={shareButtonStyle}>
+                            <span role="img" aria-label="email">📧</span> <span>Share via Email</span>
+                        </button>
+                    </div>
                 </div>
             );
         }
 
         return itineraryCards;
+    };
+
+    // Styling for the share buttons
+    const shareButtonStyle = {
+        padding: '8px',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+        cursor: 'pointer',
+        fontSize: '14px',
+        backgroundColor: '#f9f9f9',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '5px',
+        color: '#333',
+        opacity: 1, // Ensure text is fully opaque
+        visibility: 'visible' // Ensure the text is visible
     };
 
     // Styling for the card layout

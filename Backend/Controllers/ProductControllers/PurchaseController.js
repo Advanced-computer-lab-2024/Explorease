@@ -12,12 +12,17 @@ const createPurchase = async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
         
-        if (product.quantity < quantity) {
+        if (product.AvailableQuantity < quantity) {
             return res.status(400).json({ message: 'Insufficient stock' });
         }
 
         // Calculate total price
         const totalPrice = product.Price * quantity;
+
+        // Decrement the product stock
+        product.AvailableQuantity = product.AvailableQuantity - quantity;
+        product.Sales = product.Sales + quantity;
+        await product.save();
 
         // Create new purchase
         const purchase = new Purchase({
@@ -28,10 +33,6 @@ const createPurchase = async (req, res) => {
         });
         
         await purchase.save();
-
-        // Decrement the product stock
-        product.quantity -= quantity;
-        await product.save();
 
         res.status(201).json({ message: 'Purchase successful', purchase });
     } catch (error) {

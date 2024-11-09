@@ -11,6 +11,29 @@ const ItineraryController = require('../Controllers/ActivityControllers/Itinerar
 const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
 const {optionalAuth} = require('../Middleware/authMiddleware');
 const Itinerary = require('../Models/ActivityModels/Itinerary');
+
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary'); // This is now defined after the package is installed
+require('dotenv').config();
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'products',
+        allowedFormats: ['jpg', 'png', 'jpeg']
+    }
+});
+
+const upload = multer({ storage });
+
+
 // Admin Routes
 
 // Add Main Admin (can be used once to create the first admin)
@@ -57,6 +80,8 @@ router.get('/getCategories', optionalAuth(['guest']), activityController.getAllC
 router.delete('/deleteCategory/:id', authenticateAdmin, activityController.deleteCategory);
 
 router.get('/products', authenticateAdmin, productController.getAllProductsAdmin);
+router.get('/adminproducts', authenticateAdmin, productController.getMyAdminProducts);
+router.post('/addProduct', authenticateAdmin, upload.single('image'), productController.createProductAdmin);
 router.put('/archiveProduct/:id',authenticateAdmin, productController.toggleProductArchiveStatus);
 // router.get('/searchProductByName', authenticateAdmin, productController.searchProductByName);
 // router.get('/products', authenticateAdmin, productController.getAllProducts);
