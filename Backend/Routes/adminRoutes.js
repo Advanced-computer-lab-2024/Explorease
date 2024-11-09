@@ -10,7 +10,7 @@ const productController = require('../Controllers/ProductControllers/ProductCont
 const ItineraryController = require('../Controllers/ActivityControllers/ItineraryController');
 const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
 const {optionalAuth} = require('../Middleware/authMiddleware');
-const Itinerary = require('../Models/ActivityModels/Itinerary');
+
 
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');

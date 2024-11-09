@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const sellerController = require('../Controllers/UserControllers/sellerController');
 const productController = require('../Controllers/ProductControllers/ProductController');  // Ensure correct path
-const reqdeleteController = require('../Controllers/RequestDelete'); 
 const { roleAuth } = require('../Middleware/authMiddleware');
 
 const cloudinary = require('cloudinary').v2;

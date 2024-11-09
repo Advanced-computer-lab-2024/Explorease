@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const itineraryController = require('../Controllers/ActivityControllers/ItineraryController');
-const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
-const reqdeleteController = require('../Controllers/RequestDelete'); 
+const tourGuideController = require('../Controllers/UserControllers/tourGuideController'); 
 const { roleAuth } = require('../Middleware/authMiddleware');
 
 // Routes for Tour Guide to create, read, update, and delete itineraries

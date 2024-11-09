@@ -12,7 +12,6 @@ const{ roleAuth, optionalAuth } = require('../Middleware/authMiddleware');
 const itineraryBookingController = require('../Controllers/ActivityControllers/BookingItenController');
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController');
 const PurchaseController = require('../Controllers/ProductControllers/PurchaseController');
-const reqdeleteController = require('../Controllers/RequestDelete');
 const TourGuideReviewController = require('../Controllers/TourGuideReview');
 const cartController = require('../Controllers/ProductControllers/cartController');
 

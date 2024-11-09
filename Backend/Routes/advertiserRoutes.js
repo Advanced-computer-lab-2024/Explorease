@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const advertiserController = require('../Controllers/UserControllers/advertiserController');
 const activityController = require('../Controllers/ActivityControllers/ActivityController');
-const reqdeleteController = require('../Controllers/RequestDelete'); 
 const { roleAuth } = require('../Middleware/authMiddleware'); // Assuming roleAuth is already defined
 
 // Advertiser-specific routes
