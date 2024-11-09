@@ -3,7 +3,7 @@ const { default: mongoose } = require('mongoose');
 const Product = require('../../Models/ProductModels/Product.js');
 const createPurchase = async (req, res) => {
     const { productId, quantity } = req.body;
-    const buyerId = req.user.id; // Assuming authentication middleware provides the buyer's ID
+    const buyerId = req.user.id;
 
     try {
         // Check if the product exists and has sufficient stock
@@ -11,34 +11,40 @@ const createPurchase = async (req, res) => {
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
-        
+
+        console.log('AvailableQuantity before purchase:', product.AvailableQuantity);
+        console.log('Sales before purchase:', product.Sales);
+
         if (product.AvailableQuantity < quantity) {
             return res.status(400).json({ message: 'Insufficient stock' });
         }
 
-        // Calculate total price
-        const totalPrice = product.Price * quantity;
+        // Update AvailableQuantity and Sales
+        product.AvailableQuantity -= quantity;
+        product.Sales += quantity;
 
-        // Decrement the product stock
-        product.AvailableQuantity = product.AvailableQuantity - quantity;
-        product.Sales = product.Sales + quantity;
+        // Save the updated product and log the result
         await product.save();
+        console.log('AvailableQuantity after purchase:', product.AvailableQuantity);
+        console.log('Sales after purchase:', product.Sales);
 
         // Create new purchase
         const purchase = new Purchase({
             productId,
             buyerId,
             quantity,
-            totalPrice
+            totalPrice: product.Price * quantity,
         });
-        
+
         await purchase.save();
 
         res.status(201).json({ message: 'Purchase successful', purchase });
     } catch (error) {
+        console.error('Error processing purchase:', error);
         res.status(500).json({ message: 'Error processing purchase', error: error.message });
     }
 };
+
 
 const getPurchasesByUser = async (req, res) => {
     const buyerId = req.user.id; 

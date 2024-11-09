@@ -69,7 +69,7 @@ const AdvertiserDashboard = () => {
         if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.put('/advertiser/deleteAdvertiserRequest',{}, {
+                await axios.put('/advertiser/deleteRequest',{}, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

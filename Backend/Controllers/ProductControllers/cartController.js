@@ -134,7 +134,8 @@ const checkoutCart = async (req, res) => {
                 }
 
                 // Decrement stock
-                product.quantity -= item.quantity;
+                product.AvailableQuantity -= item.quantity;
+                product.Sales += item.quantity;
                 await product.save();
 
                 // Create purchase record

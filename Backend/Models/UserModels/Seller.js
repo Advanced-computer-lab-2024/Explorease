@@ -9,7 +9,7 @@ const sellerSchema = new Schema({
     name: { type: String, required: false },
     description: { type: String, required: false },
     isAccepted: { type: Boolean, default: false },
-    deleteRequest : {type : Boolean , default : true , required: false},
+    deleteRequest : {type : Boolean , default : false , required: false},
     createdProduct : [{type : Schema.Types.ObjectId , ref : 'Product'}],
     documents: {
         ID: { type: String , required : false},  // URL to the uploaded ID document

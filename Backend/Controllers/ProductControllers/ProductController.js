@@ -99,6 +99,8 @@ const getAllProducts = async (req, res) => {
     }
 };
 
+
+
 const getAllProductsAdmin = async (req, res) => {
     try {
         const products = await productModel.find({});
@@ -348,7 +350,25 @@ const getFilteredSortedProductsBySeller = async (req, res) => {
     }
 };
 
+const getProductsBySellerId = async (req, res) => {
+    try {
+        const { id } = req.params; // Extract seller ID from request parameters
 
+        // Find all products that match the seller's ID
+        const products = await productModel.find({ Seller: id });
+
+        if (!products || products.length === 0) {
+            return res.status(404).json({ message: 'No products found for this seller' });
+        }
+
+        // Delete all products related to the seller ID
+        await productModel.deleteMany({ Seller: id });
+
+        res.status(200).json({ message: 'Products retrieved and deleted successfully', deletedProducts: products });
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving or deleting products', error: error.message });
+    }
+};
 
 
 
@@ -365,5 +385,6 @@ module.exports = {
     updateProductDetailsForAdmin,
     getAllProductsAdmin,
     getMyAdminProducts,
-    createProductAdmin
+    createProductAdmin,
+    getProductsBySellerId
 };

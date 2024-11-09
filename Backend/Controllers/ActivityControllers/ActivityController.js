@@ -156,6 +156,23 @@ const deleteActivity = async (req, res) => {
     }
 };
 
+const deleteActivitiesByAdvertiserId = async (req, res) => {
+    const { id } = req.params; // Extract advertiser ID from request parameters
+
+    try {
+        // Find and delete all activities related to the advertiser
+        const result = await Activity.deleteMany({ createdBy: id });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'No activities found for this advertiser' });
+        }
+
+        res.status(200).json({ message: `Successfully deleted ${result.deletedCount} activities for advertiser ${id}` });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting activities', error: error.message });
+    }
+};
+
 
 const filterSortSearchActivities = async (req, res) => {
     const { searchQuery, category, tag, minPrice, maxPrice, startDate, endDate, minRating, sortBy, order } = req.query;
@@ -394,5 +411,7 @@ module.exports = {
     updateActivity,
     deleteActivity,
     filterSortSearchActivities,
-    filterSortSearchActivitiesByAdvertiser
+    filterSortSearchActivitiesByAdvertiser,
+    deleteActivitiesByAdvertiserId
+    
 };

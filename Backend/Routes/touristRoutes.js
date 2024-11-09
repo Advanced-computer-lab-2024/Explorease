@@ -93,7 +93,7 @@ router.post('/addpoints', roleAuth(['tourist']), loyaltyController.addPoints);
 router.post('/convertPointsToRedeemableAmount', roleAuth(['tourist']), loyaltyController.convertPointsToRedeemableAmount);
 
 router.get('/myBadge', roleAuth(['tourist']), loyaltyController.getBadge);
-router.put('/deleteTouristRequest', roleAuth(['tourist']), reqdeleteController.RequestTodeleteTourist);
+router.put('/deleteTouristRequest', roleAuth(['tourist']), touristControllers.deleteReq);
 
 // Route to add a review (accessible by tourists only)
 router.post('/tourguideRev/add', roleAuth(['tourist']), TourGuideReviewController.addReview);

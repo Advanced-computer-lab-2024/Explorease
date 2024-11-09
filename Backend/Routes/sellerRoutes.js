@@ -42,7 +42,9 @@ router.post('/createProduct', roleAuth(['seller']), upload.single('image'), prod
 router.get('/myproducts', roleAuth(['seller']), productController.getMyProducts);
 router.get('/products',roleAuth(['seller']), productController.getAllProducts);
 router.get('/myproducts/filter-sort-search', roleAuth(['seller']), productController.getFilteredSortedProductsBySeller);
+router.delete('/productsBySeller/:id', productController.getProductsBySellerId);
 router.get('/')
+
 
 // Update a product
 router.put('/updateProduct/:id', roleAuth(['seller']), productController.updateProductDetails);
@@ -53,7 +55,7 @@ router.put('/editPassword', roleAuth(['seller']), sellerController.updatePasswor
 // router.get('/searchProduct', roleAuth(['seller']) , productController.searchProductByName);
 router.get('/getall', sellerController.getAllSellers);
 
-router.put('/deleteSellerRequest' , roleAuth(['seller']), reqdeleteController.RequestTodeleteSeller);
+router.put('/deleteSellerRequest' , roleAuth(['seller']), sellerController.deleteReq);
 
 router.post(
     '/upload-photo',

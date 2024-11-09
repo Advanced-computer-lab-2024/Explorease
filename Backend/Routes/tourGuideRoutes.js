@@ -47,6 +47,7 @@ router.put('/deactivateItinerary/:id', roleAuth(['tourGuide']), itineraryControl
 
 // Delete an itinerary
 router.delete('/deleteItinerary/:id', roleAuth(['tourGuide']), itineraryController.deleteItinerary);
+router.delete('/deleteItinerary2/:id', roleAuth(['tourGuide']), itineraryController.deleteItinerariesByTourGuideId);
 
 //Get my profile.
 router.get('/myProfile', roleAuth(['tourGuide']), tourGuideController.getTourGuideById);
@@ -67,5 +68,5 @@ router.post(
 
 router.put('/editPassword', roleAuth(['tourGuide']), tourGuideController.updatePassword);
 router.get('/getall', tourGuideController.getAllTourGuides);
-router.put('/deletetourGuideRequest' , roleAuth(['tourGuide']), reqdeleteController.RequestTodeleteTourGuide);
+router.put('/deletetourGuideRequest' , roleAuth(['tourGuide']), tourGuideController.deleteReq);
 module.exports = router;

@@ -39,34 +39,42 @@ export default function DeleteRequests() {
 
   const handleDeleteRequest = async (userId, userType, action) => {
     try {
-      // Delete user
-      await axios.delete(`/admins/deleteUser/${userId}/${userType}`, axiosConfig);
+        // Additional deletion steps based on user type
+        if (userType === 'tourGuide') {
+            try {
+                await axios.delete(`/tourguide/deleteItinerary2/${userId}`, axiosConfig);
+            } catch (error) {
+                console.error(`No itineraries found or error deleting itineraries for tourGuide with ID: ${userId}`);
+            }
+        }
+
+        if (userType === 'seller') {
+            try {
+                await axios.delete(`/seller/productsBySeller/${userId}`, axiosConfig);
+            } catch (error) {
+                console.error(`No products found or error deleting products for seller with ID: ${userId}`);
+            }
+        }
+
+        if (userType === 'advertiser') {
+            try {
+               await axios.delete(`/advertiser/deleteActivity2/${userId}`, axiosConfig);
+            } catch (error) {
+                console.error(`No activities found or error deleting activities for advertiser with ID: ${userId}`);
+            }
+        }
+
+        // Proceed with deleting the user regardless of errors in previous steps
+        await axios.delete(`/admins/deleteUser/${userId}/${userType}`, axiosConfig);
   
-      // Additional deletion steps based on user type
-      if (userType === 'tourGuide') {
-        const itineraries = await axios.get(`/tourguide/itineraries/${userId}`, axiosConfig);
-        for (const itinerary of itineraries.data) {
-          await axios.delete(`/tourguide/deleteItinerary/${itinerary._id}`, axiosConfig);
-        }
-      } else if (userType === 'seller') {
-        const products = await axios.get(`/seller/products/${userId}`, axiosConfig);
-        for (const product of products.data) {
-          await axios.delete(`/seller/deleteProduct/${product._id}`, axiosConfig);
-        }
-      } else if (userType === 'advertiser') {
-        const activities = await axios.get(`/advertiser/activities/${userId}`, axiosConfig);
-        for (const activity of activities.data) {
-          await axios.delete(`/advertiser/deleteActivity/${activity._id}`, axiosConfig);
-        }
-      }
-  
-      setMessage(`User and associated data deleted successfully`);
-      fetchDeleteRequests(); // Refresh the list after update
+        setMessage(`User and associated data deleted successfully`);
+        fetchDeleteRequests(); // Refresh the list after update
     } catch (error) {
-      console.error('Error handling delete request:', error);
-      setMessage(error.response?.data?.message || 'Failed to process delete request');
+        console.error('Error handling delete request:', error);
+        setMessage(error.response?.data?.message || 'Failed to process delete request');
     }
-  };
+};
+
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2 }}>
       <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>

@@ -130,6 +130,17 @@ const loginAdvertiser = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error });
     }
 };
+const deleteReq = async(req,res) =>{
+    try{
+        const advertiser = await userModel.findById(req.user.id);
+        advertiser.deleteRequest = true;
+        await advertiser.save();
+        res.status(200).json({ message: 'Delete request sent successfully' });
+    }
+    catch(error){
+        res.status(400).json({ error: error.message });
+    }
+}
 
 const updatePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
@@ -212,5 +223,6 @@ module.exports = {
     deleteAdvertiser,
     getAllAdvertisers,
     loginAdvertiser,
-    updatePassword
+    updatePassword,
+    deleteReq
 };

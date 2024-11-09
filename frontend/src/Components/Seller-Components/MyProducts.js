@@ -10,6 +10,7 @@ const SellerProducts = () => {
     const [sortByRatings, setSortByRatings] = useState('');
     const [editingProductId, setEditingProductId] = useState(null); // Track which product is being edited
     const [updatedProductData, setUpdatedProductData] = useState({}); // Store updated product data
+    const [viewSales, setViewSales] = useState(null);
 
     // Fetch all products initially for the seller
     const fetchSellerProducts = async () => {
@@ -137,6 +138,13 @@ const SellerProducts = () => {
         }
     };
 
+            // Handle viewing sales
+            const handleViewSales = (productId) => {
+                const product = products.find(p => p._id === productId);
+                setViewSales(product.Sales);
+                alert(`Total Sales: ${product.Sales}`);
+            };
+
     const handleSearch = (e) => {
         e.preventDefault();
         fetchFilteredSellerProducts(); // Fetch products with the filter/sort/search when search is pressed
@@ -210,6 +218,23 @@ const SellerProducts = () => {
                         >
                             Delete Product
                         </button>
+
+                        <button
+                onClick={() => handleViewSales(product._id)}
+                style={{
+                    display: 'inline-block',
+                    padding: '10px 15px',
+                    backgroundColor: '#007bff',
+                    color: '#fff',
+                    border: 'none',
+                    cursor: 'pointer',
+                    borderRadius: '5px',
+                    marginTop: '10px',
+                    marginLeft: '10px', // Add space to the right
+                }}
+            >
+                View Sales
+            </button>
                     </>
                 )}
             </div>

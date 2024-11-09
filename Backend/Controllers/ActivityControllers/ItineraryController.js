@@ -202,6 +202,36 @@ const deleteItinerary = async (req, res) => {
     }
 };
 
+
+const deleteItinerariesByTourGuideId = async (req, res) => {
+    const { tourGuideId } = req.params;
+
+    try {
+        // Find all itineraries created by the tour guide with the given ID
+        const itineraries = await ItineraryModel.find({ createdBy: tourGuideId });
+
+        if (!itineraries || itineraries.length === 0) {
+            return res.status(404).json({ message: 'No itineraries found for this tour guide' });
+        }
+
+        // Filter itineraries to check if any have been booked
+        const bookedItineraries = itineraries.filter(itinerary => itinerary.BookedBy.length > 0);
+        
+        if (bookedItineraries.length > 0) {
+            return res.status(403).json({ 
+                message: `Cannot delete itineraries. ${bookedItineraries.length} itinerary(ies) have been booked by user(s) and cannot be deleted.` 
+            });
+        }
+
+        // Delete unbooked itineraries created by the tour guide
+        await ItineraryModel.deleteMany({ createdBy: tourGuideId, BookedBy: { $size: 0 } });
+        
+        res.status(200).json({ message: `Unbooked itineraries for tour guide ${tourGuideId} deleted successfully` });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting itineraries', error: error.message });
+    }
+};
+
 const filterSortSearchItineraries = async (req, res) => {
     try {
         const {
@@ -416,5 +446,6 @@ module.exports = {
     deactivateItinerary,
     getAllActivatedItinerary,
     flagItinerary,
-    unflagItinerary
+    unflagItinerary,
+    deleteItinerariesByTourGuideId
 };

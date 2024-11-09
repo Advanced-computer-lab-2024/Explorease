@@ -10,7 +10,7 @@ const tourGuideSchema = new mongoose.Schema({
     yearsOfExperience: { type: Number, required: false },
     previousWork: { type: String, required: false },
     isAccepted: { type: Boolean, default: false },
-    deleteRequest : {type : Boolean , default : true , required: false}, 
+    deleteRequest : {type : Boolean , default : false , required: false}, 
     createdItineraries: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }],
     documents: {
         ID : { type: String, required: false }, // URL or path to ID PDF

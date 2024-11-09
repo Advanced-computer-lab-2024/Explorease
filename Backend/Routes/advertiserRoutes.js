@@ -16,10 +16,11 @@ router.post('/createActivity', roleAuth(['advertiser']), activityController.crea
 router.get('/getMyActivities',  roleAuth(['advertiser']) , activityController.readActivities);
 router.get('/filter-sort-search', roleAuth(['advertiser']), activityController.filterSortSearchActivitiesByAdvertiser);
 router.delete('/deleteActivity/:id', roleAuth(['advertiser']), activityController.deleteActivity);
+router.delete('/deleteActivity2/:id', roleAuth(['advertiser']), activityController.deleteActivitiesByAdvertiserId);
 // Add the update activity route
 router.put('/updateActivity/:id', roleAuth(['advertiser']), activityController.updateActivity);
 
-router.put('/deleteRequest' , roleAuth(['advertiser']), reqdeleteController.RequestTodeleteAdvertiser)
+router.put('/deleteRequest' , roleAuth(['advertiser']), advertiserController.deleteReq)
 
 router.put('/editPassword', roleAuth(['advertiser']), advertiserController.updatePassword);
 router.post(

@@ -11,7 +11,7 @@ const advertiserSchema = new mongoose.Schema({
     hotline: { type: String, required: false },
     companyProfile: { type: String, required: false },
     isAccepted: { type: Boolean, default: false },
-    deleteRequest : {type : Boolean , default : true , required: false},
+    deleteRequest : {type : Boolean , default : false , required: false},
     createdActivities: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
     documents: {
         ID: { type: String, required : false },  // URL to the uploaded ID document

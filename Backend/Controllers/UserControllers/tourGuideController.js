@@ -22,6 +22,17 @@ const createTourGuide = async (req, res) => {
     }
 };
 
+const deleteReq = async (req, res) => {
+    try {
+        const tourguide  = await userModel.findById(req.user.id);
+        tourguide.deleteRequest = true;
+        await tourguide.save();
+        res.status(200).json({ message: 'Delete request sent successfully' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // Get a tour guide by ID
 const getTourGuideById = async (req, res) => {
     try {
@@ -192,5 +203,6 @@ module.exports = {
     deleteTourGuide,
     getAllTourGuides,
     loginTourGuide,
-    updatePassword
+    updatePassword,
+    deleteReq
 };

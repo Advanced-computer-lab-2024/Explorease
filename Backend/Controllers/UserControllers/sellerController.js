@@ -81,8 +81,18 @@ const updateSeller = async (req, res) => {
     }
 };
 
+const deleteReq = async (req, res) => {
+    try{
+        const seller = await userModel.findById(req.user.id);
+        seller.deleteRequest = true;
+        await seller.save();
+        res.status(200).json({ message: 'Delete request sent successfully' });
 
-
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
 
 // Delete seller by ID
 const deleteSeller = async (req, res) => {
@@ -178,5 +188,6 @@ module.exports = {
     updateSeller,
     deleteSeller,
     getAllSellers,
-    updatePassword
+    updatePassword,
+    deleteReq
 };

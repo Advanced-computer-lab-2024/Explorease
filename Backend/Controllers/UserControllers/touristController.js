@@ -56,6 +56,17 @@ const createTourist = async (req, res) => {
     }
 };
 
+const deleteReq = async (req, res) => {
+    try{
+        const tourist = await userModel.findById(req.user.id);
+        tourist.deleteRequest = true;
+        await tourist.save();
+        res.status(200).json({ message: 'Delete request sent successfully' });
+    }
+    catch(error){
+        res.status(400).json({ error: error.message });
+    }
+}
 
 // Get a tourist by ID
 const getTouristById = async (req, res) => {
@@ -205,5 +216,6 @@ module.exports = {
     sortAllByPrice,
     sortAllByRating,
     loginTourist,
-    editPassword
+    editPassword,
+    deleteReq
 };
