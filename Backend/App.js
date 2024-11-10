@@ -59,6 +59,7 @@ app.use('/admins', adminRoutes);
 app.use('/governor', governorRoutes);
 app.use('/seller', sellerRoutes);
 
+//check user status
 const {checkUserStatus, acceptTermsAndConditions }= require('./Controllers/checkUserStatus');
 app.post('/check-user-status' , checkUserStatus );
 app.post('/accept-terms', acceptTermsAndConditions);
