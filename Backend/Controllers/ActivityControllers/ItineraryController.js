@@ -431,7 +431,21 @@ const bookItinerary = async (req, res) => {
     }
 };
 
-
+const getItineraryById = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const itinerary = await ItineraryModel.findById(id);
+  
+      if (!itinerary) {
+        return res.status(404).json({ message: 'Itinerary not found' });
+      }
+  
+      res.json(itinerary);
+    } catch (error) {
+      console.error('Error fetching itinerary:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
 
 
 module.exports = {
@@ -447,5 +461,6 @@ module.exports = {
     getAllActivatedItinerary,
     flagItinerary,
     unflagItinerary,
-    deleteItinerariesByTourGuideId
+    deleteItinerariesByTourGuideId,
+    getItineraryById
 };

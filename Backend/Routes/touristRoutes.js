@@ -72,7 +72,7 @@ router.get('/itineraries/bookings', roleAuth(['tourist']), itineraryBookingContr
 router.get('/activities/bookings', roleAuth(['tourist']), bookingController.getMyBookings );
 
 
-router.get('/activities/:id', roleAuth(['tourist']), activityControllers.getActivityById);
+router.get('/activities/:id', optionalAuth(['tourist', 'guest']), activityControllers.getActivityById);
 
 router.post('/bookings/cancelBooking/:bookingId', roleAuth(['tourist']), bookingController.deleteBooking);
 router.post('/bookings/cancelBookingItinerary/:bookingId', roleAuth(['tourist']), itineraryBookingController.cancelBookingItinerary);
@@ -83,6 +83,7 @@ router.post('/activity-bookings/add-comment/:bookingId', roleAuth(['tourist']), 
 // Itinerary Booking Routes
 router.post('/itinerary-bookings/add-rating/:bookingId', roleAuth(['tourist']), itineraryBookingController.setRatingForItineraryBooking);
 router.post('/itinerary-bookings/add-comment/:bookingId', roleAuth(['tourist']), itineraryBookingController.setCommentForItineraryBooking);
+router.get('/itineraries/:id', optionalAuth(['tourist', 'guest']),itineraryControllers.getItineraryById);
 
 router.get('/get-my-guides/:id',roleAuth(['tourist']), tourGuideController.getTourGuideByIdParam );
 
