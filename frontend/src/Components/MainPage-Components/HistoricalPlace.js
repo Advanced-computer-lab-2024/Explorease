@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Navbar from './GuestNavbar';
 
 const HistoricalPlaces = () => {
     const [places, setPlaces] = useState([]);
@@ -163,6 +164,7 @@ const HistoricalPlaces = () => {
 
     return (
         <div>
+            <Navbar />
             <h1>All Historical Places</h1>
 
             <form onSubmit={handleSearch} style={formStyle}>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Navbar from './GuestNavbar';
 
 const Itineraries = () => {
     const [itineraries, setItineraries] = useState([]);
@@ -154,6 +155,7 @@ const Itineraries = () => {
 
     return (
         <div>
+            <Navbar />
             <h1>All Itineraries</h1>
             <form onSubmit={handleSearch} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
