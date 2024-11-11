@@ -141,7 +141,7 @@ export default function PurchasedProduct() {
                   )}
                 </CardContent>
               </Grid>
-            </Grid>
+            </Grid>`  `
           </Card>
         ))}
       </Box>

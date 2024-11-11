@@ -19,11 +19,21 @@ const BookItinerariesPage = () => {
     const [selectedItinerary, setSelectedItinerary] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [exchangeRates, setExchangeRates] = useState({});
+    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+
+    const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
     useEffect(() => {
         fetchItineraries();
         fetchWalletBalance();
+        fetchExchangeRates();
     }, []);
+
+    
+    const convertToUSD = (price) => {
+        return (price / (exchangeRates[selectedCurrency] || 1)).toFixed(2);
+    };
 
     const fetchItineraries = async () => {
         try {
@@ -60,8 +70,8 @@ const BookItinerariesPage = () => {
         e.preventDefault();
         let queryString = '';
         if (searchQuery) queryString += `searchQuery=${searchQuery}&`;
-        if (minPrice) queryString += `minPrice=${minPrice}&`;
-        if (maxPrice) queryString += `maxPrice=${maxPrice}&`;
+        if (minPrice) queryString += `minPrice=${convertToUSD(minPrice)}&`;  
+        if (maxPrice) queryString += `maxPrice=${convertToUSD(maxPrice)}&`;  
         if (startDate) queryString += `startDate=${startDate}&`;
         if (endDate) queryString += `endDate=${endDate}&`;
         if (minRating) queryString += `minRating=${minRating}&`;
@@ -77,6 +87,23 @@ const BookItinerariesPage = () => {
             console.error('Error fetching itineraries:', error);
             setMessage('Error fetching itineraries');
         }
+    };
+
+    const fetchExchangeRates = async () => {
+        try {
+            const response = await axios.get(`https://v6.exchangerate-api.com/v6/${YOUR_API_KEY}/latest/USD`);
+            setExchangeRates(response.data.conversion_rates);
+        } catch (error) {
+            console.error('Error fetching exchange rates:', error);
+        }
+    };
+
+    const handleCurrencyChange = (e) => {
+        setSelectedCurrency(e.target.value);
+    };
+
+    const convertPrice = (price) => {
+        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
 
     const handleBookItinerary = (itinerary) => {
@@ -246,6 +273,17 @@ const BookItinerariesPage = () => {
                         <MenuItem value="desc">Descending</MenuItem>
                     </Select>
                 </FormControl>
+
+                <FormControl sx={{ marginBottom: 3, minWidth: 120 }}>
+                <InputLabel>Currency</InputLabel>
+                <Select value={selectedCurrency} onChange={handleCurrencyChange}>
+                    {Object.keys(exchangeRates).map((currency) => (
+                        <MenuItem key={currency} value={currency}>
+                            {currency}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
                 <Button type="submit" variant="contained" color="primary" sx={{ height: '56px', alignSelf: 'center' }}>
                     Search & Filter
                 </Button>
@@ -258,7 +296,7 @@ const BookItinerariesPage = () => {
                     <Card key={itinerary._id} sx={{ width: '300px', boxShadow: 3, padding: 2, textAlign: 'center' }}>
                         <CardContent>
                             <Typography variant="h6">{itinerary.name}</Typography>
-                            <Typography><strong>Total Price:</strong> ${itinerary.totalPrice}</Typography>
+                            <Typography><strong>Total Price:</strong> {convertPrice(itinerary.totalPrice)} {selectedCurrency}</Typography>
                             <Typography><strong>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}</Typography>
                             <Typography><strong>Date :</strong> {itinerary.AvailableDates[0]}</Typography>
 

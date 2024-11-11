@@ -71,6 +71,8 @@ const TouristNavbar = ({ setActiveComponent }) => {
                             <MenuItem onClick={() => { setActiveComponent('bookHotel'); handlePopoverClose(); }}>Book A Hotel</MenuItem>
                             <MenuItem onClick={() => { setActiveComponent('bookActivity'); handlePopoverClose(); }}>Book An Activity</MenuItem>
                             <MenuItem onClick={() => { setActiveComponent('bookItinerary'); handlePopoverClose(); }}>Book An Itinerary</MenuItem>
+                            <MenuItem onClick={() => { setActiveComponent('bookTransportation'); handlePopoverClose(); }}>Book A Transportation</MenuItem>
+
                         </Popover>
                     </Box>
                 </Box>

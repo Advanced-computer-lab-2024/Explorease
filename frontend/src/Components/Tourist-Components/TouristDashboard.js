@@ -2,7 +2,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Products from '../Seller-Components/Products';
+// import Products from '../Seller-Components/Products';
 import FileComplaint from './fileComplaint';
 import TouristNavbar from './TouristNavbar';
 import UpdateProfile from './UpdateProfile';
@@ -18,6 +18,7 @@ import ViewBookings from './ViewBookings';
 import ReviewGuides from './ReviewGuides';
 import PurchasedProduct from './PurchasedProduct';
 import MyPoints from './MyPoints';
+import Products from './BuyProduct';
 import { Box, Typography } from '@mui/material';
 
 const TouristDashboard = () => {
@@ -140,7 +141,8 @@ const TouristDashboard = () => {
                     return <ViewBookings />
             case 'reviewGuides':
                     return <ReviewGuides />
-            
+            case 'bookTransportation':
+                return <BookTransport />
             case 'PurchasedProduct':
                     return <PurchasedProduct />
             case 'MyPoints':

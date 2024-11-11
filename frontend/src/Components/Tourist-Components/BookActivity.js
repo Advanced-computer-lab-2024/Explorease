@@ -20,11 +20,20 @@ const BookActivitiesPage = () => {
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [exchangeRates, setExchangeRates] = useState({});
+    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+
+    const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
     useEffect(() => {
         fetchActivities();
         fetchWalletBalance();
+        fetchExchangeRates();
     }, []);
+
+    const convertToUSD = (price) => {
+        return (price / (exchangeRates[selectedCurrency] || 1)).toFixed(2);
+    };
 
     const fetchActivities = async () => {
         try {
@@ -61,6 +70,23 @@ const BookActivitiesPage = () => {
         }
     };
     
+    const fetchExchangeRates = async () => {
+        try {
+            const response = await axios.get(`https://v6.exchangerate-api.com/v6/${YOUR_API_KEY}/latest/USD`);
+            setExchangeRates(response.data.conversion_rates);
+        } catch (error) {
+            console.error('Error fetching exchange rates:', error);
+        }
+    };
+    
+
+    const handleCurrencyChange = (e) => {
+        setSelectedCurrency(e.target.value);
+    };
+
+    const convertPrice = (price) => {
+        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
+    };
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -68,8 +94,8 @@ const BookActivitiesPage = () => {
         if (searchQuery) queryString += `searchQuery=${searchQuery}&`;
         if (category) queryString += `category=${category}&`;
         if (tag) queryString += `tag=${tag}&`;
-        if (minPrice) queryString += `minPrice=${minPrice}&`;
-        if (maxPrice) queryString += `maxPrice=${maxPrice}&`;
+        if (minPrice) queryString += `minPrice=${convertToUSD(minPrice)}&`;  
+        if (maxPrice) queryString += `maxPrice=${convertToUSD(maxPrice)}&`;  
         if (startDate) queryString += `startDate=${startDate}&`;
         if (endDate) queryString += `endDate=${endDate}&`;
         if (minRating) queryString += `minRating=${minRating}&`;
@@ -250,6 +276,18 @@ const BookActivitiesPage = () => {
                     <MenuItem value="desc">Descending</MenuItem>
                 </Select>
             </FormControl>
+
+            <FormControl sx={{ marginBottom: 3, minWidth: 120 }}>
+                <InputLabel>Currency</InputLabel>
+                <Select value={selectedCurrency} onChange={handleCurrencyChange}>
+                    {Object.keys(exchangeRates).map((currency) => (
+                        <MenuItem key={currency} value={currency}>
+                            {currency}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
             <Button type="submit" variant="contained" color="primary" sx={{ 
                         backgroundColor: '#111E56', 
                         color: 'white', 
@@ -275,7 +313,7 @@ const BookActivitiesPage = () => {
                         <Typography><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</Typography>
                         <Typography><strong>Time:</strong> {activity.time}</Typography>
                         <Typography><strong>Location:</strong> {activity.location}</Typography>
-                        <Typography><strong>Price:</strong> ${activity.price}</Typography>
+                        <Typography><strong>Price:</strong> {convertPrice(activity.price)} {selectedCurrency}</Typography>
                         <Typography><strong>Category:</strong> {activity.category?.name}</Typography>
                         {activity.tags && (
                             <Typography><strong>Tags:</strong> {activity.tags.map(tag => tag.name).join(', ')}</Typography>

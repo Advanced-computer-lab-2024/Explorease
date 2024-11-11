@@ -21,6 +21,11 @@ const Products = () => {
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [sortByRatings, setSortByRatings] = useState('');
+    const [exchangeRates, setExchangeRates] = useState({});
+    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+
+    const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
+
 
     const fetchAllProducts = async () => {
         try {
@@ -39,15 +44,31 @@ const Products = () => {
 
     useEffect(() => {
         fetchAllProducts();
+        fetchExchangeRates();
+
     }, []);
+
+
+    const fetchExchangeRates = async () => {
+        try {
+            const response = await axios.get(`https://v6.exchangerate-api.com/v6/${YOUR_API_KEY}/latest/USD`);
+            setExchangeRates(response.data.conversion_rates);
+        } catch (error) {
+            console.error('Error fetching exchange rates:', error);
+        }
+    };
+
+    const convertToUSD = (price) => {
+        return (price / (exchangeRates[selectedCurrency] || 1)).toFixed(2);
+    };
 
     const fetchFilteredProducts = async () => {
         try {
             const token = localStorage.getItem('token');
             let queryString = '';
             if (searchQuery) queryString += `name=${searchQuery}&`;
-            if (minPrice) queryString += `minPrice=${minPrice}&`;
-            if (maxPrice) queryString += `maxPrice=${maxPrice}&`;
+            if (minPrice) queryString += `minPrice=${convertToUSD(minPrice)}&`;  
+            if (maxPrice) queryString += `maxPrice=${convertToUSD(maxPrice)}&`;  
             if (sortByRatings) queryString += `sortByRatings=${sortByRatings}&`;
 
             const response = await axios.get(`/tourists/products/filter-sort-search?${queryString}`, {
@@ -67,7 +88,28 @@ const Products = () => {
         fetchFilteredProducts();
     };
 
-   
+    const handleCurrencyChange = (e) => {
+        setSelectedCurrency(e.target.value);
+    };
+
+    const convertPrice = (price) => {
+        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
+    };
+
+    const addToCart = async (productId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post('/tourists/cart/add', { productId, quantity: 1 }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setProductMessage('Product added to cart!');
+        } catch (error) {
+            setProductMessage('Error adding product to cart');
+            console.error('Error adding product to cart:', error);
+        }
+    };
     
 
     const renderProductCards = () => {
@@ -87,7 +129,7 @@ const Products = () => {
                 <CardContent>
                     <Typography variant="h6">{product.Name}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                        <strong>Price:</strong> ${product.Price}
+                    <strong>Price:</strong> {convertPrice(product.Price)} {selectedCurrency}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                         <strong>Description:</strong> {product.Description}
@@ -95,7 +137,10 @@ const Products = () => {
                     <Typography variant="body2" color="text.secondary">
                         <strong>Ratings:</strong> {'★'.repeat(product.Ratings)}{'☆'.repeat(5 - product.Ratings)}
                     </Typography>
-                    
+                    <Button variant="contained" color="primary" sx={{ mt: 2 }} fullWidth
+                    onClick={() => addToCart(product._id)}>
+                        Add to Cart
+                    </Button>
                 </CardContent>
             </Card>
         ));
@@ -141,7 +186,18 @@ const Products = () => {
                             <MenuItem value="desc">Descending</MenuItem>
                         </Select>
                     </FormControl>
+                    <FormControl variant="outlined" sx={{ mb: 2, minWidth: 120 }}>
+                <InputLabel>Currency</InputLabel>
+                <Select value={selectedCurrency} onChange={handleCurrencyChange} label="Currency">
+                    {Object.keys(exchangeRates).map((currency) => (
+                        <MenuItem key={currency} value={currency}>
+                            {currency}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
                     <Button type="submit" variant="contained" color="primary">Search</Button>
+                    
                 </Box>
 
                 {productMessage && <Typography color="error">{productMessage}</Typography>}

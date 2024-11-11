@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const cors = require('cors');
+const axios = require('axios');
+
 
 // User Routes
 // const roleAuth = require('../Middleware/AuthMiddleware');
@@ -86,6 +88,32 @@ app.post('/upload-documents/tourguide', uploadPDF.fields([
 app.use('/api/flights', flightsRoute);
 // backend/App.js
 app.use('/api/hotels', hotelsRoute); // Register the new route
+
+app.get('/transit-route', async (req, res) => {
+    const { origin, destination } = req.query; // Expected format: "lat,lng"
+
+    if (!origin || !destination) {
+        return res.status(400).json({ error: 'Origin and destination are required' });
+    }
+
+    try {
+        const response = await axios.get('https://transit.hereapi.com/v8/routes', {
+            params: {
+                origin: origin,
+                destination: destination,
+                return: 'travelSummary',
+                transportMode: 'publicTransport',
+                apiKey: 'BHQGHZGH973nk4Gkx-jQQO_wabymB17n5Y-KhBE32zs'
+            }
+        });
+        console.log(response.data);
+
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching transit route:', error.message);
+        res.status(500).json({ error: 'Failed to fetch transit route' });
+    }
+});
 
 
 

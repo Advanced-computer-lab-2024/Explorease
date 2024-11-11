@@ -15,8 +15,6 @@ const AdminLogin = () => {
             const { token } = response.data;  // Assuming the JWT token is in the response
             localStorage.setItem('token', token); // Store JWT in localStorage
             setMessage('Login successful! Redirecting to dashboard...');
-
-            // Redirect to the admin dashboard after a short delay (2 seconds)
             setTimeout(() => {
                 navigate('/admin/dashboard');
             }, 2000);  // 2-second delay for user to see the message
