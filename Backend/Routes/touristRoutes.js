@@ -14,6 +14,7 @@ const tourGuideController = require('../Controllers/UserControllers/tourGuideCon
 const PurchaseController = require('../Controllers/ProductControllers/PurchaseController');
 const TourGuideReviewController = require('../Controllers/TourGuideReview');
 const cartController = require('../Controllers/ProductControllers/cartController');
+const wishlistController = require('../Controllers/ProductControllers/wishlistController');
 
 // Tourist-specific routes
 router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristById);  // Tourist can read their own profile
@@ -28,6 +29,8 @@ router.get('/products/filter-sort-search', optionalAuth(['tourist']), productCon
 router.post('product/purchase', roleAuth(['tourist']), PurchaseController.createPurchase);
 router.put('/purchase/:purchaseId/review', roleAuth(['tourist']), PurchaseController.addReviewAndRating);
 router.get('/purchases/my-purchases', roleAuth(['tourist']), PurchaseController.getPurchasesByUser);
+router.delete('/purchases/:purchaseId/cancel',roleAuth(['tourist']) , PurchaseController.cancelPurchase);
+
 
 //cart functions
 router.post('/cart/add', roleAuth(['tourist']), cartController.addToCart);
@@ -35,6 +38,7 @@ router.get('/cart', roleAuth(['tourist']), cartController.viewCart);
 router.delete('/cart/:productId', roleAuth(['tourist']), cartController.removeFromCart);
 router.delete('/cart', roleAuth(['tourist']), cartController.clearCart);
 router.post('/cart/checkout', roleAuth(['tourist']), cartController.checkoutCart);
+router.put('/cart/update', roleAuth(['tourist']), cartController.updateCartQuantity);
 
 
 // router.get('/getAllReviews',optionalAuth(['tourist']), ProductReviewControllers.getAllReviews); 
@@ -102,4 +106,24 @@ router.post('/tourguideRev/add', roleAuth(['tourist']), TourGuideReviewControlle
 router.get('/getTGRevAll/:tourGuideId' , TourGuideReviewController.getReviewsForGuide);
 router.get('/getTGRev/:tourGuideId',roleAuth(['tourist']), TourGuideReviewController.getReviewByTouristForGuide);
 
+// Wishlist routes
+router.post('/wishlist/add', roleAuth(['tourist']), wishlistController.addToWishlist );
+router.get('/wishlist', roleAuth(['tourist']), wishlistController.getWishlist);
+router.delete('/wishlist/:productId', roleAuth(['tourist']), wishlistController.removeFromWishlist);
+
+
+//Delivery addresses
+router.post('/delivery-address', roleAuth(['tourist']), touristControllers.addDeliveryAddress);
+
+// Get all delivery addresses
+router.get('/delivery-address', roleAuth(['tourist']), touristControllers.getDeliveryAddresses);
+
+// Delete a delivery address
+router.delete('/delivery-address/:addressId', roleAuth(['tourist']), touristControllers.deleteDeliveryAddress);
+
+
+// stripe routes
+router.post('/cart/stripe-session', roleAuth(['tourist']), cartController.createStripeSession);
+
+router.post('/cart/stripe-success', roleAuth(['tourist']), cartController.stripeSuccess);
 module.exports = router;

@@ -1,10 +1,8 @@
-// TouristDashboard.js
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import Products from '../Seller-Components/Products';
-import FileComplaint from './fileComplaint';
 import TouristNavbar from './TouristNavbar';
+import FileComplaint from './fileComplaint';
 import UpdateProfile from './UpdateProfile';
 import ViewComplaints from './ViewComplaints';
 import BookFlight from './BookFlight';
@@ -19,13 +17,28 @@ import ReviewGuides from './ReviewGuides';
 import PurchasedProduct from './PurchasedProduct';
 import MyPoints from './MyPoints';
 import Products from './BuyProduct';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Drawer, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import Wishlist from './Wishlist';
+import Checkout from './Checkout';
 
 const TouristDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('profile');
-    const navigate = useNavigate();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
+ // Function to refresh cart count (increments by 1)
+ const incrementCartCount = () => {
+    setCartCount((prevCount) => prevCount + 1);
+};
+    const sidebarWidth = isSidebarOpen ? 250 : 0;
+        const navigate = useNavigate();
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen((prev) => !prev);
+    };
+
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -36,7 +49,7 @@ const TouristDashboard = () => {
 
             try {
                 const response = await axios.get('/tourists/myProfile', {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (response.data) {
@@ -45,26 +58,37 @@ const TouristDashboard = () => {
                     setMessage('No profile data found');
                 }
             } catch (error) {
-                console.error('Error fetching profile:', error.response ? error.response.data : error.message);
+                console.error(
+                    'Error fetching profile:',
+                    error.response ? error.response.data : error.message
+                );
                 setMessage('Error fetching profile');
             }
         };
 
         fetchProfile();
     }, [navigate]);
+
+    
+
     const handleDeleteAccountRequest = async () => {
-        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (
+            window.confirm(
+                'Are you sure you want to delete your account? This action cannot be undone.'
+            )
+        ) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.put('/tourists/deleteTouristRequest',{}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
+                await axios.put(
+                    '/tourists/deleteTouristRequest',
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
                     }
-                });
+                );
                 setMessage('Account deletion request sent successfully.');
-                // Optionally, you can log the user out and redirect them
-                // localStorage.removeItem('token');
-                // navigate('/login');
             } catch (error) {
                 console.error('Error requesting account deletion:', error);
                 setMessage('Failed to request account deletion. Please try again.');
@@ -72,43 +96,45 @@ const TouristDashboard = () => {
         }
     };
 
-    const sidebarStyle = {
-        width: '250px',
-        backgroundColor: '#f1f1f1',
-        padding: '15px',
-        position: 'fixed',
-        height: '100%',
-        top: '60px',
-        left: '0',
-        display: 'flex',
-        flexDirection: 'column',
-        zIndex: 1,
-    };
-
-    const contentStyle = {
-        marginLeft: '260px',
-        padding: '20px',
-    };
-
     const renderContent = () => {
         switch (activeComponent) {
             case 'profile':
                 return (
                     <>
-                        <Typography variant="h4" align="center" gutterBottom>Tourist Profile</Typography>
+                        <Typography variant="h4" align="center" gutterBottom>
+                            Tourist Profile
+                        </Typography>
                         {message && <Typography color="error" align="center">{message}</Typography>}
                         {profile && profile.username ? (
-                            <Box sx={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', maxWidth: '400px', margin: '0 auto', backgroundColor: '#f9f9f9', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
-                                <p><strong>Username:</strong> {profile.username}</p>
-                                <p><strong>Email:</strong> {profile.email}</p>
-                                <p><strong>Date of Birth:</strong> {new Date(profile.dob).toLocaleDateString()}</p>
-                                <p><strong>Nationality:</strong> {profile.nationality}</p>
-                                <p><strong>Wallet Balance:</strong> {profile.wallet} USD</p>
-                                <button 
-                                    onClick={handleDeleteAccountRequest}
-                                    variant="destructive"
-                                    
-                                >
+                            <Box
+                                sx={{
+                                    border: '1px solid #ccc',
+                                    borderRadius: '8px',
+                                    padding: '20px',
+                                    maxWidth: '400px',
+                                    margin: '0 auto',
+                                    backgroundColor: '#f9f9f9',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <p>
+                                    <strong>Username:</strong> {profile.username}
+                                </p>
+                                <p>
+                                    <strong>Email:</strong> {profile.email}
+                                </p>
+                                <p>
+                                    <strong>Date of Birth:</strong>{' '}
+                                    {new Date(profile.dob).toLocaleDateString()}
+                                </p>
+                                <p>
+                                    <strong>Nationality:</strong> {profile.nationality}
+                                </p>
+                                <p>
+                                    <strong>Wallet Balance:</strong> {profile.wallet} USD
+                                </p>
+                                <button onClick={handleDeleteAccountRequest} variant="destructive">
                                     Delete Account
                                 </button>
                             </Box>
@@ -118,15 +144,18 @@ const TouristDashboard = () => {
                     </>
                 );
             case 'viewProducts':
-                return <Products />;
+                return <Products incrementCartCount={incrementCartCount} />
+
             case 'updateProfile':
                 return <UpdateProfile profile={profile} setProfile={setProfile} />;
             case 'fileComplaint':
-                return < FileComplaint />;
+                return <FileComplaint />;
             case 'ViewComplaints':
-                return <ViewComplaints />
+                return <ViewComplaints />;
             case 'cart':
-                return <Cart />;
+                return <Cart setActiveComponent={setActiveComponent} />;
+            case 'checkout':
+                return <Checkout setActiveComponent={setActiveComponent}></Checkout>
             case 'wallet':
                 return <h2> Still Implementing Wallet!</h2>;
             case 'bookFlight':
@@ -134,19 +163,21 @@ const TouristDashboard = () => {
             case 'bookHotel':
                 return <BookHotel />;
             case 'bookActivity':
-                return <BookActivity />
+                return <BookActivity />;
             case 'bookItinerary':
-                return <BookItinerary />
+                return <BookItinerary />;
             case 'ViewBookings':
-                    return <ViewBookings />
+                return <ViewBookings />;
             case 'reviewGuides':
-                    return <ReviewGuides />
+                return <ReviewGuides />;
             case 'bookTransportation':
-                return <BookTransport />
+                return <BookTransport />;
             case 'PurchasedProduct':
-                    return <PurchasedProduct />
+                return <PurchasedProduct />;
             case 'MyPoints':
-                    return <MyPoints />    
+                return <MyPoints />;
+            case 'wishlist':
+                return <Wishlist />
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
@@ -154,25 +185,77 @@ const TouristDashboard = () => {
 
     return (
         <div>
-            <TouristNavbar setActiveComponent={setActiveComponent} />
+   {/* Navbar */}
+   <TouristNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} cartCount={cartCount} />
 
-            <Box sx={sidebarStyle}>
-                <Typography variant="h6">Dashboard</Typography>
-                <ul style={{ listStyleType: 'none', padding: '0' }}>
-                    <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
-                    <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
-                    <li onClick={() => setActiveComponent('fileComplaint')} style={{ cursor: 'pointer', marginBottom: '10px' }}>File Complaint</li>
-                    <li onClick={() => setActiveComponent('ViewComplaints')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Complaints</li>
-                    <li onClick={() => setActiveComponent('ViewBookings')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Bookings</li>
-                    <li onClick={() => setActiveComponent('reviewGuides')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Review Tour Guides</li>
-                    <li onClick={() => setActiveComponent('PurchasedProduct')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Review Purchased Product</li>
-                    <li onClick={() => setActiveComponent('MyPoints')} style={{ cursor: 'pointer', marginBottom: '10px' }}>My Points</li>
-                </ul>
-            </Box>
+{/* Sidebar */}
+<Box
+    sx={{
+        position: 'fixed',
+        top: '64px', // Navbar height
+        left: 0,
+        width: sidebarWidth,
+        height: 'calc(100% - 64px)', // Full height minus navbar
+        backgroundColor: '#f1f1f1',
+        transition: 'width 0.3s ease',
+        overflow: 'hidden',
+        zIndex: 1000,
+    }}
+    onMouseLeave={() => setIsSidebarOpen(false)} // Close sidebar on mouse leave
+>
+<List sx={{ padding: 0 }}>
+    {[
+        { text: 'View Profile', component: 'profile' },
+        { text: 'Update Profile', component: 'updateProfile' },
+        { text: 'File Complaint', component: 'fileComplaint' },
+        { text: 'View Complaints', component: 'ViewComplaints' },
+        { text: 'View Bookings', component: 'ViewBookings' },
+        { text: 'Review Tour Guides', component: 'reviewGuides' },
+        { text: 'Purchased Products', component: 'PurchasedProduct' },
+        { text: 'My Points', component: 'MyPoints' },
+        {text : 'Wishlist', component: 'wishlist'},
+    ].map((item, index) => (
+        <ListItem
+            button
+            key={index}
+            onClick={() => {
+                setActiveComponent(item.component);
+                setIsSidebarOpen(false);
+            }}
+            sx={{
+                backgroundColor: index % 2 === 1 ? '#111E56' : '#f5f5f5', // Alternating colors
+                color: index % 2 === 1 ? 'white' : '#111E56',
+                padding: '15px 20px',
+                '&:hover': {
+                    backgroundColor: index % 2 === 1 ? '#0D1740' : '#e0e0e0', // Slightly darker on hover
+                    cursor: 'pointer',
+                },
+                transition: 'background-color 0.3s ease',
+            }}
+        >
+            <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    fontFamily: 'Poppins, sans-serif',
+                }}
+            />
+        </ListItem>
+    ))}
+</List>
+</Box>
 
-            <Box sx={contentStyle}>
-                {renderContent()}
-            </Box>
+{/* Main Content */}
+<Box
+    sx={{
+        marginLeft: isSidebarOpen ? 50 : 0,
+        transition: 'margin-left 0.3s ease',
+        padding: '20px',
+    }}
+>
+    {renderContent()}
+</Box>
         </div>
     );
 };

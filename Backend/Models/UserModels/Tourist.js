@@ -18,7 +18,20 @@ const touristSchema = new mongoose.Schema({
     deleteRequest : {type : Boolean , default : false , required: false},
     previousIteniraries : [{type : Schema.Types.ObjectId, ref : 'Itenirary'}], 
     bokedHistoricalPlace : [{type : Schema.Types.ObjectId , ref : 'HistoricalPlace'}],
-    previousHistoricalPlace : [{type : Schema.Types.ObjectId, ref : 'HistoricalPlace'}]
+    previousHistoricalPlace : [{type : Schema.Types.ObjectId, ref : 'HistoricalPlace'}],
+    wishlist: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Wishlist',
+    },
+    deliveryAddresses: [
+        {
+            label: String, // Example: "Home", "Office"
+            address: String, // Full address
+            city: String,
+            zipCode: String,
+            country: String,
+        }
+    ],
 }, { timestamps: true });
 
 const Tourist = mongoose.model('Tourist', touristSchema);

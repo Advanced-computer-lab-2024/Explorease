@@ -17,6 +17,8 @@ import TouristGovernorDashboard from './Components/TouristGoverner-Components/To
 import UploadDocuments from './Components/MainPage-Components/UploadDocuments';
 import SingleItinerary from './Components/MainPage-Components/SingleItinerary';
 import SingleActivity from './Components/MainPage-Components/SingleActivity';
+import Success from './Components/Tourist-Components/Success';
+
 function App() {
             // All paths needed
   return (
@@ -40,6 +42,7 @@ function App() {
           <Route path="/uploadDocuments" element={<UploadDocuments />} />
           <Route path="/itinerary/:id" element={<SingleItinerary />} />
           <Route path="/activity/:id" element={<SingleActivity />} />
+          <Route path="/success" element={<Success />} />
 
         </Routes>
       </div>

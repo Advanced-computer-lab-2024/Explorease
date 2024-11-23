@@ -12,9 +12,11 @@ import {
     Select,
     FormControl,
     InputLabel,
+    IconButton,
 } from '@mui/material';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-const Products = () => {
+const Products = ( {incrementCartCount} ) => {
     const [products, setProducts] = useState([]);
     const [productMessage, setProductMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
@@ -105,9 +107,26 @@ const Products = () => {
                 }
             });
             setProductMessage('Product added to cart!');
+            incrementCartCount();
+
         } catch (error) {
             setProductMessage('Error adding product to cart');
             console.error('Error adding product to cart:', error);
+        }
+    };
+
+    const addToWishlist = async (productId) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post('/tourists/wishlist/add', { productId }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setProductMessage('Product added to wishlist!');
+        } catch (error) {
+            setProductMessage('Error adding product to wishlist');
+            console.error('Error adding product to wishlist:', error);
         }
     };
     
@@ -141,6 +160,12 @@ const Products = () => {
                     onClick={() => addToCart(product._id)}>
                         Add to Cart
                     </Button>
+                    <IconButton
+                            color="secondary"
+                            onClick={() => addToWishlist(product._id)}
+                        >
+                            <FavoriteBorderIcon />
+                        </IconButton>
                 </CardContent>
             </Card>
         ));

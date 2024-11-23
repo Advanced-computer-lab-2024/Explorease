@@ -1,13 +1,27 @@
-// components/Cart.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Button, Card, CardContent, CardMedia, Alert } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Button,
+    Card,
+    CardContent,
+    CardMedia,
+    IconButton,
+    Alert,
+    TextField,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import { useNavigate } from 'react-router-dom';
 
-const Cart = () => {
+const Cart = ({setActiveComponent}) => {
     const [cartItems, setCartItems] = useState([]);
     const [walletBalance, setWalletBalance] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
     const [checkoutMessage, setCheckoutMessage] = useState('');
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchCartItems();
@@ -48,6 +62,22 @@ const Cart = () => {
         setTotalCost(total);
     };
 
+    const updateQuantity = async (productId, newQuantity) => {
+        try {
+            if (newQuantity <= 0) return;
+            const token = localStorage.getItem('token');
+            await axios.put(
+                '/tourists/cart/update',
+                { productId, quantity: newQuantity },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            fetchCartItems(); // Refresh cart after updating
+        } catch (error) {
+            setCheckoutMessage('Error updating quantity');
+            console.error('Error updating quantity:', error);
+        }
+    };
+
     const removeFromCart = async (productId) => {
         try {
             const token = localStorage.getItem('token');
@@ -64,27 +94,7 @@ const Cart = () => {
 
     // Handle checkout process
     const handleCheckout = async () => {
-        if (walletBalance < totalCost) {
-            setCheckoutMessage('Insufficient funds in wallet. Please add more funds.');
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem('token');
-
-            // Perform checkout, creating purchase records
-            const response = await axios.post('/tourists/cart/checkout', {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            // Update wallet balance and show success message
-            setWalletBalance(response.data.newWalletBalance);
-            setCartItems([]); // Clear cart
-            setCheckoutMessage('Purchase successful! Items have been purchased.');
-        } catch (error) {
-            setCheckoutMessage('Checkout failed. Please try again.');
-            console.error('Error during checkout:', error);
-        }
+        setActiveComponent('checkout'); // Navigate to Checkout component
     };
 
     return (
@@ -99,40 +109,59 @@ const Cart = () => {
                 <>
                     <Box display="flex" flexDirection="column" gap={2}>
                         {cartItems.map((item) => (
-                            <Card key={item.productId._id} sx={{ display: 'flex', mb: 2}}>
+                            <Card key={item.productId._id} sx={{ display: 'flex', alignItems: 'center', mb: 2, padding: '16px', borderRadius: '8px', boxShadow: 3 }}>
                                 <CardMedia
                                     component="img"
-                                    height="140"
                                     image={item.productId.imageUrl}
                                     alt={item.productId.Name}
-                                    sx={{objectFit: "contain"}}
+                                    sx={{ width: '150px', height: '150px', objectFit: 'contain', borderRadius: '8px', marginRight: '16px' }}
                                 />
-                                <CardContent>
-                                    <Typography variant="h6">{item.productId.Name}</Typography>
-                                    <Typography variant="body2">Price: ${item.productId.Price}</Typography>
-                                    <Typography variant="body2">Quantity: {item.quantity}</Typography>
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        onClick={() => removeFromCart(item.productId._id)}
-                                        sx={{ mt: 2 }}
-                                    >
-                                        Remove from Cart
-                                    </Button>
+                                <CardContent sx={{ flexGrow: 1 }}>
+                                    <Typography variant="h6" sx={{ mb: 1 }}>{item.productId.Name}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>Price: ${item.productId.Price}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>Total: ${item.productId.Price * item.quantity}</Typography>
+                                    <Box display="flex" alignItems="center" gap={2}>
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() => updateQuantity(item.productId._id, item.quantity - 1)}
+                                        >
+                                            <RemoveIcon />
+                                        </IconButton>
+                                        <TextField
+                                            value={item.quantity}
+                                            inputProps={{ readOnly: true }}
+                                            size="small"
+                                            sx={{ width: '50px', textAlign: 'center' }}
+                                        />
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() => updateQuantity(item.productId._id, item.quantity + 1)}
+                                        >
+                                            <AddIcon />
+                                        </IconButton>
+                                    </Box>
                                 </CardContent>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => removeFromCart(item.productId._id)}
+                                    sx={{ height: '40px', alignSelf: 'center', marginLeft: 'auto' }}
+                                >
+                                    Remove from Cart
+                                </Button>
                             </Card>
                         ))}
                     </Box>
 
                     {/* Summary and Checkout */}
                     <Box mt={4}>
-                        <Typography variant="h6">Total Cost: ${totalCost}</Typography>
+                        {/* <Typography variant="h6">Total Cost: ${totalCost}</Typography>
                         <Typography variant="h6">Wallet Balance: ${walletBalance}</Typography>
                         <Typography variant="h6">
                             Balance After Purchase: ${walletBalance - totalCost}
-                        </Typography>
+                        </Typography> */}
 
-                        {walletBalance >= totalCost ? (
+                    
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -141,11 +170,6 @@ const Cart = () => {
                             >
                                 Proceed to Checkout
                             </Button>
-                        ) : (
-                            <Typography color="error" sx={{ mt: 2 }}>
-                                Insufficient funds in wallet. Please add more funds.
-                            </Typography>
-                        )}
                     </Box>
                 </>
             )}

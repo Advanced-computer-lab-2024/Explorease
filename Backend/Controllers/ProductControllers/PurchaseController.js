@@ -1,6 +1,8 @@
 const Purchase = require('../../Models/ProductModels/Purchase.js');
 const { default: mongoose } = require('mongoose');
 const Product = require('../../Models/ProductModels/Product.js');
+const Tourist = require('../../Models/UserModels/Tourist.js');
+
 const createPurchase = async (req, res) => {
     const { productId, quantity } = req.body;
     const buyerId = req.user.id;
@@ -79,4 +81,48 @@ const addReviewAndRating = async (req, res) => {
     }
 };
 
-module.exports = {createPurchase, getPurchasesByUser, addReviewAndRating};
+const cancelPurchase = async (req, res) => {
+    const { purchaseId } = req.params;
+    const buyerId = req.user.id; // Get the buyer ID from the authentication middleware
+
+    try {
+        // Find the purchase document
+        const purchase = await Purchase.findOne({ _id: purchaseId, buyerId });
+        if (!purchase) {
+            return res.status(404).json({ message: 'Purchase not found' });
+        }
+
+        // Increase the product quantity
+        const product = await Product.findById(purchase.productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        product.AvailableQuantity += purchase.quantity;
+        await product.save();
+
+        // Refund the amount to the buyer's wallet if applicable
+        if (purchase.paymentMethod === 'wallet' || purchase.paymentMethod === 'stripe') {
+            const buyer = await Tourist.findById(buyerId);
+            if (!buyer) {
+                return res.status(404).json({ message: 'Buyer not found' });
+            }
+
+            buyer.wallet += purchase.totalPrice;
+            await buyer.save();
+        }
+
+        // Delete the purchase document
+        await Purchase.findByIdAndDelete(purchaseId);
+
+        res.status(200).json({ message: 'Order canceled successfully' });
+    } catch (error) {
+        console.error('Error canceling purchase:', error);
+        res.status(500).json({ message: 'Failed to cancel the order', error: error.message });
+    }
+};
+
+module.exports = { cancelPurchase };
+
+
+module.exports = {createPurchase, getPurchasesByUser, addReviewAndRating, cancelPurchase};

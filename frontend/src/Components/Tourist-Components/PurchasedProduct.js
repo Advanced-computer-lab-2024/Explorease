@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { 
-  Button, Typography, Box, Rating, Card, CardContent, 
-  CardActions, Grid, Container, Dialog, DialogTitle, DialogContent, 
-  DialogActions, CircularProgress, TextField
+import {
+  Button,
+  Typography,
+  Box,
+  Rating,
+  Card,
+  CardContent,
+  CardMedia,
+  Grid,
+  Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress,
+  TextField,
+  Divider,
 } from '@mui/material';
 
 export default function PurchasedProduct() {
@@ -22,7 +35,7 @@ export default function PurchasedProduct() {
     const fetchPurchases = async () => {
       try {
         const response = await axios.get('/tourists/purchases/my-purchases', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setPurchases(response.data);
         setLoading(false);
@@ -55,16 +68,19 @@ export default function PurchasedProduct() {
 
     setSubmitting(true);
     try {
-      const response = await axios.put(`/tourists/purchase/${currentPurchase._id}/review`, {
-        rating: reviewRating,
-        review: reviewDetails
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.put(
+        `/tourists/purchase/${currentPurchase._id}/review`,
+        {
+          rating: reviewRating,
+          review: reviewDetails,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      // Update the purchases array to include the new review
-      setPurchases(prevPurchases =>
-        prevPurchases.map(purchase =>
+      setPurchases((prevPurchases) =>
+        prevPurchases.map((purchase) =>
           purchase._id === currentPurchase._id
             ? { ...purchase, rating: reviewRating, review: reviewDetails }
             : purchase
@@ -78,7 +94,28 @@ export default function PurchasedProduct() {
       setSubmitting(false);
     }
   };
+  const handleCancelOrder = async (purchaseId) => {
+    if (!window.confirm('Are you sure you want to cancel this order?')) {
+        return;
+    }
 
+    try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`/tourists/purchases/${purchaseId}/cancel`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // Remove the canceled order from the recent orders
+        setPurchases((prevPurchases) =>
+            prevPurchases.filter((purchase) => purchase._id !== purchaseId)
+        );
+
+        alert('Order canceled successfully.');
+    } catch (error) {
+        console.error('Error canceling order:', error);
+        alert('Failed to cancel the order. Please try again.');
+    }
+};
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -95,55 +132,102 @@ export default function PurchasedProduct() {
     );
   }
 
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+  const deliveredOrders = purchases.filter((purchase) => new Date(purchase.purchaseDate) <= twoDaysAgo);
+  const recentOrders = purchases.filter((purchase) => new Date(purchase.purchaseDate) > twoDaysAgo);
+
+  const renderOrders = (orders, isDelivered) => (
+    <Grid container spacing={4}>
+      {orders.map((purchase) => (
+        <Grid item xs={12} sm={6} md={4} key={purchase._id}>
+          <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <CardMedia
+              component="img"
+              height="200"
+              image={purchase.productId.imageUrl || 'https://via.placeholder.com/150'}
+              alt={purchase.productId.Name}
+            />
+            <CardContent>
+              <Typography variant="h6">{purchase.productId.Name}</Typography>
+              <Typography variant="body2" color="textSecondary">
+                Price: ${purchase.productId.Price}
+              </Typography>
+              <Typography variant="body2" color="textSecondary" gutterBottom>
+                Description: {purchase.productId.Description}
+              </Typography>
+              {isDelivered ? (
+                <>
+                  <Typography variant="body2" color="primary" gutterBottom>
+                    Status: Delivered
+                  </Typography>
+                  {purchase.review || purchase.rating ? (
+                    <Box mt={1}>
+                      <Typography variant="body2" color="textSecondary">
+                        Your Review:
+                      </Typography>
+                      <Rating value={purchase.rating} readOnly size="small" />
+                      <Typography variant="body2">{purchase.review}</Typography>
+                    </Box>
+                  ) : (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => handleReviewOpen(purchase)}
+                      sx={{ mt: 1 }}
+                    >
+                      Write a Review
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Typography variant="body2" color="secondary" gutterBottom>
+                    Status: Delivering
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+  Payment Method: {purchase.paymentMethod ? purchase.paymentMethod.charAt(0).toUpperCase() + purchase.paymentMethod.slice(1) : 'Unknown'}
+</Typography>
+<Button
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleCancelOrder(purchase._id)}
+                                    sx={{ mt: 1 }}
+                                >
+                                    Cancel Order
+                                </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  );
+
   return (
     <Container maxWidth="lg">
       <Box my={4}>
         <Typography variant="h4" component="h1" gutterBottom>
           Your Purchased Products
         </Typography>
-        {purchases.map((purchase) => (
-          <Card key={purchase._id} sx={{ mb: 4 }}>
-            <Grid container>
-              <Grid item xs={12} md={6}>
-                <CardContent>
-                  <Typography variant="h6" component="h2">
-                    {purchase.productId.Name}
-                  </Typography>
-                  <Typography color="textSecondary" gutterBottom>
-                    Price: ${purchase.productId.Price}
-                  </Typography>
-                  <Typography variant="body2" component="p">
-                    Description: {purchase.productId.Description}
-                  </Typography>
-                  <CardActions sx={{ justifyContent: 'flex-end' }}>
-                    {purchase.review || purchase.rating ? (
-                      <Typography variant="body2" color="textSecondary">
-                        Review already submitted.
-                      </Typography>
-                    ) : (
-                      <Button size="small" color="primary" onClick={() => handleReviewOpen(purchase)}>
-                        Write a Review
-                      </Button>
-                    )}
-                  </CardActions>
-                </CardContent>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CardContent>
-                  <Typography variant="subtitle1" gutterBottom>Review:</Typography>
-                  {purchase.review || purchase.rating ? (
-                    <Box mb={2}>
-                      <Rating value={purchase.rating || 0} readOnly size="small" />
-                      <Typography variant="body2">{purchase.review}</Typography>
-                    </Box>
-                  ) : (
-                    <Typography variant="body2">No reviews yet.</Typography>
-                  )}
-                </CardContent>
-              </Grid>
-            </Grid>`  `
-          </Card>
-        ))}
+
+        <Box my={4}>
+          <Typography variant="h5" gutterBottom>
+            Delivered Orders
+          </Typography>
+          {deliveredOrders.length > 0 ? renderOrders(deliveredOrders, true) : <Typography>No delivered orders.</Typography>}
+        </Box>
+
+        <Divider sx={{ my: 4 }} />
+
+        <Box my={4}>
+          <Typography variant="h5" gutterBottom>
+            Recent Orders
+          </Typography>
+          {recentOrders.length > 0 ? renderOrders(recentOrders, false) : <Typography>No recent orders.</Typography>}
+        </Box>
       </Box>
 
       <Dialog open={openReviewDialog} onClose={handleReviewClose}>

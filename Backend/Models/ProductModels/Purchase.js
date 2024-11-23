@@ -33,7 +33,20 @@ const purchaseSchema = new Schema({
     rating : {
         type : Number, 
         required : false
+    },
+    address : {
+        type : String, 
+        required : false,
+    },
+    delivered : {
+        type : Boolean, 
+        required : true,
+        default : false,
+    },
+    paymentMethod : {
+        type : String, required : true,
     }
+
 });
 
 module.exports = mongoose.model('Purchase', purchaseSchema);

@@ -206,6 +206,57 @@ const editPassword = async(req, res) => {
     }
 }
 
+const addDeliveryAddress = async (req, res) => {
+    const { label, address, city, zipCode, country } = req.body;
+    const touristId = req.user.id;
+
+    try {
+        const tourist = await userModel.findById(touristId);
+        if (!tourist) return res.status(404).json({ message: 'Tourist not found' });
+
+        const newAddress = { label, address, city, zipCode, country };
+        tourist.deliveryAddresses.push(newAddress);
+
+        await tourist.save();
+        res.status(200).json({ message: 'Address added successfully', addresses: tourist.deliveryAddresses });
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding address', error: error.message });
+    }
+};
+
+const getDeliveryAddresses = async (req, res) => {
+    const touristId = req.user.id;
+
+    try {
+        const tourist = await userModel.findById(touristId);
+        if (!tourist) return res.status(404).json({ message: 'Tourist not found' });
+
+        res.status(200).json({ addresses: tourist.deliveryAddresses });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching addresses', error: error.message });
+    }
+};
+
+const deleteDeliveryAddress = async (req, res) => {
+    const touristId = req.user.id;
+    const { addressId } = req.params;
+
+    try {
+        const tourist = await userModel.findById(touristId);
+        if (!tourist) return res.status(404).json({ message: 'Tourist not found' });
+
+        tourist.deliveryAddresses = tourist.deliveryAddresses.filter(
+            (address, index) => index.toString() !== addressId
+        );
+
+        await tourist.save();
+        res.status(200).json({ message: 'Address removed successfully', addresses: tourist.deliveryAddresses });
+    } catch (error) {
+        res.status(500).json({ message: 'Error removing address', error: error.message });
+    }
+};
+
+
 
 module.exports = {
     createTourist,
@@ -217,5 +268,8 @@ module.exports = {
     sortAllByRating,
     loginTourist,
     editPassword,
-    deleteReq
+    deleteReq,
+    addDeliveryAddress,
+    getDeliveryAddresses,
+    deleteDeliveryAddress
 };
