@@ -9,6 +9,7 @@ const activityController = require('../Controllers/ActivityControllers/ActivityC
 const productController = require('../Controllers/ProductControllers/ProductController'); // Ensure correct path
 const ItineraryController = require('../Controllers/ActivityControllers/ItineraryController');
 const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
+const promoCodeController = require('../Controllers/ProductControllers/PromoCodeController');
 const {optionalAuth} = require('../Middleware/authMiddleware');
 
 
@@ -71,7 +72,10 @@ router.put('/updateTag/:id', authenticateAdmin, tagController.updateTag);
 router.get('/getTags',optionalAuth(['guest']), tagController.getAllTags);
 router.delete('/deleteTag/:id', authenticateAdmin, tagController.deleteTag);
 
-
+router.post('/createPromoCode', authenticateAdmin, promoCodeController.createPromoCode);
+router.put('/updatePromoCode/:id', authenticateAdmin, promoCodeController.updatePromoCode);
+router.get('/getPromoCodes', authenticateAdmin, promoCodeController.getAllPromoCodes);
+router.delete('/deletePromoCode/:id', authenticateAdmin, promoCodeController.deletePromoCode);
 
 // must add another middleware to check the activity I create category for is free.
 router.post('/createCategory', authenticateAdmin, activityController.createCategory);

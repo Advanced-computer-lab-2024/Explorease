@@ -185,7 +185,13 @@ const HomePage = () => {
                                     type="submit"
                                     variant="contained"
                                     color="primary"
-                                    sx={{ backgroundColor: '#111E56' }}
+                                    sx={{ backgroundColor: '#111E56', 
+                                        color: 'white', 
+                                        '&:hover': { 
+                                            backgroundColor: 'white', 
+                                            color: '#111E56',
+                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                                        }, }}
                                 >
                                     Send Message
                                 </Button>

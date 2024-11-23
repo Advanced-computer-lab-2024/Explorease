@@ -11,6 +11,7 @@ import Complaints from './Complaints';
 import MyProducts from './AdminProducts'
 import MyAdminProducts from './AdminMyProducts'
 import DeleteRequests from './DeleteRequests';
+import PromoCode from './PromoCodes';
 
 
 const AdminDashboard = () => {
@@ -43,6 +44,8 @@ const [editedTag, setEditedTag] = useState({});
 const [tagMessage, setTagMessage] = useState('');
 
 const [isGovernorAdded, setIsGovernorAdded] = useState(false);
+const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+
 
     const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState('home');
@@ -51,6 +54,7 @@ const [isGovernorAdded, setIsGovernorAdded] = useState(false);
         setActiveSection(section);
     };
 
+    
     
     const handleAddGovernor = async (e) => {
         e.preventDefault();
@@ -78,6 +82,11 @@ const [isGovernorAdded, setIsGovernorAdded] = useState(false);
     };
 
  
+
+    const toggleSidebar = () => {
+        setIsSidebarVisible(!isSidebarVisible);
+    };
+    
 
 
 
@@ -205,68 +214,6 @@ const fetchProducts = async () => {
     }
 };
 
-// Search for a product by name
-// const searchProductByName = async (e) => {
-//     e.preventDefault();
-//     const token = localStorage.getItem('token');
-//     try {
-//         const response = await axios.get(`/admins/products/searchProductByName?name=${searchQuery}`, {
-//             headers: {
-//                 Authorization: `Bearer ${token}`,
-//             },
-//         });
-//         setProducts(response.data);
-//     } catch (error) {
-//         setProductMessage('Error searching for products.');
-//     }
-// };
-
-// Filter products by price
-// const filterProductByPrice = async (e) => {
-//     e.preventDefault();
-//     const token = localStorage.getItem('token');
-//     try {
-//         const response = await axios.get(`/admins/products/filter?minPrice=${minPrice}&maxPrice=${maxPrice}`, {
-//             headers: {
-//                 Authorization: `Bearer ${token}`,
-//             },
-//         });
-//         setProducts(response.data);
-//     } catch (error) {
-//         setProductMessage('Error filtering products by price.');
-//     }
-// };
-
-// // Delete a product
-// const deleteProduct = async (id) => {
-//     const token = localStorage.getItem('token');
-//     try {
-//         await axios.delete(`/admins/deleteProduct/${id}`, {
-//             headers: {
-//                 Authorization: `Bearer ${token}`,
-//             },
-//         });
-//         setProductMessage('Product deleted successfully!');
-//         fetchProducts();
-//     } catch (error) {
-//         setProductMessage('Error deleting product.');
-//     }
-// };
-
-// Sort products by ratings
-// const sortProductsByRatings = async () => {
-//     const token = localStorage.getItem('token');
-//     try {
-//         const response = await axios.get('/admins/products/sortByRating', {
-//             headers: {
-//                 Authorization: `Bearer ${token}`,
-//             },
-//         });
-//         setProducts(response.data);
-//     } catch (error) {
-//         setProductMessage('Error sorting products by ratings.');
-//     }
-// };
 
 // Create a new preference tag
 const createTag = async (e) => {
@@ -316,27 +263,6 @@ const updateTag = async (id, newName) => {
     }
 };
 
-// const handleArchiveProduct = async (productId) => {
-//     const token = localStorage.getItem('token');
-//     try {
-//         // Find the product to get its current Archived status
-//         const product = products.find(p => p._id === productId);
-        
-//         // Toggle Archived status
-//         await axios.put(`/seller/archiveProduct/${productId}`, { Archived: !product.Archived }, {
-//             headers: {
-//                 Authorization: `Bearer ${token}`
-//             }
-//         });
-
-//         setProductMessage(product.Archived ? 'Product unarchived successfully' : 'Product archived successfully');
-//         fetchProducts(); // Refresh product list after toggling archive status
-//     } catch (error) {
-//         setProductMessage('Error updating archive status');
-//         console.error('Error updating archive status:', error);
-//     }
-// };
-
 // Delete a preference tag
 const deleteTag = async (id) => {
     const token = localStorage.getItem('token');
@@ -374,309 +300,415 @@ const handleTagChange = (id, newName) => {
         }
     }, [navigate]);
 
+    // Define individual styles as constants
+    const containerStyle = {
+        display: 'flex',
+        overflow: 'hidden',
+    };
+
+    const sidebarStyle = {
+        width: '250px',
+        backgroundColor: '#333',
+        color: 'white',
+        height: '100vh',
+        position: 'fixed',
+        transition: 'transform 0.3s ease-in-out',
+    };
+
+    const closeSidebarStyle = {
+        background: 'none',
+        border: 'none',
+        color: 'white',
+        fontSize: '16px',
+        cursor: 'pointer',
+        margin: '10px',
+    };
+
+    const openSidebarStyle = {
+        position: 'absolute',
+        top: '10px',
+        left: '10px',
+        background: '#007bff',
+        border: 'none',
+        color: 'white',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        zIndex: 1000,
+    };
+
+    const mainContentStyle = {
+        flex: 1,
+        transition: 'margin-left 0.3s ease-in-out',
+        padding: '20px',
+        marginLeft: isSidebarVisible ? '250px' : '0',
+    };
+
+    const navButtonStyle = (isActive) => ({
+        background: isActive ? 'lightblue' : 'transparent',
+        color: 'white',
+        border: 'none',
+        padding: '10px 15px',
+        cursor: 'pointer',
+        width: '100%',
+        textAlign: 'left',
+    });
+
 
     return (
-        <div className="container">
-            
-            <h1>Welcome to the Admin Dashboard</h1>
-
-            {/* Navigation bar */}
-            <nav>
-                <button
-                    onClick={() => handleSectionChange('home')}
-                    className={activeSection === 'home' ? 'active' : ''}
-                >
-                    Home
+        <div style={containerStyle}>
+            {/* Sidebar Toggle Button */}
+            {!isSidebarVisible && (
+                <button style={openSidebarStyle} onClick={toggleSidebar}>
+                    Open Sidebar
                 </button>
-                <button
-                    onClick={() => handleSectionChange('editPassword')}
-                    className={activeSection === 'editPassword' ? 'active' : ''}
-                >
-                    Edit Password
-                </button>
-                <button
-                    onClick={() => handleSectionChange('deleteAccounts')}
-                    className={activeSection === 'deleteAccounts' ? 'active' : ''}
-                >
-                    Delete Accounts
-                </button>
-                <button
-                    onClick={() => handleSectionChange('preferenceTag')}
-                    className={activeSection === 'preferenceTag' ? 'active' : ''}
-                >
-                    Preference Tag
-                </button>
-                <button
-                    onClick={() => handleSectionChange('activityCategory')}
-                    className={activeSection === 'activityCategory' ? 'active' : ''}
-                >
-                    Activity Category
-                </button>
-                <button
-                    onClick={() => handleSectionChange('product')}
-                    className={activeSection === 'product' ? 'active' : ''}
-                >
-                    Product
-
-                </button>
-
-                <button
-                    onClick={() => handleSectionChange('tourismGoverner')}
-                    className={activeSection === 'tourismGoverner' ? 'active' : ''}
-                >
-                    Add Tourism Governer
-                    
-                </button>
-                <button
-                    onClick={() => handleSectionChange('ReviewUsers')}
-                    className={activeSection === 'ReviewUsers' ? 'active' : ''}
-                >
-                    Review Registering Users
-                </button>
-
-                <button
-                    onClick={() => handleSectionChange('Block event')}
-                    className={activeSection === 'Block event' ? 'active' : ''}
-                >
-                    Block Event
-                </button>
-                
-                <button
-                    onClick={() => handleSectionChange('Complaints')}
-                    className={activeSection === 'Complaints' ? 'active' : ''}
-                >
-                    Complaints
-                </button>
-                <button
-                    onClick={() => handleSectionChange('Delete Requests')}
-                    className={activeSection === 'Delete Requests' ? 'active' : ''}
-                >
-                    User Delete Requests
-                </button>
-            </nav>
-
-            {/* Conditionally render sections */}
-            {activeSection === 'home' && (
-    <div className="section">
-        <CreateAdminForm />
-    </div>
-)}
-
-{activeSection === 'deleteAccounts' && ( <ManageUsers />) }
-{activeSection === 'ReviewUsers' && ( <UserApproval />) }
-{activeSection === 'Block event' && ( <BlockItinerary />) }
-{activeSection === 'Complaints' && ( <Complaints />) }
-{activeSection === 'Delete Requests' && ( <DeleteRequests />) }
-{activeSection === 'editPassword' && ( <EditMyPassword />) }
-
-{activeSection === 'preferenceTag' && (
-    <div className="section">
-        <h2>Manage Preference Tags</h2>
-        
-        {/* Create New Tag */}
-        <form onSubmit={createTag}>
-            <div className="form-group">
-                <label>New Tag Name:</label>
-                <input
-                    type="text"
-                    value={newTagName}
-                    onChange={(e) => setNewTagName(e.target.value)}
-                    required
-                />
-            </div>
-            <button type="submit" className="submit-btn">Create Tag</button>
-        </form>
-
-        {/* Display message */}
-        <p>{tagMessage}</p>
-
-        {/* List of Tags with Update/Delete options */}
-        <ul className="admin-list">
-            {Array.isArray(preferenceTags) && preferenceTags.length === 0 ? (
-                <p>No tags found</p>
-            ) : (
-                Array.isArray(preferenceTags) && preferenceTags.map(tag => (
-                    <li key={tag._id}>
-                        <input
-                            type="text"
-                            value={editedTag[tag._id] || tag.name}  // Show edited name or default name
-                            onChange={(e) => handleTagChange(tag._id, e.target.value)}  // Update local state
-                        />
-                        <button 
-                            onClick={() => updateTag(tag._id, editedTag[tag._id] || tag.name)} 
-                            style={{ backgroundColor: 'lightblue', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}
-                        >
-                            Update
-                        </button>
-                        <button onClick={() => deleteTag(tag._id)} style={{ marginLeft: '10px' }}>Delete</button>
-                    </li>
-                ))
             )}
-        </ul>
-    </div>
-)}
-
-
-
-{activeSection === 'activityCategory' && (
-    <div className="section">
-        <h2>Manage Activity Categories</h2>
-        
-        {/* Create New Category */}
-        <form onSubmit={createCategory}>
-            <div className="form-group">
-                <label>New Category Name:</label>
-                <input
-                    type="text"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    required
-                />
-            </div>
-            <button type="submit" className="submit-btn">Create Category</button>
-        </form>
-        
-        {/* Display message */}
-        <p>{categoryMessage}</p>
-
-        {/* List of Categories with Update/Delete options */}
-        <ul className="admin-list">
-            {activityCategories.length === 0 ? (
-                <p>No categories found</p>
-            ) : (
-                activityCategories.map(category => (
-                    <li key={category._id}>
-                        <input
-                            type="text"
-                            value={editedCategory[category._id] || category.name}  // Show edited name or default name
-                            onChange={(e) => handleCategoryChange(category._id, e.target.value)}  // Update local state
-                        />
-                        <button 
-                            onClick={() => updateCategory(category._id, editedCategory[category._id] || category.name)} 
-                            style={{ backgroundColor: 'lightblue', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}
+    
+            {/* Sidebar */}
+            {isSidebarVisible && (
+                <div style={sidebarStyle}>
+                    <button style={closeSidebarStyle} onClick={toggleSidebar}>
+                        Close Sidebar
+                    </button>
+    
+                    {/* Navigation bar */}
+                    <nav>
+                        <button
+                            onClick={() => handleSectionChange('home')}
+                            style={navButtonStyle(activeSection === 'home')}
                         >
-                            Update
+                            Home
                         </button>
-                        <button onClick={() => deleteCategory(category._id)} style={{ marginLeft: '10px' }}>Delete</button>
-                    </li>
-                ))
+                        <button
+                            onClick={() => handleSectionChange('editPassword')}
+                            style={navButtonStyle(activeSection === 'editPassword')}
+                        >
+                            Edit Password
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('deleteAccounts')}
+                            style={navButtonStyle(activeSection === 'deleteAccounts')}
+                        >
+                            Delete Accounts
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('preferenceTag')}
+                            style={navButtonStyle(activeSection === 'preferenceTag')}
+                        >
+                            Preference Tag
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('activityCategory')}
+                            style={navButtonStyle(activeSection === 'activityCategory')}
+                        >
+                            Activity Category
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('product')}
+                            style={navButtonStyle(activeSection === 'product')}
+                        >
+                            Product
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('tourismGoverner')}
+                            style={navButtonStyle(activeSection === 'tourismGoverner')}
+                        >
+                            Add Tourism Governer
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('ReviewUsers')}
+                            style={navButtonStyle(activeSection === 'ReviewUsers')}
+                        >
+                            Review Registering Users
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('Block event')}
+                            style={navButtonStyle(activeSection === 'Block event')}
+                        >
+                            Block Event
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('Complaints')}
+                            style={navButtonStyle(activeSection === 'Complaints')}
+                        >
+                            Complaints
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('Delete Requests')}
+                            style={navButtonStyle(activeSection === 'Delete Requests')}
+                        >
+                            User Delete Requests
+                        </button>
+                        <button
+                            onClick={() => handleSectionChange('Promo Code')}
+                            style={navButtonStyle(activeSection === 'Promo Code')}
+                        >
+                            Promo Code
+                        </button>
+                    </nav>
+                </div>
             )}
-        </ul>
-    </div>
-)}
-
-{activeSection === 'tourismGoverner' && ( 
-    <div className="section">
-        <h2>Add Tourism Governer</h2>
-        {isGovernorAdded && (
-                    <div className="success-message">
-                        <p style={{ color: 'green' }}>Tourism Governor added successfully!</p>
+    
+            {/* Main Content */}
+            <div style={mainContentStyle}>
+                <h1>Welcome to the Admin Dashboard</h1>
+    
+                {/* Conditionally render sections */}
+                {activeSection === 'home' && (
+                    <div className="section">
+                        <CreateAdminForm />
                     </div>
                 )}
-        <form onSubmit={handleAddGovernor}>
-            <div className="form-group">
-                <label>Tourism Governer Username:</label>
-                <input
-                    type="text"
-                    value={governorUsername}
-                    onChange={(e) => setGovernorUsername(e.target.value)}
-                    required
-                />
+                {activeSection === 'deleteAccounts' && <ManageUsers />}
+                {activeSection === 'ReviewUsers' && <UserApproval />}
+                {activeSection === 'Block event' && <BlockItinerary />}
+                {activeSection === 'Complaints' && <Complaints />}
+                {activeSection === 'Delete Requests' && <DeleteRequests />}
+                {activeSection === 'editPassword' && <EditMyPassword />}
+                {activeSection === 'Promo Code' && <PromoCode />}
+    
+                {activeSection === 'preferenceTag' && (
+                    <div className="section">
+                        <h2>Manage Preference Tags</h2>
+    
+                        {/* Create New Tag */}
+                        <form onSubmit={createTag}>
+                            <div className="form-group">
+                                <label>New Tag Name:</label>
+                                <input
+                                    type="text"
+                                    value={newTagName}
+                                    onChange={(e) => setNewTagName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="submit-btn">
+                                Create Tag
+                            </button>
+                        </form>
+    
+                        {/* Display message */}
+                        <p>{tagMessage}</p>
+    
+                        {/* List of Tags with Update/Delete options */}
+                        <ul className="admin-list">
+                            {Array.isArray(preferenceTags) && preferenceTags.length === 0 ? (
+                                <p>No tags found</p>
+                            ) : (
+                                Array.isArray(preferenceTags) &&
+                                preferenceTags.map((tag) => (
+                                    <li key={tag._id}>
+                                        <input
+                                            type="text"
+                                            value={editedTag[tag._id] || tag.name} // Show edited name or default name
+                                            onChange={(e) =>
+                                                handleTagChange(tag._id, e.target.value)
+                                            } // Update local state
+                                        />
+                                        <button
+                                            onClick={() =>
+                                                updateTag(tag._id, editedTag[tag._id] || tag.name)
+                                            }
+                                        >
+                                            Update
+                                        </button>
+                                        <button onClick={() => deleteTag(tag._id)}>Delete</button>
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                    </div>
+                )}
+    
+                {activeSection === 'activityCategory' && (
+                    <div className="section">
+                        <h2>Manage Activity Categories</h2>
+    
+                        {/* Create New Category */}
+                        <form onSubmit={createCategory}>
+                            <div className="form-group">
+                                <label>New Category Name:</label>
+                                <input
+                                    type="text"
+                                    value={newCategoryName}
+                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="submit-btn">
+                                Create Category
+                            </button>
+                        </form>
+    
+                        {/* Display message */}
+                        <p>{categoryMessage}</p>
+    
+                        {/* List of Categories with Update/Delete options */}
+                        <ul className="admin-list">
+                            {activityCategories.length === 0 ? (
+                                <p>No categories found</p>
+                            ) : (
+                                activityCategories.map((category) => (
+                                    <li key={category._id}>
+                                        <input
+                                            type="text"
+                                            value={
+                                                editedCategory[category._id] || category.name
+                                            } // Show edited name or default name
+                                            onChange={(e) =>
+                                                handleCategoryChange(
+                                                    category._id,
+                                                    e.target.value
+                                                )
+                                            } // Update local state
+                                        />
+                                        <button
+                                            onClick={() =>
+                                                updateCategory(
+                                                    category._id,
+                                                    editedCategory[category._id] || category.name
+                                                )
+                                            }
+                                        >
+                                            Update
+                                        </button>
+                                        <button onClick={() => deleteCategory(category._id)}>
+                                            Delete
+                                        </button>
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                    </div>
+                )}
+    
+                {activeSection === 'tourismGoverner' && (
+                    <div className="section">
+                        <h2>Add Tourism Governer</h2>
+                        {isGovernorAdded && (
+                            <div className="success-message">
+                                <p style={{ color: 'green' }}>
+                                    Tourism Governor added successfully!
+                                </p>
+                            </div>
+                        )}
+                        <form onSubmit={handleAddGovernor}>
+                            <div className="form-group">
+                                <label>Tourism Governer Username:</label>
+                                <input
+                                    type="text"
+                                    value={governorUsername}
+                                    onChange={(e) => setGovernorUsername(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Tourism Governer Email:</label>
+                                <input
+                                    type="email"
+                                    value={governorEmail}
+                                    onChange={(e) => setGovernorEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Tourism Governer Password:</label>
+                                <input
+                                    type="password"
+                                    value={governorPassword}
+                                    onChange={(e) => setGovernorPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="submit-btn">
+                                Add Tourism Governer
+                            </button>
+                        </form>
+                    </div>
+                )}
+    
+                {activeSection === 'product' && (
+                    <div className="section">
+                        <h2>Manage Products</h2>
+    
+                        {/* Display message for success or error */}
+                        {productMessage && (
+                            <p
+                                style={{
+                                    color: productMessage.includes('successfully')
+                                        ? 'green'
+                                        : 'red',
+                                }}
+                            >
+                                {productMessage}
+                            </p>
+                        )}
+    
+                        {/* Create New Product */}
+                        <form onSubmit={createProduct} encType="multipart/form-data">
+                            <div className="form-group">
+                                <label>Product Name:</label>
+                                <input
+                                    type="text"
+                                    value={productName}
+                                    onChange={(e) => setProductName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Product Price:</label>
+                                <input
+                                    type="number"
+                                    value={productPrice}
+                                    onChange={(e) => setProductPrice(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Product Description:</label>
+                                <input
+                                    type="text"
+                                    value={productDescription}
+                                    onChange={(e) => setProductDescription(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Available Quantity:</label>
+                                <input
+                                    type="number"
+                                    value={availableQuantity}
+                                    onChange={(e) => setAvailableQuantity(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Product Image:</label>
+                                <input
+                                    type="file"
+                                    onChange={(e) => setImageFile(e.target.files[0])}
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="submit-btn">
+                                Create Product
+                            </button>
+                        </form>
+    
+                        {/* List of products */}
+                        <MyAdminProducts
+                            products={products}
+                            productMessage={productMessage}
+                        />
+                        <MyProducts products={products} productMessage={productMessage} />
+                    </div>
+                )}
             </div>
-            <div className="form-group">
-                <label>Tourism Governer Email:</label>
-                <input
-                    type="email"
-                    value={governorEmail}
-                    onChange={(e) => setGovernorEmail(e.target.value)}
-                    required
-                />
-            </div>
-            <div className="form-group">
-                <label>Tourism Governer Password:</label>
-                <input
-                    type="password"
-                    value={governorPassword}
-                    onChange={(e) => setGovernorPassword(e.target.value)}
-                    required
-                />
-            </div>
-            <button type="submit" className="submit-btn">Add Tourism Governer</button>
-        </form>
-
-        
-    </div>
-)}
-
-
-
-
-{activeSection === 'product' && (
-    <div className="section">
-        <h2>Manage Products</h2>
-
-        {/* Display message for success or error */}
-        {productMessage && <p style={{ color: productMessage.includes('successfully') ? 'green' : 'red' }}>{productMessage}</p>}
-
-        {/* Create New Product */}
-        <form onSubmit={createProduct} encType="multipart/form-data">
-            <div className="form-group">
-                <label>Product Name:</label>
-                <input
-                    type="text"
-                    value={productName}
-                    onChange={(e) => setProductName(e.target.value)}
-                    required
-                />
-            </div>
-            <div className="form-group">
-                <label>Product Price:</label>
-                <input
-                    type="number"
-                    value={productPrice}
-                    onChange={(e) => setProductPrice(e.target.value)}
-                    required
-                />
-            </div>
-            <div className="form-group">
-                <label>Product Description:</label>
-                <input
-                    type="text"
-                    value={productDescription}
-                    onChange={(e) => setProductDescription(e.target.value)}
-                    required
-                />
-            </div>
-            <div className="form-group">
-                <label>Available Quantity:</label>
-                <input
-                    type="number"
-                    value={availableQuantity}
-                    onChange={(e) => setAvailableQuantity(e.target.value)}
-                    required
-                />
-            </div>
-            <div className="form-group">
-                <label>Product Image:</label>
-                <input
-                    type="file"
-                    onChange={(e) => setImageFile(e.target.files[0])}
-                    required
-                />
-            </div>
-            <button type="submit" className="submit-btn">Create Product</button>
-        </form>
-
-        {/* List of products */}
-        <MyAdminProducts products={products} productMessage={productMessage} />
-        <MyProducts products={products} productMessage={productMessage} />
-    </div>
-)}
-
-
         </div>
     );
-};
+    
+    };
+
+    
 
 export default AdminDashboard;
 

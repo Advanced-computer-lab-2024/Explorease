@@ -6,11 +6,11 @@ import StoreIcon from '@mui/icons-material/Store';
 import logo from '../../Misc/logo.png';
 import { Link } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
-import axios from 'axios';
+import Tooltip from '@mui/material/Tooltip';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 
-
-const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount }) => {
+const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount , wishlistCount}) => {
     const [anchorEl, setAnchorEl] = useState(null);
     // const [cartCount, setCartCount] = useState(0);
 
@@ -109,29 +109,62 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount }) => {
 
                 {/* Icon Buttons */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '20px' }}>
-                <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('cart')}>
-                    <Badge
-                        badgeContent={cartCount} // Display cart count
-                        color="error"
-                        sx={{
-                            '& .MuiBadge-badge': {
-                                backgroundColor: '#FF0000',
-                                color: 'white',
-                                fontSize: '12px',
-                                fontWeight: 'bold',
-                            },
-                        }}
-                    >
-                        <ShoppingCartIcon />
-                    </Badge>
-                </IconButton>
-                    <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('wallet')} aria-label="wallet">
-                        <AccountBalanceWalletIcon />
-                    </IconButton>
-                    <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('viewProducts')} aria-label="market">
-                        <StoreIcon />
-                    </IconButton>
+                    {/* Cart Icon */}
+                    <Tooltip title="View Cart" arrow>
+                        <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('cart')}>
+                            <Badge
+                                badgeContent={cartCount} // Display cart count
+                                color="error"
+                                sx={{
+                                    '& .MuiBadge-badge': {
+                                        backgroundColor: '#FF0000',
+                                        color: 'white',
+                                        fontSize: '12px',
+                                        fontWeight: 'bold',
+                                    },
+                                }}
+                            >
+                                <ShoppingCartIcon />
+                            </Badge>
+                        </IconButton>
+                    </Tooltip>
+
+                    {/* Wallet Icon */}
+                    <Tooltip title="Wallet" arrow>
+                        <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('wallet')} aria-label="wallet">
+                            <AccountBalanceWalletIcon />
+                        </IconButton>
+                    </Tooltip>
+
+                    {/* Market Icon */}
+                    <Tooltip title="Marketplace" arrow>
+                        <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('viewProducts')} aria-label="market">
+                            <StoreIcon />
+                        </IconButton>
+                    </Tooltip>
+                        {/* Wishlist Icon */}
+                    <Tooltip title="Wishlist" arrow>
+                        <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('wishlist')} aria-label="wishlist">
+                            <Badge
+                                badgeContent={wishlistCount} // Display wishlist count
+                                color="error"
+                                sx={{
+                                    '& .MuiBadge-badge': {
+                                        backgroundColor: '#FF0000',
+                                        color: 'white',
+                                        fontSize: '12px',
+                                        fontWeight: 'bold',
+                                    },
+                                }}
+                            >
+                                <FavoriteIcon />
+                            </Badge>
+                        </IconButton>
+                    </Tooltip>
                 </Box>
+
+                
+
             </Toolbar>
         </AppBar>
     );
