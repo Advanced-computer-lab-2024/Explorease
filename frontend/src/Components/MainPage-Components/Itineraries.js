@@ -1,222 +1,403 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  TextField,
+  Grid,
+  CircularProgress,
+} from '@mui/material';
+import {
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel
+  } from '@mui/material';
+  
+import EmailIcon from '@mui/icons-material/Email';
+import LinkIcon from '@mui/icons-material/Link';
 import Navbar from './GuestNavbar';
 
 const Itineraries = () => {
-    const [itineraries, setItineraries] = useState([]);
-    const [message, setMessage] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [minPrice, setMinPrice] = useState('');
-    const [maxPrice, setMaxPrice] = useState('');
-    const [minRating, setMinRating] = useState('');
-    const [sortBy, setSortBy] = useState('');
-    const [order, setOrder] = useState('asc');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [language, setLanguage] = useState('');
-    const [accessibility, setAccessibility] = useState('');
-    const [tag, setTag] = useState('');
+  const [itineraries, setItineraries] = useState([]);
+  const [loading, setLoading] = useState(true); // For loading state
+  const [message, setMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [minRating, setMinRating] = useState('');
+  const [sortBy, setSortBy] = useState('');
+  const [order, setOrder] = useState('asc');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [language, setLanguage] = useState('');
+  const [accessibility, setAccessibility] = useState('');
+  const [tag, setTag] = useState('');
 
-    useEffect(() => {
-        fetchItineraries();
-    }, []);
+  useEffect(() => {
+    fetchItineraries();
+  }, []);
 
-    const fetchItineraries = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('tourists/itineraries', {
-                headers: {
-                    Authorization: `Bearer ${token}`  // Send the JWT token if logged in
-                }
-            });
+  const fetchItineraries = async () => {
+    setLoading(true); // Start loading indicator
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('tourists/itineraries', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setItineraries(response.data);
+      setLoading(false); // Stop loading indicator
+    } catch (error) {
+      setMessage('Error fetching itineraries');
+      setLoading(false); // Stop loading even if there's an error
+    }
+  };
 
-            console.log('API Response:', response.data);
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    let queryString = '';
 
-            if (Array.isArray(response.data)) {
-                setItineraries(response.data);
-            } else {
-                setMessage('Invalid data format');
-                console.error('Expected an array but received:', typeof response.data);
-            }
-        } catch (error) {
-            setMessage('Error fetching itineraries');
-            console.error('Error fetching itineraries:', error);
-        }
-    };
+    // Add parameters to query string
+    if (searchQuery) queryString += `searchQuery=${searchQuery}&`;
+    if (minPrice) queryString += `minPrice=${minPrice}&`;
+    if (maxPrice) queryString += `maxPrice=${maxPrice}&`;
+    if (startDate) queryString += `startDate=${startDate}&`;
+    if (endDate) queryString += `endDate=${endDate}&`;
+    if (minRating) queryString += `minRating=${minRating}&`;
+    if (language) queryString += `language=${language}&`;
+    if (accessibility) queryString += `accessibility=${accessibility}&`;
+    if (tag) queryString += `tags=${tag}&`;
+    if (sortBy) queryString += `sortBy=${sortBy}&order=${order}`;
 
-    const handleCopyLink = (itineraryId) => {
-        const link = `${window.location.origin}/itinerary/${itineraryId}`;
-        navigator.clipboard.writeText(link)
-            .then(() => {
-                alert('Link copied to clipboard!');
-            })
-            .catch((err) => {
-                console.error('Error copying link:', err);
-            });
-    };
+    setLoading(true); // Start loading while searching
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`tourists/itineraries/filter-sort-search?${queryString}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setItineraries(response.data);
+      setLoading(false); // Stop loading after fetching
+    } catch (error) {
+      console.error('Error fetching itineraries:', error.response ? error.response.data : error.message);
+      setLoading(false); // Stop loading on error
+    }
+  };
 
-    // New function to handle sharing via email
-    const handleShareEmail = (itinerary) => {
-        const subject = `Check out this itinerary: ${itinerary.name}`;
-        const body = `Here is an itinerary you might be interested in:\n\nName: ${itinerary.name}\nTotal Price: $${itinerary.totalPrice}\nLanguages: ${itinerary.LanguageOfTour.join(', ')}\nPick-Up Location: ${itinerary.PickUpLocation}\nDrop-Off Location: ${itinerary.DropOffLocation}\n\nCheck it out here: ${window.location.origin}/itinerary/${itinerary._id}`;
-        const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.location.href = mailtoLink;
-    };
+  const handleCopyLink = (itineraryId) => {
+    const link = `${window.location.origin}/itinerary/${itineraryId}`;
+    navigator.clipboard.writeText(link)
+      .then(() => alert('Link copied to clipboard!'))
+      .catch((err) => console.error('Error copying link:', err));
+  };
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
-    
-        let queryString = '';
-    
-        // Add parameters to query string
-        if (searchQuery) queryString += `searchQuery=${searchQuery}&`;
-        if (minPrice) queryString += `minPrice=${minPrice}&`;
-        if (maxPrice) queryString += `maxPrice=${maxPrice}&`;
-        if (startDate) queryString += `startDate=${startDate}&`;
-        if (endDate) queryString += `endDate=${endDate}&`;
-        if (minRating) queryString += `minRating=${minRating}&`;
-        if (language) queryString += `language=${language}&`;
-        if (accessibility) queryString += `accessibility=${accessibility}&`;
-        if (tag) queryString += `tags=${tag}&`;
-        if (sortBy) queryString += `sortBy=${sortBy}&order=${order}`;
-    
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get(`tourists/itineraries/filter-sort-search?${queryString}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`  // Send the JWT token if logged in
-                }
-            });
-            console.log('API Response:', response.data);
-            setItineraries(response.data);
-        } catch (error) {
-            console.error('Error fetching itineraries:', error.response ? error.response.data : error.message);
-        }
-    };
+  const handleShareEmail = (itinerary) => {
+    const subject = `Check out this itinerary: ${itinerary.name}`;
+    const body = `Here is an itinerary you might be interested in:\n\nName: ${itinerary.name}\nTotal Price: $${itinerary.totalPrice}\nLanguages: ${itinerary.LanguageOfTour.join(', ')}\nPick-Up Location: ${itinerary.PickUpLocation}\nDrop-Off Location: ${itinerary.DropOffLocation}\n\nCheck it out here: ${window.location.origin}/itinerary/${itinerary._id}`;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+  };
 
-    // Helper function to render the list of itineraries
-    const renderItineraryCards = () => {
-        const itineraryCards = [];
+  return (
+    <Box>
+      <Navbar />
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          All Itineraries
+        </Typography>
 
-        for (let i = 0; i < itineraries.length; i++) {
-            const itinerary = itineraries[i];
-            itineraryCards.push(
-                <div key={itinerary._id} className="itinerary-card" style={cardStyle}>
-                    <h3>{itinerary.name}</h3>
-                    <p><strong>Total Price:</strong> ${itinerary.totalPrice}</p>
-                    <p><strong>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}</p>
-                    <p><strong>Pick-Up Location:</strong> {itinerary.PickUpLocation}</p>
-                    <p><strong>Drop-Off Location:</strong> {itinerary.DropOffLocation}</p>
-                    <p><strong>Accessibility:</strong> {itinerary.accessibility}</p>
-                    {itinerary.tags && (
-                        <p><strong>Tags:</strong> {itinerary.tags.map(tag => tag.name).join(', ')}</p>
-                    )}
-                    <p><strong>Available Dates:</strong> {itinerary.AvailableDates.map(date => new Date(date).toLocaleDateString()).join(', ')}</p>
-                     {/* New share functionality added here */}
-                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                        <button onClick={() => handleCopyLink(itinerary._id)} title="Copy Link" style={shareButtonStyle}>
-                            <span role="img" aria-label="link">🔗</span> <span>Copy Link</span>
-                        </button>
-                        <button onClick={() => handleShareEmail(itinerary)} title="Share via Email" style={shareButtonStyle}>
-                            <span role="img" aria-label="email">📧</span> <span>Share via Email</span>
-                        </button>
-                    </div>
-                </div>
-            );
-        }
+        {/* Search Form */}
+        <Box
+          component="form"
+          onSubmit={handleSearch}
+          sx={{
+            maxWidth: 'calc(100% - 200px)',
+            mx: 'auto',
+            mb: 4,
+          }}
+        >
+          <Grid container spacing={2}>
+            {/* Search by Name */}
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Search by Name"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                fullWidth
+              />
+            </Grid>
 
-        return itineraryCards;
-    };
+            {/* Start Date */}
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Start Date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+              />
+            </Grid>
 
-    // Styling for the share buttons
-    const shareButtonStyle = {
-        padding: '8px',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
-        cursor: 'pointer',
-        fontSize: '14px',
-        backgroundColor: '#f9f9f9',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '5px',
-        color: '#333',
-        opacity: 1, // Ensure text is fully opaque
-        visibility: 'visible' // Ensure the text is visible
-    };
+            {/* End Date */}
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="End Date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+              />
+            </Grid>
 
-    // Styling for the card layout
-    const cardStyle = {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '16px',
-        margin: '16px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    };
+            {/* Language */}
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                fullWidth
+              />
+            </Grid>
 
-    return (
-        <div>
-            <Navbar />
-            <h1>All Itineraries</h1>
-            <form onSubmit={handleSearch} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Search by Name:</label>
-                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Start Date:</label>
-                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>End Date:</label>
-                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Min Price:</label>
-                    <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '100px' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Max Price:</label>
-                    <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '100px' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Language:</label>
-                    <input type="text" value={language} onChange={(e) => setLanguage(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '150px' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Accessibility:</label>
-                    <input type="text" value={accessibility} onChange={(e) => setAccessibility(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '150px' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Tag:</label>
-                    <input type="text" value={tag} onChange={(e) => setTag(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc', width: '150px' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Sort By:</label>
-                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}>
-                        <option value="">Select</option>
-                        <option value="price">Price</option>
-                        <option value="ratings">Rating</option>
-                    </select>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label>Order:</label>
-                    <select value={order} onChange={(e) => setOrder(e.target.value)} style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}>
-                        <option value="asc">Ascending</option>
-                        <option value="desc">Descending</option>
-                    </select>
-                </div>
-                <button type="submit" style={{ padding: '10px 15px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none', cursor: 'pointer' }}>
-                    Search & Filter
-                </button>
-            </form>
+            {/* Min Price */}
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Min Price"
+                type="number"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                fullWidth
+              />
+            </Grid>
 
-            {message && <p>{message}</p>}
-            <div className="itinerary-list">
-                {itineraries.length > 0 ? renderItineraryCards() : <p>No itineraries available</p>}
-            </div>
-        </div>
-    );
+            {/* Max Price */}
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Max Price"
+                type="number"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                fullWidth
+              />
+            </Grid>
+
+            {/* Accessibility */}
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Accessibility"
+                value={accessibility}
+                onChange={(e) => setAccessibility(e.target.value)}
+                fullWidth
+              />
+            </Grid>
+
+            {/* Tag */}
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Tag"
+                value={tag}
+                onChange={(e) => setTag(e.target.value)}
+                fullWidth
+              />
+            </Grid>
+
+            {/* Sort By */}
+<Grid item xs={12} sm={6} md={3}>
+  <FormControl fullWidth>
+    <InputLabel>Sort By</InputLabel>
+    <Select
+      value={sortBy}
+      onChange={(e) => setSortBy(e.target.value)}
+      label="Sort By"
+    >
+      <MenuItem value="">Select</MenuItem>
+      <MenuItem value="price">Price</MenuItem>
+      <MenuItem value="ratings">Ratings</MenuItem>
+      <MenuItem value="date">Date</MenuItem>
+    </Select>
+  </FormControl>
+</Grid>
+
+{/* Order */}
+<Grid item xs={12} sm={6} md={3}>
+  <FormControl fullWidth>
+    <InputLabel>Order</InputLabel>
+    <Select
+      value={order}
+      onChange={(e) => setOrder(e.target.value)}
+      label="Order"
+    >
+      <MenuItem value="asc">Ascending</MenuItem>
+      <MenuItem value="desc">Descending</MenuItem>
+    </Select>
+  </FormControl>
+</Grid>
+
+
+            {/* Search Button */}
+            <Grid item xs={12} sm={6} md={1}>
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{
+                  backgroundColor: '#111E56',
+                  color: 'white',
+                  height: '54px',
+                  width: '100px',
+                  '&:hover': {
+                    backgroundColor: 'white',
+                    color: '#111E56',
+                    border: '1px solid #111E56',
+                  },
+                }}
+              >
+                Search
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Loading Indicator */}
+        {loading ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '200px',
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 3,
+            }}
+          >
+            {itineraries.length > 0 ? (
+              itineraries.map((itinerary) => (
+                <Card
+                  key={itinerary._id}
+                  sx={{
+                    width: '85%',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+                    borderRadius: 2,
+                    height: '280px',
+                    '&:hover': {
+                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                      transform: 'scale(1.02)',
+                      transition: 'transform 0.2s ease-in-out',
+                    },
+                  }}
+                >
+                  <CardContent
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    {/* Left Section */}
+                    <Box sx={{ flex: 2, paddingRight: 2 }}>
+                      <Typography variant="h6" gutterBottom>
+                        {itinerary.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <strong>Total Price:</strong> ${itinerary.totalPrice}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <strong>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <strong>Pick-Up Location:</strong> {itinerary.PickUpLocation}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <strong>Drop-Off Location:</strong> {itinerary.DropOffLocation}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <strong>Accessibility:</strong> {itinerary.accessibility}
+                      </Typography>
+                      {itinerary.tags && (
+                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                          <strong>Tags:</strong> {itinerary.tags.map((tag) => tag.name).join(', ')}
+                        </Typography>
+                      )}
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        <strong>Available Dates:</strong> {itinerary.AvailableDates.map((date) => new Date(date).toLocaleDateString()).join(', ')}
+                      </Typography>
+                      {/* Centered Buttons */}
+                    <Box
+                      sx={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1,
+                      }}
+                    >
+                      <Button
+                        onClick={() => handleCopyLink(itinerary._id)}
+                        variant="outlined"
+                        startIcon={<LinkIcon />}
+                        sx={{
+                          backgroundColor: 'white',
+                          color: '#5A8CFF',
+                          border: '1px solid #5A8CFF',
+                          '&:hover': {
+                            backgroundColor: '#5A8CFF',
+                            color: 'white',
+                          },
+                          textTransform: 'none',
+                        }}
+                      >
+                        Copy Link
+                      </Button>
+                      <Button
+                        onClick={() => handleShareEmail(itinerary)}
+                        variant="outlined"
+                        startIcon={<EmailIcon />}
+                        sx={{
+                          backgroundColor: 'white',
+                          color: '#5A8CFF',
+                          border: '1px solid #5A8CFF',
+                          '&:hover': {
+                            backgroundColor: '#5A8CFF',
+                            color: 'white',
+                          },
+                          textTransform: 'none',
+                        }}
+                      >
+                        Share via Email
+                      </Button>
+                    </Box>
+                    </Box>
+
+                    
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Typography>No itineraries available</Typography>
+            )}
+          </Box>
+        )}
+      </Box>
+    </Box>
+  );
 };
 
 export default Itineraries;
-

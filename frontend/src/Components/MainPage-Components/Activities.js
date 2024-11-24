@@ -12,6 +12,7 @@ import {
   FormControl,
   InputLabel,
   Grid,
+  CircularProgress,
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
@@ -30,27 +31,34 @@ const Activities = () => {
   const [order, setOrder] = useState('asc');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+const [loading, setLoading] = useState(true); // For loading state
+
 
   useEffect(() => {
     fetchActivities();
   }, []);
 
   const fetchActivities = async () => {
+    setLoading(true); // Start loading
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/tourists/activities', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setActivities(response.data);
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/tourists/activities', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        setActivities(response.data);
     } catch (error) {
-      setMessage('Error fetching activities');
+        setMessage('Error fetching activities');
+    } finally {
+        setLoading(false); // Stop loading regardless of success or error
     }
-  };
+};
 
-  const handleSearch = async (e) => {
+
+const handleSearch = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
     let queryString = '';
 
     if (searchQuery) queryString += `searchQuery=${searchQuery}&`;
@@ -64,17 +72,20 @@ const Activities = () => {
     if (sortBy) queryString += `sortBy=${sortBy}&order=${order}`;
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`/tourists/activities/filter-sort-search?${queryString}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setActivities(response.data);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`/tourists/activities/filter-sort-search?${queryString}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        setActivities(response.data);
     } catch (error) {
-      setMessage('Error applying filters');
+        setMessage('Error applying filters');
+    } finally {
+        setLoading(false); // Stop loading regardless of success or error
     }
-  };
+};
+
 
   const handleCopyLink = (activityId) => {
     const link = `${window.location.origin}/activity/${activityId}`;
@@ -255,7 +266,19 @@ const Activities = () => {
   </Grid>
 </Box>
 
-
+{/* Loading Indicator */}
+{loading ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '200px',
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
 <Box
   sx={{
     display: 'flex',
@@ -264,6 +287,7 @@ const Activities = () => {
     gap: 3,
   }}
 >
+    
   {activities.length > 0 ? (
     activities.map((activity) => (
       <Card
@@ -369,6 +393,7 @@ const Activities = () => {
     <Typography>No activities available</Typography>
   )}
 </Box>
+)}
 
 
       </Box>
