@@ -7,17 +7,20 @@ import {
   Button,
   Box,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 
 const BlockItinerary = () => {
   const [itineraries, setItineraries] = useState([]);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true); // Add loading state
 
   // Fetch itineraries on component mount
   useEffect(() => {
     const fetchItineraries = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true); // Start loading
         const response = await axios.get('/admins/itineraries', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -26,6 +29,8 @@ const BlockItinerary = () => {
         setItineraries(response.data);
       } catch (error) {
         setMessage('Error fetching itineraries.');
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
     fetchItineraries();
@@ -73,7 +78,6 @@ const BlockItinerary = () => {
     }
   };
 
-  // Render itinerary cards
   const renderItineraryCards = () => {
     if (!Array.isArray(itineraries) || itineraries.length === 0) {
       return <Typography>No itineraries available</Typography>;
@@ -86,14 +90,14 @@ const BlockItinerary = () => {
           border: '1px solid #ccc',
           borderRadius: '8px',
           padding: '20px',
-          width: '500px', // Fixed width for all cards
-          margin: '10px auto', // Center card and add space between
+          width: '500px',
+          margin: '10px auto',
           backgroundColor: '#f9f9f9',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           textAlign: 'center',
           '&:hover': {
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-            transform: 'scale(1.02)', // Subtle scale effect on hover
+            transform: 'scale(1.02)',
             transition: 'transform 0.2s ease-in-out',
           },
         }}
@@ -145,9 +149,15 @@ const BlockItinerary = () => {
         My Itineraries
       </Typography>
       {message && <Alert severity="info" sx={{ marginBottom: '20px' }}>{message}</Alert>}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {renderItineraryCards()}
-      </Box>
+      {loading ? ( // Show loader when fetching data
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {renderItineraryCards()}
+        </Box>
+      )}
     </Box>
   );
 };

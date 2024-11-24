@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './AdminDashboard.css'; // Import the CSS file
+//import './AdminDashboard.css'; // Import the CSS file
 import CreateAdminForm from './AdminManagement';
 import ManageUsers from './ManageUser';
 import EditMyPassword from './EditPassword';
@@ -323,7 +323,7 @@ const handleTagChange = (id, newName) => {
           <Box
           sx={{
             width: '250px',
-            backgroundColor: '#1a1a1a !important',
+            backgroundColor: '#111E40',
 
             color: 'white',
             height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
@@ -333,10 +333,10 @@ const handleTagChange = (id, newName) => {
             display: 'flex',
             flexDirection: 'column',
             transition: 'transform 0.3s ease-in-out',
-            '&:hover': { backgroundColor: '#444' }, // Hover effect for the sidebar
+            '&:hover': { backgroundColor: '#111E40' }, // Hover effect for the sidebar
           }}
         >
-            <Button
+            {/* <Button
               sx={{
                 color: 'white',
                 textAlign: 'left',
@@ -348,7 +348,7 @@ const handleTagChange = (id, newName) => {
               onClick={toggleSidebar}
             >
               Close Sidebar
-            </Button>
+            </Button> */}
 
             {/* Navigation Buttons */}
             <nav>
@@ -374,10 +374,16 @@ const handleTagChange = (id, newName) => {
                     justifyContent: 'flex-start',
                     width: '100%',
                     padding: '10px',
-                    backgroundColor:
-                      activeSection === item.section ? 'lightblue' : 'transparent',
-                    '&:hover': { backgroundColor: '#555' }, // Hover effect
+                    marginTop: '5px',
+                    backgroundColor: activeSection === item.section ? '#7BAFD0' : 'transparent',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Smooth animation for scaling and shadow
+                    '&:hover': {
+                      backgroundColor: '#7BAFD0', // Hover effect
+                      transform: 'scale(1.01)', // Slight scaling
+                      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow
+                    },
                   }}
+                  
                   onClick={() => handleSectionChange(item.section)}
                 >
                   {item.label}

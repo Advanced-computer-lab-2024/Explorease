@@ -3,15 +3,15 @@ import axios from 'axios';
 import {
   Box,
   Typography,
-  Button,
+  IconButton,
   Alert,
-  Card,
-  CardContent,
   List,
   ListItem,
   ListItemText,
   Divider,
+  CircularProgress,
 } from '@mui/material';
+import Delete from '@mui/icons-material/Delete';
 
 const ManageUsers = () => {
   const [tourists, setTourists] = useState([]);
@@ -20,6 +20,7 @@ const ManageUsers = () => {
   const [tourGuides, setTourGuides] = useState([]);
   const [advertisers, setAdvertisers] = useState([]);
   const [userMessage, setUserMessage] = useState('');
+  const [loading, setLoading] = useState(true); // Added loading state
 
   useEffect(() => {
     fetchUsers();
@@ -30,6 +31,7 @@ const ManageUsers = () => {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
+      setLoading(true); // Start loading
       const [touristsRes, sellersRes, governorsRes, guidesRes, advertisersRes] = await Promise.all([
         axios.get('/admins/tourists', { headers }),
         axios.get('/admins/sellers', { headers }),
@@ -46,6 +48,8 @@ const ManageUsers = () => {
     } catch (error) {
       setUserMessage('Error fetching users.');
       console.error(error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -86,13 +90,11 @@ const ManageUsers = () => {
                 }}
               >
                 <ListItemText primary={`${user.username} - ${user.email}`} />
-                <Button
-                  variant="outlined"
+                <IconButton
                   onClick={() => deleteUser(user._id, userType)}
                   sx={{
                     backgroundColor: '#f44336',
                     color: 'white',
-                    border: '1px solid #f44336',
                     '&:hover': {
                       backgroundColor: 'white',
                       color: '#f44336',
@@ -100,8 +102,8 @@ const ManageUsers = () => {
                     },
                   }}
                 >
-                  Delete {title}
-                </Button>
+                  <Delete />
+                </IconButton>
               </ListItem>
               <Divider />
             </React.Fragment>
@@ -114,7 +116,7 @@ const ManageUsers = () => {
   return (
     <Box sx={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       <Typography variant="h5" gutterBottom>
-        Manage Users
+        Manage Users Accounts
       </Typography>
 
       {userMessage && (
@@ -123,12 +125,20 @@ const ManageUsers = () => {
         </Alert>
       )}
 
-      {/* Render user sections */}
-      {renderUserSection('Tourists', tourists, 'tourist')}
-      {renderUserSection('Sellers', sellers, 'seller')}
-      {renderUserSection('Tourism Governors', tourismGovernors, 'tourismGovernor')}
-      {renderUserSection('Tour Guides', tourGuides, 'tourGuide')}
-      {renderUserSection('Advertisers', advertisers, 'advertiser')}
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <>
+          {/* Render user sections */}
+          {renderUserSection('Tourists', tourists, 'tourist')}
+          {renderUserSection('Sellers', sellers, 'seller')}
+          {renderUserSection('Tourism Governors', tourismGovernors, 'tourismGovernor')}
+          {renderUserSection('Tour Guides', tourGuides, 'tourGuide')}
+          {renderUserSection('Advertisers', advertisers, 'advertiser')}
+        </>
+      )}
     </Box>
   );
 };

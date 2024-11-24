@@ -134,12 +134,16 @@ const HomePage = () => {
                             Explore a variety of services to make your journey unforgettable.
                         </Typography>
                         <Stack
-                            direction={{ xs: 'column', sm: 'row' }}
-                            justifyContent="center"
-                            alignItems="center"
-                            spacing={4}
-                            flexWrap="wrap"
-                        >
+  direction={{ xs: 'column', sm: 'row' }}
+  justifyContent="center"
+  alignItems="center"
+  spacing={5}
+  flexWrap="wrap"
+  sx={{
+    rowGap: '30px', // Adds 5px space between rows
+  }}
+>
+
                             {[
                                 { icon: <ActivitiesIcon fontSize="large" />, title: 'Activities', description: 'Explore fun activities.' },
                                 { icon: <FlightsIcon fontSize="large" />, title: 'Flights', description: 'Book convenient flights.' },
@@ -220,13 +224,72 @@ const HomePage = () => {
                              © 2024. All rights reserved.
                         </Typography>
                         <Stack direction="row" spacing={3}>
-                            <Link to="/admin/login" style={{ color: 'white', textDecoration: 'none' }}>
-                                Admin Login
-                            </Link>
-                            <Link to="/uploadDocuments" style={{ color: 'white', textDecoration: 'none' }}>
-                                Upload Documents
-                            </Link>
-                        </Stack>
+  <Link
+    to="/admin/login"
+    style={{
+      color: 'white',
+      textDecoration: 'none',
+      position: 'relative',
+      fontSize: '16px',
+      transition: 'font-size 0.3s ease', // Smooth font-size transition
+    }}
+    onMouseEnter={(e) => {
+      e.target.style.fontSize = '18px'; // Increase font size on hover
+    }}
+    onMouseLeave={(e) => {
+      e.target.style.fontSize = '16px'; // Reset font size
+    }}
+  >
+    Admin Login
+    <span
+      style={{
+        content: '""',
+        display: 'block',
+        position: 'absolute',
+        bottom: '-2px',
+        left: '0',
+        width: '0%',
+        height: '2px',
+        background: 'white',
+        transition: 'width 0.3s ease', // Smooth underline animation
+      }}
+      className="hover-underline"
+    />
+  </Link>
+  <Link
+    to="/uploadDocuments"
+    style={{
+      color: 'white',
+      textDecoration: 'none',
+      position: 'relative',
+      fontSize: '16px',
+      transition: 'font-size 0.3s ease', // Smooth font-size transition
+    }}
+    onMouseEnter={(e) => {
+      e.target.style.fontSize = '18px'; // Increase font size on hover
+    }}
+    onMouseLeave={(e) => {
+      e.target.style.fontSize = '16px'; // Reset font size
+    }}
+  >
+    Upload Documents
+    <span
+      style={{
+        content: '""',
+        display: 'block',
+        position: 'absolute',
+        bottom: '-2px',
+        left: '0',
+        width: '0%',
+        height: '2px',
+        background: 'white',
+        transition: 'width 0.3s ease', // Smooth underline animation
+      }}
+      className="hover-underline"
+    />
+  </Link>
+</Stack>
+
                     </Stack>
                 </Container>
             </footer>

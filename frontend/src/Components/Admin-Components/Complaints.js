@@ -1,19 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+    Box,
+    Card,
+    CardContent,
+    Typography,
+    Button,
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Modal,
+    IconButton,
+    Alert,
+    Snackbar,
+    CircularProgress,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Complaints = () => {
     const [complaints, setComplaints] = useState([]);
     const [selectedComplaint, setSelectedComplaint] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
     const [responseText, setResponseText] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [sortOrder, setSortOrder] = useState('newest');
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('info');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [loading, setLoading] = useState(false); // Added loading state
 
     useEffect(() => {
         fetchComplaints();
     }, []);
 
     const fetchComplaints = async () => {
+        setLoading(true); // Set loading to true when fetching starts
         const token = localStorage.getItem('token');
         try {
             const response = await axios.get('/admins/getAllComplaints', {
@@ -23,8 +45,16 @@ const Complaints = () => {
             });
             setComplaints(response.data);
         } catch (error) {
-            setErrorMessage('Error fetching complaints.');
+            showAlert('Error fetching complaints.', 'error');
+        } finally {
+            setLoading(false); // Set loading to false when fetching ends
         }
+    };
+
+    const showAlert = (message, severity) => {
+        setAlertMessage(message);
+        setAlertSeverity(severity);
+        setAlertOpen(true);
     };
 
     const handleComplaintClick = (complaint) => {
@@ -32,153 +62,38 @@ const Complaints = () => {
         setResponseText('');
     };
 
-    const closeComplaintDetails = () => {
-        setSelectedComplaint(null);
-    };
-
     const handleResponseSubmit = async (complaintId) => {
         const token = localStorage.getItem('token');
         try {
             await axios.put(
-                `/admins/adminRespondToComplaint/${complaintId}`, 
-                { adminResponse: responseText }, // Updated payload
+                `/admins/adminRespondToComplaint/${complaintId}`,
+                { adminResponse: responseText },
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            setComplaints(prevComplaints => 
-                prevComplaints.map(complaint => 
-                    complaint._id === complaintId 
-                        ? { ...complaint, status: 'Resolved', adminResponse: responseText } 
+            setComplaints((prevComplaints) =>
+                prevComplaints.map((complaint) =>
+                    complaint._id === complaintId
+                        ? { ...complaint, status: 'Resolved', adminResponse: responseText }
                         : complaint
                 )
             );
+            showAlert('Response submitted successfully!', 'success');
             setSelectedComplaint(null);
         } catch (error) {
-            setErrorMessage('Error submitting response.');
+            showAlert('Error submitting response.', 'error');
         }
     };
-    
 
-    const containerStyle = {
-        padding: '20px',
-        textAlign: 'center',
-        maxWidth: '800px',
-        margin: '0 auto',
-    };
-
-    const listStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-        marginTop: '20px',
-    };
-
-    const cardStyle = {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '20px',
-        width: '100%',
-        backgroundColor: '#f9f9f9',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        textAlign: 'left',
-        cursor: 'pointer',
-    };
-
-    const statusStyle = {
-        display: 'inline-block',
-        padding: '5px 10px',
-        borderRadius: '5px',
-        marginLeft: '10px',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        color: '#fff',
-    };
-
-    const pendingStyle = {
-        ...statusStyle,
-        backgroundColor: '#007bff', // Blue for Pending
-    };
-
-    const resolvedStyle = {
-        ...statusStyle,
-        backgroundColor: '#28a745', // Green for Resolved
-    };
-
-    const overlayStyle = {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-    };
-
-    const modalStyle = {
-        backgroundColor: '#fff',
-        padding: '20px',
-        width: '90%',
-        maxWidth: '500px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-        position: 'relative',
-    };
-
-    const closeButtonStyle = {
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        background: 'none',
-        border: 'none',
-        fontSize: '18px',
-        cursor: 'pointer',
-        color: '#888',
-    };
-
-    const errorMessageStyle = {
-        color: 'red',
-        marginBottom: '20px',
-    };
-
-    const textareaStyle = {
-        width: '80%',
-        minHeight: '100px',
-        padding: '10px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-    };
-
-    const submitButtonStyle = {
-        backgroundColor: '#007bff',
-        color: '#fff',
-        padding: '10px 15px',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-    };
-
-    const filterSortStyle = {
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginBottom: '20px',
-    };
-
-    const selectStyle = {
-        padding: '5px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
+    const handleCloseAlert = () => {
+        setAlertOpen(false);
     };
 
     const filteredComplaints = complaints
-        .filter(complaint => statusFilter === 'All' || complaint.status === statusFilter)
+        .filter(
+            (complaint) => statusFilter === 'All' || complaint.status === statusFilter
+        )
         .sort((a, b) => {
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);
@@ -186,75 +101,227 @@ const Complaints = () => {
         });
 
     return (
-        <div style={containerStyle}>
-            <h2>Complaints</h2>
-            {errorMessage && <p style={errorMessageStyle}>{errorMessage}</p>}
-            
-            <div style={filterSortStyle}>
-                <select 
-                    style={selectStyle}
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
+        <Box sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
+            <Typography variant="h4" gutterBottom>
+                Complaints
+            </Typography>
+
+            <Snackbar
+                open={alertOpen}
+                autoHideDuration={5000}
+                onClose={handleCloseAlert}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    severity={alertSeverity}
+                    onClose={handleCloseAlert}
+                    sx={{ width: '100%' }}
                 >
-                    <option value="All">All Statuses</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Resolved">Resolved</option>
-                </select>
-                <select 
-                    style={selectStyle}
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value)}
-                >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                </select>
-            </div>
-            
-            <div style={listStyle}>
-                {filteredComplaints.map((complaint) => (
-                    <div
-                        key={complaint._id}
-                        style={cardStyle}
-                        onClick={() => handleComplaintClick(complaint)}
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    mb: 4,
+                }}
+            >
+                <FormControl variant="outlined" sx={{ minWidth: 150 }}>
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        label="Status"
                     >
-                        <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            {complaint.title}
-                            <span
-                                style={complaint.status === 'Pending' ? pendingStyle : resolvedStyle}
-                            >
-                                {complaint.status}
-                            </span>
-                        </h3>
+                        <MenuItem value="All">All</MenuItem>
+                        <MenuItem value="Pending">Pending</MenuItem>
+                        <MenuItem value="Resolved">Resolved</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl variant="outlined" sx={{ minWidth: 150 }}>
+                    <InputLabel>Sort</InputLabel>
+                    <Select
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value)}
+                        label="Sort"
+                    >
+                        <MenuItem value="newest">Newest First</MenuItem>
+                        <MenuItem value="oldest">Oldest First</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
 
-                    </div>
-                ))}
-            </div>
-
-            {selectedComplaint && (
-                <div style={overlayStyle}>
-                    <div style={modalStyle}>
-                        <button style={closeButtonStyle} onClick={closeComplaintDetails}>X</button>
-                        <h3>{selectedComplaint.title}</h3>
-                        <p><strong>Status:</strong> {selectedComplaint.status}</p>
-                        <p><strong>Details:</strong> {selectedComplaint.body}</p>
-                        <p><strong>Submitted by:</strong> {selectedComplaint.touristId.username}</p>
-                        <p><strong>Date:</strong> {new Date(selectedComplaint.date).toLocaleString()}</p>
-                        <textarea
-                            style={textareaStyle}
-                            value={responseText}
-                            onChange={(e) => setResponseText(e.target.value)}
-                            placeholder="Type your response here..."
-                        />
-                        <button
-                            style={submitButtonStyle}
-                            onClick={() => handleResponseSubmit(selectedComplaint._id)}
+            {loading ? ( // Display loading spinner while fetching
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                    }}
+                >
+                    {filteredComplaints.map((complaint) => (
+                        <Card
+                            key={complaint._id}
+                            sx={{
+                                p: 2,
+                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)', // Added shadow
+                                borderRadius: 2,
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
+                                },
+                            }}
                         >
-                            Submit Response
-                        </button>
-                    </div>
-                </div>
+                            <CardContent>
+                                <Typography variant="h6">{complaint.title}</Typography>
+                                <Button
+                                    variant="contained"
+                                    color={complaint.status === 'Pending' ? 'primary' : 'success'}
+                                    onClick={() => handleComplaintClick(complaint)}
+                                    sx={{
+                                        mt: 2,
+                                        backgroundColor:
+                                            complaint.status === 'Pending'
+                                                ? '#007bff'
+                                                : '#28a745',
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: 'white',
+                                            color:
+                                                complaint.status === 'Pending'
+                                                    ? '#007bff'
+                                                    : '#28a745',
+                                            border: `1px solid ${
+                                                complaint.status === 'Pending'
+                                                    ? '#007bff'
+                                                    : '#28a745'
+                                            }`,
+                                        },
+                                    }}
+                                >
+                                    {complaint.status}
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </Box>
             )}
-        </div>
+
+            <Modal
+                open={Boolean(selectedComplaint)}
+                onClose={() => setSelectedComplaint(null)}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100vh',
+                    }}
+                >
+                    <Box
+                        sx={{
+                            backgroundColor: 'white',
+                            p: 4,
+                            borderRadius: 2,
+                            maxWidth: 500,
+                            width: '90%',
+                            boxShadow: 3,
+                            position: 'relative', // For positioning the "X" button
+                        }}
+                    >
+                        <IconButton
+                            onClick={() => setSelectedComplaint(null)}
+                            sx={{
+                                position: 'absolute',
+                                top: 8,
+                                right: 8,
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+
+                        {selectedComplaint && (
+                            <>
+                                <Typography variant="h5" gutterBottom align="center">
+                                    {selectedComplaint.title}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    align="center"
+                                    sx={{ mb: 2 }}
+                                >
+                                    <strong>Status:</strong> {selectedComplaint.status}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    align="center"
+                                    sx={{ mb: 2 }}
+                                >
+                                    <strong>Details:</strong> {selectedComplaint.body}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    align="center"
+                                    sx={{ mb: 2 }}
+                                >
+                                    <strong>Submitted by:</strong>{' '}
+                                    {selectedComplaint.touristId.username}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    align="center"
+                                    sx={{ mb: 2 }}
+                                >
+                                    <strong>Date:</strong>{' '}
+                                    {new Date(selectedComplaint.date).toLocaleString()}
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    minRows={3}
+                                    label="Admin Response"
+                                    value={responseText}
+                                    onChange={(e) => setResponseText(e.target.value)}
+                                    sx={{ mb: 2 }}
+                                />
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        mt: 2,
+                                    }}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        onClick={() =>
+                                            handleResponseSubmit(selectedComplaint._id)
+                                        }
+                                        sx={{
+                                            backgroundColor: '#111E56',
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: 'white',
+                                                color: '#111E56',
+                                                border: '1px solid #111E56',
+                                            },
+                                        }}
+                                    >
+                                        Submit Response
+                                    </Button>
+                                </Box>
+                            </>
+                        )}
+                    </Box>
+                </Box>
+            </Modal>
+        </Box>
     );
 };
 
