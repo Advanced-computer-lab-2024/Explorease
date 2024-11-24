@@ -12,6 +12,14 @@ import MyProducts from './AdminProducts'
 import MyAdminProducts from './AdminMyProducts'
 import DeleteRequests from './DeleteRequests';
 import PromoCode from './PromoCodes';
+import AdminNavBar from './AdminNavBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 
 
 const AdminDashboard = () => {
@@ -300,161 +308,101 @@ const handleTagChange = (id, newName) => {
         }
     }, [navigate]);
 
-    // Define individual styles as constants
-    const containerStyle = {
-        display: 'flex',
-        overflow: 'hidden',
-    };
-
-    const sidebarStyle = {
-        width: '250px',
-        backgroundColor: '#333',
-        color: 'white',
-        height: '100vh',
-        position: 'fixed',
-        transition: 'transform 0.3s ease-in-out',
-    };
-
-    const closeSidebarStyle = {
-        background: 'none',
-        border: 'none',
-        color: 'white',
-        fontSize: '16px',
-        cursor: 'pointer',
-        margin: '10px',
-    };
-
-    const openSidebarStyle = {
-        position: 'absolute',
-        top: '10px',
-        left: '10px',
-        background: '#007bff',
-        border: 'none',
-        color: 'white',
-        padding: '5px 10px',
-        cursor: 'pointer',
-        zIndex: 1000,
-    };
-
-    const mainContentStyle = {
-        flex: 1,
-        transition: 'margin-left 0.3s ease-in-out',
-        padding: '20px',
-        marginLeft: isSidebarVisible ? '250px' : '0',
-    };
-
-    const navButtonStyle = (isActive) => ({
-        background: isActive ? 'lightblue' : 'transparent',
-        color: 'white',
-        border: 'none',
-        padding: '10px 15px',
-        cursor: 'pointer',
-        width: '100%',
-        textAlign: 'left',
-    });
-
-
     return (
-        <div style={containerStyle}>
-            {/* Sidebar Toggle Button */}
-            {!isSidebarVisible && (
-                <button style={openSidebarStyle} onClick={toggleSidebar}>
-                    Open Sidebar
-                </button>
-            )}
-    
-            {/* Sidebar */}
-            {isSidebarVisible && (
-                <div style={sidebarStyle}>
-                    <button style={closeSidebarStyle} onClick={toggleSidebar}>
-                        Close Sidebar
-                    </button>
-    
-                    {/* Navigation bar */}
-                    <nav>
-                        <button
-                            onClick={() => handleSectionChange('home')}
-                            style={navButtonStyle(activeSection === 'home')}
-                        >
-                            Home
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('editPassword')}
-                            style={navButtonStyle(activeSection === 'editPassword')}
-                        >
-                            Edit Password
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('deleteAccounts')}
-                            style={navButtonStyle(activeSection === 'deleteAccounts')}
-                        >
-                            Delete Accounts
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('preferenceTag')}
-                            style={navButtonStyle(activeSection === 'preferenceTag')}
-                        >
-                            Preference Tag
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('activityCategory')}
-                            style={navButtonStyle(activeSection === 'activityCategory')}
-                        >
-                            Activity Category
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('product')}
-                            style={navButtonStyle(activeSection === 'product')}
-                        >
-                            Product
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('tourismGoverner')}
-                            style={navButtonStyle(activeSection === 'tourismGoverner')}
-                        >
-                            Add Tourism Governer
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('ReviewUsers')}
-                            style={navButtonStyle(activeSection === 'ReviewUsers')}
-                        >
-                            Review Registering Users
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('Block event')}
-                            style={navButtonStyle(activeSection === 'Block event')}
-                        >
-                            Block Event
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('Complaints')}
-                            style={navButtonStyle(activeSection === 'Complaints')}
-                        >
-                            Complaints
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('Delete Requests')}
-                            style={navButtonStyle(activeSection === 'Delete Requests')}
-                        >
-                            User Delete Requests
-                        </button>
-                        <button
-                            onClick={() => handleSectionChange('Promo Code')}
-                            style={navButtonStyle(activeSection === 'Promo Code')}
-                        >
-                            Promo Code
-                        </button>
-                    </nav>
-                </div>
-            )}
-    
-            {/* Main Content */}
-            <div style={mainContentStyle}>
-                <h1>Welcome to the Admin Dashboard</h1>
+        <>
+        <AdminNavBar toggleSidebar={toggleSidebar} />
+{/* Container */}
+<Box
+        sx={{
+          display: 'flex',
+          minHeight: '100vh', // Allows content to expand naturally
+        }}
+      >
+        {/* Sidebar */}
+        {isSidebarVisible && (
+          <Box
+          sx={{
+            width: '250px',
+            backgroundColor: '#1a1a1a !important',
+
+            color: 'white',
+            height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
+            position: 'fixed',
+            top: '64px', // Start below the navbar
+            padding: '10px',
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'transform 0.3s ease-in-out',
+            '&:hover': { backgroundColor: '#444' }, // Hover effect for the sidebar
+          }}
+        >
+            <Button
+              sx={{
+                color: 'white',
+                textAlign: 'left',
+                justifyContent: 'flex-start',
+                width: '100%',
+                padding: '10px',
+                '&:hover': { backgroundColor: '#555' }, // Hover effect
+              }}
+              onClick={toggleSidebar}
+            >
+              Close Sidebar
+            </Button>
+
+            {/* Navigation Buttons */}
+            <nav>
+              {[
+                { label: 'Home', section: 'home' },
+                { label: 'Edit Password', section: 'editPassword' },
+                { label: 'Delete Accounts', section: 'deleteAccounts' },
+                { label: 'Preference Tag', section: 'preferenceTag' },
+                { label: 'Activity Category', section: 'activityCategory' },
+                { label: 'Product', section: 'product' },
+                { label: 'Add Tourism Governor', section: 'tourismGoverner' },
+                { label: 'Review Users', section: 'ReviewUsers' },
+                { label: 'Block Event', section: 'Block event' },
+                { label: 'Complaints', section: 'Complaints' },
+                { label: 'Delete Requests', section: 'Delete Requests' },
+                { label: 'Promo Code', section: 'Promo Code' },
+              ].map((item) => (
+                <Button
+                  key={item.section}
+                  sx={{
+                    color: 'white',
+                    textAlign: 'left',
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    padding: '10px',
+                    backgroundColor:
+                      activeSection === item.section ? 'lightblue' : 'transparent',
+                    '&:hover': { backgroundColor: '#555' }, // Hover effect
+                  }}
+                  onClick={() => handleSectionChange(item.section)}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </nav>
+          </Box>
+        )}
+
+
+        {/* Main Content */}
+        <Box
+          sx={{
+            flex: 1,
+            marginLeft: isSidebarVisible ? '250px' : '0',
+            transition: 'margin-left 0.3s ease-in-out',
+           // overflowY: 'auto', // Enables scrolling for the main content
+            padding: '20px',
+          }}
+        >
     
                 {/* Conditionally render sections */}
                 {activeSection === 'home' && (
                     <div className="section">
+                        <h1>Welcome to the Admin Dashboard</h1>
                         <CreateAdminForm />
                     </div>
                 )}
@@ -467,243 +415,482 @@ const handleTagChange = (id, newName) => {
                 {activeSection === 'Promo Code' && <PromoCode />}
     
                 {activeSection === 'preferenceTag' && (
-                    <div className="section">
-                        <h2>Manage Preference Tags</h2>
-    
-                        {/* Create New Tag */}
-                        <form onSubmit={createTag}>
-                            <div className="form-group">
-                                <label>New Tag Name:</label>
-                                <input
-                                    type="text"
-                                    value={newTagName}
-                                    onChange={(e) => setNewTagName(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="submit-btn">
-                                Create Tag
-                            </button>
-                        </form>
-    
-                        {/* Display message */}
-                        <p>{tagMessage}</p>
-    
-                        {/* List of Tags with Update/Delete options */}
-                        <ul className="admin-list">
-                            {Array.isArray(preferenceTags) && preferenceTags.length === 0 ? (
-                                <p>No tags found</p>
-                            ) : (
-                                Array.isArray(preferenceTags) &&
-                                preferenceTags.map((tag) => (
-                                    <li key={tag._id}>
-                                        <input
-                                            type="text"
-                                            value={editedTag[tag._id] || tag.name} // Show edited name or default name
-                                            onChange={(e) =>
-                                                handleTagChange(tag._id, e.target.value)
-                                            } // Update local state
-                                        />
-                                        <button
-                                            onClick={() =>
-                                                updateTag(tag._id, editedTag[tag._id] || tag.name)
-                                            }
-                                        >
-                                            Update
-                                        </button>
-                                        <button onClick={() => deleteTag(tag._id)}>Delete</button>
-                                    </li>
-                                ))
-                            )}
-                        </ul>
-                    </div>
-                )}
-    
-                {activeSection === 'activityCategory' && (
-                    <div className="section">
-                        <h2>Manage Activity Categories</h2>
-    
-                        {/* Create New Category */}
-                        <form onSubmit={createCategory}>
-                            <div className="form-group">
-                                <label>New Category Name:</label>
-                                <input
-                                    type="text"
-                                    value={newCategoryName}
-                                    onChange={(e) => setNewCategoryName(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="submit-btn">
-                                Create Category
-                            </button>
-                        </form>
-    
-                        {/* Display message */}
-                        <p>{categoryMessage}</p>
-    
-                        {/* List of Categories with Update/Delete options */}
-                        <ul className="admin-list">
-                            {activityCategories.length === 0 ? (
-                                <p>No categories found</p>
-                            ) : (
-                                activityCategories.map((category) => (
-                                    <li key={category._id}>
-                                        <input
-                                            type="text"
-                                            value={
-                                                editedCategory[category._id] || category.name
-                                            } // Show edited name or default name
-                                            onChange={(e) =>
-                                                handleCategoryChange(
-                                                    category._id,
-                                                    e.target.value
-                                                )
-                                            } // Update local state
-                                        />
-                                        <button
-                                            onClick={() =>
-                                                updateCategory(
-                                                    category._id,
-                                                    editedCategory[category._id] || category.name
-                                                )
-                                            }
-                                        >
-                                            Update
-                                        </button>
-                                        <button onClick={() => deleteCategory(category._id)}>
-                                            Delete
-                                        </button>
-                                    </li>
-                                ))
-                            )}
-                        </ul>
-                    </div>
-                )}
-    
-                {activeSection === 'tourismGoverner' && (
-                    <div className="section">
-                        <h2>Add Tourism Governer</h2>
-                        {isGovernorAdded && (
-                            <div className="success-message">
-                                <p style={{ color: 'green' }}>
-                                    Tourism Governor added successfully!
-                                </p>
-                            </div>
-                        )}
-                        <form onSubmit={handleAddGovernor}>
-                            <div className="form-group">
-                                <label>Tourism Governer Username:</label>
-                                <input
-                                    type="text"
-                                    value={governorUsername}
-                                    onChange={(e) => setGovernorUsername(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Tourism Governer Email:</label>
-                                <input
-                                    type="email"
-                                    value={governorEmail}
-                                    onChange={(e) => setGovernorEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Tourism Governer Password:</label>
-                                <input
-                                    type="password"
-                                    value={governorPassword}
-                                    onChange={(e) => setGovernorPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="submit-btn">
-                                Add Tourism Governer
-                            </button>
-                        </form>
-                    </div>
-                )}
-    
-                {activeSection === 'product' && (
-                    <div className="section">
-                        <h2>Manage Products</h2>
-    
-                        {/* Display message for success or error */}
-                        {productMessage && (
-                            <p
-                                style={{
-                                    color: productMessage.includes('successfully')
-                                        ? 'green'
-                                        : 'red',
-                                }}
-                            >
-                                {productMessage}
-                            </p>
-                        )}
-    
-                        {/* Create New Product */}
-                        <form onSubmit={createProduct} encType="multipart/form-data">
-                            <div className="form-group">
-                                <label>Product Name:</label>
-                                <input
-                                    type="text"
-                                    value={productName}
-                                    onChange={(e) => setProductName(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Product Price:</label>
-                                <input
-                                    type="number"
-                                    value={productPrice}
-                                    onChange={(e) => setProductPrice(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Product Description:</label>
-                                <input
-                                    type="text"
-                                    value={productDescription}
-                                    onChange={(e) => setProductDescription(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Available Quantity:</label>
-                                <input
-                                    type="number"
-                                    value={availableQuantity}
-                                    onChange={(e) => setAvailableQuantity(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Product Image:</label>
-                                <input
-                                    type="file"
-                                    onChange={(e) => setImageFile(e.target.files[0])}
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="submit-btn">
-                                Create Product
-                            </button>
-                        </form>
-    
-                        {/* List of products */}
-                        <MyAdminProducts
-                            products={products}
-                            productMessage={productMessage}
+    <Box
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+            padding: '20px',
+        }}
+    >
+        <Typography variant="h5" gutterBottom>
+            Manage Preference Tags
+        </Typography>
+
+        {/* Display message */}
+        {tagMessage && (
+            <Box sx={{ marginY: 2 }}>
+                <Typography
+                    sx={{
+                        color: tagMessage.includes('successfully') ? 'green' : 'red',
+                    }}
+                >
+                    {tagMessage}
+                </Typography>
+            </Box>
+        )}
+
+        {/* Create New Tag */}
+        <Box
+            component="form"
+            onSubmit={createTag}
+            sx={{
+                display: 'grid',
+                gap: 2,
+                maxWidth: '600px',
+                width: '100%',
+                marginBottom: '40px',
+            }}
+        >
+            <TextField
+                label="New Tag Name"
+                value={newTagName}
+                onChange={(e) => setNewTagName(e.target.value)}
+                required
+                fullWidth
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                    backgroundColor: '#111E56',
+                    color: 'white',
+                    '&:hover': {
+                        backgroundColor: 'white',
+                        color: '#111E56',
+                        border: '1px solid #111E56',
+                    },
+                }}
+            >
+                Create Tag
+            </Button>
+        </Box>
+
+        {/* List of Tags with Update/Delete options */}
+        <Box
+            sx={{
+                width: '100%',
+                maxWidth: '600px',
+            }}
+        >
+            <Typography variant="h6" gutterBottom>
+                Existing Tags
+            </Typography>
+            {Array.isArray(preferenceTags) && preferenceTags.length === 0 ? (
+                <Typography>No tags found</Typography>
+            ) : (
+                preferenceTags.map((tag) => (
+                    <Box
+                        key={tag._id}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: 2,
+                            padding: 2,
+                            border: '1px solid #ccc',
+                            borderRadius: '8px',
+                            marginBottom: '10px',
+                        }}
+                    >
+                        <TextField
+                            fullWidth
+                            value={editedTag[tag._id] || tag.name}
+                            onChange={(e) =>
+                                handleTagChange(tag._id, e.target.value)
+                            }
                         />
-                        <MyProducts products={products} productMessage={productMessage} />
-                    </div>
-                )}
-            </div>
-        </div>
+                        <Button
+                            variant="outlined"
+                            onClick={() =>
+                                updateTag(tag._id, editedTag[tag._id] || tag.name)
+                            }
+                            sx={{
+                                backgroundColor: '#111E56',
+                                color: 'white',
+                                '&:hover': {
+                                    backgroundColor: 'white',
+                                    color: '#111E56',
+                                    border: '1px solid #111E56',
+                                },
+                            }}
+                        >
+                            Update
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={() => deleteTag(tag._id)}
+                            sx={{
+                                backgroundColor: '#f44336',
+                                color: 'white',
+                                border: '1px solid #f44336',
+                                '&:hover': {
+                                    backgroundColor: 'white',
+                                    color: '#f44336',
+                                    border: '1px solid #f44336',
+                                },
+                            }}
+                            
+                        >
+                            Delete
+                        </Button>
+                    </Box>
+                ))
+            )}
+        </Box>
+    </Box>
+)}
+
+{activeSection === 'activityCategory' && (
+    <Box
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+            padding: '20px',
+        }}
+    >
+        <Typography variant="h5" gutterBottom>
+            Manage Activity Categories
+        </Typography>
+
+        {/* Display message */}
+        {categoryMessage && (
+            <Box sx={{ marginY: 2 }}>
+                <Typography
+                    sx={{
+                        color: categoryMessage.includes('successfully') ? 'green' : 'red',
+                    }}
+                >
+                    {categoryMessage}
+                </Typography>
+            </Box>
+        )}
+
+        {/* Create New Category */}
+        <Box
+            component="form"
+            onSubmit={createCategory}
+            sx={{
+                display: 'grid',
+                gap: 2,
+                maxWidth: '600px',
+                width: '100%',
+                marginBottom: '40px',
+            }}
+        >
+            <TextField
+                label="New Category Name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                required
+                fullWidth
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                    backgroundColor: '#111E56',
+                    color: 'white',
+                    '&:hover': {
+                        backgroundColor: 'white',
+                        color: '#111E56',
+                        border: '1px solid #111E56',
+                    },
+                }}
+            >
+                Create Category
+            </Button>
+        </Box>
+
+        {/* List of Categories with Update/Delete options */}
+        <Box
+            sx={{
+                width: '100%',
+                maxWidth: '600px',
+            }}
+        >
+            <Typography variant="h6" gutterBottom>
+                Existing Categories
+            </Typography>
+            {activityCategories.length === 0 ? (
+                <Typography>No categories found</Typography>
+            ) : (
+                activityCategories.map((category) => (
+                    <Box
+                        key={category._id}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: 2,
+                            padding: 2,
+                            border: '1px solid #ccc',
+                            borderRadius: '8px',
+                            marginBottom: '10px',
+                        }}
+                    >
+                        <TextField
+                            fullWidth
+                            value={editedCategory[category._id] || category.name}
+                            onChange={(e) =>
+                                handleCategoryChange(category._id, e.target.value)
+                            }
+                        />
+                        <Button
+                            variant="outlined"
+                            onClick={() =>
+                                updateCategory(
+                                    category._id,
+                                    editedCategory[category._id] || category.name
+                                )
+                            }
+                            sx={{
+                                backgroundColor: '#111E56',
+                                color: 'white',
+                                '&:hover': {
+                                    backgroundColor: 'white',
+                                    color: '#111E56',
+                                    border: '1px solid #111E56',
+                                },
+                            }}
+                        >
+                            Update
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={() => deleteCategory(category._id)}
+                            sx={{
+                                backgroundColor: '#f44336',
+                                color: 'white',
+                                border: '1px solid #f44336',
+                                '&:hover': {
+                                    backgroundColor: 'white',
+                                    color: '#f44336',
+                                    border: '1px solid #f44336',
+                                },
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </Box>
+                ))
+            )}
+        </Box>
+    </Box>
+)}
+
+{activeSection === 'tourismGoverner' && (
+    <Box
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '60vh',
+            padding: '20px',
+        }}
+    >
+        <Typography variant="h5" gutterBottom>
+            Add Tourism Governor
+        </Typography>
+
+        {/* Success Message */}
+        {isGovernorAdded && (
+            <Typography sx={{ color: 'green', marginBottom: 2 }}>
+                Tourism Governor added successfully!
+            </Typography>
+        )}
+
+        {/* Form to Add Governor */}
+        <Box
+            component="form"
+            onSubmit={handleAddGovernor}
+            sx={{
+                display: 'grid',
+                gap: 2,
+                maxWidth: '600px',
+                width: '100%',
+            }}
+        >
+            <TextField
+                label="Governor Username"
+                value={governorUsername}
+                onChange={(e) => setGovernorUsername(e.target.value)}
+                required
+                fullWidth
+            />
+            <TextField
+                label="Governor Email"
+                type="email"
+                value={governorEmail}
+                onChange={(e) => setGovernorEmail(e.target.value)}
+                required
+                fullWidth
+            />
+            <TextField
+                label="Governor Password"
+                type="password"
+                value={governorPassword}
+                onChange={(e) => setGovernorPassword(e.target.value)}
+                required
+                fullWidth
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                    backgroundColor: '#111E56',
+                    color: 'white',
+                    '&:hover': {
+                        backgroundColor: 'white',
+                        color: '#111E56',
+                        border: '1px solid #111E56',
+                    },
+                }}
+            >
+                Add Governor
+            </Button>
+        </Box>
+    </Box>
+)}
+
+    {activeSection === 'product' && (
+    <Box
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+            padding: '20px',
+        }}
+    >
+        <Typography variant="h5" gutterBottom>
+            Manage Products
+        </Typography>
+
+        {/* Display message for success or error */}
+        {productMessage && (
+            <Box sx={{ marginY: 2 }}>
+                <Typography
+                    sx={{
+                        color: productMessage.includes('successfully') ? 'green' : 'red',
+                    }}
+                >
+                    {productMessage}
+                </Typography>
+            </Box>
+        )}
+
+        {/* Create New Product Form */}
+        <Box
+            component="form"
+            onSubmit={createProduct}
+            encType="multipart/form-data"
+            sx={{
+                display: 'grid',
+                gap: 2,
+                maxWidth: '600px',
+                width: '100%',
+                marginBottom: '40px',
+            }}
+        >
+            <TextField
+                label="Product Name"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                required
+                fullWidth
+            />
+            <TextField
+                label="Product Price"
+                type="number"
+                value={productPrice}
+                onChange={(e) => setProductPrice(e.target.value)}
+                required
+                fullWidth
+            />
+            <TextField
+                label="Product Description"
+                value={productDescription}
+                onChange={(e) => setProductDescription(e.target.value)}
+                required
+                fullWidth
+            />
+            <TextField
+                label="Available Quantity"
+                type="number"
+                value={availableQuantity}
+                onChange={(e) => setAvailableQuantity(e.target.value)}
+                required
+                fullWidth
+            />
+            <TextField
+                type="file"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                inputProps={{ accept: 'image/*' }} // Restrict to image files
+                required
+                fullWidth
+                helperText="Upload an image for the product"
+            />
+            <Button
+                variant="contained"
+                type="submit"
+                sx={{
+                    backgroundColor: '#111E56',
+                    color: 'white',
+                    '&:hover': {
+                        backgroundColor: 'white',
+                        color: '#111E56',
+                        border: '1px solid #111E56',
+                    },
+                }}
+            >
+                Create Product
+            </Button>
+        </Box>
+
+        {/* List of Products */}
+        <Box
+            sx={{
+                width: '100%',
+                maxWidth: '800px',
+            }}
+        >
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                }}
+            >
+                <MyAdminProducts products={products} productMessage={productMessage} />
+                <MyProducts products={products} productMessage={productMessage} />
+            </Box>
+        </Box>
+    </Box>
+)}
+
+
+
+            </Box>
+        </Box>
+        </>
     );
     
     };

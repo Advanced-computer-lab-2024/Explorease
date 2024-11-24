@@ -10,6 +10,7 @@ import {
     IconButton,
     Divider,
 } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 import { Delete, Edit, Save, Cancel } from '@mui/icons-material';
 
 const PromoCodes = () => {
@@ -145,8 +146,6 @@ const PromoCodes = () => {
                 />
                 <Button
                     variant="contained"
-                    color="primary"
-                    onClick={handleCreatePromo}
                     sx={{
                         backgroundColor: '#111E56',
                         color: 'white',
@@ -156,6 +155,7 @@ const PromoCodes = () => {
                             border: '1px solid #111E56',
                         },
                     }}
+                    onClick={handleCreatePromo}
                 >
                     Create Promo Code
                 </Button>
@@ -173,13 +173,19 @@ const PromoCodes = () => {
                         key={promo._id}
                         sx={{
                             width: 300,
+                            marginLeft: 'auto',
+                            marginRight: 'auto',
                             boxShadow: 3,
                             borderRadius: 2,
                             position: 'relative',
+                            transition: 'transform 0.2s ease-in-out',
+                            '&:hover': {
+                                transform: 'scale(1.02)',
+                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+                            },
                         }}
                     >
                         <CardContent>
-                            {/* Check if this promo is being edited */}
                             {editPromoId === promo._id ? (
                                 <>
                                     <TextField
@@ -216,33 +222,34 @@ const PromoCodes = () => {
                                         sx={{ mb: 2 }}
                                         InputLabelProps={{ shrink: true }}
                                     />
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            gap: 1,
-                                            marginTop: 2,
-                                        }}
-                                    >
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
                                         <Button
                                             variant="contained"
-                                            color="primary"
-                                            onClick={() => handleSaveEdit(promo._id)}
                                             sx={{
                                                 backgroundColor: '#111E56',
                                                 color: 'white',
+                                                marginRight: 1,
                                                 '&:hover': {
                                                     backgroundColor: 'white',
                                                     color: '#111E56',
                                                     border: '1px solid #111E56',
                                                 },
                                             }}
+                                            onClick={() => handleSaveEdit(promo._id)}
                                         >
                                             <Save /> Save
                                         </Button>
                                         <Button
                                             variant="outlined"
-                                            color="error"
+                                            sx={{
+                                                backgroundColor: '#f44336',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: 'white',
+                                                    color: '#f44336',
+                                                    border: '1px solid #f44336',
+                                                },
+                                            }}
                                             onClick={handleCancelEdit}
                                         >
                                             <Cancel /> Cancel
@@ -261,26 +268,33 @@ const PromoCodes = () => {
                                         <strong>Active Until:</strong>{' '}
                                         {new Date(promo.activeUntil).toLocaleDateString()}
                                     </Typography>
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            justifyContent: 'flex-end',
-                                            gap: 1,
-                                            marginTop: 2,
-                                        }}
-                                    >
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                                    <Tooltip title="Edit Product" arrow>
                                         <IconButton
-                                            color="primary"
+                                            sx={{
+                                                color: '#111E56',
+                                                '&:hover': {
+                                                    color: '#000',
+                                                },
+                                            }}
                                             onClick={() => handleEditPromo(promo)}
                                         >
                                             <Edit />
                                         </IconButton>
+                                        </Tooltip >
+                                        <Tooltip title="Delete Product" arrow>
                                         <IconButton
-                                            color="error"
+                                            sx={{
+                                                color: '#f44336',
+                                                '&:hover': {
+                                                    color: '#d32f2f',
+                                                },
+                                            }}
                                             onClick={() => handleDeletePromo(promo._id)}
                                         >
                                             <Delete />
                                         </IconButton>
+                                        </Tooltip>
                                     </Box>
                                 </>
                             )}
