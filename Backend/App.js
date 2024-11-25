@@ -128,9 +128,11 @@ app.get('/transit-route', async (req, res) => {
     }
 });
 
-// Schedule the birthday promo code task to run every 5 minutes
-// Schedule the birthday promo code task to run every 5 minutes
+// Schedule the birthday promo code task to run every 24 hours
 schedule.scheduleJob('0 0 * * *', generateBirthdayPromoCodes);
+
+// Schedule the birthday promo code task every 5 minutes
+schedule.scheduleJob('*/5 * * * *', generateBirthdayPromoCodes);
 
 
 
