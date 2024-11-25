@@ -17,7 +17,7 @@ const UploadDocument = () => {
             const { message, requiredDocuments, userType , isAccepted} = response.data;
             if(isAccepted){
                 setMessage('Documents have been reviewed and you are accepted. Redirecting to login page.');
-                Navigate('/login');
+                Navigate(`/login`);
                 return;
             }
             setMessage(message);

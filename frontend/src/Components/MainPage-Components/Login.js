@@ -24,6 +24,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState('');
 
     const [openForgotPassword, setOpenForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
@@ -40,6 +41,7 @@ const Login = () => {
     const [passwordError, setPasswordError] = useState(false);
     const [resetPasswordError, setResetPasswordError] = useState('');
     const [showResetPassword, setShowResetPassword] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
 
     const navigate = useNavigate();
 
@@ -52,17 +54,51 @@ const Login = () => {
 
             localStorage.setItem('token', token);
             localStorage.setItem('role', user.role);
+            setEmail(user.email);
 
+            if (user.role === 'tourist' || user.role === 'touristGovernor') {
+                navigateToDashboard(user.role);
+                return;
+            }
+            if (!user.isAccepted) {
+                setError('Your account is not yet approved. Please upload the required documents.');
+                setTimeout(() => navigate('/uploadDocuments'), 3000);
+                return;
+            }
             if (!user.canLogin) {
-                setError('Your account is restricted. Please contact support.');
+                setShowTerms(true);
+                //setError('Your account is restricted. Please contact support.');
                 return;
             }
 
-            navigate(`/${user.role}/dashboard`);
+            navigateToDashboard(user.role);
         } catch (err) {
             setError('Invalid email/username or password');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+
+    const handleAcceptTerms = async () => {
+        const token = localStorage.getItem('token'); // Retrieve token from local storage
+        try {
+            const response = await axios.post(
+                '/accept-terms',
+                { email },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Send token in headers
+                    },
+                }
+            );
+            if (response.data.canLogin) {
+                navigateToDashboard(localStorage.getItem('role'));
+            } else {
+                setError('Failed to accept terms. Please try again.');
+            }
+        } catch (error) {
+            setError('Error accepting terms. Please try again.');
         }
     };
 
@@ -82,6 +118,31 @@ const Login = () => {
             );
         } finally {
             setIsSendingOtp(false);
+        }
+    };
+
+    const navigateToDashboard = (role) => {
+        switch (role) {
+            case 'tourist':
+                navigate('/tourist/');
+                break;
+            case 'tourGuide':
+                navigate('/tourguide/');
+                break;
+            case 'seller':
+                navigate('/seller/');
+                break;
+            case 'advertiser':
+                navigate('/advertiser/');
+                break;
+            case 'admin':
+                navigate('/admin/');
+                break;
+            case 'touristGovernor':
+                navigate('/governor/');
+                break;
+            default:
+                setError('Unknown user role');
         }
     };
 
@@ -129,7 +190,33 @@ const Login = () => {
                         <Typography color="error" align="center" sx={{ mb: 2 }}>
                             {error}
                         </Typography>
-                    )}
+                    )}                   
+                    {showTerms ? (
+                        <>
+                            <Typography variant="body1" sx={{ mb: 2 }}>
+                                Please read and accept the terms and conditions to proceed.
+                            </Typography>
+                            <Box>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    onClick={handleAcceptTerms}
+                                >
+                                    Accept Terms and Continue
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    fullWidth
+                                    sx={{ mt: 1 }}
+                                    onClick={() => navigate('/')}
+                                >
+                                    Decline and Go Back
+                                </Button>
+                            </Box>
+                        </>
+                    ) : (
                     <form onSubmit={handleLogin}>
                         <TextField
                             label="Email or Username"
@@ -180,6 +267,7 @@ const Login = () => {
                             {isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Login'}
                         </Button>
                     </form>
+                    )}
                     <Typography
                         variant="body2"
                         color="primary"
