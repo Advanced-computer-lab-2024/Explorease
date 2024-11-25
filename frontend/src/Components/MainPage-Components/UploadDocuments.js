@@ -82,7 +82,13 @@ const UploadDocument = () => {
                 variant="contained"
                 color="primary"
                 onClick={checkUserStatus}
-                sx={{ mt: 2, width: '100%', padding: '10px' }}
+                sx={{ backgroundColor: '#111E56', 
+                    color: 'white', 
+                    '&:hover': { 
+                        backgroundColor: 'white', 
+                        color: '#111E56',
+                        border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                    },mt: 2, width: '100%', padding: '10px' }}
             >
                 Check Status
             </Button>
@@ -122,7 +128,13 @@ const UploadDocument = () => {
                         type="submit"
                         variant="contained"
                         color="primary"
-                        sx={{ mt: 4, width: '100%', padding: '10px', fontWeight: 'bold' }}
+                        sx={{ backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },mt: 4, width: '100%', padding: '10px', fontWeight: 'bold' }}
                     >
                         Upload Documents
                     </Button>
