@@ -5,6 +5,9 @@ const path = require('path');
 const cors = require('cors');
 const axios = require('axios');
 
+const schedule = require('node-schedule');
+const Tourist = require('./Models/UserModels/Tourist');
+const { createBirthdayPromoCode } = require('./Controllers/ProductControllers/PromoCodeController');
 
 // User Routes
 // const roleAuth = require('../Middleware/AuthMiddleware');
@@ -52,7 +55,13 @@ app.post('/register', registerController.registerUser);
 
 // Unified Login Route
 const unifiedLoginController = require('./Controllers/loginController');
+
+
 app.post('/login', unifiedLoginController);
+
+
+const forgetPasswordController = require('./Controllers/ForgetPasswordController');
+app.post('/send-otp', forgetPasswordController.sendOTP);
 
 app.use('/tourguide', tourGuideRoutes);
 app.use('/tourists', touristRoutes);
@@ -114,6 +123,37 @@ app.get('/transit-route', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch transit route' });
     }
 });
+
+
+
+
+// Function to check for birthdays and create promo codes
+const generateBirthdayPromoCodes = async () => {
+    try {
+        const today = new Date();
+        const tourists = await Tourist.find({
+            dob: { $exists: true },
+            $expr: {
+                $and: [
+                    { $eq: [{ $dayOfMonth: '$dob' }, today.getDate()] },
+                    { $eq: [{ $month: '$dob' }, today.getMonth() + 1] }
+                ]
+            }
+        });
+
+        for (const tourist of tourists) {
+            await createBirthdayPromoCode(tourist._id);
+        }
+
+        console.log('Birthday promo codes generated successfully!');
+    } catch (error) {
+        console.error('Error generating birthday promo codes:', error.message);
+    }
+};
+
+// Schedule the function to run daily at midnight
+schedule.scheduleJob('0 0 * * *', generateBirthdayPromoCodes);
+
 
 
 

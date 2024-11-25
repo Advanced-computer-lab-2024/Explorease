@@ -151,29 +151,39 @@ const authorizeAdmin = (requiredPermissions) => {
     };
 };
 
-const loginAdmin = async(req, res) => {
-    const { email, password } = req.body;
+const loginAdmin = async (req, res) => {
+    const { emailOrUsername, password } = req.body; // Updated to accept either email or username
 
     try {
-        const admin = await Admin.findOne({ email });
+        // Find the admin by email or username
+        const admin = await Admin.findOne({
+            $or: [{ email: emailOrUsername }, { username: emailOrUsername }]
+        });
+
         if (!admin) {
             return res.status(404).json({ message: 'Admin not found' });
         }
 
+        // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, admin.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ id: admin._id, isMainAdmin: admin.isMainAdmin }, // Add isMainAdmin in the token payload
-            process.env.JWT_SECRET, { expiresIn: '1h' }
+        // Generate a JWT token with the admin's details
+        const token = jwt.sign(
+            { id: admin._id, isMainAdmin: admin.isMainAdmin }, // Include isMainAdmin in the payload
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
         );
 
+        // Respond with the generated token
         res.json({ token });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 const createMainAdmin = async(req, res) => {
     const bcrypt = require('bcrypt');

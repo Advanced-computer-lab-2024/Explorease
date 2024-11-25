@@ -15,12 +15,15 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useNavigate } from 'react-router-dom';
 
-const Cart = ({setActiveComponent}) => {
+const Cart = ({ setActiveComponent }) => {
     const [cartItems, setCartItems] = useState([]);
     const [walletBalance, setWalletBalance] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
     const [checkoutMessage, setCheckoutMessage] = useState('');
-
+    const [promoCode, setPromoCode] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [promoMessage, setPromoMessage] = useState('');
+    const [isPromoApplied, setIsPromoApplied] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,12 +31,11 @@ const Cart = ({setActiveComponent}) => {
         fetchWalletBalance();
     }, []);
 
-    // Fetch items in the tourist's cart
     const fetchCartItems = async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get('/tourists/cart', {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
             setCartItems(response.data.items || []);
             calculateTotalCost(response.data.items || []);
@@ -43,12 +45,11 @@ const Cart = ({setActiveComponent}) => {
         }
     };
 
-    // Fetch tourist's wallet balance
     const fetchWalletBalance = async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get('/tourists/myProfile', {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
             setWalletBalance(response.data.wallet || 0);
         } catch (error) {
@@ -56,10 +57,16 @@ const Cart = ({setActiveComponent}) => {
         }
     };
 
-    // Calculate total cost of items in the cart
     const calculateTotalCost = (items) => {
-        const total = items.reduce((sum, item) => sum + item.productId.Price * item.quantity, 0);
-        setTotalCost(total);
+        if(isPromoApplied) {
+            const total = items.reduce((sum, item) => sum + item.productId.Price * item.quantity, 0);
+            const discounted = total - (total * discount) / 100;
+            setTotalCost(discounted);
+        }else{
+            const total = items.reduce((sum, item) => sum + item.productId.Price * item.quantity, 0);
+            setTotalCost(total);
+        }
+        
     };
 
     const updateQuantity = async (productId, newQuantity) => {
@@ -69,7 +76,7 @@ const Cart = ({setActiveComponent}) => {
             await axios.put(
                 '/tourists/cart/update',
                 { productId, quantity: newQuantity },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { headers: { Authorization: `Bearer ${token}` } },
             );
             fetchCartItems(); // Refresh cart after updating
         } catch (error) {
@@ -82,7 +89,7 @@ const Cart = ({setActiveComponent}) => {
         try {
             const token = localStorage.getItem('token');
             await axios.delete(`/tourists/cart/${productId}`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
             setCheckoutMessage('Product removed from cart');
             fetchCartItems();
@@ -92,14 +99,40 @@ const Cart = ({setActiveComponent}) => {
         }
     };
 
-    // Handle checkout process
     const handleCheckout = async () => {
         setActiveComponent('checkout'); // Navigate to Checkout component
     };
 
+    const applyPromoCode = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`/tourists/promocode/${promoCode}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (response.data && response.data.promoCode && response.data.promoCode.isActive) {
+                const discountPercentage = response.data.promoCode.percentage;
+                const discounted = totalCost - (totalCost * discountPercentage) / 100;
+
+                setDiscount(discountPercentage);
+                setTotalCost(discounted); // Update total cost to discounted total
+                
+                setPromoMessage(`Promo code applied! You get a ${discounted}% discount.`);
+                setIsPromoApplied(true); // Disable further promo application
+            } else {
+                setPromoMessage('Invalid or expired promo code.');
+            }
+        } catch (error) {
+            setPromoMessage('Invalid promo code.');
+            console.error('Error applying promo code:', error);
+        }
+    };
+
     return (
         <Box sx={{ p: 3 }}>
-            <Typography variant="h4" sx={{ mb: 3 }}>My Cart</Typography>
+            <Typography variant="h4" sx={{ mb: 3 }}>
+                My Cart
+            </Typography>
 
             {checkoutMessage && <Alert severity="info" sx={{ mb: 2 }}>{checkoutMessage}</Alert>}
 
@@ -117,9 +150,15 @@ const Cart = ({setActiveComponent}) => {
                                     sx={{ width: '150px', height: '150px', objectFit: 'contain', borderRadius: '8px', marginRight: '16px' }}
                                 />
                                 <CardContent sx={{ flexGrow: 1 }}>
-                                    <Typography variant="h6" sx={{ mb: 1 }}>{item.productId.Name}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>Price: ${item.productId.Price}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>Total: ${item.productId.Price * item.quantity}</Typography>
+                                    <Typography variant="h6" sx={{ mb: 1 }}>
+                                        {item.productId.Name}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>
+                                        Price: ${item.productId.Price}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>
+                                        Total: ${item.productId.Price * item.quantity}
+                                    </Typography>
                                     <Box display="flex" alignItems="center" gap={2}>
                                         <IconButton
                                             color="primary"
@@ -153,23 +192,54 @@ const Cart = ({setActiveComponent}) => {
                         ))}
                     </Box>
 
+                    {/* Promo Code Section */}
+                    <Box mt={4}>
+                        <Box display="flex" alignItems="center" gap={2} sx={{ mb: 2 }}>
+                            <TextField
+                                label="Have a Promo Code?"
+                                value={promoCode}
+                                onChange={(e) => setPromoCode(e.target.value)}
+                                fullWidth
+                                size="small"
+                                disabled={isPromoApplied}
+                            />
+                            {!isPromoApplied && (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={applyPromoCode}
+                                    sx={{
+                                        backgroundColor: '#111E56',
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: 'white',
+                                            color: '#111E56',
+                                            border: '1px solid #111E56',
+                                        },
+                                    }}
+                                >
+                                    Apply
+                                </Button>
+                            )}
+                        </Box>
+                        {promoMessage && <Typography variant="body2" color="error">{promoMessage}</Typography>}
+                    </Box>
+
                     {/* Summary and Checkout */}
                     <Box mt={4}>
-                        {/* <Typography variant="h6">Total Cost: ${totalCost}</Typography>
+                        <Typography variant="h6">Total Cost: ${totalCost.toFixed(2)}</Typography>
                         <Typography variant="h6">Wallet Balance: ${walletBalance}</Typography>
                         <Typography variant="h6">
-                            Balance After Purchase: ${walletBalance - totalCost}
-                        </Typography> */}
-
-                    
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleCheckout}
-                                sx={{ mt: 2 }}
-                            >
-                                Proceed to Checkout
-                            </Button>
+                            Balance After Purchase: ${(walletBalance - totalCost).toFixed(2)}
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleCheckout}
+                            sx={{ mt: 2 }}
+                        >
+                            Proceed to Checkout
+                        </Button>
                     </Box>
                 </>
             )}

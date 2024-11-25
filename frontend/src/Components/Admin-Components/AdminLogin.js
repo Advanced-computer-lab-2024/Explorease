@@ -15,7 +15,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const AdminLogin = () => {
-    const [email, setEmail] = useState('');
+    const [emailOrUsername, setEmailOrUsername] = useState(''); // Changed state variable
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +25,7 @@ const AdminLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('/admins/login', { email, password });
+            const response = await axios.post('/admins/login', { emailOrUsername, password }); // Changed payload
             const { token } = response.data; // Assuming the JWT token is in the response
             localStorage.setItem('token', token); // Store JWT in localStorage
             setMessage('Login successful! Redirecting to dashboard...');
@@ -51,10 +51,10 @@ const AdminLogin = () => {
                     )}
                     <form onSubmit={handleSubmit}>
                         <TextField
-                            label="Email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            label="Email or Username" // Updated label
+                            type="text" // Accept both email and username
+                            value={emailOrUsername} // Updated state binding
+                            onChange={(e) => setEmailOrUsername(e.target.value)} // Updated handler
                             fullWidth
                             required
                             sx={{ mb: 2 }}
@@ -91,7 +91,7 @@ const AdminLogin = () => {
                                 '&:hover': {
                                     backgroundColor: 'white',
                                     color: '#111E56',
-                                    border: '1px solid #111E56', // Optional: adds a border to match the dark blue on hover
+                                    border: '1px solid #111E56',
                                 },
                                 mb: 2,
                             }}

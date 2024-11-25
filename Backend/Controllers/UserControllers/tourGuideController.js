@@ -103,25 +103,34 @@ const getAllTourGuides = async (req, res) => {
 
 // Tour guide login
 const loginTourGuide = async (req, res) => {
-    const { email, password } = req.body;
+    const { emailOrUsername, password } = req.body; // Updated field
 
     try {
-        const user = await userModel.findOne({ email });
+        // Find the user by email or username
+        const user = await userModel.findOne({
+            $or: [{ email: emailOrUsername }, { username: emailOrUsername }]
+        });
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
+        // Check if the password matches
         const isMatch = await comparePassword(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const token = createToken(user);  // Token creation
+        // Generate a token
+        const token = createToken(user);
+
+        // Respond with the token
         res.status(200).json({ token });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error });
     }
 };
+
 
 const updatePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;

@@ -10,21 +10,35 @@ const Admin = require('../Models/UserModels/Admin');
 const TouristGovernor = require('../Models/UserModels/TouristGoverner');
 
 const unifiedLoginController = async (req, res) => {
-    const { email, password } = req.body;
+    const { emailOrUsername, password } = req.body; // Updated field
 
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required.' });
+    if (!emailOrUsername || !password) {
+        return res.status(400).json({ message: 'Email/Username and password are required.' });
     }
 
     try {
-        // Function to find a user by email and compare password
+        // Function to find a user by email or username and compare password
         const findUserAndAuthenticate = async (Model, userType) => {
-            const user = await Model.findOne({ email });
+            const user = await Model.findOne({
+                $or: [{ email: emailOrUsername }, { username: emailOrUsername }]
+            });
+
             if (user) {
                 const isMatch = await bcrypt.compare(password, user.password);
                 if (isMatch) {
-                    const token = jwt.sign({ id: user.id, role: userType }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                    return { user, token, role: userType, isAccepted: user.isAccepted, canLogin : user.canLogin };                }
+                    const token = jwt.sign(
+                        { id: user.id, role: userType },
+                        process.env.JWT_SECRET,
+                        { expiresIn: '1h' }
+                    );
+                    return {
+                        user,
+                        token,
+                        role: userType,
+                        isAccepted: user.isAccepted,
+                        canLogin: user.canLogin,
+                    };
+                }
             }
             return null;
         };
@@ -39,7 +53,7 @@ const unifiedLoginController = async (req, res) => {
 
         // If no user was found or authenticated
         if (!userResponse) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({ message: 'Invalid email/username or password' });
         }
 
         // If user was authenticated successfully
@@ -47,8 +61,15 @@ const unifiedLoginController = async (req, res) => {
 
         res.status(200).json({
             message: 'Login successful',
-            user: { id: user._id, email: user.email, role, isAccepted : user.isAccepted, canLogin : user.canLogin },  // Send the role explicitly
-            token
+            user: {
+                id: user._id,
+                email: user.email,
+                username: user.username,
+                role,
+                isAccepted: user.isAccepted,
+                canLogin: user.canLogin,
+            }, // Send the role explicitly
+            token,
         });
     } catch (error) {
         res.status(500).json({ message: 'Error during login', error: error.message });

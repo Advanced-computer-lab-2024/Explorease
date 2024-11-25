@@ -89,11 +89,14 @@ exports.getAllTouristGovernors = async (req, res) => {
 
 
 exports.loginTouristGovernor = async (req, res) => {
-    const { email, password } = req.body;
+    const { emailOrUsername, password } = req.body; // Updated field
 
     try {
-        // Find the user by email
-        const user = await userModel.findOne({ email });
+        // Find the user by email or username
+        const user = await userModel.findOne({
+            $or: [{ email: emailOrUsername }, { username: emailOrUsername }]
+        });
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -113,6 +116,7 @@ exports.loginTouristGovernor = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error });
     }
 };
+
 
 exports.editPassword = async (req, res) => {
     try {

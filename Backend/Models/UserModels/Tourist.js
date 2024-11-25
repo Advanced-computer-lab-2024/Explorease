@@ -19,6 +19,7 @@ const touristSchema = new mongoose.Schema({
     previousIteniraries : [{type : Schema.Types.ObjectId, ref : 'Itenirary'}], 
     bokedHistoricalPlace : [{type : Schema.Types.ObjectId , ref : 'HistoricalPlace'}],
     previousHistoricalPlace : [{type : Schema.Types.ObjectId, ref : 'HistoricalPlace'}],
+    promoCodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PromoCode' }],
     wishlist: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Wishlist',

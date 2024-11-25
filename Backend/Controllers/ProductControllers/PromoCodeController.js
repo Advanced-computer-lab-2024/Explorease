@@ -1,5 +1,38 @@
+const { get } = require('lodash');
 const PromoCode = require('../../Models/ProductModels/PromoCode.js');
+const Tourist = require('../../Models/UserModels/Tourist.js');
 const { default: mongoose } = require('mongoose');
+
+const createBirthdayPromoCode = async (touristId) => {
+    try {
+        // Generate a unique promo code
+        const promoCode = `BDAY-${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+        
+        // Find the tourist to whom the promo code should be assigned
+        const tourist = await Tourist.findById(touristId);
+        if (!tourist) {
+            throw new Error('Tourist not found');
+        }
+
+        // Create a new promo code
+        const newPromoCode = await PromoCode.create({
+            name: promoCode,
+            isActive: true,
+            percentage: 20, // Example: 20% discount
+            activeUntil: new Date(new Date().setDate(new Date().getDate() + 30)), // 30 days validity
+        });
+
+        // Add the promo code to the tourist's promos array
+        tourist.promoCodes.push(newPromoCode._id);
+        await tourist.save();
+
+        console.log(`Promo code created for ${tourist.username}: ${promoCode}`);
+        return newPromoCode;
+    } catch (error) {
+        console.error('Error creating promo code:', error.message);
+        throw error;
+    }
+};
 
 
 // Create a new promo code
@@ -73,10 +106,24 @@ const getAllPromoCodes = async (req, res) => {
     }
 };
 
+const getPromoCodeByName = async (req,res) => {
+    const name = req.params.name;
+    try {
+        const promoCode = await PromoCode.findOne({ name });
+        res.status(200).json({ message: 'Promo codes fetched successfully', promoCode });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error fetching promo codes', error: error.message });
+    }
+}
+
 // Export all functions at the end
 module.exports = {
     createPromoCode,
     updatePromoCode,
     deletePromoCode,
     getAllPromoCodes, // Export the new method
+    createBirthdayPromoCode,
+    getPromoCodeByName,
+
 };

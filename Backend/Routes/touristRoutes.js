@@ -15,6 +15,7 @@ const PurchaseController = require('../Controllers/ProductControllers/PurchaseCo
 const TourGuideReviewController = require('../Controllers/TourGuideReview');
 const cartController = require('../Controllers/ProductControllers/cartController');
 const wishlistController = require('../Controllers/ProductControllers/wishlistController');
+const promoCodeController = require('../Controllers/ProductControllers/PromoCodeController');
 
 // Tourist-specific routes
 router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristById);  // Tourist can read their own profile
@@ -23,6 +24,9 @@ router.put('/myProfile', roleAuth(['tourist']), touristControllers.updateTourist
 // Tourist-specific routes for products
 router.get('/products', optionalAuth(['tourist']), productControllers.getAllProducts);  // View all products
 router.get('/products/filter-sort-search', optionalAuth(['tourist']), productControllers.getFilteredSortedProducts);  // Search products by name
+
+//promo code 
+router.get('/promocode/:name', optionalAuth(['tourist']), promoCodeController.getPromoCodeByName);
 
 
 //product review
@@ -98,6 +102,8 @@ router.post('/convertPointsToRedeemableAmount', roleAuth(['tourist']), loyaltyCo
 
 router.get('/myBadge', roleAuth(['tourist']), loyaltyController.getBadge);
 router.put('/deleteTouristRequest', roleAuth(['tourist']), touristControllers.deleteReq);
+
+
 
 // Route to add a review (accessible by tourists only)
 router.post('/tourguideRev/add', roleAuth(['tourist']), TourGuideReviewController.addReview);
