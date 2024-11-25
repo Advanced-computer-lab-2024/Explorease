@@ -19,6 +19,7 @@ const adminRoutes = require('./Routes/adminRoutes');
 const governorRoutes = require('./Routes/governorRoutes');
 const flightsRoute = require('./Routes/flights');
 const hotelsRoute = require('./Routes/hotel'); // Add this line
+const { generateBirthdayPromoCodes } = require('./utils/promoCodeService');
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
@@ -61,7 +62,10 @@ app.post('/login', unifiedLoginController);
 
 
 const forgetPasswordController = require('./Controllers/ForgetPasswordController');
+
 app.post('/send-otp', forgetPasswordController.sendOTP);
+app.post('/verify-otp', forgetPasswordController.verifyOTP);
+app.post('/reset-password', forgetPasswordController.resetPassword);
 
 app.use('/tourguide', tourGuideRoutes);
 app.use('/tourists', touristRoutes);
@@ -124,34 +128,7 @@ app.get('/transit-route', async (req, res) => {
     }
 });
 
-
-
-
-// Function to check for birthdays and create promo codes
-const generateBirthdayPromoCodes = async () => {
-    try {
-        const today = new Date();
-        const tourists = await Tourist.find({
-            dob: { $exists: true },
-            $expr: {
-                $and: [
-                    { $eq: [{ $dayOfMonth: '$dob' }, today.getDate()] },
-                    { $eq: [{ $month: '$dob' }, today.getMonth() + 1] }
-                ]
-            }
-        });
-
-        for (const tourist of tourists) {
-            await createBirthdayPromoCode(tourist._id);
-        }
-
-        console.log('Birthday promo codes generated successfully!');
-    } catch (error) {
-        console.error('Error generating birthday promo codes:', error.message);
-    }
-};
-
-// Schedule the function to run daily at midnight
+// Schedule the birthday promo code task to run every 5 minutes
 schedule.scheduleJob('0 0 * * *', generateBirthdayPromoCodes);
 
 

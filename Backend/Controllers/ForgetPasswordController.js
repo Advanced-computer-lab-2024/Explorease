@@ -1,5 +1,6 @@
 const mailgun = require('mailgun-js');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 // Import the different user models
 const Tourist = require('../Models/UserModels/Tourist');
@@ -57,35 +58,73 @@ exports.sendOTP = async (req, res) => {
         res.status(500).json({ message: 'Failed to send OTP. Please try again later.', error: error.message });
     }
 };
-// Verify OTP Endpoint
-// exports.verifyOTP = async (req, res) => {
-//     const { email, otp } = req.body;
 
-//     if (!email || !otp) {
-//         return res.status(400).json({ message: 'Email and OTP are required.' });
-//     }
+// Verify OTP
+exports.verifyOTP = async (req, res) => {
+    const { email, otp } = req.body;
 
-//     try {
-//         const storedOtpData = otpStorage[email];
+    if (!email || !otp) {
+        return res.status(400).json({ message: 'Email and OTP are required.' });
+    }
 
-//         if (!storedOtpData) {
-//             return res.status(400).json({ message: 'Invalid or expired OTP.' });
-//         }
+    try {
+        const storedOtpData = otpStorage[email];
 
-//         if (storedOtpData.otp !== otp) {
-//             return res.status(400).json({ message: 'Invalid OTP.' });
-//         }
+        if (!storedOtpData) {
+            return res.status(400).json({ message: 'Invalid or expired OTP.' });
+        }
 
-//         if (storedOtpData.expiresAt < Date.now()) {
-//             delete otpStorage[email]; // Clear expired OTP
-//             return res.status(400).json({ message: 'OTP has expired.' });
-//         }
+        if (storedOtpData.otp !== otp) {
+            return res.status(400).json({ message: 'Invalid OTP.' });
+        }
 
-//         // OTP is valid
-//         delete otpStorage[email]; // Clear OTP after successful verification
-//         res.status(200).json({ message: 'OTP verified successfully. Proceed to reset password.' });
-//     } catch (error) {
-//         console.error('Error verifying OTP:', error.message);
-//         res.status(500).json({ message: 'Error verifying OTP.', error: error.message });
-//     }
-// };
+        if (storedOtpData.expiresAt < Date.now()) {
+            delete otpStorage[email]; // Clear expired OTP
+            return res.status(400).json({ message: 'OTP has expired.' });
+        }
+
+        // OTP is valid
+        delete otpStorage[email]; // Clear OTP after successful verification
+        res.status(200).json({ message: 'OTP verified successfully. Proceed to reset password.' });
+    } catch (error) {
+        console.error('Error verifying OTP:', error.message);
+        res.status(500).json({ message: 'Error verifying OTP.', error: error.message });
+    }
+};
+
+// Reset Password
+exports.resetPassword = async (req, res) => {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    if (!email || !newPassword || !confirmPassword) {
+        return res.status(400).json({ message: 'Email, new password, and confirm password are required.' });
+    }
+
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: 'Passwords do not match.' });
+    }
+
+    try {
+        const userModels = [Tourist, TourGuide, Seller, Advertiser, Admin, TouristGovernor];
+        let user = null;
+
+        for (const model of userModels) {
+            user = await model.findOne({ email });
+            if (user) break;
+        }
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found with the provided email.' });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: 'Password reset successfully. You can now log in with your new password.' });
+    } catch (error) {
+        console.error('Error resetting password:', error.message);
+        res.status(500).json({ message: 'Failed to reset password. Please try again later.', error: error.message });
+    }
+};
