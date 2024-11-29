@@ -4,18 +4,20 @@ import { Button, Typography, Box, Container, TextField, Stack } from '@mui/mater
 import TouristNavbar from './GuestNavBarforGuest'; // Ensure this file exists
 import { Fade } from 'react-awesome-reveal';
 import { Link } from 'react-router-dom';
-import logo from '../../Misc/logo2.png'; 
-import logo2 from '../../Misc/image.png'
-import waveGif from '../../Misc/wave_main.gif'
+import logo from '../../Misc/logo3.png'; 
+import logo2 from '../../Misc/image.png';
+import waveGif from '../../Misc/wave_main.gif';
 import ActivitiesIcon from '@mui/icons-material/DirectionsWalk';
 import FlightsIcon from '@mui/icons-material/Flight';
 import HotelsIcon from '@mui/icons-material/Hotel';
 import ItinerariesIcon from '@mui/icons-material/Event';
 import HistoricalPlacesIcon from '@mui/icons-material/Place';
 
+// Import the background image
+import heroBackground from '../../Misc/heroBackground.jpg';
+
 const HomePage = () => {
     const navigate = useNavigate();
-
 
     const handleLogin = () => {
         navigate('/login');
@@ -30,71 +32,85 @@ const HomePage = () => {
             {/* Navbar */}
             <TouristNavbar />
 
-       
-           {/* Hero Section */}
-           <section
+            {/* Hero Section */}
+            <section
                 style={{
-                    backgroundColor: 'white',
-                    padding: '500px 0',
+                    backgroundImage: `url(${heroBackground})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    padding: '300px 0', // Reduced padding to decrease height
                     position: 'relative',
                     overflow: 'hidden',
+                    color: 'white', // Ensure text is visible on the background
                 }}
             >
                 <Container>
                     <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="center">
                         <Fade direction="left">
                             <Box>
-                                <Typography variant="h2" gutterBottom>
-                                    Welcome to{' '}
-                                    <Box
-                                        component="span"
-                                        sx={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            verticalAlign: 'middle',
-                                        }}
-                                    >
-                                        <img
-                                            src={logo}
-                                            alt="Explorease"
-                                            style={{ height: '1.5em', marginLeft: '0.5em' }}
-                                        />
-                                    </Box>
-                                </Typography>
+                            <Typography
+    variant="h2"
+    gutterBottom
+    sx={{
+        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Add shadow to the text
+    }}
+>
+    Welcome to{' '}
+    <Box
+        component="span"
+        sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            verticalAlign: 'middle',
+        }}
+    >
+        <img
+            src={logo}
+            alt="Explorease"
+            style={{ height: '1.5em', marginLeft: '0.5em' }}
+        />
+    </Box>
+</Typography>
+
                                 <Typography variant="body1" style={{ marginBottom: '20px' }}>
                                     Discover your next adventure, explore historical places, and plan your perfect trip
                                     with ease.
                                 </Typography>
                                 <Button
-                variant="contained"
-                onClick={handleLogin} // Correct navigation
-                sx={{
-                    backgroundColor: '#111E56',
-                    color: 'white',
-                    marginRight: '10px',
-                    '&:hover': {
-                        backgroundColor: 'white',
-                        color: '#111E56',
-                        border: '1px solid #111E56',
-                    },
-                }}
-            >
-                Login
-            </Button>
-            <Button
-                variant="outlined"
-                onClick={handleRegister} // Correct navigation
-                sx={{
-                    color: '#111E56',
-                    border: '1px solid #111E56',
-                    '&:hover': {
-                        backgroundColor: '#111E56',
-                        color: 'white',
-                    },
-                }}
-            >
-                Register
-            </Button>
+                                    variant="contained"
+                                    onClick={handleLogin} // Correct navigation
+                                    sx={{
+                                        backgroundColor: '#111E56',
+                                        color: 'white',
+                                        marginRight: '10px',
+                                        border: '2px solid transparent', // Default border to maintain dimensions
+                                        '&:hover': {
+                                            backgroundColor: 'transparent',
+                                            color: '#111E56',
+                                            border: '2px solid #111E56',
+                                        },
+                                    }}
+                                >
+                                    Login
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleRegister} // Correct navigation
+                                    sx={{
+                                        backgroundColor: '#111E56',
+                                        color: 'white',
+                                        marginRight: '10px',
+                                        border: '2px solid transparent', // Default border to maintain dimensions
+                                        '&:hover': {
+                                            backgroundColor: 'transparent',
+                                            color: '#111E56',
+                                            border: '2px solid #111E56',
+                                        },
+                                    }}
+                                >
+                                    Register
+                                </Button>
                             </Box>
                         </Fade>
                         <Fade direction="right">
@@ -123,6 +139,7 @@ const HomePage = () => {
                     </Stack>
                 </Container>
             </section>
+
             {/* Services Section */}
             <section style={{ backgroundColor: '#111E56', color: 'white', padding: '200px 0' }}>
                 <Container>
@@ -134,16 +151,15 @@ const HomePage = () => {
                             Explore a variety of services to make your journey unforgettable.
                         </Typography>
                         <Stack
-  direction={{ xs: 'column', sm: 'row' }}
-  justifyContent="center"
-  alignItems="center"
-  spacing={5}
-  flexWrap="wrap"
-  sx={{
-    rowGap: '30px', // Adds 5px space between rows
-  }}
->
-
+                            direction={{ xs: 'column', sm: 'row' }}
+                            justifyContent="center"
+                            alignItems="center"
+                            spacing={5}
+                            flexWrap="wrap"
+                            sx={{
+                                rowGap: '30px',
+                            }}
+                        >
                             {[
                                 { icon: <ActivitiesIcon fontSize="large" />, title: 'Activities', description: 'Explore fun activities.' },
                                 { icon: <FlightsIcon fontSize="large" />, title: 'Flights', description: 'Book convenient flights.' },
@@ -189,13 +205,15 @@ const HomePage = () => {
                                     type="submit"
                                     variant="contained"
                                     color="primary"
-                                    sx={{ backgroundColor: '#111E56', 
-                                        color: 'white', 
-                                        '&:hover': { 
-                                            backgroundColor: 'white', 
+                                    sx={{
+                                        backgroundColor: '#111E56',
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: 'white',
                                             color: '#111E56',
-                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                                        }, }}
+                                            border: '1px solid #111E56',
+                                        },
+                                    }}
                                 >
                                     Send Message
                                 </Button>
@@ -216,80 +234,33 @@ const HomePage = () => {
                         sx={{ textAlign: { xs: 'center', sm: 'left' } }}
                     >
                         <img
-                                            src={logo2}
-                                            alt="Explorease"
-                                            style={{ height: '3em', marginLeft: '5px' }}
-                                        />
-                        <Typography variant="body2">
-                             © 2024. All rights reserved.
-                        </Typography>
+                            src={logo}
+                            alt="Explorease"
+                            style={{ height: '3em', marginLeft: '5px' }}
+                        />
+                        <Typography variant="body2">© 2024. All rights reserved.</Typography>
                         <Stack direction="row" spacing={3}>
-  <Link
-    to="/admin/login"
-    style={{
-      color: 'white',
-      textDecoration: 'none',
-      position: 'relative',
-      fontSize: '16px',
-      transition: 'font-size 0.3s ease', // Smooth font-size transition
-    }}
-    onMouseEnter={(e) => {
-      e.target.style.fontSize = '18px'; // Increase font size on hover
-    }}
-    onMouseLeave={(e) => {
-      e.target.style.fontSize = '16px'; // Reset font size
-    }}
-  >
-    Admin Login
-    <span
-      style={{
-        content: '""',
-        display: 'block',
-        position: 'absolute',
-        bottom: '-2px',
-        left: '0',
-        width: '0%',
-        height: '2px',
-        background: 'white',
-        transition: 'width 0.3s ease', // Smooth underline animation
-      }}
-      className="hover-underline"
-    />
-  </Link>
-  <Link
-    to="/uploadDocuments"
-    style={{
-      color: 'white',
-      textDecoration: 'none',
-      position: 'relative',
-      fontSize: '16px',
-      transition: 'font-size 0.3s ease', // Smooth font-size transition
-    }}
-    onMouseEnter={(e) => {
-      e.target.style.fontSize = '18px'; // Increase font size on hover
-    }}
-    onMouseLeave={(e) => {
-      e.target.style.fontSize = '16px'; // Reset font size
-    }}
-  >
-    Upload Documents
-    <span
-      style={{
-        content: '""',
-        display: 'block',
-        position: 'absolute',
-        bottom: '-2px',
-        left: '0',
-        width: '0%',
-        height: '2px',
-        background: 'white',
-        transition: 'width 0.3s ease', // Smooth underline animation
-      }}
-      className="hover-underline"
-    />
-  </Link>
-</Stack>
-
+                            <Link
+                                to="/admin/login"
+                                style={{
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    fontSize: '16px',
+                                }}
+                            >
+                                Admin Login
+                            </Link>
+                            <Link
+                                to="/uploadDocuments"
+                                style={{
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    fontSize: '16px',
+                                }}
+                            >
+                                Upload Documents
+                            </Link>
+                        </Stack>
                     </Stack>
                 </Container>
             </footer>

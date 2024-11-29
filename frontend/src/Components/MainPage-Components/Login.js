@@ -17,6 +17,7 @@ import {
     CircularProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
+import GuestNavBarforGuest from './GuestNavBarforGuest'; // Replace with the actual path to your navbar file
 
 const Login = () => {
     const [emailOrUsername, setEmailOrUsername] = useState('');
@@ -180,8 +181,23 @@ const Login = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-            <Card sx={{ maxWidth: 400, p: 3, boxShadow: 3 }}>
+        <>
+            <GuestNavBarforGuest /> {/* Replace with the actual path to your navbar file */}
+        
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' , backgroundColor:'white' }}>
+        <Card
+    sx={{
+        maxWidth: 400,
+        p: 3,
+        boxShadow: 3, // Default shadow
+        transition: 'all 0.3s ease', // Smooth transition for hover effects
+        '&:hover': {
+            boxShadow: 6, // Increase shadow on hover
+            transform: 'scale(1.05)', // Slightly scale up the card
+            backgroundColor: 'white', // Change background color on hover
+        },
+    }}
+>
                 <CardContent>
                     <Typography variant="h4" align="center" gutterBottom>
                         Login
@@ -491,6 +507,7 @@ const Login = () => {
                 </DialogActions>
             </Dialog>
         </Box>
+        </>
     );
 };
 

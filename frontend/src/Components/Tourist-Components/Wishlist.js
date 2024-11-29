@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import {
     Box,
     Typography,
@@ -9,6 +8,7 @@ import {
     Button,
     Alert,
 } from '@mui/material';
+import axios from 'axios';
 
 const Wishlist = () => {
     const [wishlistItems, setWishlistItems] = useState([]);
@@ -21,12 +21,9 @@ const Wishlist = () => {
             const response = await axios.get('/tourists/wishlist', {
                 headers: { Authorization: `Bearer ${token}` },
             });
-
-            console.log('Wishlist response:', response.data); // Debugging response
-            setWishlistItems(response.data.wishlist.products || []); // Correctly access the `products` array
+            setWishlistItems(response.data.wishlist.products || []);
         } catch (error) {
             setWishlistMessage('Error fetching wishlist items');
-            console.error('Error fetching wishlist items:', error);
         }
     };
 
@@ -41,10 +38,9 @@ const Wishlist = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setWishlistMessage('Product removed from wishlist!');
-            fetchWishlist(); // Refresh wishlist after removing
+            fetchWishlist(); // Refresh wishlist
         } catch (error) {
             setWishlistMessage('Error removing product from wishlist');
-            console.error('Error removing product from wishlist:', error);
         }
     };
 
@@ -53,23 +49,30 @@ const Wishlist = () => {
             const token = localStorage.getItem('token');
             await axios.post(
                 '/tourists/cart/add',
-                { productId, quantity: 1 }, // Assuming default quantity is 1
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
+                { productId, quantity: 1 },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             setWishlistMessage('Product added to cart!');
         } catch (error) {
             setWishlistMessage('Error adding product to cart');
-            console.error('Error adding product to cart:', error);
         }
     };
 
     return (
         <Box sx={{ p: 3 }}>
-            <Typography variant="h4" sx={{ mb: 3 }}>
-                My Wishlist
-            </Typography>
+            <Typography
+    variant="h4"
+    sx={{
+        mb: 3,
+        fontWeight: 'bold',
+        color: '#111E56',
+        position: 'relative', // Ensures the pseudo-element is positioned relative to the Typography
+       
+    }}
+>
+    My Wishlist
+</Typography>
+
 
             {wishlistMessage && <Alert severity="info" sx={{ mb: 2 }}>{wishlistMessage}</Alert>}
 
@@ -78,38 +81,109 @@ const Wishlist = () => {
             ) : (
                 <Box display="flex" flexDirection="column" gap={2}>
                     {wishlistItems.map((item) => (
-                        <Card key={item.id} sx={{ display: 'flex', mb: 2 }}>
+                        <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center', // Centers horizontally
+                            alignItems: 'center', // Centers vertically
+                            
+                        }}
+                    >
+                        <Card
+                            key={item.id}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                height: '180px',
+                                width: '85%',
+                                marginTop: '5px',
+                                p: 2,
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                                borderRadius: '8px',
+                                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                '&:hover': {
+                                    transform: 'scale(1.03)',
+                                    boxShadow: '0 6px 12px rgba(0,0,0,0.3)',
+                                },
+                            }}
+                        >
                             <CardMedia
                                 component="img"
-                                height="140"
-                                image={item.imageUrl || 'https://via.placeholder.com/150'} // Use placeholder if no image
+                                image={item.imageUrl || 'https://via.placeholder.com/150'}
                                 alt={item.Name}
-                                sx={{ objectFit: 'contain' }}
+                                sx={{
+                                    width: '150px',
+                                    height: '150px',
+                                    objectFit: 'contain',
+                                    borderRadius: '8px',
+                                }}
                             />
-                            <CardContent>
+                            <CardContent
+                                sx={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'space-between',
+                                    gap: 2,
+                                    height: '100%',
+                                }}
+                            >
                                 <Typography variant="h6">{item.Name}</Typography>
                                 <Typography variant="body2">Price: ${item.Price}</Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                    }}
+                                >
                                     {item.Description}
                                 </Typography>
-                                <Box display="flex" gap={2} sx={{ mt: 2 }}>
+                                <Box display="flex" justifyContent="flex-start" gap={2} sx={{
+                            display: 'flex',
+                            justifyContent: 'center', // Centers horizontally
+                            alignItems: 'center', // Centers vertically
+                            
+                        }} >
                                     <Button
                                         variant="contained"
-                                        color="primary"
-                                        onClick={() => addToCart(item._id)} // Add to cart
+                                        sx={{
+                                            backgroundColor: '#111E56',
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: 'white',
+                                                color: '#111E56',
+                                                border: '1px solid #111E56',
+                                            },
+                                        }}
+                                        onClick={() => addToCart(item._id)}
                                     >
                                         Add to Cart
                                     </Button>
                                     <Button
                                         variant="contained"
-                                        color="secondary"
-                                        onClick={() => removeFromWishlist(item._id)} // Remove from wishlist
+                                        sx={{
+                                            backgroundColor: '#f44336',
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: 'white',
+                                                color: '#f44336',
+                                                border: '1px solid #f44336',
+                                            },
+                                        }}
+                                        onClick={() => removeFromWishlist(item._id)}
                                     >
                                         Remove
                                     </Button>
                                 </Box>
                             </CardContent>
                         </Card>
+                    </Box>
                     ))}
                 </Box>
             )}

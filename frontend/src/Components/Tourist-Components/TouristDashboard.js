@@ -17,11 +17,12 @@ import ReviewGuides from './ReviewGuides';
 import PurchasedProduct from './PurchasedProduct';
 import MyPoints from './MyPoints';
 import Products from './BuyProduct';
-import { Box, Typography, Drawer, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { Box, Typography, Drawer, List, ListItem, ListItemText, IconButton , Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Wishlist from './Wishlist';
 import Checkout from './Checkout';
 import SavedEvents from './SavedEvents';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const TouristDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -102,48 +103,134 @@ const TouristDashboard = () => {
             case 'profile':
                 return (
                     <>
-                        <Typography variant="h4" align="center" gutterBottom>
+                        <Typography
+                            variant="h4"
+                            align="center"
+                            gutterBottom
+                            sx={{
+                                fontWeight: 'bold',
+                                color: '#111E56',
+                                
+                                marginBottom: '20px',
+                            }}
+                        >
                             Tourist Profile
                         </Typography>
-                        {message && <Typography color="error" align="center">{message}</Typography>}
+                        {message && (
+                            <Typography
+                                color="error"
+                                align="center"
+                                sx={{
+                                    marginBottom: '10px',
+                                    fontWeight: 'bold',
+                                    
+                                }}
+                            >
+                                {message}
+                            </Typography>
+                        )}
                         {profile && profile.username ? (
                             <Box
                                 sx={{
-                                    border: '1px solid #ccc',
-                                    borderRadius: '8px',
-                                    padding: '20px',
-                                    maxWidth: '400px',
-                                    margin: '0 auto',
-                                    backgroundColor: '#f9f9f9',
-                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                    marginTop: '50px',
+                                    width: '400px', // Set square dimensions
+                                    height: '400px', // Ensure square shape
+                                    borderRadius: '16px',
+                                    backgroundColor: 'white',
+                                    margin: '30px auto',
+                                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
                                     textAlign: 'center',
+                                    fontFamily: 'Poppins, sans-serif',
+                                    padding: '20px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                    '&:hover': {
+                                        transform: 'scale(1.05)', // Hover effect: scaling
+                                        boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)', // Slightly more pronounced shadow
+                                    },
                                 }}
                             >
-                                <p>
-                                    <strong>Username:</strong> {profile.username}
-                                </p>
-                                <p>
-                                    <strong>Email:</strong> {profile.email}
-                                </p>
-                                <p>
-                                    <strong>Date of Birth:</strong>{' '}
-                                    {new Date(profile.dob).toLocaleDateString()}
-                                </p>
-                                <p>
-                                    <strong>Nationality:</strong> {profile.nationality}
-                                </p>
-                                <p>
-                                    <strong>Wallet Balance:</strong> {profile.wallet} USD
-                                </p>
-                                <button onClick={handleDeleteAccountRequest} variant="destructive">
+                                <Typography
+                                    variant="h5"
+                                    gutterBottom
+                                    sx={{
+                                        fontWeight: 'bold',
+                                        color: '#111E56',
+                                        marginBottom: '15px',
+                                    }}
+                                >
+                                    Profile Details
+                                </Typography>
+                                <Box
+                                    component="div"
+                                    sx={{
+                                        fontSize: '16px',
+                                        lineHeight: '1.8',
+                                        '& strong': {
+                                            color: '#111E56',
+                                            fontWeight: 'bold',
+                                        },
+                                    }}
+                                >
+                                    <p>
+                                        <strong>Username:</strong> {profile.username}
+                                    </p>
+                                    <p>
+                                        <strong>Email:</strong> {profile.email}
+                                    </p>
+                                    <p>
+                                        <strong>Date of Birth:</strong>{' '}
+                                        {new Date(profile.dob).toLocaleDateString()}
+                                    </p>
+                                    <p>
+                                        <strong>Nationality:</strong> {profile.nationality}
+                                    </p>
+                                    <p>
+                                        <strong>Wallet Balance:</strong> {profile.wallet} USD
+                                    </p>
+                                </Box>
+                                <Button
+                                    onClick={handleDeleteAccountRequest}
+                                    sx={{
+                                        marginTop: '20px',
+                                        backgroundColor: '#f44336',
+                                        color: 'white',
+                                        border: '2px solid #f44336',
+                                        padding: '10px 20px',
+                                        fontWeight: 'bold',
+                                        fontSize: '14px',
+                                        textTransform: 'uppercase',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                            backgroundColor: 'white',
+                                            color: '#f44336',
+                                            border: '2px solid #f44336',
+                                        },
+                                    }}
+                                >
                                     Delete Account
-                                </button>
+                                </Button>
                             </Box>
                         ) : (
-                            <Typography align="center">Loading profile...</Typography>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    height: '100px',
+                                    marginTop: '20px',
+                                }}
+                            >
+                                <CircularProgress size={50} sx={{ color: '#111E56' }} />
+                            </Box>
                         )}
                     </>
                 );
+                
             case 'viewProducts':
                 return <Products incrementCartCount={incrementCartCount} />
 
@@ -191,68 +278,69 @@ const TouristDashboard = () => {
    {/* Navbar */}
    <TouristNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} cartCount={cartCount} />
 
-{/* Sidebar */}
-<Box
-    sx={{
-        position: 'fixed',
-        top: '64px', // Navbar height
-        left: 0,
-        width: sidebarWidth,
-        height: 'calc(100% - 64px)', // Full height minus navbar
-        backgroundColor: '#f1f1f1',
-        transition: 'width 0.3s ease',
-        overflow: 'hidden',
-        zIndex: 1000,
-    }}
-    onMouseLeave={() => setIsSidebarOpen(false)} // Close sidebar on mouse leave
->
-<List sx={{ padding: 0 }}>
-    {[
-        { text: 'View Profile', component: 'profile' },
-        { text: 'Update Profile', component: 'updateProfile' },
-        { text: 'File Complaint', component: 'fileComplaint' },
-        { text: 'View Complaints', component: 'ViewComplaints' },
-        { text: 'View Bookings', component: 'ViewBookings' },
-        { text: 'Review Tour Guides', component: 'reviewGuides' },
-        { text: 'Purchased Products', component: 'PurchasedProduct' },
-        { text: 'My Points', component: 'MyPoints' },
-        { text: 'Saved Event', component: 'SavedEvents' }, 
-    ].map((item, index) => (
-        <ListItem
-            button
-            key={index}
-            onClick={() => {
-                setActiveComponent(item.component);
-                setIsSidebarOpen(false);
-            }}
-            sx={{
-                backgroundColor: index % 2 === 1 ? '#111E56' : '#f5f5f5', // Alternating colors
-                color: index % 2 === 1 ? 'white' : '#111E56',
-                padding: '15px 20px',
-                '&:hover': {
-                    backgroundColor: index % 2 === 1 ? '#0D1740' : '#e0e0e0', // Slightly darker on hover
-                    cursor: 'pointer',
-                },
-                transition: 'background-color 0.3s ease',
-            }}
-        >
-            <ListItemText
-                primary={item.text}
-                primaryTypographyProps={{
-                    fontSize: '16px',
-                    fontWeight: 500,
-                    fontFamily: 'Poppins, sans-serif',
-                }}
-            />
-        </ListItem>
-    ))}
-</List>
-</Box>
+{/* Tourist Sidebar */}
+{isSidebarOpen && (
+    <Box
+        sx={{
+            width: '250px',
+            backgroundColor: '#111E40', // Same color as Admin sidebar
+            color: 'white',
+            height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
+            position: 'fixed',
+            top: '64px', // Start below the Navbar
+            padding: '10px',
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'transform 0.3s ease-in-out',
+        }}
+    >
+        {/* Sidebar Navigation */}
+        
+        <nav>
+            {[
+                { label: 'View Profile', component: 'profile' },
+                { label: 'Update Profile', component: 'updateProfile' },
+                { label: 'File Complaint', component: 'fileComplaint' },
+                { label: 'View Complaints', component: 'ViewComplaints' },
+                { label: 'View Bookings', component: 'ViewBookings' },
+                { label: 'Review Tour Guides', component: 'reviewGuides' },
+                { label: 'Purchased Products', component: 'PurchasedProduct' },
+                { label: 'My Points', component: 'MyPoints' },
+                { label: 'Wishlist', component: 'wishlist' },
+                { label: 'Saved Events', component: 'SavedEvents' },
+            ].map((item) => (
+                <Button
+                    key={item.component}
+                    sx={{
+                        color: 'white',
+                        textAlign: 'left',
+                        justifyContent: 'flex-start',
+                        width: '100%',
+                        padding: '10px',
+                        marginTop: '10px',
+                        backgroundColor: activeComponent === item.component ? '#7BAFD0' : 'transparent',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Smooth animation for scaling and shadow
+                        '&:hover': {
+                            backgroundColor: '#7BAFD0', // Hover effect
+                            transform: 'scale(1.01)', // Slight scaling
+                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow
+                        },
+                    }}
+                    onClick={() => setActiveComponent(item.component)}
+                >
+                    {item.label}
+                </Button>
+            ))}
+        </nav>
+    </Box>
+)}
+
+
 
 {/* Main Content */}
 <Box
     sx={{
-        marginLeft: isSidebarOpen ? 50 : 0,
+        marginLeft: isSidebarOpen ? 30 : 0,
         transition: 'margin-left 0.3s ease',
         padding: '20px',
     }}

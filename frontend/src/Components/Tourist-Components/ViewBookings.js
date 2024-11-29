@@ -139,10 +139,50 @@ const ViewBookings = () => {
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}
 
             <Box sx={{ mt: 4 }}>
-                <Typography variant="h5" gutterBottom>Activity Bookings</Typography>
+            <Typography
+    variant="h5"
+    gutterBottom
+    sx={{
+        color: '#111E56', // Blue color
+        fontWeight: 'bold',
+        position: 'relative',
+        display: 'inline-block', // Ensures proper width for underline
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}
+>
+    Activity Bookings
+</Typography>
+
                 {activityBookings.length > 0 ? (
                     activityBookings.map(booking => (
-                        <Card key={booking._id} sx={{ mb: 2 }}>
+                        <Card
+    key={booking._id}
+    sx={{
+        mb: 2,
+        borderRadius: '12px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        '&:hover': {
+            transform: 'scale(1.02)', // Slightly enlarges the card
+            boxShadow: '0 8px 16px rgba(0,0,0,0.3)', // Adds a deeper shadow on hover
+            backgroundColor: 'white', // Optional: Lightens the background color slightly
+        },
+    }}
+>
                             <CardContent>
                                 <Typography variant="h6">{booking.Activity.name}</Typography>
                                 <Typography><strong>Date:</strong> {new Date(booking.Activity.date).toLocaleDateString()}</Typography>
@@ -156,7 +196,14 @@ const ViewBookings = () => {
                                             <Typography><strong>Your Rating:</strong> {booking.rating}</Typography>
                                         ) : (
                                             <Box sx={{ mt: 2 }}>
-                                                <TextField
+                                                <Rating
+                                                    name={`rating-${booking._id}`}
+                                                    value={ratings[booking._id] || 0}
+                                                    onChange={(e, newValue) => handleRatingChange(booking, newValue)}
+                                                    precision={1}
+                                                    max={5}
+                                                />
+                                                {/* <TextField
                                                     label="Rating (1-5)"
                                                     type="number"
                                                     value={ratings[booking._id] || ''}
@@ -164,12 +211,20 @@ const ViewBookings = () => {
                                                     inputProps={{ min: 1, max: 5 }}
                                                     fullWidth
                                                     sx={{ mb: 1 }}
-                                                />
+                                                /> */}
+                                                <p></p>
                                                 <Button
                                                     variant="contained"
                                                     color="primary"
                                                     onClick={() => submitRating(booking, 'activity')}
-                                                    sx={{ mb: 2 }}
+                                                    sx={{ marginTop: '5px',
+                                                         backgroundColor: '#111E56', 
+                                                        color: 'white', 
+                                                        '&:hover': { 
+                                                            backgroundColor: 'white', 
+                                                            color: '#111E56',
+                                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                                                        },mb: 2 }}
                                                 >
                                                     Submit Rating
                                                 </Button>
@@ -192,6 +247,14 @@ const ViewBookings = () => {
                                                 <Button
                                                     variant="contained"
                                                     color="primary"
+                                                    sx={{marginTop: '10px',
+                                                        backgroundColor: '#111E56', 
+                                                        color: 'white', 
+                                                        '&:hover': { 
+                                                            backgroundColor: 'white', 
+                                                            color: '#111E56',
+                                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                                                        },mb: 2 }}
                                                     onClick={() => submitComment(booking, 'activity')}
                                                 >
                                                     Submit Comment
@@ -220,10 +283,50 @@ const ViewBookings = () => {
             <Divider sx={{ my: 4 }} />
 
             <Box>
-                <Typography variant="h5" gutterBottom>Itinerary Bookings</Typography>
+            <Typography
+    variant="h5"
+    gutterBottom
+    sx={{
+        color: '#111E56',
+        fontWeight: 'bold',
+        position: 'relative',
+        display: 'inline-block',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}
+>
+    Itinerary Bookings
+</Typography>
+
                 {itineraryBookings.length > 0 ? (
                     itineraryBookings.map(booking => (
-                        <Card key={booking._id} sx={{ mb: 2 }}>
+                        <Card
+    key={booking._id}
+    sx={{
+        mb: 4,
+        marginTop: '5px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        '&:hover': {
+            transform: 'scale(1.02)',
+            boxShadow: '0 6px 12px rgba(0,0,0,0.3)',
+        },
+    }}
+>
                             <CardContent>
                                 <Typography variant="h6">{booking.Itinerary.name}</Typography>
                                 <Typography><strong>Date:</strong> {new Date(booking.Itinerary.AvailableDates[0]).toLocaleDateString()}</Typography>
@@ -244,11 +347,19 @@ const ViewBookings = () => {
                                                     precision={1}
                                                     max={5}
                                                 />
+                                                <p></p>
                                                 <Button
                                                     variant="contained"
                                                     color="primary"
                                                     onClick={() => submitRating(booking, 'itinerary')}
-                                                    sx={{ mb: 2 }}
+                                                    sx={{ backgroundColor: '#111E56',
+                                                        position: 'center', 
+                                                        color: 'white', 
+                                                        '&:hover': { 
+                                                            backgroundColor: 'white', 
+                                                            color: '#111E56',
+                                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                                                        },mb: 2 }}
                                                 >
                                                     Submit Rating       
                                                 </Button>
@@ -272,6 +383,14 @@ const ViewBookings = () => {
                                                     variant="contained"
                                                     color="primary"
                                                     onClick={() => submitComment(booking, 'itinerary')}
+                                                    sx={{ marginTop: '10px',
+                                                        backgroundColor: '#111E56', 
+                                                        color: 'white', 
+                                                        '&:hover': { 
+                                                            backgroundColor: 'white', 
+                                                            color: '#111E56',
+                                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                                                        },mb: 2 }}
                                                 >
                                                     Submit Comment
                                                 </Button>
