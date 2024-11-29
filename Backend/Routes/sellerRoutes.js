@@ -3,6 +3,7 @@ const router = express.Router();
 const sellerController = require('../Controllers/UserControllers/sellerController');
 const productController = require('../Controllers/ProductControllers/ProductController');  // Ensure correct path
 const { roleAuth } = require('../Middleware/authMiddleware');
+const notificationController = require('../Controllers/UserControllers/NotificationController');
 
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
@@ -62,6 +63,12 @@ router.post(
     sellerController.upload.single('photo'), // Single file upload middleware with field 'photo'
     sellerController.uploadSellerPhoto // Controller method for uploading
 );
+
+//notifications routes
+router.post('/notifications', notificationController.createNotification);
+router.get('/notifications', roleAuth(['seller']), notificationController.getNotifications);
+router.put('/notifications/:id', roleAuth(['seller']), notificationController.markNotificationAsRead);
+router.delete('/notifications/:id', roleAuth(['seller']), notificationController.deleteNotification);
 
 // Export only the router
 module.exports = router;

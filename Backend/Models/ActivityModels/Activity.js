@@ -17,6 +17,7 @@ const ActivitySchema = new Schema({
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PreferenceTag' }]    ,
     ratings : {type : Number, required : false, default : 0, min : 0, max : 10},
     duration : {type : Number, required : true},
+    isFlagged: { type: Boolean, default: false },
 }, { timestamps: true });
 
 const Activity = mongoose.model('Activity', ActivitySchema);

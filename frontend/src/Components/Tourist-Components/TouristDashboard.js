@@ -21,6 +21,7 @@ import { Box, Typography, Drawer, List, ListItem, ListItemText, IconButton } fro
 import MenuIcon from '@mui/icons-material/Menu';
 import Wishlist from './Wishlist';
 import Checkout from './Checkout';
+import SavedEvents from './SavedEvents';
 
 const TouristDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -178,6 +179,8 @@ const TouristDashboard = () => {
                 return <MyPoints />;
             case 'wishlist':
                 return <Wishlist />
+            case 'SavedEvents':
+                return <SavedEvents />
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
@@ -213,6 +216,7 @@ const TouristDashboard = () => {
         { text: 'Review Tour Guides', component: 'reviewGuides' },
         { text: 'Purchased Products', component: 'PurchasedProduct' },
         { text: 'My Points', component: 'MyPoints' },
+        { text: 'Saved Event', component: 'SavedEvents' }, 
     ].map((item, index) => (
         <ListItem
             button

@@ -3,6 +3,108 @@ const Cart = require('../../Models/ProductModels/Cart');
 const Product = require('../../Models/ProductModels/Product');
 const Tourist = require('../../Models/UserModels/Tourist');
 const Purchase = require('../../Models/ProductModels/Purchase');
+const PromoCode = require('../../Models/ProductModels/PromoCode');
+const Notification = require('../../Models/UserModels/Notification');
+const Seller = require('../../Models/UserModels/Seller');
+const Admin = require('../../Models/UserModels/Admin');
+const { sendEmail } = require('../../utils/emailService');
+
+// Validate and Apply Promo Code
+const applyPromoCode = async (req, res) => {
+    const { promoCode } = req.body;
+    const touristId = req.user.id;
+
+    try {
+        // Fetch the cart
+        const cart = await Cart.findOne({ touristId }).populate('items.productId');
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({ message: 'Cart is empty' });
+        }
+
+        // Fetch the promo code
+        const promo = await PromoCode.findOne({ name: promoCode });
+        if (!promo) {
+            return res.status(400).json({ message: 'Invalid promo code.' });
+        }
+
+        // Check if the promo code is active and not expired
+        if (!promo.isActive || new Date() > promo.activeUntil) {
+            return res.status(400).json({ message: 'Promo code is expired or inactive.' });
+        }
+
+        // Calculate the discount
+        const cartTotal = cart.items.reduce((sum, item) => sum + item.productId.Price * item.quantity, 0);
+        const discount = (promo.percentage / 100) * cartTotal;
+
+        // Respond with the discount
+        res.status(200).json({ discount, message: 'Promo code applied successfully!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error applying promo code', error: error.message });
+    }
+};
+
+
+const checkAndNotifyOutOfStock = async (product) => {
+    try {
+        // Check if the product is out of stock
+        if (product.AvailableQuantity === 0) {
+            let message;
+            let userId;
+            let role;
+            let email;
+            let userName;
+
+            // Check if the product is created by a Seller
+            if (product.Seller) {
+                const seller = await Seller.findById(product.Seller);
+                if (seller) {
+                    message = `Your product "${product.Name}" is out of stock.`;
+                    userId = seller._id;
+                    role = 'Seller';
+                    email = seller.email;
+                    userName = seller.username;
+                }
+            } else if (product.Admin) {
+                // Check if the product is created by an Admin
+                const admin = await Admin.findById(product.Admin);
+                if (admin) {
+                    message = `The product "${product.Name}" you created is out of stock.`;
+                    userId = admin._id;
+                    role = 'Admin';
+                    email = admin.email;
+                    userName = admin.username;
+                }
+            }
+
+            // Create a notification if userId and message are set
+            if (userId && message) {
+                const notification = new Notification({
+                    user: userId,
+                    role: role,
+                    type: 'product_out_of_stock',
+                    message: message,
+                    data: { productId: product._id },
+                });
+                await notification.save();
+            }
+
+            // Send email notification if email is available
+            if (email) {
+                const subject = `⚠️ Product Out of Stock: ${product.Name}`;
+                const emailMessage = `
+                    <h1>Hello ${userName},</h1>
+                    <p>We noticed that your product <strong>${product.Name}</strong> is now out of stock.</p>
+                    <p>Please restock your product to continue receiving orders.</p>
+                    <p>Cheers,<br>Your Inventory Management Team</p>
+                `;
+                await sendEmail(email, subject, emailMessage);
+            }
+        }
+    } catch (error) {
+        console.error('Error checking and notifying out-of-stock product:', error.message);
+    }
+};
+
 
 const addToCart = async (req, res) => {
     const { productId, quantity } = req.body;
@@ -96,20 +198,31 @@ const clearCart = async (req, res) => {
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Replace with your Stripe secret key
 
 const checkoutCart = async (req, res) => {
-    const buyerId = req.user.id; // Tourist's ID from authentication
-    const { paymentMethod, address } = req.body; // Payment method and address from the request body
+    const buyerId = req.user.id;
+    const { paymentMethod, address, promoCode } = req.body;
 
     try {
-        // Retrieve tourist's cart
         const cart = await Cart.findOne({ touristId: buyerId }).populate('items.productId');
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ message: 'Cart is empty' });
         }
 
-        // Calculate total cost
-        const totalCost = cart.items.reduce((sum, item) => {
-            return sum + item.productId.Price * item.quantity;
-        }, 0);
+        const cartTotal = cart.items.reduce((sum, item) => sum + item.productId.Price * item.quantity, 0);
+
+        let discount = 0;
+        if (promoCode) {
+            const promo = await PromoCode.findOne({ name: promoCode });
+            if (promo && promo.isActive && new Date() <= promo.activeUntil) {
+                discount = (promo.percentage / 100) * cartTotal;
+                promo.touristsUsed.push(buyerId);
+                await promo.save();
+            }
+        }
+
+        const finalCost = cartTotal - discount;
+        if (finalCost < 0) {
+            return res.status(400).json({ message: 'Discount exceeds total cost.' });
+        }
 
         // Retrieve tourist
         const tourist = await Tourist.findById(buyerId);
@@ -120,15 +233,15 @@ const checkoutCart = async (req, res) => {
         // Handle payment based on the chosen method
         if (paymentMethod === 'wallet') {
             // Wallet Payment
-            if (tourist.wallet < totalCost) {
+            if (tourist.wallet < finalCost) {
                 return res.status(400).json({ message: 'Insufficient funds in wallet' });
             }
 
-            // Deduct total cost from wallet
-            tourist.wallet -= totalCost;
+            // Deduct final cost from wallet
+            tourist.wallet -= finalCost;
             await tourist.save();
+        }
 
-        } 
         // Check stock availability and create purchase records
         const purchases = await Promise.all(
             cart.items.map(async (item) => {
@@ -143,6 +256,8 @@ const checkoutCart = async (req, res) => {
                 product.AvailableQuantity -= item.quantity;
                 product.Sales += item.quantity;
                 await product.save();
+
+                await checkAndNotifyOutOfStock(product);
 
                 // Create purchase record
                 const purchase = new Purchase({
@@ -170,6 +285,8 @@ const checkoutCart = async (req, res) => {
         res.status(200).json({
             message: 'Checkout successful',
             purchases,
+            discount,
+            finalCost,
             newWalletBalance: tourist.wallet,
         });
     } catch (error) {
@@ -177,49 +294,82 @@ const checkoutCart = async (req, res) => {
     }
 };
 
+const createStripeSession = async (req, res) => {
+    const buyerId = req.user.id; // Tourist's ID from authentication
+    const { address, promoCode } = req.body;
 
-    const createStripeSession = async (req, res) => {
-        const buyerId = req.user.id; // Tourist's ID from authentication
-        const { address } = req.body; // Ensure the address is received
-    
-        try {
-            // Retrieve tourist's cart
-            const cart = await Cart.findOne({ touristId: buyerId }).populate('items.productId');
-            if (!cart || cart.items.length === 0) {
-                return res.status(400).json({ message: 'Cart is empty' });
+    try {
+        // Retrieve tourist's cart
+        const cart = await Cart.findOne({ touristId: buyerId }).populate('items.productId');
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({ message: 'Cart is empty' });
+        }
+
+        // Calculate total cart cost
+        const cartTotal = cart.items.reduce(
+            (sum, item) => sum + item.productId.Price * item.quantity,
+            0
+        );
+
+        let discount = 0;
+        if (promoCode) {
+            const promo = await PromoCode.findOne({ name: promoCode });
+            if (promo && promo.isActive && new Date() <= promo.activeUntil) {
+                discount = (promo.percentage / 100) * cartTotal;
+                promo.touristsUsed.push(buyerId);
+                await promo.save();
             }
-    
-            // Calculate line items for Stripe
-            const lineItems = cart.items.map(item => ({
+        }
+
+        const finalCost = cartTotal - discount;
+        if (finalCost < 0) {
+            return res.status(400).json({ message: 'Discount exceeds total cost.' });
+        }
+
+        // // Log values for debugging
+        // console.log("Cart Total:", cartTotal);
+        // console.log("Discount:", discount);
+        // console.log("Final Cost:", finalCost);
+
+        // Create a single line item for the discounted total
+        const lineItems = [
+            {
                 price_data: {
                     currency: 'usd',
                     product_data: {
-                        name: item.productId.Name,
+                        name: 'Cart Total',
+                        description: promoCode ? `Discount applied: ${promoCode}` : 'No promo code applied',
                     },
-                    unit_amount: Math.round(item.productId.Price * 100), // Stripe expects amounts in cents
+                    unit_amount: Math.round(finalCost * 100), // Convert to cents
                 },
-                quantity: item.quantity,
-            }));
-    
-            // Create Stripe session
-            const session = await stripe.checkout.sessions.create({
-                payment_method_types: ['card'],
-                line_items: lineItems,
-                mode: 'payment',
-                client_reference_id: buyerId, // To identify the user
-                metadata: { address }, // Store the address as metadata
-                success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `${process.env.FRONTEND_URL}/cart`,
-            });
-    
-            // Return the session URL to the frontend
-            res.status(200).json({ url: session.url });
-        } catch (error) {
-            console.error('Error creating Stripe session:', error);
-            res.status(500).json({ message: 'Error creating Stripe session', error: error.message });
-        }
-    };
-    
+                quantity: 1,
+            },
+        ];
+
+        // Create Stripe session
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: lineItems,
+            mode: 'payment',
+            client_reference_id: buyerId,
+            metadata: {
+                address,
+                promoCode: promoCode || 'N/A',
+                cartTotal,
+                discount,
+                finalCost,
+            },
+            success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/cart`,
+        });
+
+        // Return the session URL
+        res.status(200).json({ url: session.url });
+    } catch (error) {
+        console.error('Error creating Stripe session:', error.message);
+        res.status(500).json({ message: 'Error creating Stripe session', error: error.message });
+    }
+};
 
 
 const stripeWebhook = async (req, res) => {
@@ -230,6 +380,7 @@ const stripeWebhook = async (req, res) => {
 
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
+
 
             // Retrieve the buyer ID
             const buyerId = req.user.id;
@@ -318,6 +469,7 @@ const updateCartQuantity = async (req, res) => {
         // Update the quantity of the item
         if (quantity > 0) {
             item.quantity = quantity;
+            await checkAndNotifyOutOfStock(product);
         } else {
             // If quantity is 0, remove the item from the cart
             cart.items = cart.items.filter((item) => item.productId.toString() !== productId);
@@ -416,5 +568,6 @@ module.exports = {
     updateCartQuantity,
     createStripeSession,
     stripeWebhook,
-    stripeSuccess
+    stripeSuccess,
+    applyPromoCode,
 };

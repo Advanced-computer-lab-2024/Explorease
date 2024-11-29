@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Box, Container, TextField, Stack } from '@mui/material';
-import TouristNavbar from './GuestNavbar'; // Ensure this file exists
+import TouristNavbar from './GuestNavBarforGuest'; // Ensure this file exists
 import { Fade } from 'react-awesome-reveal';
 import { Link } from 'react-router-dom';
 import logo from '../../Misc/logo2.png'; 

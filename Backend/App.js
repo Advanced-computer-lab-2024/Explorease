@@ -20,6 +20,8 @@ const governorRoutes = require('./Routes/governorRoutes');
 const flightsRoute = require('./Routes/flights');
 const hotelsRoute = require('./Routes/hotel'); // Add this line
 const { generateBirthdayPromoCodes } = require('./utils/promoCodeService');
+//const notificationController = require('./Controllers/UserControllers/NotificationController');
+const { sendBookingReminders } = require('./Controllers/ActivityControllers/BookingController');
 
 mongoose.set('strictQuery', false);
 require('dotenv').config();
@@ -81,6 +83,12 @@ app.post('/accept-terms', acceptTermsAndConditions);
 // Routes to upload documents for specific user types
 const { uploadPDF, uploadSellerDocuments, uploadAdvertiserDocuments, uploadTourGuideDocuments } = require('./Controllers/uploadController');
 
+// //notifications routes
+// app.post('/notifications', notificationController.createNotification);
+// app.get('/notifications', notificationController.getNotifications);
+// app.put('/notifications/:id', notificationController.markNotificationAsRead);
+// app.delete('/notifications/:id', notificationController.deleteNotification);
+
 app.post('/upload-documents/seller', uploadPDF.fields([
     { name: 'ID', maxCount: 1 },
     { name: 'TaxationRegistry', maxCount: 1 }
@@ -131,8 +139,14 @@ app.get('/transit-route', async (req, res) => {
 // Schedule the birthday promo code task to run every 24 hours
 schedule.scheduleJob('0 0 * * *', generateBirthdayPromoCodes);
 
+// Schedule the reminder function to run every day at 9:00 AM using node-schedule
+schedule.scheduleJob('0 9 * * *', async () => {
+    console.log('Running daily booking reminder task...');
+    await sendBookingReminders();
+});
+
 // Schedule the birthday promo code task every 5 minutes
-schedule.scheduleJob('*/5 * * * *', generateBirthdayPromoCodes);
+//schedule.scheduleJob('*/5 * * * *', generateBirthdayPromoCodes);
 
 
 

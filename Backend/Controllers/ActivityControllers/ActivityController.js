@@ -3,6 +3,99 @@ const activityCategoryModel = require('../../Models/ActivityModels/ActivityCateg
 const preferenceTagModel = require('../../Models/ActivityModels/PreferenceTags.js');
 const Tourist = require('../../Models/UserModels/Tourist.js');
 const Booking = require('../../Models/ActivityModels/Booking.js');
+
+
+const Notification = require('../../Models/UserModels/Notification'); // Import Notification model
+
+const Advertiser = require('../../Models/UserModels/Advertiser'); // Import Advertiser model
+const { sendEmail } = require('../../utils/emailService'); // Import email service
+
+const flagActivity = async (req, res) => {
+    const { id } = req.params; // Get activity ID from request parameters
+
+    try {
+        // Find the activity by ID
+        const activity = await activityModel.findById(id);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
+        // Check if the activity is already flagged
+        if (activity.isFlagged === true) {
+            return res.status(403).json({ message: 'Activity has already been flagged' });
+        }
+
+        // Fetch advertiser details using `createdBy` field
+        const advertiser = await Advertiser.findById(activity.createdBy);
+        if (!advertiser) {
+            return res.status(404).json({ message: 'Advertiser not found' });
+        }
+
+        // Flag the activity
+        activity.isFlagged = true;
+        await activity.save();
+
+        // Create a notification for the advertiser
+        const notification = new Notification({
+            user: advertiser._id,
+            role: 'Advertiser',
+            type: 'event_flagged',
+            message: `Your activity "${activity.name}" has been flagged as inappropriate by the admin.`,
+            data: { activityId: activity._id },
+        });
+        await notification.save();
+
+        // Send an email to the advertiser
+        const subject = `⚠️ Activity Flagged Notification`;
+        const message = `
+            <h1>Dear ${advertiser.username},</h1>
+            <p>We regret to inform you that your activity "<strong>${activity.name}</strong>" has been flagged as inappropriate by the admin.</p>
+            <p>If you believe this is a mistake or have any questions, please contact support.</p>
+            <p>Thank you for your understanding.</p>
+            <p>Best regards,<br>Your Admin Team</p>
+        `;
+
+        await sendEmail(advertiser.email, subject, message);
+
+        res.status(200).json({
+            message: 'Activity flagged successfully, the Advertiser notified via email, and a notification created.',
+            isFlagged: true,
+        });
+    } catch (error) {
+        console.error('Error flagging activity:', error);
+        res.status(500).json({ message: 'Error flagging activity', error: error.message });
+    }
+};
+
+// Unflag Activity
+const unflagActivity = async (req, res) => {
+    const { id } = req.params; // Get activity ID from request parameters
+
+    try {
+        // Find the activity
+        const activity = await activityModel.findById(id);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
+        // Check if the activity is already unflagged
+        if (activity.isFlagged === false) {
+            return res.status(403).json({ message: 'Activity is not flagged' });
+        }
+
+        // Unflag the activity
+        activity.isFlagged = false;
+        await activity.save();
+
+        res.status(200).json({ message: 'Activity unflagged successfully', isFlagged: false });
+    } catch (error) {
+        console.error('Error unflagging activity:', error);
+        res.status(500).json({ message: 'Error unflagging activity', error: error.message });
+    }
+};
+
+
+
 // Create Activity
 const createActivity = async (req, res) => {
     const { name, date, time, location, price, category, tags, specialDiscounts, bookingOpen, duration } = req.body;
@@ -412,6 +505,8 @@ module.exports = {
     deleteActivity,
     filterSortSearchActivities,
     filterSortSearchActivitiesByAdvertiser,
-    deleteActivitiesByAdvertiserId
+    deleteActivitiesByAdvertiserId,
+    flagActivity,
+    unflagActivity
     
 };

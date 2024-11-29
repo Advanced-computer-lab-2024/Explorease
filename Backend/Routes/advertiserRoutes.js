@@ -4,6 +4,7 @@ const router = express.Router();
 const advertiserController = require('../Controllers/UserControllers/advertiserController');
 const activityController = require('../Controllers/ActivityControllers/ActivityController');
 const { roleAuth } = require('../Middleware/authMiddleware'); // Assuming roleAuth is already defined
+const notificationController = require('../Controllers/UserControllers/NotificationController');
 
 // Advertiser-specific routes
 router.get('/myProfile', roleAuth(['advertiser']), advertiserController.getAdvertiserById);  // Get own profile
@@ -28,6 +29,12 @@ router.post(
     advertiserController.upload.single('photo'),  // Use `upload` directly here
     advertiserController.uploadAdvertiserPhoto
 );
+
+// Notifications routes
+router.post('/notifications', notificationController.createNotification);
+router.get('/notifications', roleAuth(['advertiser']), notificationController.getNotifications);
+router.put('/notifications/:id', roleAuth(['advertiser']), notificationController.markNotificationAsRead);
+router.delete('/notifications/:id', roleAuth(['advertiser']), notificationController.deleteNotification);
 
 // Export the router
 module.exports = router;

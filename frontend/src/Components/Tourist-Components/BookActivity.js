@@ -22,18 +22,69 @@ const BookActivitiesPage = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [exchangeRates, setExchangeRates] = useState({});
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
+    const [bookmarkErrorMessage, setBookmarkErrorMessage] = useState('');
+    const [bookmarkSuccessMessage, setBookmarkSuccessMessage] = useState('');
+    const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
+
 
     const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
-
+    const fetchBookmarkedActivities = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/tourists/saved-activity/', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+    
+            // Check the actual structure of response.data
+            const activities = response.data.activities || []; // Update this based on your API's response structure
+            const bookmarkedIds = activities.map((activity) => activity._id); // Extract IDs if activities is an array
+            setBookmarkedActivities(bookmarkedIds);
+        } catch (error) {
+            console.error('Error fetching bookmarked activities:', error);
+        }
+    };
+    
+    
+    
     useEffect(() => {
         fetchActivities();
         fetchWalletBalance();
         fetchExchangeRates();
+        fetchBookmarkedActivities(); // Fetch bookmarked activities on mount
     }, []);
 
     const convertToUSD = (price) => {
         return (price / (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
+
+    const handleBookmarkActivity = async (activity) => {
+        const isBookmarked = bookmarkedActivities.includes(activity._id);
+        try {
+            const token = localStorage.getItem('token');
+            if (isBookmarked) {
+                // Unbookmark
+                await axios.delete(`/tourists/saved-activity/${activity._id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setBookmarkedActivities(bookmarkedActivities.filter(id => id !== activity._id));
+                setBookmarkSuccessMessage('Activity removed from bookmarks.');
+            } else {
+                // Bookmark
+                await axios.post(`/tourists/saved-activity/${activity._id}`, {}, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setBookmarkedActivities([...bookmarkedActivities, activity._id]);
+                setBookmarkSuccessMessage('Activity bookmarked successfully!');
+            }
+    
+            setTimeout(() => setBookmarkSuccessMessage(''), 3000);
+        } catch (error) {
+            console.error('Error toggling bookmark:', error);
+            setBookmarkErrorMessage(error.response?.data?.msg || 'Error toggling bookmark');
+            setTimeout(() => setBookmarkErrorMessage(''), 3000);
+        }
+    };
+    
 
     const fetchActivities = async () => {
         try {
@@ -338,6 +389,26 @@ const BookActivitiesPage = () => {
                     >
                         Book Now
                     </Button>
+                    <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => handleBookmarkActivity(activity)}
+    sx={{ 
+        backgroundColor: bookmarkedActivities.includes(activity._id) ? '#FF5733' : '#FFB800',
+        color: 'white',
+        '&:hover': {
+            backgroundColor: bookmarkedActivities.includes(activity._id) ? '#FF7961' : '#FFD54F',
+            color: 'black',
+        },
+        mx: 1,
+        px: 4,
+        mt: 1
+    }}
+>
+    {bookmarkedActivities.includes(activity._id) ? 'Unbookmark' : 'Bookmark'}
+</Button>
+
+
                 </Card>
             )) : (
                 <Typography>No activities available</Typography>

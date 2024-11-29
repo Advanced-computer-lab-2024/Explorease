@@ -24,12 +24,36 @@ const Checkout = () => {
         country: '',
     });
     const [paymentMethod, setPaymentMethod] = useState('wallet');
+    const [promoCode, setPromoCode] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [totalCost, setTotalCost] = useState(0);
+    const [finalCost, setFinalCost] = useState(0);
     const [checkoutMessage, setCheckoutMessage] = useState('');
     const [isStripeRedirecting, setIsStripeRedirecting] = useState(false);
 
     useEffect(() => {
+        fetchCartDetails();
         fetchAddresses();
     }, []);
+
+    // Fetch cart details
+    const fetchCartDetails = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/tourists/cart', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const total = response.data.items.reduce(
+                (sum, item) => sum + item.productId.Price * item.quantity,
+                0
+            );
+            setTotalCost(total);
+            setFinalCost(total); // Initialize final cost with total cost
+        } catch (error) {
+            console.error('Error fetching cart:', error);
+        }
+    };
 
     // Fetch existing delivery addresses
     const fetchAddresses = async () => {
@@ -60,6 +84,24 @@ const Checkout = () => {
         }
     };
 
+    // Apply promo code
+    const handleApplyPromoCode = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                '/tourists/promocode', // Promo code validation endpoint
+                { promoCode, cartTotal: totalCost },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setDiscount(response.data.discount);
+            setFinalCost(totalCost - response.data.discount);
+            setCheckoutMessage('Promo code applied successfully!');
+        } catch (error) {
+            console.error('Error applying promo code:', error.response?.data || error.message);
+            setCheckoutMessage('Failed to apply promo code. Please try again.');
+        }
+    };
+
     // Handle checkout process
     const handleCheckout = async () => {
         if (!selectedAddress) {
@@ -82,7 +124,7 @@ const Checkout = () => {
             const token = localStorage.getItem('token');
             const response = await axios.post(
                 '/tourists/cart/checkout',
-                { address: selectedAddress, paymentMethod: 'wallet' },
+                { address: selectedAddress, paymentMethod: 'wallet', promoCode },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setCheckoutMessage(response.data.message);
@@ -95,17 +137,17 @@ const Checkout = () => {
     // Handle Stripe Payment
     const handleStripeCheckout = async () => {
         try {
-            setIsStripeRedirecting(true); // Indicate redirection is in progress
+            setIsStripeRedirecting(true);
             const token = localStorage.getItem('token');
             const response = await axios.post(
                 '/tourists/cart/stripe-session',
-                { address: selectedAddress }, // Pass the selected address
+                { address: selectedAddress, promoCode },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-    
-            console.log(response.data.url);
+            console.log(promoCode.discount);
+
             if (response.data.url) {
-                window.location.href = response.data.url; // Redirect to Stripe Checkout
+                window.location.href = response.data.url;
             } else {
                 setCheckoutMessage('Stripe session creation failed. Please try again.');
             }
@@ -113,10 +155,9 @@ const Checkout = () => {
             console.error('Error during Stripe checkout:', error);
             setCheckoutMessage('Stripe checkout failed. Please try again.');
         } finally {
-            setIsStripeRedirecting(false); // Reset the redirection flag
+            setIsStripeRedirecting(false);
         }
     };
-    
 
     // Handle Cash on Delivery Payment
     const handleCODCheckout = async () => {
@@ -124,7 +165,7 @@ const Checkout = () => {
             const token = localStorage.getItem('token');
             const response = await axios.post(
                 '/tourists/cart/checkout',
-                { address: selectedAddress, paymentMethod: 'cod' },
+                { address: selectedAddress, paymentMethod: 'cod', promoCode },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setCheckoutMessage(response.data.message);
@@ -140,8 +181,30 @@ const Checkout = () => {
 
             {checkoutMessage && <Alert severity="info" sx={{ mb: 2 }}>{checkoutMessage}</Alert>}
 
+            <Typography variant="h6">Cart Total: ${totalCost}</Typography>
+            <Typography variant="h6">Discount: ${discount}</Typography>
+            <Typography variant="h6">Final Total: ${finalCost}</Typography>
+
+            <Box sx={{ mt: 3 }}>
+    <Typography variant="h6">Have a Promo Code?</Typography>
+    <TextField
+        label="Enter Promo Code"
+        fullWidth
+        value={promoCode}
+        onChange={(e) => setPromoCode(e.target.value)}
+        sx={{ mb: 2 }}
+    />
+    <Button variant="contained" onClick={handleApplyPromoCode} sx={{ mb: 2 }}>
+        Apply
+    </Button>
+    <Typography variant="body1" color="primary">
+        Discount: ${discount}
+    </Typography>
+</Box>
+
+
             {/* Delivery Address Section */}
-            <Typography variant="h6">Select Delivery Address</Typography>
+            <Typography variant="h6" sx={{ mt: 3 }}>Select Delivery Address</Typography>
             {addresses.length === 0 ? (
                 <Typography color="text.secondary" sx={{ mb: 3 }}>
                     No delivery addresses found. Please add a new address.

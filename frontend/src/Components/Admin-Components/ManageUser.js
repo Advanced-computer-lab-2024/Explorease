@@ -10,6 +10,8 @@ import {
   ListItemText,
   Divider,
   CircularProgress,
+  Card,
+  CardContent,
 } from '@mui/material';
 import Delete from '@mui/icons-material/Delete';
 
@@ -20,7 +22,9 @@ const ManageUsers = () => {
   const [tourGuides, setTourGuides] = useState([]);
   const [advertisers, setAdvertisers] = useState([]);
   const [userMessage, setUserMessage] = useState('');
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(true);
+  const [totalAccounts, setTotalAccounts] = useState(0);
+  const [monthlyAccounts, setMonthlyAccounts] = useState(0);
 
   useEffect(() => {
     fetchUsers();
@@ -31,7 +35,7 @@ const ManageUsers = () => {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      setLoading(true); // Start loading
+      setLoading(true);
       const [touristsRes, sellersRes, governorsRes, guidesRes, advertisersRes] = await Promise.all([
         axios.get('/admins/tourists', { headers }),
         axios.get('/admins/sellers', { headers }),
@@ -40,16 +44,35 @@ const ManageUsers = () => {
         axios.get('/admins/advertisers', { headers }),
       ]);
 
+      const allUsers = [
+        ...touristsRes.data,
+        ...sellersRes.data,
+        ...governorsRes.data,
+        ...guidesRes.data,
+        ...advertisersRes.data,
+      ];
+
       setTourists(touristsRes.data);
       setSellers(sellersRes.data);
       setTourismGovernors(governorsRes.data);
       setTourGuides(guidesRes.data);
       setAdvertisers(advertisersRes.data);
+
+      setTotalAccounts(allUsers.length);
+
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      const monthlyCount = allUsers.filter((user) => {
+        const createdAt = new Date(user.createdAt);
+        return createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear;
+      }).length;
+
+      setMonthlyAccounts(monthlyCount);
     } catch (error) {
       setUserMessage('Error fetching users.');
       console.error(error);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -87,6 +110,11 @@ const ManageUsers = () => {
                   border: '1px solid #ccc',
                   borderRadius: '8px',
                   marginBottom: '10px',
+                  transition: 'transform 0.3s, box-shadow 0.3s',
+                  '&:hover': {
+                    transform: 'scale(1.02)',
+                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                  },
                 }}
               >
                 <ListItemText primary={`${user.username} - ${user.email}`} />
@@ -95,10 +123,12 @@ const ManageUsers = () => {
                   sx={{
                     backgroundColor: '#f44336',
                     color: 'white',
+                    transition: 'background-color 0.3s, transform 0.3s',
                     '&:hover': {
                       backgroundColor: 'white',
                       color: '#f44336',
                       border: '1px solid #f44336',
+                      transform: 'scale(1.1)',
                     },
                   }}
                 >
@@ -131,7 +161,43 @@ const ManageUsers = () => {
         </Box>
       ) : (
         <>
-          {/* Render user sections */}
+          <Box sx={{ display: 'flex', gap: 2, marginBottom: 4 }}>
+            <Card
+              sx={{
+                flex: 1,
+                transition: 'transform 0.3s, box-shadow 0.3s',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
+                },
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6">Total Accounts</Typography>
+                <Typography variant="h4" color="primary">
+                  {totalAccounts}
+                </Typography>
+              </CardContent>
+            </Card>
+            <Card
+              sx={{
+                flex: 1,
+                transition: 'transform 0.3s, box-shadow 0.3s',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
+                },
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6">Accounts This Month</Typography>
+                <Typography variant="h4" color="secondary">
+                  {monthlyAccounts}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+
           {renderUserSection('Tourists', tourists, 'tourist')}
           {renderUserSection('Sellers', sellers, 'seller')}
           {renderUserSection('Tourism Governors', tourismGovernors, 'tourismGovernor')}

@@ -20,10 +20,7 @@ const Cart = ({ setActiveComponent }) => {
     const [walletBalance, setWalletBalance] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
     const [checkoutMessage, setCheckoutMessage] = useState('');
-    const [promoCode, setPromoCode] = useState('');
-    const [discount, setDiscount] = useState(0);
-    const [promoMessage, setPromoMessage] = useState('');
-    const [isPromoApplied, setIsPromoApplied] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -58,14 +55,9 @@ const Cart = ({ setActiveComponent }) => {
     };
 
     const calculateTotalCost = (items) => {
-        if(isPromoApplied) {
-            const total = items.reduce((sum, item) => sum + item.productId.Price * item.quantity, 0);
-            const discounted = total - (total * discount) / 100;
-            setTotalCost(discounted);
-        }else{
+
             const total = items.reduce((sum, item) => sum + item.productId.Price * item.quantity, 0);
             setTotalCost(total);
-        }
         
     };
 
@@ -103,30 +95,6 @@ const Cart = ({ setActiveComponent }) => {
         setActiveComponent('checkout'); // Navigate to Checkout component
     };
 
-    const applyPromoCode = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get(`/tourists/promocode/${promoCode}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.data && response.data.promoCode && response.data.promoCode.isActive) {
-                const discountPercentage = response.data.promoCode.percentage;
-                const discounted = totalCost - (totalCost * discountPercentage) / 100;
-
-                setDiscount(discountPercentage);
-                setTotalCost(discounted); // Update total cost to discounted total
-                
-                setPromoMessage(`Promo code applied! You get a ${discounted}% discount.`);
-                setIsPromoApplied(true); // Disable further promo application
-            } else {
-                setPromoMessage('Invalid or expired promo code.');
-            }
-        } catch (error) {
-            setPromoMessage('Invalid promo code.');
-            console.error('Error applying promo code:', error);
-        }
-    };
 
     return (
         <Box sx={{ p: 3 }}>
@@ -192,39 +160,7 @@ const Cart = ({ setActiveComponent }) => {
                         ))}
                     </Box>
 
-                    {/* Promo Code Section */}
-                    <Box mt={4}>
-                        <Box display="flex" alignItems="center" gap={2} sx={{ mb: 2 }}>
-                            <TextField
-                                label="Have a Promo Code?"
-                                value={promoCode}
-                                onChange={(e) => setPromoCode(e.target.value)}
-                                fullWidth
-                                size="small"
-                                disabled={isPromoApplied}
-                            />
-                            {!isPromoApplied && (
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={applyPromoCode}
-                                    sx={{
-                                        backgroundColor: '#111E56',
-                                        color: 'white',
-                                        '&:hover': {
-                                            backgroundColor: 'white',
-                                            color: '#111E56',
-                                            border: '1px solid #111E56',
-                                        },
-                                    }}
-                                >
-                                    Apply
-                                </Button>
-                            )}
-                        </Box>
-                        {promoMessage && <Typography variant="body2" color="error">{promoMessage}</Typography>}
-                    </Box>
-
+          
                     {/* Summary and Checkout */}
                     <Box mt={4}>
                         <Typography variant="h6">Total Cost: ${totalCost.toFixed(2)}</Typography>

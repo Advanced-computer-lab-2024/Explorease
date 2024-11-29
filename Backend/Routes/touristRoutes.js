@@ -16,6 +16,7 @@ const TourGuideReviewController = require('../Controllers/TourGuideReview');
 const cartController = require('../Controllers/ProductControllers/cartController');
 const wishlistController = require('../Controllers/ProductControllers/wishlistController');
 const promoCodeController = require('../Controllers/ProductControllers/PromoCodeController');
+const savedActivityController = require('../Controllers/ActivityControllers/SavedActivityController');
 
 // Tourist-specific routes
 router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristById);  // Tourist can read their own profile
@@ -27,6 +28,7 @@ router.get('/products/filter-sort-search', optionalAuth(['tourist']), productCon
 
 //promo code 
 router.get('/promocode/:name', optionalAuth(['tourist']), promoCodeController.getPromoCodeByName);
+router.post('/promocode', roleAuth(['tourist']), promoCodeController.applyPromoCode);
 
 
 //product review
@@ -43,6 +45,8 @@ router.delete('/cart/:productId', roleAuth(['tourist']), cartController.removeFr
 router.delete('/cart', roleAuth(['tourist']), cartController.clearCart);
 router.post('/cart/checkout', roleAuth(['tourist']), cartController.checkoutCart);
 router.put('/cart/update', roleAuth(['tourist']), cartController.updateCartQuantity);
+router.post('/cart/apply-promo', roleAuth(['tourist']), cartController.applyPromoCode);
+
 
 
 // router.get('/getAllReviews',optionalAuth(['tourist']), ProductReviewControllers.getAllReviews); 
@@ -132,4 +136,14 @@ router.delete('/delivery-address/:addressId', roleAuth(['tourist']), touristCont
 router.post('/cart/stripe-session', roleAuth(['tourist']), cartController.createStripeSession);
 
 router.post('/cart/stripe-success', roleAuth(['tourist']), cartController.stripeSuccess);
+
+//saved activity routes
+router.post('/saved-activity/:activityId', roleAuth(['tourist']), savedActivityController.saveActivity);
+router.get('/saved-activity/', roleAuth(['tourist']), savedActivityController.getSavedActivities);
+router.delete('/saved-activity/:activityId', roleAuth(['tourist']), savedActivityController.deleteSavedActivity);
+
+// Stripe routes for itineraries
+router.post('/itineraries/stripe-session/:itineraryId', roleAuth(['tourist']), itineraryControllers.createStripeSession);
+router.get('/itineraries/stripe-success', roleAuth(['tourist']), itineraryControllers.stripeSuccess);
+
 module.exports = router;

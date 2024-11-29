@@ -4,6 +4,69 @@ const ActivityModel = require('../../Models/ActivityModels/Activity');
 const { default: mongoose } = require('mongoose');
 const BookingItinerary = require('../../Models/ActivityModels/BookingItinerary');
 const Tourist = require('../../Models/UserModels/Tourist');
+const { create } = require('lodash');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Notification = require('../../Models/UserModels/Notification'); // Import Notification model
+const TourGuide = require('../../Models/UserModels/TourGuide'); // Import the TourGuide model
+const { sendEmail } = require('../../utils/emailService'); // Import email service
+
+const flagItinerary = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Find the itinerary
+        const itinerary = await ItineraryModel.findById(id);
+        if (!itinerary) {
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+
+        // Check if the itinerary is already flagged
+        if (itinerary.isFlagged === true) {
+            return res.status(403).json({ message: 'Itinerary has already been flagged' });
+        }
+
+        // Fetch the tour guide details using `createdBy` field
+        const tourGuide = await TourGuide.findById(itinerary.createdBy);
+        if (!tourGuide) {
+            return res.status(404).json({ message: 'Tour Guide not found' });
+        }
+
+        // Flag the itinerary
+        itinerary.isFlagged = true;
+        await itinerary.save();
+
+        // Create a notification for the tour guide
+        const notification = new Notification({
+            user: tourGuide._id,
+            role: 'TourGuide',
+            type: 'event_flagged',
+            message: `Your itinerary "${itinerary.name}" has been flagged as inappropriate by the admin.`,
+            data: { itineraryId: itinerary._id },
+        });
+        await notification.save();
+
+        // Send an email to the tour guide
+        const subject = `⚠️ Itinerary Flagged Notification`;
+        const message = `
+            <h1>Dear ${tourGuide.username},</h1>
+            <p>We regret to inform you that your itinerary "<strong>${itinerary.name}</strong>" has been flagged as inappropriate by the admin.</p>
+            <p>If you believe this is a mistake or have any questions, please contact support.</p>
+            <p>Thank you for your understanding.</p>
+            <p>Best regards,<br>Your Admin Team</p>
+        `;
+
+        await sendEmail(tourGuide.email, subject, message);
+
+        res.status(200).json({
+            message: 'Itinerary flagged successfully, the Tour Guide notified via email, and a notification created.',
+            isFlagged: true,
+        });
+    } catch (error) {
+        console.error('Error flagging itinerary:', error);
+        res.status(500).json({ message: 'Error flagging itinerary', error: error.message });
+    }
+};
+
 
 // Create Itinerary
 const createItinerary = async (req, res) => {
@@ -141,25 +204,6 @@ const updateItinerary = async (req, res) => {
     }
 };
 
-
-// Flag Itinerary
-const flagItinerary = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const itinerary = await ItineraryModel.findById(id);
-        if (!itinerary) {
-            return res.status(404).json({ message: 'Itinerary not found' });
-        }
-        if (itinerary.isFlagged === true) {
-            return res.status(403).json({ message: 'Itinerary has already been flagged' });
-        }
-        itinerary.isFlagged = true;
-        await itinerary.save();
-        res.status(200).json({ message: 'Itinerary flagged successfully', isFlagged: true });
-    } catch (error) {
-        res.status(500).json({ message: 'Error flagging itinerary', error: error.message });
-    }
-};
 
 // Unflag Itinerary
 const unflagItinerary = async (req, res) => {
@@ -447,6 +491,152 @@ const getItineraryById = async (req, res) => {
     }
   };
 
+  const stripeWebhook = async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+
+    try {
+        // Verify the event using the Stripe signature
+        const event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+
+        if (event.type === 'checkout.session.completed') {
+            const session = event.data.object;
+            const { itineraryId } = session.metadata;
+            const touristId = session.client_reference_id;
+
+            // Retrieve itinerary and tourist details
+            const itinerary = await ItineraryModel.findById(itineraryId);
+            const tourist = await Tourist.findById(touristId);
+
+            if (!itinerary || !tourist) {
+                console.error('Itinerary or Tourist not found during webhook processing.');
+                return res.status(404).json({ message: 'Itinerary or Tourist not found' });
+            }
+
+            // Deduct payment from wallet if applicable
+            if (tourist.wallet >= itinerary.totalPrice) {
+                tourist.wallet -= itinerary.totalPrice;
+                await tourist.save();
+            }
+
+            // Create a booking record
+            const booking = new BookingItinerary({
+                Tourist: touristId,
+                Itinerary: itineraryId,
+                Status: 'Active',
+                BookedAt: new Date(),
+            });
+
+            await booking.save();
+
+            console.log('Booking created:', booking);
+        }
+
+        res.status(200).send('Webhook received.');
+    } catch (error) {
+        console.error('Stripe webhook error:', error.message);
+        res.status(400).send(`Webhook Error: ${error.message}`);
+    }
+};
+
+
+const stripeSuccess = async (req, res) => {
+    const { sessionId } = req.query; // Stripe session ID from the frontend
+
+    try {
+        // Retrieve the Stripe session details
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        if (!session) {
+            return res.status(404).json({ message: 'Session not found' });
+        }
+
+        const { itineraryId } = session.metadata; // Retrieve the itinerary ID from the session metadata
+        const touristId = session.client_reference_id; // Retrieve the tourist ID from the session reference
+
+        // Retrieve the itinerary and tourist
+        const itinerary = await ItineraryModel.findById(itineraryId);
+        const tourist = await Tourist.findById(touristId);
+
+        if (!itinerary || !tourist) {
+            return res.status(404).json({ message: 'Itinerary or Tourist not found' });
+        }
+
+        // Deduct wallet balance (if applicable) or confirm payment success
+        const { totalPrice } = itinerary;
+        if (tourist.wallet >= totalPrice) {
+            tourist.wallet -= totalPrice;
+            await tourist.save();
+        }
+
+        // Create a new booking
+        const newBooking = new BookingItinerary({
+            Tourist: touristId,
+            Itinerary: itineraryId,
+            Status: 'Active',
+            BookedAt: new Date(),
+        });
+
+        await newBooking.save();
+
+        res.status(201).json({
+            message: 'Payment successful! Itinerary booked successfully.',
+            booking: newBooking,
+            walletBalance: tourist.wallet,
+        });
+    } catch (error) {
+        console.error('Error during Stripe success processing:', error.message);
+        res.status(500).json({ message: 'Error finalizing payment', error: error.message });
+    }
+};
+
+  
+
+  const createStripeSession = async (req, res) => {
+      const { itineraryId } = req.params;
+      const touristId = req.user.id; // Tourist ID from authentication
+  
+      try {
+          // Find the itinerary
+          const itinerary = await ItineraryModel.findById(itineraryId);
+          if (!itinerary) {
+              return res.status(404).json({ message: 'Itinerary not found' });
+          }
+  
+          // Create a Stripe Checkout session
+          const session = await stripe.checkout.sessions.create({
+              payment_method_types: ['card'], // Accept card payments
+              line_items: [
+                  {
+                      price_data: {
+                          currency: 'usd',
+                          product_data: {
+                              name: itinerary.name,
+                              description: `Activities Included: ${itinerary.activities.length}`,
+                          },
+                          unit_amount: Math.round(itinerary.totalPrice * 100), // Stripe expects the amount in cents
+                      },
+                      quantity: 1,
+                  },
+              ],
+              mode: 'payment',
+              client_reference_id: touristId, // Reference to the tourist ID
+              metadata: {
+                  itineraryId: itinerary._id.toString(), // Store itinerary ID for the webhook
+              },
+              success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+              cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+          });
+  
+          // Send the session URL to the frontend
+          res.status(200).json({ url: session.url });
+      } catch (error) {
+          console.error('Error creating Stripe session:', error.message);
+          res.status(500).json({ message: 'Error creating Stripe session', error: error.message });
+      }
+  };
+  
+
+
 
 module.exports = {
     bookItinerary,
@@ -462,5 +652,8 @@ module.exports = {
     flagItinerary,
     unflagItinerary,
     deleteItinerariesByTourGuideId,
-    getItineraryById
+    getItineraryById,
+    createStripeSession,
+    stripeSuccess,
+    stripeWebhook,
 };

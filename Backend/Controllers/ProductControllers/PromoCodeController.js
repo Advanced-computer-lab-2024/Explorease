@@ -116,6 +116,31 @@ const getPromoCodeByName = async (req,res) => {
         res.status(500).json({ message: 'Error fetching promo codes', error: error.message });
     }
 }
+const applyPromoCode = async (req, res) => {
+    const { promoCode, cartTotal } = req.body;
+
+    try {
+        // Check if promo code exists
+        const promo = await PromoCode.findOne({ name: promoCode });
+        if (!promo) {
+            return res.status(400).json({ message: 'Invalid promo code.' });
+        }
+
+        // Check if promo code is active and not expired
+        if (!promo.isActive || new Date() > promo.activeUntil) {
+            return res.status(400).json({ message: 'Promo code is not valid or has expired.' });
+        }
+
+        // Calculate the discount
+        const discount = (promo.percentage / 100) * cartTotal;
+
+        // Respond with the discount value
+        res.status(200).json({ discount, message: 'Promo code applied successfully!' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error applying promo code', error: error.message });
+    }
+};
+
 
 // Export all functions at the end
 module.exports = {
@@ -125,5 +150,6 @@ module.exports = {
     getAllPromoCodes, // Export the new method
     createBirthdayPromoCode,
     getPromoCodeByName,
+    applyPromoCode,
 
 };

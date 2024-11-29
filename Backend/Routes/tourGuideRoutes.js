@@ -3,6 +3,7 @@ const router = express.Router();
 const itineraryController = require('../Controllers/ActivityControllers/ItineraryController');
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController'); 
 const { roleAuth } = require('../Middleware/authMiddleware');
+const notificationController = require('../Controllers/UserControllers/NotificationController');
 
 // Routes for Tour Guide to create, read, update, and delete itineraries
 const multer = require('multer');
@@ -68,4 +69,12 @@ router.post(
 router.put('/editPassword', roleAuth(['tourGuide']), tourGuideController.updatePassword);
 router.get('/getall', tourGuideController.getAllTourGuides);
 router.put('/deletetourGuideRequest' , roleAuth(['tourGuide']), tourGuideController.deleteReq);
+
+//
+// Notifications routes
+router.post('/notifications', notificationController.createNotification);
+router.get('/notifications', roleAuth(['tourGuide']), notificationController.getNotifications);
+router.put('/notifications/:id', roleAuth(['tourGuide']), notificationController.markNotificationAsRead);
+router.delete('/notifications/:id', roleAuth(['tourGuide']), notificationController.deleteNotification);
+
 module.exports = router;

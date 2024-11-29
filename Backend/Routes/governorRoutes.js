@@ -4,6 +4,7 @@ const historicalPlaceController = require('../Controllers/ActivityControllers/Hi
 const preferenceTagController = require('../Controllers/ActivityControllers/PreferenceTagsController');
 const touristGovernorController = require('../Controllers/UserControllers/tourismGovernorController');
 const { roleAuth } = require('../Middleware/authMiddleware');
+const notificationController = require('../Controllers/UserControllers/NotificationController');
 
 // Tourist Governor Routes
 
@@ -35,5 +36,11 @@ router.put('/updateProfile', roleAuth(['touristGovernor']), touristGovernorContr
 router.delete('/deleteProfile', roleAuth(['touristGovernor']), touristGovernorController.deleteTouristGovernor);
 
 router.put('/editPassword', roleAuth(['touristGovernor']), touristGovernorController.editPassword);
+
+//notifications routes
+router.post('/notifications', notificationController.createNotification);
+router.get('/notifications', roleAuth(['touristGovernor']), notificationController.getNotifications);
+router.put('/notifications/:id', roleAuth(['touristGovernor']), notificationController.markNotificationAsRead);
+router.delete('/notifications/:id', roleAuth(['touristGovernor']), notificationController.deleteNotification);
 
 module.exports = router;

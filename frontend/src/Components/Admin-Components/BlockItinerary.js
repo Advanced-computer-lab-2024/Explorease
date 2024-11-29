@@ -10,46 +10,52 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-const BlockItinerary = () => {
+const ManageContent = () => {
   const [itineraries, setItineraries] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
-  // Fetch itineraries on component mount
+  // Fetch itineraries and activities on component mount
   useEffect(() => {
-    const fetchItineraries = async () => {
+    const fetchData = async () => {
       const token = localStorage.getItem('token');
       try {
-        setLoading(true); // Start loading
-        const response = await axios.get('/admins/itineraries', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        setLoading(true);
+
+        // Fetch itineraries
+        const itinerariesRes = await axios.get('/admins/itineraries', {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setItineraries(response.data);
+
+        // Fetch activities
+        const activitiesRes = await axios.get('/admins/activities', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setItineraries(itinerariesRes.data);
+        setActivities(activitiesRes.data);
       } catch (error) {
-        setMessage('Error fetching itineraries.');
+        setMessage('Error fetching data.');
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
-    fetchItineraries();
+
+    fetchData();
   }, []);
 
-  const handleFlagging = async (id) => {
+  // Flag an itinerary
+  const handleFlagItinerary = async (id) => {
     const token = localStorage.getItem('token');
     try {
       const response = await axios.put(`/admins/flagItineraries/${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setMessage('Itinerary flagged successfully!');
-      setItineraries((prevItineraries) =>
-        prevItineraries.map((itinerary) =>
-          itinerary._id === id
-            ? { ...itinerary, isFlagged: response.data.isFlagged }
-            : itinerary
+      setItineraries((prev) =>
+        prev.map((itinerary) =>
+          itinerary._id === id ? { ...itinerary, isFlagged: response.data.isFlagged } : itinerary
         )
       );
     } catch (error) {
@@ -57,20 +63,17 @@ const BlockItinerary = () => {
     }
   };
 
-  const handleUnFlagging = async (id) => {
+  // Unflag an itinerary
+  const handleUnflagItinerary = async (id) => {
     const token = localStorage.getItem('token');
     try {
       const response = await axios.put(`/admins/unflagItineraries/${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setMessage('Itinerary unflagged successfully!');
-      setItineraries((prevItineraries) =>
-        prevItineraries.map((itinerary) =>
-          itinerary._id === id
-            ? { ...itinerary, isFlagged: response.data.isFlagged }
-            : itinerary
+      setItineraries((prev) =>
+        prev.map((itinerary) =>
+          itinerary._id === id ? { ...itinerary, isFlagged: response.data.isFlagged } : itinerary
         )
       );
     } catch (error) {
@@ -78,14 +81,51 @@ const BlockItinerary = () => {
     }
   };
 
-  const renderItineraryCards = () => {
-    if (!Array.isArray(itineraries) || itineraries.length === 0) {
-      return <Typography>No itineraries available</Typography>;
+  // Flag an activity
+  const handleFlagActivity = async (id) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.put(`/admins/flagActivity/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMessage('Activity flagged successfully!');
+      setActivities((prev) =>
+        prev.map((activity) =>
+          activity._id === id ? { ...activity, isFlagged: response.data.isFlagged } : activity
+        )
+      );
+    } catch (error) {
+      setMessage('Error updating activity status.');
+    }
+  };
+
+  // Unflag an activity
+  const handleUnflagActivity = async (id) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.put(`/admins/unflagActivity/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMessage('Activity unflagged successfully!');
+      setActivities((prev) =>
+        prev.map((activity) =>
+          activity._id === id ? { ...activity, isFlagged: response.data.isFlagged } : activity
+        )
+      );
+    } catch (error) {
+      setMessage('Error updating activity status.');
+    }
+  };
+
+  // Render cards for itineraries or activities
+  const renderCards = (items, isItinerary = true) => {
+    if (!Array.isArray(items) || items.length === 0) {
+      return <Typography>No {isItinerary ? 'itineraries' : 'activities'} available</Typography>;
     }
 
-    return itineraries.map((itinerary) => (
+    return items.map((item) => (
       <Card
-        key={itinerary._id}
+        key={item._id}
         sx={{
           border: '1px solid #ccc',
           borderRadius: '8px',
@@ -104,39 +144,59 @@ const BlockItinerary = () => {
       >
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            {itinerary.name}
+            {item.name}
           </Typography>
-          <Typography>
-            <strong>Total Price:</strong> ${itinerary.totalPrice}
-          </Typography>
-          <Typography>
-            <strong>Available Dates:</strong> {itinerary.AvailableDates.join(', ')}
-          </Typography>
-          <Typography>
-            <strong>Pick Up Location:</strong> {itinerary.PickUpLocation}
-          </Typography>
-          <Typography>
-            <strong>Drop Off Location:</strong> {itinerary.DropOffLocation}
-          </Typography>
+          {isItinerary ? (
+            <>
+              <Typography>
+                <strong>Total Price:</strong> ${item.totalPrice}
+              </Typography>
+              <Typography>
+                <strong>Available Dates:</strong> {item.AvailableDates.join(', ')}
+              </Typography>
+              <Typography>
+                <strong>Pick Up Location:</strong> {item.PickUpLocation}
+              </Typography>
+              <Typography>
+                <strong>Drop Off Location:</strong> {item.DropOffLocation}
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography>
+                <strong>Date:</strong> {new Date(item.date).toLocaleDateString()}
+              </Typography>
+              <Typography>
+                <strong>Location:</strong> {item.location}
+              </Typography>
+              <Typography>
+                <strong>Price:</strong> ${item.price}
+              </Typography>
+            </>
+          )}
           <Button
             onClick={() => {
-              itinerary.isFlagged
-                ? handleUnFlagging(itinerary._id)
-                : handleFlagging(itinerary._id);
+              isItinerary
+                ? item.isFlagged
+                  ? handleUnflagItinerary(item._id)
+                  : handleFlagItinerary(item._id)
+                : item.isFlagged
+                ? handleUnflagActivity(item._id)
+                : handleFlagActivity(item._id);
             }}
             sx={{
               marginTop: '20px',
               padding: '10px 15px',
-              backgroundColor: itinerary.isFlagged ? '#111E56' : '#f44336',
+              backgroundColor: item.isFlagged ? '#111E56' : '#f44336',
               color: 'white',
               '&:hover': {
                 backgroundColor: 'white',
-                color: itinerary.isFlagged ? '#111E56' : '#f44336',
-                border: `1px solid ${itinerary.isFlagged ? '#111E56' : '#f44336'}`,
+                color: item.isFlagged ? '#111E56' : '#f44336',
+                border: `1px solid ${item.isFlagged ? '#111E56' : '#f44336'}`,
               },
             }}
           >
-            {itinerary.isFlagged ? 'Unblock' : 'Block'}
+            {item.isFlagged ? 'Unblock' : 'Block'}
           </Button>
         </CardContent>
       </Card>
@@ -145,21 +205,104 @@ const BlockItinerary = () => {
 
   return (
     <Box sx={{ padding: '20px' }}>
-      <Typography variant="h4" gutterBottom align="center">
-        My Itineraries
+      <Typography
+        variant="h4"
+        gutterBottom
+        align="center"
+        sx={{
+          color: '#111E56',
+          position: 'relative',
+          display: 'inline-block',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            left: 0,
+            bottom: -4,
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+          },
+          '&:hover::after': {
+            transform: 'scaleX(1)',
+          },
+        }}
+      >
+        Manage Itineraries and Activities
       </Typography>
       {message && <Alert severity="info" sx={{ marginBottom: '20px' }}>{message}</Alert>}
-      {loading ? ( // Show loader when fetching data
+      {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
           <CircularProgress />
         </Box>
       ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {renderItineraryCards()}
-        </Box>
+        <>
+          <Box sx={{ marginBottom: '30px' }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{
+                color: '#111E56',
+                position: 'relative',
+                display: 'inline-block',
+                fontWeight: 'bold', // Make the text bold
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  left: 0,
+                  bottom: -4,
+                  width: '100%',
+                  height: '2px',
+                  backgroundColor: '#111E56',
+                  transform: 'scaleX(0)',
+                  transformOrigin: 'left',
+                  transition: 'transform 0.3s ease-in-out',
+                },
+                '&:hover::after': {
+                  transform: 'scaleX(1)',
+                },
+              }}
+            >
+              Itineraries
+            </Typography>
+            {renderCards(itineraries, true)}
+          </Box>
+          <Box>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{
+                color: '#111E56',
+                position: 'relative',
+                display: 'inline-block',
+                fontWeight: 'bold', // Make the text bold
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  left: 0,
+                  bottom: -4,
+                  width: '100%',
+                  height: '2px',
+                  backgroundColor: '#111E56',
+                  transform: 'scaleX(0)',
+                  transformOrigin: 'left',
+                  transition: 'transform 0.3s ease-in-out',
+                },
+                '&:hover::after': {
+                  transform: 'scaleX(1)',
+                },
+              }}
+            >
+              Activities
+            </Typography>
+            {renderCards(activities, false)}
+          </Box>
+        </>
       )}
     </Box>
   );
 };
 
-export default BlockItinerary;
+export default ManageContent;

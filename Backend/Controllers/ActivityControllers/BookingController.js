@@ -3,6 +3,70 @@ const { default: mongoose } = require('mongoose');
 const Activity = require('../../Models/ActivityModels/Activity.js');
 const Tourist= require('../../Models/UserModels/Tourist.js');
 
+const Notification = require('../../Models/UserModels/Notification');
+const { sendEmail } = require('../../utils/emailService.js'); // Assuming you have an email service
+
+const sendBookingReminders = async () => {
+    try {
+        const now = new Date();
+        const reminderThreshold = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours from now
+
+        // Find bookings that are active and happening within the next 24 hours
+        const bookings = await bookingModel
+            .find({
+                Status: 'Active',
+                CancellationDeadline: { $gte: now, $lte: reminderThreshold },
+            })
+            .select('Tourist Activity') // Limit fields returned for optimization
+            .populate('Tourist', 'username email') // Only populate necessary fields
+            .populate('Activity', 'name date'); // Only populate necessary fields
+
+        if (bookings.length === 0) {
+            console.log('No upcoming bookings within the next 24 hours.');
+            return;
+        }
+
+        for (const booking of bookings) {
+            const { Tourist: tourist, Activity: activity } = booking;
+
+            if (!tourist || !activity) {
+                console.error(`Missing tourist or activity details for booking ID: ${booking._id}`);
+                continue;
+            }
+
+            // Create an in-app notification for the tourist
+            const notification = new Notification({
+                user: tourist._id,
+                role: 'Tourist',
+                type: 'event_reminder',
+                message: `Reminder: Your event "${activity.name}" is scheduled for ${new Date(activity.date).toLocaleString()}.`,
+            });
+
+            await notification.save();
+
+            // Send an email reminder
+            const emailSubject = `Upcoming Event Reminder: "${activity.name}"`;
+            const emailMessage = `
+                <h1>Upcoming Event Reminder</h1>
+                <p>Dear ${tourist.username},</p>
+                <p>This is a friendly reminder that you have an event scheduled:</p>
+                <ul>
+                    <li><strong>Event Name:</strong> ${activity.name}</li>
+                    <li><strong>Date & Time:</strong> ${new Date(activity.date).toLocaleString()}</li>
+                </ul>
+                <p>We look forward to seeing you there!</p>
+                <p>Best regards,<br>Your Travel Team</p>
+            `;
+
+            await sendEmail(tourist.email, emailSubject, emailMessage);
+        }
+
+        console.log(`Booking reminders sent successfully to ${bookings.length} users.`);
+    } catch (error) {
+        console.error('Error sending booking reminders:', error.stack);
+    }
+};
+
 const createBooking = async (req, res) => {
     const { Tourist, Activity } = req.body;
 
@@ -173,5 +237,6 @@ module.exports = {
     getAllBookings,
     getAllBookingsforActivity,
     getMyBookings,
-    deleteBooking
+    deleteBooking,
+    sendBookingReminders,
 };

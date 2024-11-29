@@ -6,11 +6,13 @@ const adminController = require('../Controllers/UserControllers/adminController'
 const authenticateAdmin = require('../Middleware/adminAuthMiddleware');
 const tagController = require('../Controllers/ActivityControllers/PreferenceTagsController');
 const activityController = require('../Controllers/ActivityControllers/ActivityCategoryController');
+const activityControllers = require('../Controllers/ActivityControllers/ActivityController');
 const productController = require('../Controllers/ProductControllers/ProductController'); // Ensure correct path
 const ItineraryController = require('../Controllers/ActivityControllers/ItineraryController');
 const complaintControllers= require('../Controllers/UserControllers/ComplaintController');
 const promoCodeController = require('../Controllers/ProductControllers/PromoCodeController');
 const {optionalAuth} = require('../Middleware/authMiddleware');
+const notificationController = require('../Controllers/UserControllers/NotificationController');
 
 
 const cloudinary = require('cloudinary').v2;
@@ -99,6 +101,10 @@ router.get('/itineraries', authenticateAdmin, ItineraryController.getAllItinerar
 router.put('/flagItineraries/:id', authenticateAdmin, ItineraryController.flagItinerary);
 router.put('/unflagItineraries/:id', authenticateAdmin, ItineraryController.unflagItinerary);
 
+//get activities and flag them
+router.get('/activities',authenticateAdmin, activityControllers.getAllActivity);
+router.put('/flagActivity/:id', authenticateAdmin, activityControllers.flagActivity);
+router.put('/unflagActivity/:id', authenticateAdmin, activityControllers.unflagActivity);
 
 router.get('/tourists', authenticateAdmin, adminController.getAllTourists);
 router.get('/sellers', authenticateAdmin, adminController.getAllSellers);
@@ -124,4 +130,10 @@ router.get('/getComplaintsByDate', authenticateAdmin, complaintControllers.getCo
 router.put('/adminRespondToComplaint/:complaintId', authenticateAdmin, complaintControllers.adminRespondToComplaint); 
 router.delete('/deleteComplaint', authenticateAdmin, complaintControllers.deleteComplaint); 
 router.get('/getRequesteddeleteUsers', authenticateAdmin, adminController.getAllDeleteRequests);
+
+//notification
+router.post('/notifications',authenticateAdmin ,notificationController.createNotification);
+router.get('/notifications',authenticateAdmin , notificationController.getNotifications);
+router.put('/notifications/:id',authenticateAdmin , notificationController.markNotificationAsRead);
+router.delete('/notifications/:id', authenticateAdmin ,notificationController.deleteNotification);
 module.exports = router;
