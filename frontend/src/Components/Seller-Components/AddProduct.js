@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Alert,
+    InputLabel,
+    OutlinedInput,
+    TextareaAutosize,
+} from '@mui/material';
 
 const AddProduct = () => {
     const [productData, setProductData] = useState({
@@ -8,7 +18,7 @@ const AddProduct = () => {
         Description: '',
         AvailableQuantity: '',
     });
-    const [image, setImage] = useState(null); // State to store the uploaded image file
+    const [image, setImage] = useState(null);
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState(false);
 
@@ -17,123 +27,153 @@ const AddProduct = () => {
     };
 
     const handleImageChange = (e) => {
-        setImage(e.target.files[0]); // Get the selected file
+        setImage(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
-        
+
         if (!image) {
-            console.log('Image file is required');
+            setMessage('Image file is required');
+            setSuccess(false);
             return;
         }
-    
+
         try {
-            // Create a FormData object to handle multipart/form-data request
             const formData = new FormData();
             formData.append('Name', productData.Name);
             formData.append('Price', productData.Price);
             formData.append('Description', productData.Description);
             formData.append('AvailableQuantity', productData.AvailableQuantity);
-            formData.append('image', image); // Append the image file
-    
-            console.log('Form data:', formData); // Check form data is correct
-    
+            formData.append('image', image);
+
             const response = await axios.post('/seller/createProduct', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
                 },
             });
-    
-            console.log('Response:', response.data); // Log the response
+
             setMessage('Product added successfully!');
             setSuccess(true);
             setProductData({ Name: '', Price: '', Description: '', AvailableQuantity: '' });
-            setImage(null); // Reset the image input
+            setImage(null);
         } catch (error) {
-            console.error('Error adding product:', error.response ? error.response.data : error.message); // Log error
             setMessage(error.response?.data?.message || 'Error adding product');
             setSuccess(false);
         }
     };
-    
+
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <h2>Add Product</h2>
+        <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+            <Typography variant="h4" align="center" gutterBottom>
+                Add Product
+            </Typography>
+
             {message && (
-                <p style={{ color: success ? 'green' : 'red', marginBottom: '20px' }}>{message}</p>
+                <Alert severity={success ? 'success' : 'error'} sx={{ marginBottom: '20px' }}>
+                    {message}
+                </Alert>
             )}
+
             <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <div>
-                    <label>Name</label>
-                    <input
-                        type="text"
+                <Box sx={{ marginBottom: '10px' }}>
+                    <InputLabel htmlFor="Name">Name</InputLabel>
+                    <TextField
+                        fullWidth
+                        id="Name"
                         name="Name"
                         value={productData.Name}
                         onChange={handleInputChange}
                         required
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
+                        variant="outlined"
+                        sx={{ marginBottom: '10px' }}
                     />
-                </div>
-                <div>
-                    <label>Price</label>
-                    <input
-                        type="number"
+                </Box>
+
+                <Box sx={{ marginBottom: '10px' }}>
+                    <InputLabel htmlFor="Price">Price</InputLabel>
+                    <TextField
+                        fullWidth
+                        id="Price"
                         name="Price"
+                        type="number"
                         value={productData.Price}
                         onChange={handleInputChange}
                         required
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
+                        variant="outlined"
+                        sx={{ marginBottom: '10px' }}
                     />
-                </div>
-                <div>
-                    <label>Description</label>
-                    <textarea
+                </Box>
+
+                <Box sx={{ marginBottom: '10px' }}>
+                    <InputLabel htmlFor="Description">Description</InputLabel>
+                    <TextareaAutosize
+                        id="Description"
                         name="Description"
                         value={productData.Description}
                         onChange={handleInputChange}
                         required
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
+                        minRows={4}
+                        placeholder="Enter product description"
+                        style={{
+                            width: '96%',
+                            padding: '10px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                        }}
                     />
-                </div>
-                <div>
-                    <label>Available Quantity</label>
-                    <input
-                        type="number"
+                </Box>
+
+                <Box sx={{ marginBottom: '10px' }}>
+                    <InputLabel htmlFor="AvailableQuantity">Available Quantity</InputLabel>
+                    <TextField
+                        fullWidth
+                        id="AvailableQuantity"
                         name="AvailableQuantity"
+                        type="number"
                         value={productData.AvailableQuantity}
                         onChange={handleInputChange}
                         required
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
+                        variant="outlined"
+                        sx={{ marginBottom: '10px' }}
                     />
-                </div>
-                <div>
-                    <label>Upload Image</label>
-                    <input
+                </Box>
+
+                <Box sx={{ marginBottom: '10px' }}>
+                    <InputLabel htmlFor="image">Upload Image</InputLabel>
+                    <OutlinedInput
+                        id="image"
+                        name="image"
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
                         required
-                        style={{ padding: '10px', marginBottom: '10px', width: '100%' }}
+                        fullWidth
+                        sx={{ padding: '10px' }}
                     />
-                </div>
-                <button
+                </Box>
+
+                <Button
                     type="submit"
-                    style={{
+                    fullWidth
+                    sx={{
+                        marginTop: '10px',
                         padding: '10px',
-                        backgroundColor: '#007bff',
-                        color: '#fff',
-                        border: 'none',
-                        cursor: 'pointer',
-                        width: '100%',
+                        backgroundColor: '#111E56',
+                        color: 'white',
+                        '&:hover': {
+                            backgroundColor: 'white',
+                            color: '#111E56',
+                            border: '1px solid #111E56',
+                        },
                     }}
                 >
                     Add Product
-                </button>
+                </Button>
             </form>
-        </div>
+        </Box>
     );
 };
 

@@ -6,6 +6,7 @@ import { Fade } from 'react-awesome-reveal';
 import { Link } from 'react-router-dom';
 import logo from '../../Misc/logo3.png'; 
 import logo2 from '../../Misc/image.png';
+import logo3 from '../../Misc/logo2.png';
 import waveGif from '../../Misc/wave_main.gif';
 import ActivitiesIcon from '@mui/icons-material/DirectionsWalk';
 import FlightsIcon from '@mui/icons-material/Flight';
@@ -132,6 +133,7 @@ const HomePage = () => {
                                         width: '100%',
                                         maxWidth: '400px',
                                         borderRadius: '8px',
+                                        height: '160px',
                                     }}
                                 />
                             </Box>
@@ -234,7 +236,7 @@ const HomePage = () => {
                         sx={{ textAlign: { xs: 'center', sm: 'left' } }}
                     >
                         <img
-                            src={logo}
+                            src={logo2}
                             alt="Explorease"
                             style={{ height: '3em', marginLeft: '5px' }}
                         />

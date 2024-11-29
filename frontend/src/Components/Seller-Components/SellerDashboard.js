@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import SellerNavbar from '../MainPage-Components/GuestNavbar'; // Assume SellerNavbar is similar to TouristNavbar
-import Products from './Products'; // Component to manage seller's products
+import {
+    Box,
+    Typography,
+    Card,
+    CardContent,
+    CardMedia,
+    Button,
+    Alert,
+    List,
+    ListItem,
+} from '@mui/material';
+import SellerNavbar from '../MainPage-Components/GuestNavbar';
+import Products from './Products';
 import MyProducts from './MyProducts';
 import AddProduct from './AddProduct';
 import UpdateProfile from './UpdateProfile';
@@ -11,35 +22,31 @@ import UploadLogo from './UploadLogo';
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
-    const [activeComponent, setActiveComponent] = useState('profile'); // State to manage active component
+    const [activeComponent, setActiveComponent] = useState('profile');
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfile = async () => {
             const token = localStorage.getItem('token');
-            console.log('Token:', token); // Check if token is present
-    
             if (!token) {
                 navigate('/login');
                 return;
             }
-    
+
             try {
                 const response = await axios.get('/seller/myProfile', {
-                    headers: {
-                        Authorization: `Bearer ${token}` // Send token in request header
-                    }
+                    headers: { Authorization: `Bearer ${token}` },
                 });
-    
-    
+
                 if (response.data && response.data.seller) {
-                    setProfile(response.data.seller); // Update profile state with fetched data
-                } 
+                    setProfile(response.data.seller);
+                }
             } catch (error) {
-                console.error('Error fetching profile:', error.response ? error.response.data : error.message);
+                console.error('Error fetching profile:', error);
                 setMessage('Error fetching profile');
             }
         };
+
         fetchProfile();
     }, [navigate]);
 
@@ -47,15 +54,12 @@ const SellerDashboard = () => {
         if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.put('/seller/deleteSellerRequest',{}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                await axios.put(
+                    '/seller/deleteSellerRequest',
+                    {},
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
                 setMessage('Account deletion request sent successfully.');
-                // Optionally, you can log the user out and redirect them
-                // localStorage.removeItem('token');
-                // navigate('/login');
             } catch (error) {
                 console.error('Error requesting account deletion:', error);
                 setMessage('Failed to request account deletion. Please try again.');
@@ -63,131 +67,197 @@ const SellerDashboard = () => {
         }
     };
 
-    const sidebarStyle = {
-        width: '250px',
-        backgroundColor: '#f1f1f1',
-        padding: '15px',
-        position: 'fixed',
-        height: '100%',
-        top: '45px',
-        left: '0',
-        display: 'flex',
-        flexDirection: 'column',
-        zIndex: '1'
-    };
-
-    const contentStyle = {
-        marginLeft: '260px', // Space for the sidebar
-        padding: '20px',
-    };
-
-    const cardStyle = {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '20px',
-        maxWidth: '400px',
-        margin: '0 auto',
-        backgroundColor: '#f9f9f9',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-    };
-
-    const labelStyle = {
-        fontWeight: 'bold',
-        marginBottom: '10px',
-        display: 'block',
-        fontSize: '18px',
-    };
-
-    const valueStyle = {
-        marginBottom: '20px',
-        fontSize: '16px',
-        color: '#555',
-    };
-
-    // Render content based on active component
     const renderContent = () => {
         switch (activeComponent) {
             case 'profile':
-    return (
-        <>
-            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Seller Profile</h2>
-            {message && <p style={{ textAlign: 'center', color: 'red' }}>{message}</p>}
-            {profile && profile.username ? (
-                <div style={cardStyle}>
-                    {/* Display profile image if available */}
-                    {profile.imageUrl && (
-                        <img
-                            src={profile.imageUrl}
-                            alt="Profile Logo"
-                            style={{
-                                width: '100px',
-                                height: '100px',
-                                borderRadius: '8px',
-                                marginBottom: '10px'
+                return (
+                    <>
+                        <Typography
+                            variant="h4"
+                            align="center"
+                            gutterBottom
+                            sx={{
+                                fontWeight: 'bold',
+                                color: '#111E56',
+                                position: 'relative',
+                                mb: 3,
+                                
                             }}
-                        />
-                    )}
-                    <p><span style={labelStyle}>Username:</span> <span style={valueStyle}>{profile.username}</span></p>
-                    <p><span style={labelStyle}>Email:</span> <span style={valueStyle}>{profile.email}</span></p>
-                    <p><span style={labelStyle}>Name:</span> <span style={valueStyle}>{profile.name}</span></p>
-                    <p><span style={labelStyle}>Description:</span>
-                    <span style={valueStyle}>{profile.description}</span></p>
-                    <button 
-                                    onClick={handleDeleteAccountRequest}
-                                    variant="destructive"
-                                    
-                                >
-                                    Delete Account
-                                </button>
-                </div>
-            ) : (
-                <p>Loading profile...</p>
-            )}
-        </>
-    );
+                        >
+                            Seller Profile
+                        </Typography>
+                        {message && (
+                            <Alert severity="error" sx={{ mb: 2 }}>
+                                {message}
+                            </Alert>
+                        )}
+                        {profile && profile.username ? (
+                            <Card
+                                sx={{
+                                    maxWidth: 400,
+                                    margin: '0 auto',
+                                    p: 3,
+                                    borderRadius: '16px',
+                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'white',
+                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                    '&:hover': {
+                                        transform: 'scale(1.03)',
+                                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+                                    },
+                                    textAlign: 'center',
+                                }}
+                            >
+                                {profile.imageUrl && (
+                                    <CardMedia
+                                        component="img"
+                                        image={profile.imageUrl}
+                                        alt="Profile Logo"
+                                        sx={{
+                                            width: 100,
+                                            height: 100,
+                                            borderRadius: '50%',
+                                            margin: '0 auto 16px',
+                                        }}
+                                    />
+                                )}
+                                <CardContent>
+                                    <Typography variant="h6" gutterBottom>
+                                        Username:
+                                    </Typography>
+                                    <Typography variant="body1" color="text.secondary">
+                                        {profile.username}
+                                    </Typography>
+
+                                    <Typography variant="h6" gutterBottom>
+                                        Email:
+                                    </Typography>
+                                    <Typography variant="body1" color="text.secondary">
+                                        {profile.email}
+                                    </Typography>
+
+                                    <Typography variant="h6" gutterBottom>
+                                        Name:
+                                    </Typography>
+                                    <Typography variant="body1" color="text.secondary">
+                                        {profile.name}
+                                    </Typography>
+
+                                    <Typography variant="h6" gutterBottom>
+                                        Description:
+                                    </Typography>
+                                    <Typography variant="body1" color="text.secondary">
+                                        {profile.description}
+                                    </Typography>
+
+                                    <Button
+                                        onClick={handleDeleteAccountRequest}
+                                        sx={{
+                                            mt: 2,
+                                            backgroundColor: '#f44336',
+                                            color: 'white',
+                                            border: '1px solid #f44336',
+                                            '&:hover': {
+                                                backgroundColor: 'white',
+                                                color: '#f44336',
+                                                border: '1px solid #f44336',
+                                            },
+                                        }}
+                                    >
+                                        Delete Account
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <Typography align="center" variant="body1">
+                                Loading profile...
+                            </Typography>
+                        )}
+                    </>
+                );
             case 'viewProducts':
                 return <Products />;
             case 'updateProfile':
-                // Pass the profile and setProfile to the UpdateProfile component
-                return <UpdateProfile profile={profile} setProfile={setProfile} />;  // Ensure profile and setProfile are passed
-            
+                return <UpdateProfile profile={profile} setProfile={setProfile} />;
             case 'myProducts':
-                return <MyProducts />
-
-
-            case 'addProduct' :
-                    return <AddProduct />
-
-         case 'addLogo' :
-                        return <UploadLogo setProfile={setProfile} />
+                return <MyProducts />;
+            case 'addProduct':
+                return <AddProduct />;
+            case 'addLogo':
+                return <UploadLogo setProfile={setProfile} />;
             default:
-                return <h2>Welcome to the Dashboard</h2>;
+                return <Typography variant="h6">Welcome to the Dashboard</Typography>;
         }
     };
 
     return (
-        <div>
-            <SellerNavbar />  {/* Assuming SellerNavbar is a similar component to TouristNavbar */}
+        <Box>
+            <SellerNavbar />
+            <Box
+                sx={{
+                    display: 'flex',
+                    minHeight: '100vh',
+                }}
+            >
+                <Box
+    sx={{
+        width: '250px',
+        backgroundColor: '#111E40',
+        color: 'white',
+        height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
+        position: 'fixed',
+        top: '64px', // Start below the navbar
+        padding: '10px',
+        display: 'flex',
+        flexDirection: 'column',
+        transition: 'transform 0.3s ease-in-out',
+    }}
+>
 
-            <div style={sidebarStyle}>
-                <h3>Dashboard</h3>
-                <ul style={{ listStyleType: 'none', padding: '0' }}>
-                    <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
-                    <li onClick={() => setActiveComponent('viewProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View All Products</li>
-                    <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
-                    <li onClick={() => setActiveComponent('myProducts')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View My Products</li>
-                    <li onClick={() => setActiveComponent('addProduct')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Add A Product</li>
-                    <li onClick={() => setActiveComponent('addLogo')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Add A Logo!</li>
+    {[
+        { label: 'View Profile', section: 'profile' },
+        { label: 'View All Products', section: 'viewProducts' },
+        { label: 'Update Profile', section: 'updateProfile' },
+        { label: 'View My Products', section: 'myProducts' },
+        { label: 'Add A Product', section: 'addProduct' },
+        { label: 'Add A Logo', section: 'addLogo' },
+    ].map((item, index) => (
+        <Button
+            key={index}
+            onClick={() => setActiveComponent(item.section)}
+            sx={{
+                color: 'white',
+                textAlign: 'left',
+                justifyContent: 'flex-start',
+                width: '100%',
+                padding: '10px',
+                marginTop: '10px',
+                backgroundColor: activeComponent === item.section ? '#7BAFD0' : 'transparent',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Smooth animation for scaling and shadow
+                '&:hover': {
+                    backgroundColor: '#7BAFD0', // Hover effect
+                    transform: 'scale(1.01)', // Slight scaling
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow
+                },
+            }}
+        >
+            {item.label}
+        </Button>
+    ))}
+</Box>
 
-                </ul>
-            </div>
-            <div style={contentStyle}>
-                {renderContent()}
-            </div>
-        </div>
+                <Box
+                    sx={{
+                        marginLeft: '260px',
+                        padding: '20px',
+                        width: '100%',
+                    }}
+                >
+                    {renderContent()}
+                </Box>
+            </Box>
+        </Box>
     );
 };
 
 export default SellerDashboard;
-
