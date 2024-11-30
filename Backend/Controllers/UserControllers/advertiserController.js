@@ -4,6 +4,8 @@ const { hashPassword, comparePassword, createToken } = require('../../utils/auth
 const bcrypt = require('bcrypt');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
+const Booking = require('../../Models/ActivityModels/Booking');
+const mongoose = require('mongoose');
 // Create a new advertiser
 const createAdvertiser = async (req, res) => {
     const { username, email, password, name, description } = req.body;
@@ -226,6 +228,52 @@ const uploadAdvertiserPhoto = async (req, res) => {
     }
 };
 
+const getAdvertiserSalesReport = async (req, res) => {
+    try {
+        const advertiserId = req.user.id; // Assuming authentication middleware sets req.user
+
+        // Convert advertiserId to ObjectId using `new mongoose.Types.ObjectId`
+        const objectIdAdvertiser = new mongoose.Types.ObjectId(advertiserId);
+
+        // Aggregate activity revenue
+        const activityRevenue = await Booking.aggregate([
+            {
+                $lookup: {
+                    from: 'activities', // Ensure this matches your MongoDB collection name
+                    localField: 'Activity', // Field in the Booking model
+                    foreignField: '_id', // Field in the Activity model
+                    as: 'activityDetails',
+                },
+            },
+            { $unwind: { path: '$activityDetails', preserveNullAndEmptyArrays: false } }, // Unwind the matched activities
+            {
+                $match: {
+                    'activityDetails.createdBy': objectIdAdvertiser, // Match advertiser-created activities
+                    Status: 'Active', // Ensure the booking is active
+                },
+            },
+            {
+                $group: {
+                    _id: '$Activity', // Group by activity ID
+                    activityName: { $first: '$activityDetails.name' }, // Get the activity name
+                    totalRevenue: { $sum: '$amountPaid' }, // Sum the amount paid for this activity
+                },
+            },
+        ]);
+
+        // Calculate revenue after commission
+        const revenueData = activityRevenue.map((item) => ({
+            activityName: item.activityName,
+            totalRevenue: item.totalRevenue,
+            revenueAfterCommission: item.totalRevenue * 0.9, // Deduct 10% commission
+        }));
+
+        res.status(200).json({ revenueData });
+    } catch (error) {
+        console.error('Error fetching advertiser sales report:', error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};
 
 module.exports = {
     upload, 
@@ -237,5 +285,6 @@ module.exports = {
     getAllAdvertisers,
     loginAdvertiser,
     updatePassword,
-    deleteReq
+    deleteReq,
+    getAdvertiserSalesReport,
 };

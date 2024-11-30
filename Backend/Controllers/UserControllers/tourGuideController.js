@@ -2,7 +2,7 @@ const userModel = require('../../Models/UserModels/TourGuide');
 const { hashPassword, comparePassword, createToken } = require('../../utils/auth');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-
+const BookingItinerary = require('../../Models/ActivityModels/BookingItinerary');
 // Create a new tour guide
 const createTourGuide = async (req, res) => {
     const { username, email, password } = req.body;
@@ -200,7 +200,52 @@ const uploadTourGuidePhoto = async (req, res) => {
         res.status(500).json({ message: 'Failed to upload photo', error: error.message });
     }
 };
+const getTourGuideSalesReport = async (req, res) => {
+    try {
+        const tourGuideId = req.user.id; // Assuming authentication middleware sets req.user
 
+        // Calculate itinerary revenue
+        const itineraryRevenue = await BookingItinerary.aggregate([
+            {
+                $lookup: {
+                    from: 'itineraries',
+                    localField: 'Itinerary',
+                    foreignField: '_id',
+                    as: 'itineraryDetails',
+                },
+            },
+            { $unwind: '$itineraryDetails' },
+            { 
+                $match: { 
+                    'itineraryDetails.createdBy': new mongoose.Types.ObjectId(tourGuideId), // Fixed invocation
+                    Status: 'Active' 
+                } 
+            },
+            {
+                $group: {
+                    _id: '$Itinerary',
+                    itineraryName: { $first: '$itineraryDetails.name' }, // Correct field name
+                    totalRevenue: { $sum: '$amountPaid' },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    itineraryName: 1,
+                    totalRevenue: 1,
+                    revenueAfterCommission: {
+                        $multiply: ['$totalRevenue', 0.9], // Calculate revenue after 10% commission
+                    },
+                },
+            },
+        ]);
+
+        res.status(200).json({ itineraryRevenue });
+    } catch (error) {
+        console.error('Error fetching tour guide sales report:', error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};
 
 
 module.exports = {
@@ -213,5 +258,6 @@ module.exports = {
     getAllTourGuides,
     loginTourGuide,
     updatePassword,
-    deleteReq
+    deleteReq,
+    getTourGuideSalesReport
 };

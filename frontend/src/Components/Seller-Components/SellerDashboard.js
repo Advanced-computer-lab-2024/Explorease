@@ -18,6 +18,7 @@ import MyProducts from './MyProducts';
 import AddProduct from './AddProduct';
 import UpdateProfile from './UpdateProfile';
 import UploadLogo from './UploadLogo';
+import SalesReport from './SellerSalesReport';
 
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -192,6 +193,8 @@ const SellerDashboard = () => {
                 return <AddProduct />;
             case 'addLogo':
                 return <UploadLogo setProfile={setProfile} />;
+            case 'salesReport':
+                return <SalesReport />;
             default:
                 return <Typography variant="h6">Welcome to the Dashboard</Typography>;
         }
@@ -228,6 +231,7 @@ const SellerDashboard = () => {
                             { label: 'View My Products', section: 'myProducts' },
                             { label: 'Add A Product', section: 'addProduct' },
                             { label: 'Add A Logo', section: 'addLogo' },
+                            { label: 'Sales Report', section: 'salesReport' },
                         ].map((item, index) => (
                             <Button
                                 key={index}

@@ -421,6 +421,7 @@ const deactivateItinerary = async (req, res) => {
 
 const bookItinerary = async (req, res) => {
     const { itineraryId } = req.params;
+    const { amountPaid } = req.body; // Retrieve the amountPaid from the request body
     const touristId = req.user.id; // Assuming `req.user` is set by authentication middleware
 
     try {
@@ -441,13 +442,19 @@ const bookItinerary = async (req, res) => {
         const { wallet } = tourist;
 
         // Check if tourist has sufficient balance
-        if (wallet < totalPrice) {
-            console.error(`Insufficient funds: Wallet has ${wallet}, but itinerary price is ${totalPrice}`);
+        if (wallet < amountPaid) {
+            console.error(`Insufficient funds: Wallet has ${wallet}, but amount paid is ${amountPaid}`);
             return res.status(400).json({ message: 'Insufficient balance in wallet' });
         }
 
-        // Deduct the itinerary price from wallet
-        tourist.wallet -= totalPrice;
+        // Check if amountPaid is greater than totalPrice
+        if (amountPaid > totalPrice) {
+            console.error(`Overpayment: Amount paid (${amountPaid}) exceeds total price (${totalPrice})`);
+            return res.status(400).json({ message: 'Amount paid exceeds total price' });
+        }
+
+        // Deduct the amountPaid from wallet
+        tourist.wallet -= amountPaid;
         await tourist.save();
 
         // Set cancellation deadline to 48 hours before the itinerary start date
@@ -458,22 +465,24 @@ const bookItinerary = async (req, res) => {
         const newBooking = new BookingItinerary({
             Tourist: touristId,
             Itinerary: itineraryId,
+            amountPaid, // Store the amountPaid in the booking
             Status: 'Active',
             BookedAt: new Date(),
-            CancellationDeadline: cancellationDeadline
+            CancellationDeadline: cancellationDeadline,
         });
         await newBooking.save();
 
         res.status(201).json({
             message: 'Itinerary booking successful',
             booking: newBooking,
-            walletBalance: tourist.wallet
+            walletBalance: tourist.wallet,
         });
     } catch (error) {
         console.error('Error during itinerary booking:', error);
         res.status(500).json({ message: 'Error processing itinerary booking', error: error.message });
     }
 };
+
 
 const getItineraryById = async (req, res) => {
     try {

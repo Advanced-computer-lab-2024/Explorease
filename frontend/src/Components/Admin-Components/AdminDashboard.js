@@ -17,7 +17,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-
+import SalesReport from './SalesReport';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
@@ -365,6 +365,7 @@ const handleTagChange = (id, newName) => {
                 { label: 'Complaints', section: 'Complaints' },
                 { label: 'Delete Requests', section: 'Delete Requests' },
                 { label: 'Promo Code', section: 'Promo Code' },
+                { label: 'Sales Report', section: 'Sales Report' },
               ].map((item) => (
                 <Button
                   key={item.section}
@@ -419,6 +420,7 @@ const handleTagChange = (id, newName) => {
                 {activeSection === 'Delete Requests' && <DeleteRequests />}
                 {activeSection === 'editPassword' && <EditMyPassword />}
                 {activeSection === 'Promo Code' && <PromoCode />}
+                {activeSection === 'Sales Report' && <SalesReport />}
     
                 {activeSection === 'preferenceTag' && (
     <Box

@@ -11,6 +11,10 @@ const Seller = require('../../Models/UserModels/Seller');
 const TourGuide = require('../../Models/UserModels/TourGuide');
 const Advertiser = require('../../Models/UserModels/Advertiser');
 
+const Booking = require('../../Models/ActivityModels/Booking.js');
+const BookingItinerary = require('../../Models/ActivityModels/BookingItinerary.js');
+const Purchase = require('../../Models/ProductModels/Purchase.js');
+
 
 
 // Delete admin account
@@ -411,4 +415,251 @@ const getAllDeleteRequests = async (req, res) => {
     }
 };
 
-module.exports = { getPendingUsers, acceptUser, rejectUser, editMyPassword, deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins, getAllTourists, getAllSellers, getAllTourismGovernors, getAllTourguides, getAllAdvertisers , deleteUser,getAllDeleteRequests};
+// const getAdminSalesReport = async (req, res) => {
+//     try {
+//         // Get detailed activity sales
+//         const activityDetails = await Booking.aggregate([
+//             { $match: { Status: 'Active' } },
+//             {
+//                 $lookup: {
+//                     from: 'activities', // Name of your activity collection
+//                     localField: 'Activity',
+//                     foreignField: '_id',
+//                     as: 'activityDetails',
+//                 },
+//             },
+//             { $unwind: '$activityDetails' },
+//             {
+//                 $group: {
+//                     _id: '$Activity',
+//                     name: { $first: '$activityDetails.name' },
+//                     totalSales: { $sum: '$amountPaid' },
+//                     appRevenue: { $sum: { $multiply: ['$amountPaid', 0.1] } }, // App's 10% share
+//                 },
+//             },
+//         ]);
+
+//         // Get detailed itinerary sales
+//         const itineraryDetails = await BookingItinerary.aggregate([
+//             { $match: { Status: 'Active' } },
+//             {
+//                 $lookup: {
+//                     from: 'itineraries', // Name of your itinerary collection
+//                     localField: 'Itinerary',
+//                     foreignField: '_id',
+//                     as: 'itineraryDetails',
+//                 },
+//             },
+//             { $unwind: '$itineraryDetails' },
+//             {
+//                 $group: {
+//                     _id: '$Itinerary',
+//                     name: { $first: '$itineraryDetails.name' },
+//                     totalSales: { $sum: '$amountPaid' },
+//                     appRevenue: { $sum: { $multiply: ['$amountPaid', 0.1] } }, // App's 10% share
+//                 },
+//             },
+//         ]);
+
+//         // Get detailed gift shop sales
+//         const productDetails = await Purchase.aggregate([
+//             {
+//                 $lookup: {
+//                     from: 'products',
+//                     localField: 'productId',
+//                     foreignField: '_id',
+//                     as: 'productDetails',
+//                 },
+//             },
+//             { $unwind: '$productDetails' },
+//             { $match: { 'productDetails.Admin': { $exists: true } } },
+//             {
+//                 $group: {
+//                     _id: '$productId',
+//                     name: { $first: '$productDetails.Name' },
+//                     totalSales: { $sum: '$totalPrice' },
+//                 },
+//             },
+//         ]);
+
+//         // Calculate totals
+//         const totalActivityRevenue = activityDetails.reduce((sum, item) => sum + item.totalSales, 0);
+//         const totalItineraryRevenue = itineraryDetails.reduce((sum, item) => sum + item.totalSales, 0);
+//         const totalGiftShopRevenue = productDetails.reduce((sum, item) => sum + item.totalSales, 0);
+
+//         // Calculate the app's revenue
+//         const totalActivityAppRevenue = activityDetails.reduce((sum, item) => sum + item.appRevenue, 0);
+//         const totalItineraryAppRevenue = itineraryDetails.reduce((sum, item) => sum + item.appRevenue, 0);
+
+//         res.status(200).json({
+//             activitySales: activityDetails,
+//             itinerarySales: itineraryDetails,
+//             giftShopSales: productDetails,
+//             totalRevenue: {
+//                 activities: totalActivityRevenue,
+//                 itineraries: totalItineraryRevenue,
+//                 giftShop: totalGiftShopRevenue,
+//             },
+//             appRevenue: {
+//                 activities: totalActivityAppRevenue,
+//                 itineraries: totalItineraryAppRevenue,
+//                 total: totalActivityAppRevenue + totalItineraryAppRevenue,
+//             },
+//         });
+//     } catch (error) {
+//         console.error('Error fetching admin sales report:', error);
+//         res.status(500).json({ error: 'Server Error' });
+//     }
+// };
+
+const getAdminSalesReport = async (req, res) => {
+    try {
+        // Get detailed activity sales
+        const activityDetails = await Booking.aggregate([
+            { $match: { Status: 'Active' } },
+            {
+                $lookup: {
+                    from: 'activities', // Name of your activity collection
+                    localField: 'Activity',
+                    foreignField: '_id',
+                    as: 'activityDetails',
+                },
+            },
+            { $unwind: '$activityDetails' },
+            {
+                $group: {
+                    _id: '$Activity',
+                    name: { $first: '$activityDetails.name' },
+                    totalSales: { $sum: '$amountPaid' },
+                    appRevenue: { $sum: { $multiply: ['$amountPaid', 0.1] } }, // App's 10% share
+                },
+            },
+        ]);
+
+        // Get detailed itinerary sales
+        const itineraryDetails = await BookingItinerary.aggregate([
+            { $match: { Status: 'Active' } },
+            {
+                $lookup: {
+                    from: 'itineraries', // Name of your itinerary collection
+                    localField: 'Itinerary',
+                    foreignField: '_id',
+                    as: 'itineraryDetails',
+                },
+            },
+            { $unwind: '$itineraryDetails' },
+            {
+                $group: {
+                    _id: '$Itinerary',
+                    name: { $first: '$itineraryDetails.name' },
+                    totalSales: { $sum: '$amountPaid' },
+                    appRevenue: { $sum: { $multiply: ['$amountPaid', 0.1] } }, // App's 10% share
+                },
+            },
+        ]);
+
+        // Get detailed gift shop sales with quantity
+        const productDetails = await Purchase.aggregate([
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'productDetails',
+                },
+            },
+            { $unwind: '$productDetails' },
+            { $match: { 'productDetails.Admin': { $exists: true } } },
+            {
+                $group: {
+                    _id: '$productId',
+                    name: { $first: '$productDetails.Name' },
+                    totalSales: { $sum: '$totalPrice' },
+                    totalQuantitySold: { $sum: '$quantity' }, // Total quantity sold
+                    quantityLeft: { $first: '$productDetails.AvailableQuantity' }, // Remaining quantity
+                },
+            },
+        ]);
+
+        // Calculate totals
+        const totalActivityRevenue = activityDetails.reduce((sum, item) => sum + item.totalSales, 0);
+        const totalItineraryRevenue = itineraryDetails.reduce((sum, item) => sum + item.totalSales, 0);
+        const totalGiftShopRevenue = productDetails.reduce((sum, item) => sum + item.totalSales, 0);
+
+        // Calculate the app's revenue
+        const totalActivityAppRevenue = activityDetails.reduce((sum, item) => sum + item.appRevenue, 0);
+        const totalItineraryAppRevenue = itineraryDetails.reduce((sum, item) => sum + item.appRevenue, 0);
+
+        res.status(200).json({
+            activitySales: activityDetails,
+            itinerarySales: itineraryDetails,
+            giftShopSales: productDetails,
+            totalRevenue: {
+                activities: totalActivityRevenue,
+                itineraries: totalItineraryRevenue,
+                giftShop: totalGiftShopRevenue,
+            },
+            appRevenue: {
+                activities: totalActivityAppRevenue,
+                itineraries: totalItineraryAppRevenue,
+                total: totalActivityAppRevenue + totalItineraryAppRevenue,
+            },
+        });
+    } catch (error) {
+        console.error('Error fetching admin sales report:', error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};
+
+const getFilteredAdminSalesReport = async (req, res) => {
+    try {
+        const { productName, startDate, endDate } = req.query;
+
+        // Build dynamic match criteria
+        let matchCriteria = { 'productDetails.Admin': { $exists: true } };
+
+        if (productName) {
+            matchCriteria['productDetails.Name'] = { $regex: productName, $options: 'i' }; // Case-insensitive match
+        }
+        if (startDate && endDate) {
+            matchCriteria.purchaseDate = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+            };
+        }
+
+        // Filtered gift shop sales with quantity
+        const productDetails = await Purchase.aggregate([
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'productDetails',
+                },
+            },
+            { $unwind: '$productDetails' },
+            { $match: matchCriteria },
+            {
+                $group: {
+                    _id: '$productId',
+                    name: { $first: '$productDetails.Name' },
+                    totalSales: { $sum: '$totalPrice' },
+                    totalQuantitySold: { $sum: '$quantity' }, // Total quantity sold
+                    quantityLeft: { $first: '$productDetails.AvailableQuantity' }, // Remaining quantity
+                },
+            },
+        ]);
+
+        res.status(200).json({ giftShopSales: productDetails });
+    } catch (error) {
+        console.error('Error fetching filtered admin sales report:', error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};
+
+
+
+
+
+module.exports = { getAdminSalesReport,getPendingUsers, acceptUser, rejectUser, editMyPassword, deleteAdminAccount, addTourismGovernor, addAdmin, authorizeAdmin, loginAdmin, createMainAdmin, getAllAdmins, getAllTourists, getAllSellers, getAllTourismGovernors, getAllTourguides, getAllAdvertisers , deleteUser,getAllDeleteRequests, getFilteredAdminSalesReport};

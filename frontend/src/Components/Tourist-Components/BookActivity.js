@@ -196,12 +196,28 @@ const BookActivitiesPage = () => {
     const handlePayment = async () => {
         try {
             const token = localStorage.getItem('token');
-            console.log(selectedActivity._id);
-            const response = await axios.post(`/tourists/activities/book/${selectedActivity._id}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const amountPaid = selectedActivity.price; // Rename for consistency with backend
+    
+            // First, make the booking request and include amountPaid in the request body
+            const response = await axios.post(
+                `/tourists/activities/book/${selectedActivity._id}`,
+                { amountPaid }, // Send amountPaid in the request body
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+    
             setSuccessMessage('Payment successful! Booking created.');
             setWalletBalance(response.data.walletBalance);
+    
+            // After successful booking, add points based on the activity's price
+            await axios.post(
+                '/tourists/addpoints',
+                { amountPaid },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
     
             // Redirect to tourist dashboard after 3 seconds
             setTimeout(() => {
@@ -214,6 +230,7 @@ const BookActivitiesPage = () => {
             setErrorMessage(error.response?.data?.message || 'Payment failed');
         }
     };
+    
     
     if (activeComponent === 'PayForActivity' && selectedActivity) {
         return (

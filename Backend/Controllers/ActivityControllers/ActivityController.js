@@ -442,9 +442,9 @@ const filterSortSearchActivitiesByAdvertiser = async (req, res) => {
         res.status(500).json({ message: 'Error fetching activities', error: error.message });
     }
 };
-
 const bookActivity = async (req, res) => {
     const { activityId } = req.params;
+    const { amountPaid } = req.body; // Retrieve the amountPaid from the request body
     const touristId = req.user.id; // Assuming `req.user` is set by authentication middleware
 
     try {
@@ -453,7 +453,6 @@ const bookActivity = async (req, res) => {
         const activity = await activityModel.findById(activityId);
         const tourist = await Tourist.findById(touristId);
 
-     
         if (!activity) {
             console.error(`Activity with ID ${activityId} not found`);
             return res.status(404).json({ message: 'Activity not found' });
@@ -462,19 +461,24 @@ const bookActivity = async (req, res) => {
             console.error(`Tourist with ID ${touristId} not found`);
             return res.status(404).json({ message: 'Tourist not found' });
         }
-        
+
         const { price } = activity;
         const { wallet } = tourist;
 
         // Check if tourist has sufficient balance
-        if (wallet < price) {
-            console.error(`Insufficient funds: Wallet has ${wallet}, but price is ${price}`);
-
+        if (wallet < amountPaid) {
+            console.error(`Insufficient funds: Wallet has ${wallet}, but amount paid is ${amountPaid}`);
             return res.status(400).json({ message: 'Insufficient balance in wallet' });
         }
 
-        // Deduct the activity price from wallet
-        tourist.wallet -= price;
+        // Check if amountPaid is greater than activity price
+        if (amountPaid > price) {
+            console.error(`Overpayment: Amount paid (${amountPaid}) exceeds activity price (${price})`);
+            return res.status(400).json({ message: 'Amount paid exceeds activity price' });
+        }
+
+        // Deduct the amountPaid from wallet
+        tourist.wallet -= amountPaid;
         await tourist.save();
 
         // Set cancellation deadline to 48 hours before the activity date
@@ -485,16 +489,17 @@ const bookActivity = async (req, res) => {
         const newBooking = new Booking({
             Tourist: touristId,
             Activity: activityId,
+            amountPaid, // Store the amountPaid in the booking
             Status: 'Active',
             BookedAt: new Date(),
-            CancellationDeadline: cancellationDeadline
+            CancellationDeadline: cancellationDeadline,
         });
         await newBooking.save();
 
         res.status(201).json({
             message: 'Booking successful',
             booking: newBooking,
-            walletBalance: tourist.wallet
+            walletBalance: tourist.wallet,
         });
     } catch (error) {
         console.error('Error during booking:', error);

@@ -77,4 +77,8 @@ router.get('/notifications', roleAuth(['tourGuide']), notificationController.get
 router.put('/notifications/:id', roleAuth(['tourGuide']), notificationController.markNotificationAsRead);
 router.delete('/notifications/:id', roleAuth(['tourGuide']), notificationController.deleteNotification);
 
+// Get tour guide sales report
+router.get('/salesReport', roleAuth(['tourGuide']), tourGuideController.getTourGuideSalesReport);
+
+// Export the router
 module.exports = router;

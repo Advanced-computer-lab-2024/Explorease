@@ -3,6 +3,10 @@ const { hashPassword, comparePassword, createToken } = require('../../utils/auth
 const bcrypt = require('bcrypt');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
+const mongoose = require('mongoose'); // Ensure mongoose is properly imported
+const { ObjectId } = mongoose.Types;
+const Purchase = require('../../Models/ProductModels/Purchase');
+
 // Create a new seller
 const createSeller = async (req, res) => {
     const { username, email, password, name, description } = req.body;
@@ -179,6 +183,94 @@ const uploadSellerPhoto = async (req, res) => {
     }
 };
 
+const getSellerSalesReport = async (req, res) => {
+    try {
+        const sellerId = req.user.id; // Assuming authentication middleware sets req.user
+
+        // Ensure `sellerId` is converted to a proper ObjectId
+        const sellerObjectId = new ObjectId(sellerId);
+
+        // Calculate product revenue with quantity sold and quantity left
+        const productRevenue = await Purchase.aggregate([
+            {
+                $lookup: {
+                    from: 'products', // Join with the 'products' collection
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'productDetails',
+                },
+            },
+            { $unwind: '$productDetails' }, // Unwind the product details array
+            { $match: { 'productDetails.Seller': sellerObjectId } }, // Match only the seller's products
+            {
+                $group: {
+                    _id: '$productId',
+                    productName: { $first: '$productDetails.Name' },
+                    totalRevenue: { $sum: '$totalPrice' },
+                    totalQuantitySold: { $sum: '$quantity' }, // Sum the quantity sold
+                    quantityLeft: { $first: '$productDetails.AvailableQuantity' }, // Get the remaining quantity
+                },
+            },
+        ]);
+
+        res.status(200).json({ productRevenue });
+    } catch (error) {
+        console.error('Error fetching seller sales report:', error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};
+const getFilteredSellerSalesReport = async (req, res) => {
+    try {
+        const sellerId = req.user.id; // Assuming authentication middleware sets req.user
+        const { productName, startDate, endDate } = req.query; // Extract query parameters
+
+        // Ensure `sellerId` is converted to a proper ObjectId
+        const sellerObjectId = new mongoose.Types.ObjectId(sellerId);
+
+        // Build dynamic match criteria
+        let matchCriteria = { 'productDetails.Seller': sellerObjectId };
+
+        if (productName) {
+            matchCriteria['productDetails.Name'] = { $regex: new RegExp(productName, 'i') }; // Case-insensitive regex match
+        }
+        if (startDate && endDate) {
+            matchCriteria.purchaseDate = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+            };
+        }
+
+        // Calculate product revenue with filtering
+        const productRevenue = await Purchase.aggregate([
+            {
+                $lookup: {
+                    from: 'products', // Join with the 'products' collection
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'productDetails',
+                },
+            },
+            { $unwind: '$productDetails' }, // Unwind the product details array
+            { $match: matchCriteria }, // Match the seller's products with filtering
+            {
+                $group: {
+                    _id: '$productId',
+                    productName: { $first: '$productDetails.Name' },
+                    totalRevenue: { $sum: '$totalPrice' },
+                    totalQuantitySold: { $sum: '$quantity' }, // Sum the quantity sold
+                    quantityLeft: { $first: '$productDetails.AvailableQuantity' }, // Get the remaining quantity
+                },
+            },
+        ]);
+
+        res.status(200).json({ productRevenue });
+    } catch (error) {
+        console.error('Error fetching seller sales report:', error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};
+
+
 
 module.exports = {
     upload,
@@ -189,5 +281,7 @@ module.exports = {
     deleteSeller,
     getAllSellers,
     updatePassword,
-    deleteReq
+    deleteReq,
+    getSellerSalesReport,
+    getFilteredSellerSalesReport,
 };

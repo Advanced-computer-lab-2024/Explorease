@@ -36,5 +36,8 @@ router.get('/notifications', roleAuth(['advertiser']), notificationController.ge
 router.put('/notifications/:id', roleAuth(['advertiser']), notificationController.markNotificationAsRead);
 router.delete('/notifications/:id', roleAuth(['advertiser']), notificationController.deleteNotification);
 
+// Get advertiser sales report
+router.get('/salesReport', roleAuth(['advertiser']), advertiserController.getAdvertiserSalesReport);
+
 // Export the router
 module.exports = router;

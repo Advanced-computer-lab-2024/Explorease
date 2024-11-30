@@ -119,21 +119,29 @@ const BookItinerariesPage = () => {
     const handleItineraryPayment = async () => {
         try {
             const token = localStorage.getItem('token');
-            
-            // First, make the booking request
-            const response = await axios.post(`/tourists/itineraries/book/${selectedItinerary._id}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
+            const amountPaid = selectedItinerary.totalPrice; // Rename for consistency with backend
+    
+            // First, make the booking request and include amountPaid in the request body
+            const response = await axios.post(
+                `/tourists/itineraries/book/${selectedItinerary._id}`,
+                { amountPaid }, // Send amountPaid in the request body
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+    
             setSuccessMessage('Payment successful! Itinerary booked.');
             setWalletBalance(response.data.walletBalance);
-
+    
             // After successful booking, add points based on the itinerary's total price
-            const amountPaid = selectedItinerary.totalPrice; // Rename for consistency with backend
-            await axios.post('/tourists/addpoints', { amountPaid }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
+            await axios.post(
+                '/tourists/addpoints',
+                { amountPaid },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+    
             // Reset to itinerary booking list after 3 seconds
             setTimeout(() => {
                 setActiveComponent('BookItinerary');
@@ -145,6 +153,7 @@ const BookItinerariesPage = () => {
             setErrorMessage(error.response?.data?.message || 'Payment failed');
         }
     };
+    
     
     if (activeComponent === 'PayForItinerary' && selectedItinerary) {
         return (

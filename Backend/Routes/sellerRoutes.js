@@ -70,5 +70,9 @@ router.get('/notifications', roleAuth(['seller']), notificationController.getNot
 router.put('/notifications/:id', roleAuth(['seller']), notificationController.markNotificationAsRead);
 router.delete('/notifications/:id', roleAuth(['seller']), notificationController.deleteNotification);
 
+// Get seller sales report
+router.get('/salesReport', roleAuth(['seller']), sellerController.getSellerSalesReport);
+router.get('/salesReport/filter', roleAuth(['seller']), sellerController.getFilteredSellerSalesReport);
+
 // Export only the router
 module.exports = router;

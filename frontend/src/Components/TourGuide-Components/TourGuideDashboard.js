@@ -4,6 +4,7 @@ import axios from 'axios';
 import TouristNavbar from '../MainPage-Components/GuestNavbar'; // Assuming you're reusing the same navbar
 import UpdateProfile from './UpdateProfile';
 import AddPhoto from './AddPhoto';
+import SalesReport from './TourGuideSalesReport';
 
 const TourGuideDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -681,6 +682,8 @@ const TourGuideDashboard = () => {
                 return <UpdateProfile profile={profile} setProfile={setProfile}/>;
             case 'uploadProfilePicture':
                 return <AddPhoto setProfile = {setProfile} /> // Placeholder for the update itinerary component
+            case 'salesReport':
+                return <SalesReport />;
             default:
                 return <h2>Welcome to the Tour Guide Dashboard</h2>;
         }
@@ -698,7 +701,7 @@ const TourGuideDashboard = () => {
                     <li onClick={() => setActiveComponent('createActivity')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Create An Itinerary</li>
                     <li onClick={() => setActiveComponent('updateProfile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Update Profile</li>
                     <li onClick={() => setActiveComponent('uploadProfilePicture')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Upload Profile Picture</li>
-
+                    <li onClick={() => setActiveComponent('salesReport')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Sales Report</li>
                 </ul>
             </div>
 

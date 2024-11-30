@@ -121,6 +121,11 @@ router.get('/pending-users', authenticateAdmin, adminController.getPendingUsers)
 router.post('/accept-user', authenticateAdmin, adminController.acceptUser);
 router.post('/reject-user', authenticateAdmin, adminController.rejectUser);
 
+//get sales report
+router.get('/sales-report', authenticateAdmin, adminController.getAdminSalesReport);
+//get sales report by date
+router.get('/sales-report/filter', authenticateAdmin, adminController.getFilteredAdminSalesReport);
+
 
 
 //complaint
