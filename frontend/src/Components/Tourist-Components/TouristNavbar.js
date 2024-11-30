@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import axios from 'axios';
+import CloseIcon from '@mui/icons-material/Close';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 
 const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistCount }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -75,30 +77,84 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
     };
 
     const renderNotifications = () => (
-        <Box sx={{ width: 300, padding: 2 }}>
-            <Typography variant="h6" gutterBottom>
-                Notifications
-            </Typography>
+        <Box sx={{ width: 350, padding: 2, backgroundColor: '#f9f9f9' }}>
+            {/* Header */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#0D164A',
+                        fontSize: '20px',
+                        position: 'relative',
+                        '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            bottom: -2,
+                            left: 0,
+                            width: '100%',
+                            height: '2px',
+                            backgroundColor: '#0D164A',
+                            transform: 'scaleX(0)',
+                            transformOrigin: 'left',
+                            transition: 'transform 0.3s ease-in-out',
+                        },
+                        '&:hover::after': {
+                            transform: 'scaleX(1)',
+                        },
+                    }}
+                >
+                    Notifications
+                </Typography>
+                <IconButton onClick={() => toggleNotificationDrawer(false)} sx={{ color: '#111E56' }}>
+                    <CloseIcon />
+                </IconButton>
+            </Box>
+            {/* Notifications List */}
             {notifications.length === 0 ? (
                 <Typography>No notifications available</Typography>
             ) : (
-                <List>
+                <List sx={{ padding: 0 }}>
                     {notifications.map((notification) => (
                         <ListItem
                             key={notification._id}
-                            button
-                            onClick={() => markNotificationAsRead(notification._id)}
                             sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
                                 backgroundColor: notification.isRead ? '#f0f0f0' : '#e8f4ff',
-                                marginBottom: 1,
                                 borderRadius: '8px',
+                                padding: 2,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                                marginBottom: '8px',
+                                '&:hover': {
+                                    transform: 'scale(1.02)',
+                                    backgroundColor: '#edf7ff',
+                                },
                             }}
                         >
+                            <Tooltip title="Mark as Read" arrow>
+                                <IconButton
+                                    onClick={() => markNotificationAsRead(notification._id)}
+                                    sx={{
+                                        backgroundColor: '#d3d3d3',
+                                        color: 'black',
+                                        '&:hover': {
+                                            backgroundColor: '#b0b0b0',
+                                        },
+                                    }}
+                                >
+                                    <EditNoteIcon />
+                                </IconButton>
+                            </Tooltip>
                             <ListItemText
                                 primary={notification.message}
                                 secondary={new Date(notification.createdAt).toLocaleString()}
+                                sx={{ marginLeft: 2 }}
                             />
                         </ListItem>
+                        
                     ))}
                 </List>
             )}

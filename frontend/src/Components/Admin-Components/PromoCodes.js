@@ -116,10 +116,15 @@ const PromoCodes = () => {
                     maxWidth: 500,
                     margin: '0 auto',
                     padding: 3,
-                    backgroundColor: '#f9f9f9',
+                    backgroundColor: 'white',
                     borderRadius: 2,
                     boxShadow: 3,
-                    mb: 4,
+                    mb: 4,boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    '&:hover': {
+                        transform: 'scale(1.03)', // Adds a scaling effect
+                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)', // Enhances the shadow on hover
+                    },
                 }}
             >
                 <Typography variant="h5" sx={{ mb: 2 }}>
@@ -154,6 +159,7 @@ const PromoCodes = () => {
                     sx={{
                         backgroundColor: '#111E56',
                         color: 'white',
+                        border: '1px solid #111E56',
                         '&:hover': {
                             backgroundColor: 'white',
                             color: '#111E56',

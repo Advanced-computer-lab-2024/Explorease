@@ -8,6 +8,7 @@ const axios = require('axios');
 const schedule = require('node-schedule');
 const Tourist = require('./Models/UserModels/Tourist');
 const { createBirthdayPromoCode } = require('./Controllers/ProductControllers/PromoCodeController');
+const { notifySubscribedUsers } = require('./Controllers/UserControllers/NotificationController');
 
 // User Routes
 // const roleAuth = require('../Middleware/AuthMiddleware');
@@ -144,6 +145,18 @@ schedule.scheduleJob('0 9 * * *', async () => {
     console.log('Running daily booking reminder task...');
     await sendBookingReminders();
 });
+
+// Schedule task to notify subscribed users about activities with open booking
+// schedule.scheduleJob('0 * * * *', async () => {
+//     console.log('Running scheduled task to notify subscribed users...');
+//     await notifySubscribedUsers();
+// });
+
+schedule.scheduleJob('*/5 * * * *', async () => {
+    console.log('Running scheduled task to notify subscribed users every 5 minutes...');
+    await notifySubscribedUsers();
+});
+
 
 // Schedule the birthday promo code task every 5 minutes
 //schedule.scheduleJob('*/5 * * * *', generateBirthdayPromoCodes);

@@ -1,4 +1,6 @@
 const Notification = require('../../Models/UserModels/Notification');
+const Activity = require('../../Models/ActivityModels/Activity');
+const Tourist = require('../../Models/UserModels/Tourist');
 
 // Create a new notification
 const createNotification = async (req, res) => {
@@ -122,7 +124,42 @@ const markAllAsRead = async (req, res) => {
         res.status(500).json({ error: 'Server Error' });
     }
 };
+const notifySubscribedUsers = async () => {
+    try {
+        // Fetch activities with bookingOpen set to true and having subscribedUsers
+        const activities = await Activity.find({
+            bookingOpen: true,
+            subscribedUsers: { $exists: true, $not: { $size: 0 } },
+        });
 
+        for (const activity of activities) {
+            const subscribedUsers = activity.subscribedUsers;
+
+            for (const userId of subscribedUsers) {
+                // Create a notification for each user
+                await Notification.create({
+                    user: userId,
+                    role: 'Tourist',
+                    type: 'activity_booking',
+                    message: `The activity "${activity.name}" is now open for booking!`,
+                    data: { activityId: activity._id },
+                });
+
+                // Remove the user from the subscribedUsers list
+                activity.subscribedUsers = activity.subscribedUsers.filter(
+                    (subscriberId) => subscriberId.toString() !== userId.toString()
+                );
+            }
+
+            // Save the updated activity with modified subscribedUsers
+            await activity.save();
+        }
+
+        console.log('Notifications sent and subscribers removed for activities with open booking.');
+    } catch (error) {
+        console.error('Error sending notifications and updating subscriber list:', error.message);
+    }
+};
 
 module.exports = {
     createNotification,
@@ -130,5 +167,6 @@ module.exports = {
     markNotificationAsRead,
     deleteNotification,
     markAllAsRead,
+    notifySubscribedUsers,
     //createBulkNotifications,
 };

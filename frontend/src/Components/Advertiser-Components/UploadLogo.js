@@ -46,8 +46,13 @@ const UploadLogo = ({ setProfile }) => {
     };
 
     return (
-        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2 }}>
-            <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>
+        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2 ,boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+            '&:hover': {
+                transform: 'scale(1.03)', // Adds a scaling effect
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)', // Enhances the shadow on hover
+            },}}>
+            <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' , color:'#111E56' }}>
                 Upload Your Photo
             </Typography>
 
@@ -63,7 +68,13 @@ const UploadLogo = ({ setProfile }) => {
                 variant="contained"
                 color="primary"
                 onClick={handleUpload}
-                sx={{ mt: 2, width: '100%', padding: '10px' }}
+                sx={{ backgroundColor: '#111E56', 
+                    color: 'white', 
+                    '&:hover': { 
+                        backgroundColor: 'white', 
+                        color: '#111E56',
+                        border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                    },mt: 2, width: '100%', padding: '10px' }}
                 disabled={uploading}
             >
                 {uploading ? <CircularProgress size={24} /> : 'Upload Photo'}

@@ -164,6 +164,24 @@ const BookActivitiesPage = () => {
         }
     };
 
+    const handleNotifyWhenAvailable = async (activityId) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(
+                `/tourists/subscribeToActivity/${activityId}`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setBookmarkSuccessMessage('You will be notified when booking opens!');
+            setTimeout(() => setBookmarkSuccessMessage(''), 3000);
+        } catch (error) {
+            console.error('Error subscribing to activity:', error);
+            setBookmarkErrorMessage(error.response?.data?.msg || 'Error subscribing to activity');
+            setTimeout(() => setBookmarkErrorMessage(''), 3000);
+        }
+    };
+    
+
     const handleBookActivity = (activity) => {
         if (walletBalance === null || isNaN(walletBalance)) {
             setErrorMessage('Error: Wallet balance is not available.');
@@ -358,58 +376,80 @@ const BookActivitiesPage = () => {
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
             {activities.length > 0 ? activities.map((activity) => (
-                <Card key={activity._id} sx={{ width: '300px', boxShadow: 3, padding: 2, textAlign: 'center' }}>
-                    <CardContent>
-                        <Typography variant="h6">{activity.name}</Typography>
-                        <Typography><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</Typography>
-                        <Typography><strong>Time:</strong> {activity.time}</Typography>
-                        <Typography><strong>Location:</strong> {activity.location}</Typography>
-                        <Typography><strong>Price:</strong> {convertPrice(activity.price)} {selectedCurrency}</Typography>
-                        <Typography><strong>Category:</strong> {activity.category?.name}</Typography>
-                        {activity.tags && (
-                            <Typography><strong>Tags:</strong> {activity.tags.map(tag => tag.name).join(', ')}</Typography>
-                        )}
-                        <Typography><strong>Special Discounts:</strong> {activity.specialDiscounts}</Typography>
-                    </CardContent>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => handleBookActivity(activity)}
-                        sx={{ 
-                            backgroundColor: '#111E56', 
-                            color: 'white', 
-                            '&:hover': { 
-                                backgroundColor: 'white', 
-                                color: '#111E56',
-                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                            }, 
-                            mx: 1, 
-                            px: 4 
-                        }}
-                    >
-                        Book Now
-                    </Button>
-                    <Button
-    variant="contained"
-    color="secondary"
-    onClick={() => handleBookmarkActivity(activity)}
-    sx={{ 
-        backgroundColor: bookmarkedActivities.includes(activity._id) ? '#FF5733' : '#FFB800',
-        color: 'white',
-        '&:hover': {
-            backgroundColor: bookmarkedActivities.includes(activity._id) ? '#FF7961' : '#FFD54F',
-            color: 'black',
-        },
-        mx: 1,
-        px: 4,
-        mt: 1
-    }}
->
-    {bookmarkedActivities.includes(activity._id) ? 'Unbookmark' : 'Bookmark'}
-</Button>
-
-
-                </Card>
+            <Card key={activity._id} sx={{ width: '300px', boxShadow: 3, padding: 2, textAlign: 'center' }}>
+            <CardContent>
+                <Typography variant="h6">{activity.name}</Typography>
+                <Typography><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</Typography>
+                <Typography><strong>Time:</strong> {activity.time}</Typography>
+                <Typography><strong>Location:</strong> {activity.location}</Typography>
+                <Typography><strong>Price:</strong> {convertPrice(activity.price)} {selectedCurrency}</Typography>
+                <Typography><strong>Category:</strong> {activity.category?.name}</Typography>
+                {activity.tags && (
+                    <Typography><strong>Tags:</strong> {activity.tags.map(tag => tag.name).join(', ')}</Typography>
+                )}
+                <Typography><strong>Special Discounts:</strong> {activity.specialDiscounts}</Typography>
+            </CardContent>
+        
+            {activity.bookingOpen ? (
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => handleBookActivity(activity)}
+                    sx={{ 
+                        backgroundColor: '#111E56', 
+                        color: 'white', 
+                        '&:hover': { 
+                            backgroundColor: 'white', 
+                            color: '#111E56',
+                            border: '1px solid #111E56',
+                        }, 
+                        mx: 1, 
+                        px: 4,
+                    }}
+                >
+                    Book Now
+                </Button>
+            ) : (
+                <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={() => handleNotifyWhenAvailable(activity._id)}
+                    sx={{ 
+                        backgroundColor: '#FFD54F',
+                        color: 'black',
+                        '&:hover': { 
+                            backgroundColor: '#FFF9C4',
+                            border: '1px solid #FFD54F',
+                        },
+                        mx: 1,
+                        px: 4,
+                        mt: 1,
+                    }}
+                >
+                    Notify When Available
+                </Button>
+            )}
+        
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => handleBookmarkActivity(activity)}
+                sx={{ 
+                    backgroundColor: bookmarkedActivities.includes(activity._id) ? '#FF5733' : '#FFB800',
+                    color: 'white',
+                    '&:hover': {
+                        backgroundColor: bookmarkedActivities.includes(activity._id) ? '#FF7961' : '#FFD54F',
+                        color: 'black',
+                    },
+                    mx: 1,
+                    px: 4,
+                    mt: 1,
+                }}
+            >
+                {bookmarkedActivities.includes(activity._id) ? 'Unbookmark' : 'Bookmark'}
+            </Button>
+        </Card>
+        
             )) : (
                 <Typography>No activities available</Typography>
             )}

@@ -22,6 +22,8 @@ import UploadLogo from './UploadLogo';
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar visibility state
+
     const [activeComponent, setActiveComponent] = useState('profile');
     const navigate = useNavigate();
 
@@ -66,6 +68,11 @@ const SellerDashboard = () => {
             }
         }
     };
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen((prevState) => !prevState);
+    };
+    
 
     const renderContent = () => {
         switch (activeComponent) {
@@ -192,69 +199,72 @@ const SellerDashboard = () => {
 
     return (
         <Box>
-            <SellerNavbar />
+            <SellerNavbar toggleSidebar={toggleSidebar} />
             <Box
                 sx={{
                     display: 'flex',
                     minHeight: '100vh',
                 }}
             >
-                <Box
+                {isSidebarOpen && (
+                    <Box
+                        sx={{
+                            width: '250px',
+                            backgroundColor: '#111E40',
+                            color: 'white',
+                            height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
+                            position: 'fixed',
+                            top: '64px', // Start below the navbar
+                            padding: '10px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            transition: 'transform 0.3s ease-in-out',
+                        }}
+                    >
+                        {[
+                            { label: 'View Profile', section: 'profile' },
+                            { label: 'View All Products', section: 'viewProducts' },
+                            { label: 'Update Profile', section: 'updateProfile' },
+                            { label: 'View My Products', section: 'myProducts' },
+                            { label: 'Add A Product', section: 'addProduct' },
+                            { label: 'Add A Logo', section: 'addLogo' },
+                        ].map((item, index) => (
+                            <Button
+                                key={index}
+                                onClick={() => setActiveComponent(item.section)}
+                                sx={{
+                                    color: 'white',
+                                    textAlign: 'left',
+                                    justifyContent: 'flex-start',
+                                    width: '100%',
+                                    padding: '10px',
+                                    marginTop: '10px',
+                                    backgroundColor: activeComponent === item.section ? '#7BAFD0' : 'transparent',
+                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                                    '&:hover': {
+                                        backgroundColor: '#7BAFD0',
+                                        transform: 'scale(1.01)',
+                                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                                    },
+                                }}
+                            >
+                                {item.label}
+                            </Button>
+                        ))}
+                    </Box>
+                )}
+
+<Box
     sx={{
-        width: '250px',
-        backgroundColor: '#111E40',
-        color: 'white',
-        height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
-        position: 'fixed',
-        top: '64px', // Start below the navbar
-        padding: '10px',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'transform 0.3s ease-in-out',
+        marginLeft: isSidebarOpen ? '260px' : '0px',
+        padding: '20px',
+        width: '100%',
+        transition: 'margin-left 0.3s ease',
     }}
 >
-
-    {[
-        { label: 'View Profile', section: 'profile' },
-        { label: 'View All Products', section: 'viewProducts' },
-        { label: 'Update Profile', section: 'updateProfile' },
-        { label: 'View My Products', section: 'myProducts' },
-        { label: 'Add A Product', section: 'addProduct' },
-        { label: 'Add A Logo', section: 'addLogo' },
-    ].map((item, index) => (
-        <Button
-            key={index}
-            onClick={() => setActiveComponent(item.section)}
-            sx={{
-                color: 'white',
-                textAlign: 'left',
-                justifyContent: 'flex-start',
-                width: '100%',
-                padding: '10px',
-                marginTop: '10px',
-                backgroundColor: activeComponent === item.section ? '#7BAFD0' : 'transparent',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Smooth animation for scaling and shadow
-                '&:hover': {
-                    backgroundColor: '#7BAFD0', // Hover effect
-                    transform: 'scale(1.01)', // Slight scaling
-                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow
-                },
-            }}
-        >
-            {item.label}
-        </Button>
-    ))}
+    {renderContent()}
 </Box>
 
-                <Box
-                    sx={{
-                        marginLeft: '260px',
-                        padding: '20px',
-                        width: '100%',
-                    }}
-                >
-                    {renderContent()}
-                </Box>
             </Box>
         </Box>
     );

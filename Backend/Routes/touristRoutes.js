@@ -17,6 +17,7 @@ const cartController = require('../Controllers/ProductControllers/cartController
 const wishlistController = require('../Controllers/ProductControllers/wishlistController');
 const promoCodeController = require('../Controllers/ProductControllers/PromoCodeController');
 const savedActivityController = require('../Controllers/ActivityControllers/SavedActivityController');
+const notificationController = require('../Controllers/UserControllers/NotificationController');
 
 // Tourist-specific routes
 router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristById);  // Tourist can read their own profile
@@ -107,7 +108,7 @@ router.post('/convertPointsToRedeemableAmount', roleAuth(['tourist']), loyaltyCo
 router.get('/myBadge', roleAuth(['tourist']), loyaltyController.getBadge);
 router.put('/deleteTouristRequest', roleAuth(['tourist']), touristControllers.deleteReq);
 
-
+router.post('/subscribeToActivity/:activityId', roleAuth(['tourist']), activityControllers.subscribeToActivity);
 
 // Route to add a review (accessible by tourists only)
 router.post('/tourguideRev/add', roleAuth(['tourist']), TourGuideReviewController.addReview);
@@ -131,6 +132,8 @@ router.get('/delivery-address', roleAuth(['tourist']), touristControllers.getDel
 // Delete a delivery address
 router.delete('/delivery-address/:addressId', roleAuth(['tourist']), touristControllers.deleteDeliveryAddress);
 
+//get all notifications
+router.get('/notifications', roleAuth(['tourist']), notificationController.getNotifications);
 
 // stripe routes
 router.post('/cart/stripe-session', roleAuth(['tourist']), cartController.createStripeSession);

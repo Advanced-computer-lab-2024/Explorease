@@ -17,7 +17,7 @@ const touristSchema = new mongoose.Schema({
     bookedIteniraries : [{type : Schema.Types.ObjectId, ref : 'Itenirary'}], 
     deleteRequest : {type : Boolean , default : false , required: false},
     previousIteniraries : [{type : Schema.Types.ObjectId, ref : 'Itenirary'}], 
-    bokedHistoricalPlace : [{type : Schema.Types.ObjectId , ref : 'HistoricalPlace'}],
+    bookedHistoricalPlace : [{type : Schema.Types.ObjectId , ref : 'HistoricalPlace'}],
     previousHistoricalPlace : [{type : Schema.Types.ObjectId, ref : 'HistoricalPlace'}],
     promoCodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PromoCode' }],
     wishlist: {

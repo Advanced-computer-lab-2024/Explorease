@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import {
+    Box,
+    TextField,
+    Button,
+    Typography,
+    Checkbox,
+    FormControl,
+    FormLabel,
+    Select,
+    MenuItem,
+    InputLabel,
+    Alert,
+    CircularProgress,
+} from '@mui/material';
 
 const mapContainerStyle = {
     width: "100%",
@@ -16,13 +30,13 @@ const CreateActivity = () => {
     const [formData, setFormData] = useState({
         name: '',
         date: '',
-        time: '', 
+        time: '',
         location: '',
         latitude: 0,
         longitude: 0,
         price: '',
         category: '',
-        tags: '',
+        tags: [],
         specialDiscounts: '',
         bookingOpen: false,
         duration: ''
@@ -41,48 +55,26 @@ const CreateActivity = () => {
         });
     };
 
-    const [categories, setCategories] = useState([]);  // Initialize categories as an empty array
-    const [tags, setTags] = useState([]);  // Initialize tags as an empty array
+    const [categories, setCategories] = useState([]);
+    const [tags, setTags] = useState([]);
     const [message, setMessage] = useState('');
 
     useEffect(() => {
         const fetchCategoriesAndTags = async () => {
             const token = localStorage.getItem('token');
-
             try {
-                // Fetch categories
                 const categoriesResponse = await axios.get('/admins/getCategories', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
-
-                console.log('Categories Response:', categoriesResponse.data);  // Log the response
-                if (Array.isArray(categoriesResponse.data)) {
-                    setCategories(categoriesResponse.data);  // Set the fetched categories only if it's an array
-                } else {
-                    setCategories([]);  // Fallback to an empty array if it's not an array
-                }
-
-                // Fetch tags
+                setCategories(categoriesResponse.data || []);
                 const tagsResponse = await axios.get('/admins/getTags', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
-
-                console.log('Tags Response:', tagsResponse.data);  // Log the response
-                if (Array.isArray(tagsResponse.data)) {
-                    setTags(tagsResponse.data);  // Set the fetched tags only if it's an array
-                } else {
-                    setTags([]);  // Fallback to an empty array if it's not an array
-                }
-
+                setTags(tagsResponse.data || []);
             } catch (error) {
                 setMessage('Error fetching categories or tags');
             }
         };
-
         fetchCategoriesAndTags();
     }, []);
 
@@ -92,10 +84,9 @@ const CreateActivity = () => {
     };
 
     const handleTagChange = (e) => {
-        const selectedTags = Array.from(e.target.selectedOptions, option => option.value);  // Convert selected options into an array of tag names
-        setFormData({ ...formData, tags: selectedTags });  // Set the tags as an array of selected values
+        setFormData({ ...formData, tags: e.target.value });
     };
-    
+
     const handleCheckboxChange = (e) => {
         setFormData({ ...formData, bookingOpen: e.target.checked });
     };
@@ -103,8 +94,6 @@ const CreateActivity = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
-        if (!token) return;
-
         if (!formData.latitude || !formData.longitude) {
             setMessage('Please select a location on the map.');
             return;
@@ -112,9 +101,7 @@ const CreateActivity = () => {
 
         try {
             const response = await axios.post('/advertiser/createActivity', formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
             if (response.status === 201) {
                 setMessage('Activity created successfully');
@@ -127,7 +114,7 @@ const CreateActivity = () => {
                     longitude: 0,
                     price: '',
                     category: '',
-                    tags: '',
+                    tags: [],
                     specialDiscounts: '',
                     bookingOpen: false,
                     duration: ''
@@ -140,92 +127,63 @@ const CreateActivity = () => {
         }
     };
 
-    const formStyle = {
+    return (
+        <Box
+    sx={{
         padding: '20px',
         maxWidth: '600px',
         margin: '0 auto',
-        backgroundColor: '#f9f9f9',
+        marginTop: '30px',
+        marginBottom: '30px',
+        backgroundColor: 'white',
         borderRadius: '8px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-    };
-    
-    const formGroupStyle = {
-        marginBottom: '15px',
-        display: 'flex',
-        flexDirection: 'column'
-    };
-    
-    const labelStyle = {
-        marginBottom: '5px',
-        fontWeight: 'bold',
-        fontSize: '14px',
-        color: '#333'
-    };
-    
-    const inputStyle = {
-        padding: '10px',
-        fontSize: '14px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-        outline: 'none',
-        width: '100%',
-        boxSizing: 'border-box'
-    };
-    
-    const selectStyle = {
-        padding: '10px',
-        fontSize: '14px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-        outline: 'none',
-        width: '100%',
-        boxSizing: 'border-box'
-    };
-    
-    const buttonStyle = {
-        padding: '10px',
-        fontSize: '16px',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        width: '100%',
-        boxSizing: 'border-box',
-        marginTop: '20px'
-    };
-    
-    const errorStyle = {
-        marginBottom: '15px',
-        color: 'red',
-        fontWeight: 'bold'
-    };
-    
-    const successStyle = {
-        marginBottom: '15px',
-        color: 'green',
-        fontWeight: 'bold'
-    };
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        '&:hover': {
+            transform: 'scale(1.03)', // Adds a scaling effect
+            boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)', // Enhances the shadow on hover
+        },
+    }}
+>
 
-    return (
-        <div style={formStyle}>
-            <h2>Create Activity</h2>
-            {message && <p style={message.includes("Error") ? errorStyle : successStyle}>{message}</p>}
+            <Typography variant="h4" align="center" sx={{ marginTop:'5px', marginBottom: '20px', fontWeight: 'bold' , color:'#111E56' }}>
+                Create Activity
+            </Typography>
+            {message && <Alert severity={message.includes('Error') ? 'error' : 'success'}>{message}</Alert>}
             <form onSubmit={handleSubmit}>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Name:</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} required style={inputStyle} />
-                </div>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Date:</label>
-                    <input type="date" name="date" value={formData.date} onChange={handleChange} required style={inputStyle} />
-                </div>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Time:</label>
-                    <input type="time" name="time" value={formData.time} onChange={handleChange} required style={inputStyle} />
-                </div>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Select Location on Map:</label>
+                <TextField
+                    label="Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    sx={{ marginBottom: '20px' }}
+                />
+                <TextField
+                    label="Date"
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ marginBottom: '20px' }}
+                />
+                <TextField
+                    label="Time"
+                    type="time"
+                    name="time"
+                    value={formData.time}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ marginBottom: '20px' }}
+                />
+                <Box sx={{ marginBottom: '20px' }}>
+                    <FormLabel>Select Location on Map</FormLabel>
                     {isLoaded ? (
                         <GoogleMap
                             mapContainerStyle={mapContainerStyle}
@@ -238,47 +196,94 @@ const CreateActivity = () => {
                             )}
                         </GoogleMap>
                     ) : (
-                        <p>Loading map...</p>
+                        <CircularProgress />
                     )}
-                </div>
-                
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Price:</label>
-                    <input type="number" name="price" value={formData.price} onChange={handleChange} required style={inputStyle} />
-                </div>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Category:</label>
-                    <select name="category" value={formData.category} onChange={handleChange} required style={selectStyle}>
-                        <option value="">Select a Category</option>
-                        {Array.isArray(categories) && categories.map(category => (
-                            <option key={category._id} value={category.name}>{category.name}</option>
+                </Box>
+                <TextField
+                    label="Price"
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    sx={{ marginBottom: '20px' }}
+                />
+                <FormControl fullWidth sx={{ marginBottom: '20px' }}>
+                    <InputLabel>Category</InputLabel>
+                    <Select
+                        name="category"
+                        value={formData.category}
+                        onChange={handleChange}
+                        required
+                    >
+                        <MenuItem value="">Select a Category</MenuItem>
+                        {categories.map((category) => (
+                            <MenuItem key={category._id} value={category.name}>
+                                {category.name}
+                            </MenuItem>
                         ))}
-                    </select>
-                </div>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Tags (select multiple):</label>
-                    <select multiple={true} name="tags" value={formData.tags} onChange={handleTagChange} required style={selectStyle}>
-                        <option value="">Select Tags</option>
-                        {Array.isArray(tags) && tags.map(tag => (
-                            <option key={tag._id} value={tag.name}>{tag.name}</option>
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth sx={{ marginBottom: '20px' }}>
+                    <InputLabel>Tags</InputLabel>
+                    <Select
+                        name="tags"
+                        value={formData.tags}
+                        onChange={handleTagChange}
+                        multiple
+                    >
+                        {tags.map((tag) => (
+                            <MenuItem key={tag._id} value={tag.name}>
+                                {tag.name}
+                            </MenuItem>
                         ))}
-                    </select>
-                </div>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Special Discounts:</label>
-                    <input type="text" name="specialDiscounts" value={formData.specialDiscounts} onChange={handleChange} style={inputStyle} />
-                </div>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Duration (hours):</label>
-                    <input type="number" name="duration" value={formData.duration} onChange={handleChange} required style={inputStyle} />
-                </div>
-                <div style={formGroupStyle}>
-                    <label style={labelStyle}>Booking Open:</label>
-                    <input type="checkbox" name="bookingOpen" checked={formData.bookingOpen} onChange={handleCheckboxChange} />
-                </div>
-                <button type="submit" style={buttonStyle}>Create Activity</button>
+                    </Select>
+                </FormControl>
+                <TextField
+                    label="Special Discounts"
+                    name="specialDiscounts"
+                    value={formData.specialDiscounts}
+                    onChange={handleChange}
+                    fullWidth
+                    sx={{ marginBottom: '20px' }}
+                />
+                <TextField
+                    label="Duration (hours)"
+                    type="number"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    sx={{ marginBottom: '10px' }}
+                />
+                <FormControl fullWidth sx={{ marginBottom: '20px' }}>
+    <FormLabel>Booking Open</FormLabel>
+    <Checkbox
+        name="bookingOpen"
+        checked={formData.bookingOpen}
+        onChange={handleCheckboxChange}
+        sx={{ color: '#111E56',
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+            '&:hover': {
+                transform: 'scale(1.03)', // Adds a scaling effect
+                backgroundColor:'white'// Enhances the shadow on hover
+            }, }}
+    />
+</FormControl>
+
+                <Button type="submit" variant="contained" color="primary" fullWidth sx={{backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },}}>
+                    Create Activity
+                </Button>
             </form>
-        </div>
+        </Box>
     );
 };
 

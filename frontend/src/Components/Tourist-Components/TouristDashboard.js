@@ -306,7 +306,6 @@ const TouristDashboard = () => {
                 { label: 'Review Tour Guides', component: 'reviewGuides' },
                 { label: 'Purchased Products', component: 'PurchasedProduct' },
                 { label: 'My Points', component: 'MyPoints' },
-                { label: 'Wishlist', component: 'wishlist' },
                 { label: 'Saved Events', component: 'SavedEvents' },
             ].map((item) => (
                 <Button

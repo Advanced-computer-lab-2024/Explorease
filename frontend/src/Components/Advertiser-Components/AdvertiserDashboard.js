@@ -1,83 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TouristNavbar from '../MainPage-Components/GuestNavbar'; 
-import { useNavigate } from 'react-router-dom';
+import AdvertiserNavbar from '../MainPage-Components/GuestNavbar'; // Assuming a similar Navbar exists
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import UpdateAdvertiser from './UpdateAdvertiser';
-import MyActivities from './MyActivities';  // Import the new component
+import MyActivities from './MyActivities';
 import CreateActivity from './CreateActivity';
 import UploadLogo from './UploadLogo';
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
-    const [activeComponent, setActiveComponent] = useState('profile'); 
-    const navigate = useNavigate(); // Import useNavigate
+    const [activeComponent, setActiveComponent] = useState('profile');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const fetchProfile = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        try {
-            const response = await axios.get('/advertiser/myProfile', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            if (response.data && response.data.advertiser) {
-                setProfile(response.data.advertiser); 
-            } else {
-                setMessage('No profile data found');
-            }
-        } catch (error) {
-            setMessage('Error fetching profile');
-        }
+    const toggleSidebar = () => {
+        setIsSidebarOpen((prev) => !prev);
     };
 
     useEffect(() => {
+        const fetchProfile = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setMessage('You need to log in.');
+                return;
+            }
+
+            try {
+                const response = await axios.get('/advertiser/myProfile', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (response.data && response.data.advertiser) {
+                    setProfile(response.data.advertiser);
+                } else {
+                    setMessage('No profile data found');
+                }
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                setMessage('Error fetching profile');
+            }
+        };
+
         fetchProfile();
     }, []);
 
-    const sidebarStyle = {
-        width: '250px',
-        backgroundColor: '#f1f1f1',
-        padding: '15px',
-        position: 'fixed',
-        height: '100%',
-        top: '45px',
-        left: '0',
-        display: 'flex',
-        flexDirection: 'column',
-        zIndex: '1',
-    };
-
-    const contentStyle = {
-        marginLeft: '260px',
-        padding: '20px',
-    };
-
-    const cardStyle = {
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '20px',
-        maxWidth: '400px',
-        margin: '0 auto',
-        backgroundColor: '#f9f9f9',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-    };
     const handleDeleteAccountRequest = async () => {
-        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (
+            window.confirm(
+                'Are you sure you want to delete your account? This action cannot be undone.'
+            )
+        ) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.put('/advertiser/deleteRequest',{}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
+                await axios.put(
+                    '/advertiser/deleteRequest',
+                    {},
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
                     }
-                });
+                );
                 setMessage('Account deletion request sent successfully.');
-                // Optionally, you can log the user out and redirect them
-                // localStorage.removeItem('token');
-                // navigate('/login');
             } catch (error) {
                 console.error('Error requesting account deletion:', error);
                 setMessage('Failed to request account deletion. Please try again.');
@@ -88,73 +70,187 @@ const AdvertiserDashboard = () => {
     const renderContent = () => {
         switch (activeComponent) {
             case 'profile':
-    return (
-        <div>
-            <h2>Advertiser Profile</h2>
-            {message && <p>{message}</p>}
-            {profile && profile.username ? (
-                <div style={cardStyle}>
-                    {profile.imageUrl && (
-                        <img
-                            src={profile.imageUrl}
-                            alt="Advertiser Logo"
-                            style={{
-                                width: '100px',
-                                height: '100px',
-                                borderRadius: '8px',
-                                marginBottom: '10px'
+                return (
+                    <Box
+                        sx={{
+                            marginTop: '50px',
+                            width: '400px',
+                            height: '400px',
+                            borderRadius: '16px',
+                            backgroundColor: 'white',
+                            margin: '30px auto',
+                            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                            textAlign: 'center',
+                            padding: '20px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                            '&:hover': {
+                                transform: 'scale(1.05)',
+                                boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
+                            },
+                        }}
+                    >
+                        <Typography
+                            variant="h5"
+                            gutterBottom
+                            sx={{
+                                fontWeight: 'bold',
+                                color: '#111E56',
+                                marginBottom: '15px',
                             }}
-                        />
-                    )}
-                    <p><strong>Username:</strong> {profile.username}</p>
-                    <p><strong>Email:</strong> {profile.email}</p>
-                    <p><strong>Company Name:</strong> {profile.companyName}</p>
-                    <p><strong>Website Link:</strong> <a href={profile.websiteLink} target="_blank" rel="noopener noreferrer">{profile.websiteLink}</a></p>
-                    <p><strong>Hotline:</strong> {profile.hotline}</p>
-                    <p><strong>Company Profile:</strong> {profile.companyProfile}</p>
-                    <button 
+                        >
+                            Advertiser Profile
+                        </Typography>
+                        {message && (
+                            <Typography color="error" sx={{ marginBottom: '10px', fontWeight: 'bold' }}>
+                                {message}
+                            </Typography>
+                        )}
+                        {profile.username ? (
+                            <>
+                                <Box
+                                    component="div"
+                                    sx={{
+                                        fontSize: '16px',
+                                        lineHeight: '1.8',
+                                        '& strong': {
+                                            color: '#111E56',
+                                            fontWeight: 'bold',
+                                        },
+                                    }}
+                                >
+                                    <p>
+                                        <strong>Username:</strong> {profile.username}
+                                    </p>
+                                    <p>
+                                        <strong>Email:</strong> {profile.email}
+                                    </p>
+                                    <p>
+                                        <strong>Company Name:</strong> {profile.companyName}
+                                    </p>
+                                    <p>
+                                        <strong>Website Link:</strong>{' '}
+                                        <a
+                                            href={profile.websiteLink}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ color: '#111E56', textDecoration: 'underline' }}
+                                        >
+                                            {profile.websiteLink}
+                                        </a>
+                                    </p>
+                                    <p>
+                                        <strong>Hotline:</strong> {profile.hotline}
+                                    </p>
+                                    <p>
+                                        <strong>Company Profile:</strong> {profile.companyProfile}
+                                    </p>
+                                </Box>
+                                <Button
                                     onClick={handleDeleteAccountRequest}
-                                    variant="destructive"
-                                    
+                                    sx={{
+                                        marginTop: '20px',
+                                        backgroundColor: '#f44336',
+                                        color: 'white',
+                                        border: '2px solid #f44336',
+                                        padding: '10px 20px',
+                                        fontWeight: 'bold',
+                                        textTransform: 'uppercase',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                            backgroundColor: 'white',
+                                            color: '#f44336',
+                                            border: '2px solid #f44336',
+                                        },
+                                    }}
                                 >
                                     Delete Account
-                                </button>
-                </div>
-            ) : (
-                <p>Loading profile...</p>
-            )}
-        </div>
-    );
+                                </Button>
+                            </>
+                        ) : (
+                            <CircularProgress sx={{ color: '#111E56' }} />
+                        )}
+                    </Box>
+                );
             case 'viewActivities':
-                return <MyActivities />; 
-            case 'createActivity':  // New case for Create Activity
+                return <MyActivities />;
+            case 'createActivity':
                 return <CreateActivity />;
-            case 'updateAdvertiser':
+            case 'updateProfile':
                 return <UpdateAdvertiser profile={profile} setProfile={setProfile} />;
             case 'uploadLogo':
                 return <UploadLogo setProfile={setProfile} />;
             default:
-                return <h2>Welcome to Advertiser Dashboard</h2>;
+                return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
     };
 
     return (
         <div>
-            <TouristNavbar />
-            <div style={sidebarStyle}>
-                <h3>Dashboard</h3>
-                <ul style={{ listStyleType: 'none', padding: '0' }}>
-                    <li onClick={() => setActiveComponent('profile')} style={{ cursor: 'pointer', marginBottom: '10px' }}>View Profile</li>
-                    <li onClick={() => setActiveComponent('updateAdvertiser')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Edit Profile</li>
-                    <li onClick={() => setActiveComponent('viewActivities')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Get My Activities</li>
-                    <li onClick={() => setActiveComponent('createActivity')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Create Activity</li>
-                    <li onClick={() => setActiveComponent('uploadLogo')} style={{ cursor: 'pointer', marginBottom: '10px' }}>Upload a Logo!</li> {/* New Create Activity option */}
-                    {/* New Create Activity option */}
-                </ul>
-            </div>
-            <div style={contentStyle}>
+            {/* Navbar */}
+            <AdvertiserNavbar toggleSidebar={toggleSidebar} />
+
+            {/* Sidebar */}
+            {isSidebarOpen && (
+                <Box
+                    sx={{
+                        width: '250px',
+                        backgroundColor: '#111E40',
+                        color: 'white',
+                        height: 'calc(100vh - 64px)',
+                        position: 'fixed',
+                        top: '64px',
+                        padding: '10px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
+                    <nav>
+                        {[
+                            { label: 'View Profile', component: 'profile' },
+                            { label: 'Edit Profile', component: 'updateProfile' },
+                            { label: 'Get My Activities', component: 'viewActivities' },
+                            { label: 'Create Activity', component: 'createActivity' },
+                            { label: 'Upload a Logo', component: 'uploadLogo' },
+                        ].map((item) => (
+                            <Button
+                                key={item.component}
+                                sx={{
+                                    color: 'white',
+                                    textAlign: 'left',
+                                    justifyContent: 'flex-start',
+                                    width: '100%',
+                                    padding: '10px',
+                                    marginTop: '10px',
+                                    backgroundColor: activeComponent === item.component ? '#7BAFD0' : 'transparent',
+                                    '&:hover': {
+                                        backgroundColor: '#7BAFD0',
+                                        transform: 'scale(1.01)',
+                                    },
+                                }}
+                                onClick={() => setActiveComponent(item.component)}
+                            >
+                                {item.label}
+                            </Button>
+                        ))}
+                    </nav>
+                </Box>
+            )}
+
+            {/* Main Content */}
+            <Box
+                sx={{
+                    marginLeft: isSidebarOpen ? '250px' : '0',
+                    transition: 'margin-left 0.3s ease',
+                    padding: '20px',
+                }}
+            >
                 {renderContent()}
-            </div>
+            </Box>
         </div>
     );
 };

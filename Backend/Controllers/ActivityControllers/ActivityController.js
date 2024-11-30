@@ -220,6 +220,30 @@ const updateActivity = async (req, res) => {
     }
 };
 
+// Subscribe to an activity
+const subscribeToActivity = async (req, res) => {
+    try {
+        const activityId = req.params.activityId;
+        const touristId = req.user.id;
+
+        const activity = await activityModel.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
+        if (activity.subscribedUsers.includes(touristId)) {
+            return res.status(400).json({ message: 'You are already subscribed to this activity' });
+        }
+
+        activity.subscribedUsers.push(touristId);
+        await activity.save();
+
+        res.status(200).json({ message: 'Subscribed to activity successfully' });
+    } catch (error) {
+        console.error('Error subscribing to activity:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
 
 // Delete Activity
@@ -507,6 +531,7 @@ module.exports = {
     filterSortSearchActivitiesByAdvertiser,
     deleteActivitiesByAdvertiserId,
     flagActivity,
-    unflagActivity
+    unflagActivity,
+    subscribeToActivity
     
 };

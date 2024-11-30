@@ -14,12 +14,13 @@ import {
     Tooltip,
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import EditNoteIcon from '@mui/icons-material/EditNote'; // Import new icon
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import axios from 'axios';
 import logo from '../../Misc/logo.png';
 
-const Navbar = () => {
+const Navbar = ({ toggleSidebar }) => {
     const [notifications, setNotifications] = useState([]);
     const [isNotificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
 
@@ -94,14 +95,14 @@ const Navbar = () => {
     };
 
     const renderNotifications = () => (
-        <Box sx={{ width: 350, padding: 2, backgroundColor: '#f9f9f9', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+        <Box sx={{ width: 350, padding: 2, backgroundColor: '#f9f9f9' }}>
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                 <Typography
                     variant="h6"
                     sx={{
                         fontWeight: 'bold',
-                        color: '#0D164A', // Darker blue color
+                        color: '#0D164A',
                         fontSize: '20px',
                         position: 'relative',
                         '&::after': {
@@ -131,50 +132,49 @@ const Navbar = () => {
             {notifications.length === 0 ? (
                 <Typography>No notifications available</Typography>
             ) : (
-<List sx={{ padding: 0 }}>
-    {notifications.map((notification, index) => (
-        <ListItem
-            key={notification._id}
-            sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                backgroundColor: notification.isRead ? '#f0f0f0' : '#e8f4ff',
-                borderRadius: '8px',
-                padding: 2,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                transition: 'transform 0.2s ease-in-out, background-color 0.2s ease-in-out',
-                marginBottom: index === notifications.length - 1 ? '500px' : '8px', // Doubled the margin for the last item
-                '&:hover': {
-                    transform: 'scale(1.02)',
-                    backgroundColor: '#edf7ff',
-                },
-            }}
-        >
-            <Tooltip title="Mark as Read" arrow>
-                <IconButton
-                    onClick={() => markNotificationAsRead(notification._id)}
-                    sx={{
-                        backgroundColor: '#d3d3d3',
-                        color: 'black',
-                        '&:hover': {
-                            backgroundColor: '#b0b0b0',
-                        },
-                    }}
-                >
-                    <EditNoteIcon />
-                </IconButton>
-            </Tooltip>
-            <ListItemText
-                primary={notification.message}
-                secondary={new Date(notification.createdAt).toLocaleString()}
-                sx={{ marginLeft: 2 }}
-            />
-        </ListItem>
-    ))}
-</List>
-
+                <List sx={{ padding: 0 }}>
+                    {notifications.map((notification) => (
+                        <ListItem
+                            key={notification._id}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                backgroundColor: notification.isRead ? '#f0f0f0' : '#e8f4ff',
+                                borderRadius: '8px',
+                                padding: 2,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                                marginBottom: '8px',
+                                '&:hover': {
+                                    transform: 'scale(1.02)',
+                                    backgroundColor: '#edf7ff',
+                                },
+                            }}
+                        >
+                            <Tooltip title="Mark as Read" arrow>
+                                <IconButton
+                                    onClick={() => markNotificationAsRead(notification._id)}
+                                    sx={{
+                                        backgroundColor: '#d3d3d3',
+                                        color: 'black',
+                                        '&:hover': {
+                                            backgroundColor: '#b0b0b0',
+                                        },
+                                    }}
+                                >
+                                    <EditNoteIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <ListItemText
+                                primary={notification.message}
+                                secondary={new Date(notification.createdAt).toLocaleString()}
+                                sx={{ marginLeft: 2 }}
+                            />
+                        </ListItem>
+                        
+                    ))}
+                </List>
             )}
         </Box>
     );
@@ -182,6 +182,17 @@ const Navbar = () => {
     return (
         <AppBar position="sticky" sx={{ backgroundColor: '#111E56', zIndex: 1000, fontFamily: 'Poppins, sans-serif' }}>
             <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                {/* Sidebar Toggle Icon */}
+                <IconButton
+                    edge="start"
+                    color="inherit"
+                    aria-label="menu"
+                    sx={{ marginRight: '16px' }}
+                    onClick={toggleSidebar} // Call the toggleSidebar function passed as a prop
+                >
+                    <MenuIcon />
+                </IconButton>
+
                 {/* Clickable Logo */}
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Link to="/">
