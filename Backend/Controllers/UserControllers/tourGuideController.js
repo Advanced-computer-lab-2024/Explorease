@@ -200,6 +200,7 @@ const uploadTourGuidePhoto = async (req, res) => {
         res.status(500).json({ message: 'Failed to upload photo', error: error.message });
     }
 };
+
 const getTourGuideSalesReport = async (req, res) => {
     try {
         const tourGuideId = req.user.id; // Assuming authentication middleware sets req.user
@@ -247,6 +248,69 @@ const getTourGuideSalesReport = async (req, res) => {
     }
 };
 
+const getFilteredTourGuideSalesReport = async (req, res) => {
+    try {
+        const tourGuideId = req.user.id; // Tour guide ID from the authentication middleware
+        const { date, month } = req.query;
+
+        // Match conditions
+        const matchConditions = {
+            'itineraryDetails.createdBy': new mongoose.Types.ObjectId(tourGuideId), // Ensure only the tour guide's itineraries
+            Status: 'Active',
+        };
+
+        // Add date or month filter
+        if (date) {
+            matchConditions.createdAt = {
+                $gte: new Date(date),
+                $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)), // Include the entire day
+            };
+        } else if (month) {
+            const [year, monthNumber] = month.split('-');
+            matchConditions.createdAt = {
+                $gte: new Date(`${year}-${monthNumber}-01`),
+                $lt: new Date(`${year}-${Number(monthNumber) + 1}-01`),
+            };
+        }
+
+        // Calculate filtered itinerary revenue
+        const itineraryRevenue = await BookingItinerary.aggregate([
+            {
+                $lookup: {
+                    from: 'itineraries',
+                    localField: 'Itinerary',
+                    foreignField: '_id',
+                    as: 'itineraryDetails',
+                },
+            },
+            { $unwind: '$itineraryDetails' },
+            { $match: matchConditions },
+            {
+                $group: {
+                    _id: '$Itinerary',
+                    itineraryName: { $first: '$itineraryDetails.name' },
+                    totalRevenue: { $sum: '$amountPaid' },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    itineraryName: 1,
+                    totalRevenue: 1,
+                    revenueAfterCommission: {
+                        $multiply: ['$totalRevenue', 0.9], // Calculate revenue after 10% commission
+                    },
+                },
+            },
+        ]);
+        
+
+        res.status(200).json({ itineraryRevenue });
+    } catch (error) {
+        console.error('Error fetching filtered tour guide sales report:', error);
+        res.status(500).json({ error: 'Server error while fetching sales report.' });
+    }
+};
 
 module.exports = {
     getTourGuideByIdParam,
@@ -259,5 +323,6 @@ module.exports = {
     loginTourGuide,
     updatePassword,
     deleteReq,
-    getTourGuideSalesReport
+    getTourGuideSalesReport,
+    getFilteredTourGuideSalesReport,
 };

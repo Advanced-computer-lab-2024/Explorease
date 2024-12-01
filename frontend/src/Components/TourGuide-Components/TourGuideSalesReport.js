@@ -10,8 +10,10 @@ import {
     TableCell,
     TableBody,
     Paper,
-    Divider,
+    TextField,
+    Button,
     CircularProgress,
+    Divider,
 } from '@mui/material';
 
 const TourGuideSalesReport = () => {
@@ -21,36 +23,77 @@ const TourGuideSalesReport = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // Filters
+    const [date, setDate] = useState('');
+    const [month, setMonth] = useState('');
+
     useEffect(() => {
-        const fetchSalesReport = async () => {
+        // Fetch initial data (all sales report)
+        const fetchInitialData = async () => {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get('/tourguide/salesReport', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                const report = response.data.itineraryRevenue.map((item) => ({
-                    itineraryName: item.itineraryName,
-                    totalRevenue: item.totalRevenue,
-                    revenueAfterCommission: item.revenueAfterCommission,
-                }));
+                const total = response.data.itineraryRevenue.reduce(
+                    (sum, item) => sum + item.totalRevenue,
+                    0
+                );
 
-                const total = report.reduce((sum, item) => sum + item.totalRevenue, 0);
-                const totalAfterCommission = report.reduce((sum, item) => sum + item.revenueAfterCommission, 0);
+                const totalAfterCommission = response.data.itineraryRevenue.reduce(
+                    (sum, item) => sum + item.revenueAfterCommission,
+                    0
+                );
 
-                setData(report);
+                setData(response.data.itineraryRevenue);
                 setTotalRevenue(total);
                 setTotalRevenueAfterCommission(totalAfterCommission);
-            } catch (error) {
-                console.error('Error fetching tour guide sales report:', error);
+            } catch (err) {
                 setError('Error fetching sales report');
+                console.error(err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchSalesReport();
+        fetchInitialData();
     }, []);
+
+    const handleFilter = async () => {
+        setLoading(true); // Show loading spinner
+        try {
+            const token = localStorage.getItem('token');
+            const params = {
+                date: date || undefined,
+                month: month || undefined,
+            };
+
+            const response = await axios.get('/tourguide/salesReport/filter', {
+                headers: { Authorization: `Bearer ${token}` },
+                params,
+            });
+
+            const total = response.data.itineraryRevenue.reduce(
+                (sum, item) => sum + item.totalRevenue,
+                0
+            );
+
+            const totalAfterCommission = response.data.itineraryRevenue.reduce(
+                (sum, item) => sum + item.revenueAfterCommission,
+                0
+            );
+
+            setData(response.data.itineraryRevenue);
+            setTotalRevenue(total);
+            setTotalRevenueAfterCommission(totalAfterCommission);
+        } catch (err) {
+            setError('Error fetching filtered sales report');
+            console.error(err);
+        } finally {
+            setLoading(false); // Hide loading spinner
+        }
+    };
 
     if (loading) {
         return (
@@ -76,22 +119,6 @@ const TourGuideSalesReport = () => {
                     mb: 2,
                     fontWeight: 'bold',
                     color: '#111E56',
-                    position: 'relative',
-                    display: 'inline-block',
-                    cursor: 'pointer',
-                    '&::after': {
-                        content: "''",
-                        position: 'absolute',
-                        width: '0',
-                        height: '2px',
-                        bottom: '-4px',
-                        left: '0',
-                        backgroundColor: '#111E56',
-                        transition: 'width 0.3s ease-in-out',
-                    },
-                    '&:hover::after': {
-                        width: '100%',
-                    },
                 }}
             >
                 {title}
@@ -109,12 +136,10 @@ const TourGuideSalesReport = () => {
                             color: 'white',
                             fontWeight: 'bold',
                         },
-                        
-                        borderRadius: 2,
                     }}
                 >
                     <TableHead>
-                        <TableRow
+                    <TableRow
                             sx={{
                                 pointerEvents: 'none', // Disable hover events
                                 '&:hover': {
@@ -127,8 +152,6 @@ const TourGuideSalesReport = () => {
                             <TableCell align="right">Revenue After Commission ($)</TableCell>
                         </TableRow>
                     </TableHead>
-
-
                     <TableBody>
                         {data.map((item, index) => (
                             <TableRow key={index}>
@@ -157,8 +180,58 @@ const TourGuideSalesReport = () => {
                 Tour Guide Sales Report
             </Typography>
 
-            {/* Itineraries Section */}
+            {/* Filters */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: 2,
+                    mb: 4,
+                }}
+            >
+                <TextField
+                    type="date"
+                    label="Filter by Exact Date"
+                    InputLabelProps={{ shrink: true }}
+                    value={date}
+                    onChange={(e) => {
+                        setDate(e.target.value);
+                        setMonth(''); // Clear month when date is selected
+                    }}
+                    fullWidth
+                />
+                <TextField
+                    type="month"
+                    label="Filter by Exact Month"
+                    InputLabelProps={{ shrink: true }}
+                    value={month}
+                    onChange={(e) => {
+                        setMonth(e.target.value);
+                        setDate(''); // Clear date when month is selected
+                    }}
+                    fullWidth
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleFilter}
+                    sx={{
+                        backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },
+                        
+                    }}
+                >
+                    Search
+                </Button>
+            </Box>
+
+            {/* Table Section */}
             {renderTable('Itinerary Sales', data)}
+
             <Typography
                 variant="h6"
                 sx={{

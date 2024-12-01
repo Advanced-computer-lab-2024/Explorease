@@ -275,6 +275,69 @@ const getAdvertiserSalesReport = async (req, res) => {
     }
 };
 
+const getFilteredAdvertiserSalesReport = async (req, res) => {
+    try {
+        const advertiserId = req.user.id; // Assuming authentication middleware sets req.user
+        const { date, month } = req.query;
+
+        const objectIdAdvertiser = new mongoose.Types.ObjectId(advertiserId);
+
+        // Define match conditions
+        const matchConditions = {
+            'activityDetails.createdBy': objectIdAdvertiser, // Match advertiser-created activities
+            Status: 'Active', // Ensure the booking is active
+        };
+
+        // Add date or month filter
+        if (date) {
+            matchConditions.createdAt = {
+                $gte: new Date(date),
+                $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)), // Include the entire day
+            };
+        } else if (month) {
+            const [year, monthNumber] = month.split('-');
+            matchConditions.createdAt = {
+                $gte: new Date(`${year}-${monthNumber}-01`),
+                $lt: new Date(`${year}-${Number(monthNumber) + 1}-01`),
+            };
+        }
+
+        // Aggregate activity revenue
+        const activityRevenue = await Booking.aggregate([
+            {
+                $lookup: {
+                    from: 'activities', // Ensure this matches your MongoDB collection name
+                    localField: 'Activity', // Field in the Booking model
+                    foreignField: '_id', // Field in the Activity model
+                    as: 'activityDetails',
+                },
+            },
+            { $unwind: { path: '$activityDetails', preserveNullAndEmptyArrays: false } }, // Unwind the matched activities
+            { $match: matchConditions }, // Apply match conditions
+            {
+                $group: {
+                    _id: '$Activity', // Group by activity ID
+                    activityName: { $first: '$activityDetails.name' }, // Get the activity name
+                    totalRevenue: { $sum: '$amountPaid' }, // Sum the amount paid for this activity
+                },
+            },
+        ]);
+
+        // Calculate revenue after commission
+        const revenueData = activityRevenue.map((item) => ({
+            activityName: item.activityName,
+            totalRevenue: item.totalRevenue,
+            revenueAfterCommission: item.totalRevenue * 0.9, // Deduct 10% commission
+        }));
+
+        res.status(200).json({ revenueData });
+    } catch (error) {
+        console.error('Error fetching advertiser sales report:', error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};
+
+
 module.exports = {
     upload, 
     uploadAdvertiserPhoto,
@@ -287,4 +350,5 @@ module.exports = {
     updatePassword,
     deleteReq,
     getAdvertiserSalesReport,
+    getFilteredAdvertiserSalesReport,
 };

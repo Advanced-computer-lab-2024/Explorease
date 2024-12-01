@@ -12,6 +12,8 @@ import {
     Paper,
     Divider,
     CircularProgress,
+    TextField,
+    Button,
 } from '@mui/material';
 
 const AdvertiserSalesReport = () => {
@@ -21,33 +23,77 @@ const AdvertiserSalesReport = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // Filters
+    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedMonth, setSelectedMonth] = useState('');
+
+    const fetchSalesReport = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            setLoading(true);
+            const response = await axios.get('/advertiser/salesReport', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const report = response.data.revenueData;
+
+            // Calculate total revenues
+            const total = report.reduce((sum, item) => sum + item.totalRevenue, 0);
+            const totalAfterCommission = report.reduce((sum, item) => sum + item.revenueAfterCommission, 0);
+
+            setData(report);
+            setTotalRevenue(total);
+            setTotalRevenueAfterCommission(totalAfterCommission);
+        } catch (err) {
+            setError('Error fetching advertiser sales report');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchFilteredSalesReport = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            setLoading(true);
+    
+            // Build query parameters
+            const params = {
+                date: selectedDate || undefined,
+                month: selectedMonth || undefined,
+            };
+    
+            // Fetch data using GET with query parameters
+            const response = await axios.get('/advertiser/salesReport/filter', {
+                headers: { Authorization: `Bearer ${token}` },
+                params, // Attach query parameters
+            });
+    
+            const report = response.data.revenueData;
+    
+            // Calculate total revenues
+            const total = report.reduce((sum, item) => sum + item.totalRevenue, 0);
+            const totalAfterCommission = report.reduce((sum, item) => sum + item.revenueAfterCommission, 0);
+    
+            setData(report);
+            setTotalRevenue(total);
+            setTotalRevenueAfterCommission(totalAfterCommission);
+        } catch (err) {
+            setError('Error fetching filtered advertiser sales report');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     useEffect(() => {
-        const fetchSalesReport = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('/advertiser/salesReport', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                const report = response.data.revenueData;
-
-                // Calculate total revenues
-                const total = report.reduce((sum, item) => sum + item.totalRevenue, 0);
-                const totalAfterCommission = report.reduce((sum, item) => sum + item.revenueAfterCommission, 0);
-
-                setData(report);
-                setTotalRevenue(total);
-                setTotalRevenueAfterCommission(totalAfterCommission);
-            } catch (err) {
-                setError('Error fetching advertiser sales report');
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
+        // Fetch initial sales report without filters
         fetchSalesReport();
     }, []);
+
+    const handleFilter = () => {
+        fetchFilteredSalesReport();
+    };
 
     if (loading) {
         return (
@@ -110,7 +156,7 @@ const AdvertiserSalesReport = () => {
                     }}
                 >
                     <TableHead>
-                    <TableRow
+                        <TableRow
                             sx={{
                                 pointerEvents: 'none', // Disable hover events
                                 '&:hover': {
@@ -150,6 +196,54 @@ const AdvertiserSalesReport = () => {
             >
                 Advertiser Sales Report
             </Typography>
+
+            {/* Filters Section */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: 2,
+                    mb: 4,
+                }}
+            >
+                <TextField
+                    type="date"
+                    label="Filter by Date"
+                    InputLabelProps={{ shrink: true }}
+                    value={selectedDate}
+                    onChange={(e) => {
+                        setSelectedDate(e.target.value);
+                        setSelectedMonth(''); // Clear month filter when date is selected
+                    }}
+                    fullWidth
+                />
+                <TextField
+                    type="month"
+                    label="Filter by Month"
+                    InputLabelProps={{ shrink: true }}
+                    value={selectedMonth}
+                    onChange={(e) => {
+                        setSelectedMonth(e.target.value);
+                        setSelectedDate(''); // Clear date filter when month is selected
+                    }}
+                    fullWidth
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleFilter}
+                    sx={{
+                        backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },
+                    }}
+                >
+                    Filter
+                </Button>
+            </Box>
 
             {renderTable('Activity Sales', data)}
 

@@ -38,6 +38,7 @@ router.delete('/notifications/:id', roleAuth(['advertiser']), notificationContro
 
 // Get advertiser sales report
 router.get('/salesReport', roleAuth(['advertiser']), advertiserController.getAdvertiserSalesReport);
+router.get('/salesReport/filter', roleAuth(['advertiser']), advertiserController.getFilteredAdvertiserSalesReport);
 
 // Export the router
 module.exports = router;
