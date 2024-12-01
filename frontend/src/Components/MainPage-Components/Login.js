@@ -199,7 +199,7 @@ const Login = () => {
     }}
 >
                 <CardContent>
-                    <Typography variant="h4" align="center" gutterBottom>
+                    <Typography variant="h4" align="center" gutterBottom sx={{fontWeight:'bold',color:'#111E56'}}>
                         Login
                     </Typography>
                     {error && (

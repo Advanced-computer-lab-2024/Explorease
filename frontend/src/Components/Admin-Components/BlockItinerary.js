@@ -132,7 +132,7 @@ const ManageContent = () => {
           padding: '20px',
           width: '500px',
           margin: '10px auto',
-          backgroundColor: '#f9f9f9',
+          backgroundColor: '#white',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           textAlign: 'center',
           '&:hover': {

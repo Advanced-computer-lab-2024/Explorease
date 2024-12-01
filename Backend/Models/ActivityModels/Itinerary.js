@@ -4,7 +4,13 @@ const Schema = mongoose.Schema;
 const ItinerarySchema = new Schema({
     name : {type : String, required : true},
     activities: [{ type: Schema.Types.ObjectId, ref: 'Activity', required: true }],
-    timeline: { type: [Date], required: true },  // Start/end time for each activity
+    timeline: [
+        {
+          startTime: { type: String, required: true }, // Use HH:mm format
+          endTime: { type: String, required: true },   // Use HH:mm format
+        },
+      ],
+      
     LanguageOfTour: { type: [String], required: true },
     totalPrice: { type: Number, required: true }, // Will be calculated by summing activity prices and adding tour guide fee
     AvailableDates: { type: [Date], required: true },

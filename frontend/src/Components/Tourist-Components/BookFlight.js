@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Typography, Box, FormControl, InputLabel, Select, MenuItem, CircularProgress } from '@mui/material';
+import {
+    TextField,
+    Button,
+    Typography,
+    Box,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    CircularProgress,
+    Grid,
+    Paper,
+} from '@mui/material';
 
 const BookFlight = () => {
+    // State variables
     const [origin, setOrigin] = useState('');
     const [destination, setDestination] = useState('');
     const [departureDate, setDepartureDate] = useState('');
-    const [currency, setCurrency] = useState('USD'); // Default currency to 'USD'
+    const [currency, setCurrency] = useState('USD'); // Default currency
     const [flights, setFlights] = useState([]);
     const [error, setError] = useState('');
-    const [displayedCurrency, setDisplayedCurrency] = useState('USD'); // State to store display currency
-    const [loading, setLoading] = useState(false); // Loading state
-    const [searchTriggered, setSearchTriggered] = useState(false); // Search triggered state
+    const [displayedCurrency, setDisplayedCurrency] = useState('USD');
+    const [loading, setLoading] = useState(false);
+    const [searchTriggered, setSearchTriggered] = useState(false);
 
-    // Function to get IATA code from the backend
+    // Helper function: Fetch IATA code
     const getIATACode = async (city) => {
         try {
-            const response = await axios.get(`/api/flights/iata-code`, { params: { city } });
+            const response = await axios.get('/api/flights/iata-code', { params: { city } });
             return response.data.iataCode;
         } catch (err) {
             console.error(`Error fetching IATA code for ${city}:`, err);
@@ -24,11 +37,7 @@ const BookFlight = () => {
         }
     };
 
-    // Function to handle booking logic
-    const handleBookNow = (flight) => {
-        alert(`Booking flight with ID: ${flight.id}`);
-    };
-
+    // Handler: Search for flights
     const handleSearchFlights = async () => {
         setFlights([]);
         setError('');
@@ -36,7 +45,6 @@ const BookFlight = () => {
         setSearchTriggered(true);
 
         try {
-            // Fetch the IATA codes for origin and destination
             const originCode = await getIATACode(origin);
             const destinationCode = await getIATACode(destination);
 
@@ -46,7 +54,6 @@ const BookFlight = () => {
                 return;
             }
 
-            // Fetch flight data
             const response = await axios.get('/api/flights/search', {
                 params: {
                     origin: originCode,
@@ -55,8 +62,7 @@ const BookFlight = () => {
                     currency,
                 },
             });
-            
-            // Set new flight data and update the displayed currency
+
             setFlights(response.data || []);
             setDisplayedCurrency(currency);
         } catch (err) {
@@ -67,104 +73,154 @@ const BookFlight = () => {
         }
     };
 
-    return (
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
-            <Typography variant="h4" gutterBottom>Book a Flight</Typography>
-            <TextField
-                label="Origin City"
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                fullWidth
-                margin="normal"
-            />
-            <TextField
-                label="Destination City"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                fullWidth
-                margin="normal"
-            />
-            <TextField
-                label="Departure Date"
-                type="date"
-                value={departureDate}
-                onChange={(e) => setDepartureDate(e.target.value)}
-                fullWidth
-                margin="normal"
-                InputLabelProps={{ shrink: true }}
-            />
-            <FormControl fullWidth margin="normal">
-                <InputLabel shrink>Currency</InputLabel>
-                <Select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    label="Currency"
-                >
-                    <MenuItem value="USD">USD</MenuItem>
-                    <MenuItem value="EUR">EUR</MenuItem>
-                </Select>
-            </FormControl>
+    // Handler: Book a flight
+    const handleBookNow = (flight) => {
+        alert(`Booking flight with ID: ${flight.id}`);
+    };
 
+    return (
+        <Box sx={{ px: 3, py: 4, maxWidth: 800, mx: 'auto', backgroundColor: 'white', borderRadius: 2, boxShadow: 2, marginTop:'35px' }}>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#111E56', textAlign: 'center', mb: 4 }}>
+                Book a Flight
+            </Typography>
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Origin City"
+                        value={origin}
+                        onChange={(e) => setOrigin(e.target.value)}
+                        fullWidth
+                        variant="outlined"
+                        margin="normal"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Destination City"
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value)}
+                        fullWidth
+                        variant="outlined"
+                        margin="normal"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Departure Date"
+                        type="date"
+                        value={departureDate}
+                        onChange={(e) => setDepartureDate(e.target.value)}
+                        fullWidth
+                        variant="outlined"
+                        margin="normal"
+                        InputLabelProps={{ shrink: true }}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth margin="normal" variant="outlined">
+                        <InputLabel>Currency</InputLabel>
+                        <Select
+                            value={currency}
+                            onChange={(e) => setCurrency(e.target.value)}
+                            label="Currency"
+                        >
+                            <MenuItem value="USD">USD</MenuItem>
+                            <MenuItem value="EUR">EUR</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
             <Button
                 variant="contained"
                 color="primary"
                 onClick={handleSearchFlights}
-                sx={{ backgroundColor: '#111E56', 
-                    color: 'white', 
-                    '&:hover': { 
-                        backgroundColor: 'white', 
+                sx={{
+                    mt: 3,
+                    width: '100%',
+                    backgroundColor: '#111E56',
+                    color: 'white',
+                    '&:hover': {
+                        backgroundColor: 'white',
                         color: '#111E56',
-                        border: '1px solid #111E56'
-                    }, mt: 2 }}
+                        border: '1px solid #111E56',
+                    },
+                }}
             >
                 Search Flights
             </Button>
-
-            {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
-
+            {error && (
+                <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>
+                    {error}
+                </Typography>
+            )}
             {loading ? (
-                <Box sx={{ mt: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                     <CircularProgress />
-                    <Typography>Loading flights...</Typography>
                 </Box>
             ) : (
                 searchTriggered && flights.length === 0 && (
-                    <Typography sx={{ mt: 4 }}>No flights found for the specified criteria.</Typography>
+                    <Typography sx={{ mt: 4, textAlign: 'center' }}>
+                        No flights found for the specified criteria.
+                    </Typography>
                 )
             )}
-
             {flights.length > 0 && (
                 <Box sx={{ mt: 4 }}>
-                    <Typography variant="h6">Available Flights</Typography>
+                    <Typography variant="h6" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold', color: '#111E56' }}>
+                        Available Flights
+                    </Typography>
                     {flights.map((flight, index) => (
-                        <Box key={index} sx={{ mt: 2, p: 2, border: '1px solid #ccc', borderRadius: '8px', textAlign: 'center' }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1 }}>
-                                <Typography><strong>Departure Date:</strong> {flight.itineraries[0].segments[0].departure.at.split('T')[0]}</Typography>
-                                <Typography><strong>Time:</strong> {flight.itineraries[0].segments[0].departure.at.split('T')[1]}</Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1 }}>
-                                <Typography><strong>Arrival Date:</strong> {flight.itineraries[0].segments[0].arrival.at.split('T')[0]}</Typography>
-                                <Typography><strong>Time:</strong> {flight.itineraries[0].segments[0].arrival.at.split('T')[1]}</Typography>
-                            </Box>
+                        <Paper
+                            key={index}
+                            sx={{
+                                px: 3,
+                                py: 4,
+                                marginTop: '30px',
+                                maxWidth: 800,
+                                mx: 'auto',
+                                backgroundColor: 'white',
+                                borderRadius: 2,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                textAlign: 'center',
+                                transition: 'all 0.3s ease-in-out', // Smooth transition for all properties
+                                '&:hover': {
+                                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)', // Increased shadow for a floating effect
+                                    transform: 'scale(1.02)', // Lift slightly with a small zoom-in
+                                    backgroundColor: 'white', // Slightly lighter background for hover
+                                },}}
+                        >
+                            <Typography>
+                                <strong>Departure:</strong> {flight.itineraries[0].segments[0].departure.at.split('T')[0]} at{' '}
+                                {flight.itineraries[0].segments[0].departure.at.split('T')[1]}
+                            </Typography>
+                            <Typography>
+                                <strong>Arrival:</strong> {flight.itineraries[0].segments[0].arrival.at.split('T')[0]} at{' '}
+                                {flight.itineraries[0].segments[0].arrival.at.split('T')[1]}
+                            </Typography>
                             <Typography sx={{ mt: 2 }}>
                                 <strong>Price:</strong> {displayedCurrency} {flight.price.total}
                             </Typography>
-                            <Typography><strong>Carrier:</strong> {flight.validatingAirlineCodes.join(', ')}</Typography>
+                            <Typography>
+                                <strong>Carrier:</strong> {flight.validatingAirlineCodes.join(', ')}
+                            </Typography>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={() => handleBookNow(flight)}
-                                sx={{ backgroundColor: '#111E56', 
-                                    color: 'white', 
-                                    '&:hover': { 
-                                        backgroundColor: 'white', 
+                                sx={{
+                                    mt: 2,
+                                    backgroundColor: '#111E56',
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: 'white',
                                         color: '#111E56',
-                                        border: '1px solid #111E56'
-                                    }, mt: 2 }}
+                                        border: '1px solid #111E56',
+                                    },
+                                }}
                             >
                                 Book Now
                             </Button>
-                        </Box>
+                        </Paper>
                     ))}
                 </Box>
             )}

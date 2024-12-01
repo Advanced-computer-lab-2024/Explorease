@@ -183,13 +183,13 @@ const HomePage = () => {
             </section>
 
             {/* Contact Us Section */}
-            <section style={{ backgroundColor: '#f5f5f5', padding: '200px 0' }}>
+            <section style={{ backgroundColor: 'white', padding: '200px 0' }}>
                 <Container>
                     <Fade direction="up">
-                        <Typography variant="h3" align="center" gutterBottom>
+                        <Typography variant="h3" align="center" gutterBottom sx={{color:'#111E56'}}>
                             Contact Us
                         </Typography>
-                        <Typography variant="body1" align="center" style={{ marginBottom: '40px' }}>
+                        <Typography variant="body1" align="center" style={{ marginBottom: '40px',color:'#111E56' }}>
                             Have questions? Reach out to us!
                         </Typography>
                         <Box component="form" noValidate autoComplete="off">
@@ -210,10 +210,11 @@ const HomePage = () => {
                                     sx={{
                                         backgroundColor: '#111E56',
                                         color: 'white',
+                                        border: '2px solid #111E56',
                                         '&:hover': {
                                             backgroundColor: 'white',
                                             color: '#111E56',
-                                            border: '1px solid #111E56',
+                                            border: '2px solid #111E56',
                                         },
                                     }}
                                 >

@@ -4,6 +4,8 @@ const itineraryController = require('../Controllers/ActivityControllers/Itinerar
 const tourGuideController = require('../Controllers/UserControllers/tourGuideController'); 
 const { roleAuth } = require('../Middleware/authMiddleware');
 const notificationController = require('../Controllers/UserControllers/NotificationController');
+const activityController = require('../Controllers/ActivityControllers/ActivityController');
+const preferenceTagController = require('../Controllers/ActivityControllers/PreferenceTagsController');
 
 // Routes for Tour Guide to create, read, update, and delete itineraries
 const multer = require('multer');
@@ -31,6 +33,10 @@ const pdfStorage = new CloudinaryStorage({
 const uploadPDF = multer({ storage: pdfStorage });
 
 module.exports = uploadPDF;
+//get all activities
+router.get('/allActivities', activityController.getAllActivity);
+router.get('/allTags', preferenceTagController.getAllTags);
+
 // Create Itinerary (Tour Guide specific)
 router.post('/createItinerary', roleAuth(['tourGuide']), itineraryController.createItinerary);
 

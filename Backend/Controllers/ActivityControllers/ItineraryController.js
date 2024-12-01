@@ -67,58 +67,103 @@ const flagItinerary = async (req, res) => {
     }
 };
 
-
-// Create Itinerary
 const createItinerary = async (req, res) => {
-    const { name, activities, timeline, LanguageOfTour, AvailableDates, AvailableTimes, accessibility, PickUpLocation, DropOffLocation, tags } = req.body;
-    const createdBy = req.user.id; // Assume req.user is set by authentication middleware
-    const languageArray = Array.isArray(LanguageOfTour) ? LanguageOfTour : [LanguageOfTour]; // Ensure LanguageOfTour is an array
-    const tourGuideConvenienceFee = 50; // You can adjust this to your needs
-
     try {
-        if (!activities || !LanguageOfTour || !AvailableDates || !AvailableTimes || !PickUpLocation || !DropOffLocation) {
-            return res.status(400).json({ message: 'All fields (activities, LanguageOfTour, AvailableDates, AvailableTimes, PickUpLocation, DropOffLocation) are required.' });
-        }
-
-        // Ensure the activities exist and sum up their prices
-        const activityDocs = await ActivityModel.find({ _id: { $in: activities } });
-        if (!activityDocs || activityDocs.length !== activities.length) {
-            return res.status(400).json({ message: 'One or more activities not found.' });
-        }
-
-        // Calculate total price by summing up the price of each activity and adding the tour guide convenience fee
-        const totalPrice = activityDocs.reduce((sum, activity) => sum + activity.price, 0) + tourGuideConvenienceFee;
-
-        // Convert tag names to their corresponding IDs
-        const tagDocs = await preferenceTagModel.find({ name: { $in: tags } });
-        if (!tagDocs || tagDocs.length !== tags.length) {
-            return res.status(400).json({ message: 'One or more tags not found.' });
-        }
-        const isActivated = false;
-        // Create the new itinerary
-        const itinerary = new ItineraryModel({
-            name, 
+        // Extract fields from the request body
+        const {
+            name,
             activities,
             timeline,
-            LanguageOfTour: languageArray,
-            totalPrice, // Calculated total price
+            LanguageOfTour,
+            AvailableDates,
+            AvailableTimes,
+            accessibility,
+            PickUpLocation,
+            DropOffLocation,
+            tags,
+        } = req.body;
+
+        const createdBy = req.user.id; // Assuming `req.user` is set by authentication middleware
+
+        // Validate required fields
+        if (
+            !name ||
+            !activities.length ||
+            !timeline.length ||
+            !LanguageOfTour.length ||
+            !AvailableDates.length ||
+            !AvailableTimes.length ||
+            !accessibility ||
+            !PickUpLocation ||
+            !DropOffLocation
+        ) {
+            return res.status(400).json({
+                message: 'All required fields (name, activities, timeline, LanguageOfTour, AvailableDates, AvailableTimes, accessibility, PickUpLocation, DropOffLocation) must be provided.',
+            });
+        }
+
+        // Validate activities
+        const activityDocs = await ActivityModel.find({ _id: { $in: activities } });
+        if (!activityDocs || activityDocs.length !== activities.length) {
+            return res.status(400).json({
+                message: 'One or more activities not found. Ensure valid activity IDs are provided.',
+            });
+        }
+
+        // Validate and calculate the total price of the itinerary
+        const tourGuideConvenienceFee = 50; // Adjust this value as needed
+        const totalPrice =
+            activityDocs.reduce((sum, activity) => sum + activity.price, 0) + tourGuideConvenienceFee;
+
+        // Validate tags
+        const tagDocs = await preferenceTagModel.find({ _id: { $in: tags } });
+        if (!tagDocs || tagDocs.length !== tags.length) {
+            return res.status(400).json({
+                message: 'One or more tags not found. Ensure valid tag IDs are provided.',
+            });
+        }
+
+        // Validate timeline format (if timeline contains string times like "11:20/12:20")
+        const parsedTimeline = timeline.map((entry) => {
+            const [startTime, endTime] = entry.split('/');
+            if (!startTime || !endTime) {
+                throw new Error(`Invalid timeline format: ${entry}. Expected format is "HH:mm/HH:mm".`);
+            }
+            return { startTime, endTime }; // Store as objects for clarity
+        });
+
+        // Create the new itinerary
+        const itinerary = new ItineraryModel({
+            name,
+            activities,
+            timeline: parsedTimeline, // Save parsed timeline
+            LanguageOfTour,
+            totalPrice,
             AvailableDates,
             AvailableTimes,
             accessibility,
             PickUpLocation,
             DropOffLocation,
             createdBy,
-            tags: tagDocs.map(tag => tag._id), // Save the tag IDs
-            isActivated
+            tags: tagDocs.map((tag) => tag._id), // Save the tag IDs
+            isActivated: false, // By default, new itineraries are not activated
         });
 
+        // Save to the database
         await itinerary.save();
-        res.status(201).json({ message: 'Itinerary created successfully', itinerary });
+
+        res.status(201).json({
+            message: 'Itinerary created successfully!',
+            itinerary,
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error creating Itinerary', error: error.message });
+        console.error('Error Creating Itinerary:', error);
+        res.status(500).json({
+            message: 'Error creating itinerary',
+            error: error.message,
+        });
     }
 };
-
 
 
 // Read Itineraries by tour guide ID

@@ -176,121 +176,161 @@ const Checkout = () => {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Typography variant="h4" sx={{ mb: 3 }}>Checkout</Typography>
+        <Box sx={{
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            padding: '20px',
+            width: '60%',
+            margin: '20px auto',
+            backgroundColor: '#white',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            textAlign: 'center',
+            '&:hover': {
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+              transform: 'scale(1.02)',
+              transition: 'transform 0.2s ease-in-out',
+            },
+          }}>
+            <Typography variant="h4" sx={{ mb: 3 , fontWeight:'bold' ,color:'#111E56', marginBottom:'30px' }}>Checkout</Typography>
 
             {checkoutMessage && <Alert severity="info" sx={{ mb: 2 }}>{checkoutMessage}</Alert>}
 
-            <Typography variant="h6">Cart Total: ${totalCost}</Typography>
-            <Typography variant="h6">Discount: ${discount}</Typography>
-            <Typography variant="h6">Final Total: ${finalCost}</Typography>
-
-            <Box sx={{ mt: 3 }}>
-    <Typography variant="h6">Have a Promo Code?</Typography>
-    <TextField
-        label="Enter Promo Code"
-        fullWidth
-        value={promoCode}
-        onChange={(e) => setPromoCode(e.target.value)}
-        sx={{ mb: 2 }}
-    />
-    <Button variant="contained" onClick={handleApplyPromoCode} sx={{ mb: 2 }}>
-        Apply
-    </Button>
-    <Typography variant="body1" color="primary">
-        Discount: ${discount}
-    </Typography>
-</Box>
-
-
             {/* Delivery Address Section */}
-            <Typography variant="h6" sx={{ mt: 3 }}>Select Delivery Address</Typography>
-            {addresses.length === 0 ? (
-                <Typography color="text.secondary" sx={{ mb: 3 }}>
-                    No delivery addresses found. Please add a new address.
-                </Typography>
-            ) : (
-                <RadioGroup
-                    value={selectedAddress}
-                    onChange={(e) => setSelectedAddress(e.target.value)}
-                    sx={{ mb: 3 }}
-                >
-                    {addresses.map((address, index) => (
-                        <FormControlLabel
-                            key={index}
-                            value={address.label}
-                            control={<Radio />}
-                            label={`${address.label}: ${address.address}, ${address.city}, ${address.zipCode}, ${address.country}`}
-                        />
-                    ))}
-                </RadioGroup>
-            )}
-
-            {/* Add New Address Form */}
-            <Box sx={{ mt: 3 }}>
-                <Typography variant="h6" sx={{ mb: 1 }}>Add New Address</Typography>
-                <TextField
-                    label="Label (e.g., Home, Office)"
-                    fullWidth
-                    value={newAddress.label}
-                    onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
-                    sx={{ mb: 2 }}
-                />
-                <TextField
-                    label="Address"
-                    fullWidth
-                    value={newAddress.address}
-                    onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
-                    sx={{ mb: 2 }}
-                />
-                <TextField
-                    label="City"
-                    fullWidth
-                    value={newAddress.city}
-                    onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
-                    sx={{ mb: 2 }}
-                />
-                <TextField
-                    label="ZIP Code"
-                    fullWidth
-                    value={newAddress.zipCode}
-                    onChange={(e) => setNewAddress({ ...newAddress, zipCode: e.target.value })}
-                    sx={{ mb: 2 }}
-                />
-                <TextField
-                    label="Country"
-                    fullWidth
-                    value={newAddress.country}
-                    onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })}
-                    sx={{ mb: 2 }}
-                />
-                <Button variant="contained" onClick={handleAddAddress} sx={{ mt: 2 }}>
-                    Add Address
-                </Button>
-            </Box>
-
-            {/* Payment Method Section */}
-            <Box sx={{ mt: 4 }}>
-                <FormControl>
-                    <FormLabel>Payment Method</FormLabel>
+            <Box sx={{justifyContent:'center', width:'100%', display:'flex'}}>
+                
+                {/* Add New Address Form */}
+                <Box sx={{ mt: 3 , width:'50%' , marginRight:'30px'}}>
+                    <Typography variant="h6" sx={{ mb: 1 }}>Add New Address</Typography>
+                    <TextField
+                        label="Label (e.g., Home, Office)"
+                        fullWidth
+                        value={newAddress.label}
+                        onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        label="Address"
+                        fullWidth
+                        value={newAddress.address}
+                        onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        label="City"
+                        fullWidth
+                        value={newAddress.city}
+                        onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        label="ZIP Code"
+                        fullWidth
+                        value={newAddress.zipCode}
+                        onChange={(e) => setNewAddress({ ...newAddress, zipCode: e.target.value })}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        label="Country"
+                        fullWidth
+                        value={newAddress.country}
+                        onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })}
+                        sx={{ mb: 2 }}
+                    />
+                    <Button variant="contained" onClick={handleAddAddress} sx={{ backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },mt: 2 }}>
+                        Add Address
+                    </Button>
+                </Box>
+                <Box sx={{ width:'30%'}}>
+                <Typography variant="h6" sx={{ mt: 3 ,marginTop:'80px'}}>Select Delivery Address</Typography>
+                {addresses.length === 0 ? (
+                    <Typography color="text.secondary" sx={{ mb: 3 }}>
+                        No delivery addresses found. Please add a new address.
+                    </Typography>
+                ) : (
                     <RadioGroup
-                        value={paymentMethod}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        sx={{ mt: 1 }}
+                        value={selectedAddress}
+                        onChange={(e) => setSelectedAddress(e.target.value)}
+                        sx={{ mb: 3 }}
                     >
-                        <FormControlLabel value="wallet" control={<Radio />} label="Wallet" />
-                        <FormControlLabel value="stripe" control={<Radio />} label="Credit Card (Stripe)" />
-                        <FormControlLabel value="cod" control={<Radio />} label="Cash on Delivery" />
+                        {addresses.map((address, index) => (
+                            <FormControlLabel
+                                key={index}
+                                value={address.label}
+                                control={<Radio />}
+                                label={`${address.label}: ${address.address}, ${address.city}, ${address.zipCode}, ${address.country}`}
+                            />
+                        ))}
                     </RadioGroup>
-                </FormControl>
+                )}
+                    <Box sx={{ mt: 4 , marginLeft:'20px'}}>
+                        <Typography variant="h6" sx={{marginBottom:'10px'}}>Have a Promo Code?</Typography>
+                        <TextField
+                            label="Enter Promo Code"
+                            fullWidth
+                            value={promoCode}
+                            onChange={(e) => setPromoCode(e.target.value)}
+                            sx={{ mb: 2 }}
+                        />
+                        <Button variant="contained" onClick={handleApplyPromoCode} sx={{ backgroundColor: '#111E56', 
+                            color: 'white', 
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            },mb: 2 }}>
+                            Apply
+                        </Button>
+                        <Typography variant="body1" color="primary">
+                            Discount: ${discount}
+                        </Typography>
+                    </Box>
+                </Box>
+
             </Box>
+            <Box sx ={{display:'flex', justifyContent:'center'}}>
+                <Box sx={{ mt: 5 , marginRight:'100px'}}>
+                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Cart Total: ${totalCost}</Typography>
+                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Discount: ${discount}</Typography>
+                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Final Total: ${finalCost}</Typography>
+                </Box>
+                {/* Payment Method Section */}
+                <Box sx={{ mt: 4 }}>
+                    <FormControl>
+                        <FormLabel>Payment Method</FormLabel>
+                        <RadioGroup
+                            value={paymentMethod}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            sx={{ mt: 1 }}
+                        >
+                            <FormControlLabel value="wallet" control={<Radio />} label="Wallet" />
+                            <FormControlLabel value="stripe" control={<Radio />} label="Credit Card (Stripe)" />
+                            <FormControlLabel value="cod" control={<Radio />} label="Cash on Delivery" />
+                        </RadioGroup>
+                    </FormControl>
+                </Box>
+                
+            </Box>
+
+            
 
             {/* Checkout Button */}
             <Button
                 variant="contained"
                 color="primary"
                 onClick={handleCheckout}
-                sx={{ mt: 3 }}
+                sx={{ backgroundColor: '#111E56', 
+                    color: 'white', 
+                    '&:hover': { 
+                        backgroundColor: 'white', 
+                        color: '#111E56',
+                        border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                    },mt: 3 }}
                 disabled={addresses.length === 0 || isStripeRedirecting}
             >
                 {isStripeRedirecting ? 'Redirecting to Stripe...' : 'Place Order'}

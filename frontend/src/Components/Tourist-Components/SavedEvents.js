@@ -141,7 +141,7 @@ const SavedEvents = () => {
                                     sx={{
                                         flex: 1,
                                         marginTop: '5px',
-                                        minWidth: '240px',
+                                        minWidth: '250px',
                                         height: '200px',
                                         border: '1px solid #ccc',
                                         borderRadius: 2,
@@ -165,7 +165,7 @@ const SavedEvents = () => {
                                     display: 'flex',
                                     justifyContent: 'space-around',
                                     padding: 1,
-                                    
+                                    marginTop: '-5px',
                                 }}
                             >
                                 <Tooltip title="Book Now">
@@ -174,10 +174,11 @@ const SavedEvents = () => {
                                         sx={{
                                             backgroundColor: '#111E56',
                                             color: 'white',
+                                            border: '2px solid #111E56',
                                             '&:hover': {
                                                 backgroundColor: 'white',
                                                 color: '#111E56',
-                                                border: '1px solid #111E56',
+                                                border: '2px solid #111E56',
                                             },
                                         }}
                                     >
