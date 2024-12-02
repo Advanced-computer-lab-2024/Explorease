@@ -159,11 +159,11 @@ const PromoCodes = () => {
                     sx={{
                         backgroundColor: '#111E56',
                         color: 'white',
-                        border: '1px solid #111E56',
+                        border: '2px solid #111E56',
                         '&:hover': {
                             backgroundColor: 'white',
                             color: '#111E56',
-                            border: '1px solid #111E56',
+                            border: '2px solid #111E56',
                         },
                     }}
                     onClick={handleCreatePromo}

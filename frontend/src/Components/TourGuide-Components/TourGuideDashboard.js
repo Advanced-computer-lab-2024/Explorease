@@ -157,14 +157,19 @@ const TourGuideDashboard = () => {
                                     <Button
                                         onClick={handleDeleteAccountRequest}
                                         sx={{
-                                            mt: 2,
+                                            marginTop: '20px',
                                             backgroundColor: '#f44336',
                                             color: 'white',
-                                            border: '1px solid #f44336',
+                                            border: '2px solid #f44336',
+                                            padding: '10px 20px',
+                                            fontWeight: 'bold',
+                                            textTransform: 'uppercase',
+                                            borderRadius: '8px',
+                                            transition: 'all 0.3s ease',
                                             '&:hover': {
                                                 backgroundColor: 'white',
                                                 color: '#f44336',
-                                                border: '1px solid #f44336',
+                                                border: '2px solid #f44336',
                                             },
                                         }}
                                     >
@@ -207,19 +212,18 @@ const TourGuideDashboard = () => {
     >
         {isSidebarOpen && (
             <Box
-                sx={{
-                    width: '250px',
-                    backgroundColor: '#111E40',
-                    color: 'white',
-                    height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
-                    position: 'fixed',
-                    top: '64px', // Start below the navbar
-                    padding: '10px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    transition: 'transform 0.3s ease-in-out',
-                }}
-            >
+            sx={{
+                width: '250px',
+                backgroundColor: '#111E40',
+                color: 'white',
+                height: 'calc(100vh - 64px)',
+                position: 'fixed',
+                top: '64px',
+                padding: '10px',
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
                 <List>
                     {[
                         { label: 'View Profile', section: 'profile' },
@@ -236,9 +240,18 @@ const TourGuideDashboard = () => {
                                     setActiveComponent(item.section);
                                 }}
                                 sx={{
+                                    color: 'white',
+                                    textAlign: 'left',
+                                    justifyContent: 'flex-start',
+                                    borderRadius: '8px',
+                                    width: '100%',
+                                    padding: '10px',
+                                    marginTop: '10px',
+                                    height: '70%',
                                     backgroundColor: activeComponent === item.section ? '#7BAFD0' : 'transparent',
                                     '&:hover': {
                                         backgroundColor: '#7BAFD0',
+                                        transform: 'scale(1.01)',
                                     },
                                 }}
                             >

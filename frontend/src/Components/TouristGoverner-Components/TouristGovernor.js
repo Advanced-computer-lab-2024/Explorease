@@ -195,10 +195,11 @@ const TouristGovernorDashboard = () => {
                                                 color: 'white',
                                                 borderRadius: '50%',
                                                 marginLeft: '90px',
+                                                border: '2px solid #111E56',
                                                 '&:hover': {
                                                     backgroundColor: 'white',
                                                     color: '#111E56',
-                                                    border: '1px solid #111E56',
+                                                    border: '2px solid #111E56',
                                                 },
                                             }}
                                         >

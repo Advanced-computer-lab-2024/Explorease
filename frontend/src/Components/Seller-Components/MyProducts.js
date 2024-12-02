@@ -186,10 +186,11 @@ const SellerProducts = () => {
                         color: 'white',
                         height: '56px',
                         marginTop: '65px',
+                        border: '2px solid #111E56',
                         '&:hover': {
                             backgroundColor: 'white',
                             color: '#111E56',
-                            border: '1px solid #111E56',
+                            border: '2px solid #111E56',
                         },
                     }}
                 >

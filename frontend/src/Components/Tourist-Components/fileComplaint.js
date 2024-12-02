@@ -100,10 +100,11 @@ const FileComplaint = () => {
                     sx={{
                         backgroundColor: '#111E56',
                         color: 'white',
+                        border: '2px solid #111E56',
                         '&:hover': {
                             backgroundColor: 'white',
                             color: '#111E56',
-                            border: '1px solid #111E56'
+                            border: '2px solid #111E56',
                         },
                         mt: 2
                     }}

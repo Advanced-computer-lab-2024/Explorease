@@ -130,10 +130,11 @@ const HistoricalPlaces = () => {
                   height: '54px',
                   width: '100px',
                   flexWrap: 'wrap',
+                  border: '2px solid #111E56',
                   '&:hover': {
                     backgroundColor: 'white',
                     color: '#111E56',
-                    border: '1px solid #111E56',
+                    border: '2px solid #111E56',
                   },
                 }}
               >

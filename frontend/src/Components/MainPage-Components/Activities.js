@@ -253,10 +253,11 @@ const handleSearch = async (e) => {
         color: 'white',
         width: '90px',
         height: '54px',
+        border: '2px solid #111E56',
         '&:hover': {
           backgroundColor: 'white',
           color: '#111E56',
-          border: '1px solid #111E56',
+          border: '2px solid #111E56',
         },
       }}
     >

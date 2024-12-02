@@ -135,10 +135,11 @@ const CreateAdminForm = () => {
                 />
                 <Button type="submit" variant="contained" color="primary" fullWidth sx={{ backgroundColor: '#111E56', 
                             color: 'white', 
+                            border: '2px solid #111E56',
                             '&:hover': { 
                                 backgroundColor: 'white', 
                                 color: '#111E56',
-                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                                border: '2px solid #111E56', // Optional: adds a border to match the dark blue on hover
                             },mt: 2 }}>
                     Create Admin
                 </Button>
