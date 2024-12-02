@@ -3,6 +3,7 @@ const { hashPassword, comparePassword, createToken } = require('../../utils/auth
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const BookingItinerary = require('../../Models/ActivityModels/BookingItinerary');
+const Itinerary = require('../../Models/ActivityModels/Itinerary');
 // Create a new tour guide
 const createTourGuide = async (req, res) => {
     const { username, email, password } = req.body;
@@ -312,6 +313,57 @@ const getFilteredTourGuideSalesReport = async (req, res) => {
     }
 };
 
+
+const getTourGuideItinerarySummary = async (req, res) => {
+    try {
+        const tourGuideId = req.user.id; // Tour guide ID from authentication middleware
+
+        // Fetch itineraries created by the tour guide
+        const itineraries = await Itinerary.find({ createdBy: tourGuideId });
+
+        if (!itineraries || itineraries.length === 0) {
+            return res.status(404).json({ message: 'No itineraries found for this tour guide.' });
+        }
+
+        // Get itinerary IDs
+        const itineraryIds = itineraries.map(itinerary => itinerary._id);
+
+        // Fetch bookings for these itineraries
+        const itineraryBookings = await BookingItinerary.aggregate([
+            {
+                $match: {
+                    Itinerary: { $in: itineraryIds },
+                    Status: { $ne: 'Cancelled' }, // Exclude canceled bookings
+                },
+            },
+            {
+                $group: {
+                    _id: '$Itinerary', // Group by itinerary ID
+                    uncancelledBookings: { $sum: 1 }, // Count uncancelled bookings
+                },
+            },
+        ]);
+
+        // Map bookings to itineraries
+        const summary = itineraries.map(itinerary => {
+            const bookingData = itineraryBookings.find(
+                booking => booking._id.toString() === itinerary._id.toString()
+            );
+            return {
+                itineraryName: itinerary.name,
+                date: itinerary.AvailableDates[0],
+                uncancelledBookings: bookingData ? bookingData.uncancelledBookings : 0,
+            };
+        });
+
+        res.status(200).json({ summary });
+    } catch (error) {
+        console.error('Error fetching itinerary summary:', error);
+        res.status(500).json({ error: 'An error occurred while fetching the itinerary summary.' });
+    }
+};
+
+
 module.exports = {
     getTourGuideByIdParam,
     uploadTourGuidePhoto,
@@ -325,4 +377,5 @@ module.exports = {
     deleteReq,
     getTourGuideSalesReport,
     getFilteredTourGuideSalesReport,
+    getTourGuideItinerarySummary
 };

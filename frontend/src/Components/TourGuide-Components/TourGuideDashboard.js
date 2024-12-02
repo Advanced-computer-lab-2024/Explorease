@@ -23,6 +23,7 @@ import AddPhoto from './AddPhoto';
 import SalesReport from './TourGuideSalesReport';
 import ViewMyItineraries from './ViewMyItineraries';
 import CreateItineraryForm from './CreateItineraryForm';
+import ItinerarySummary from './ItinerarySummary';
 
 const TourGuideDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -188,6 +189,8 @@ const TourGuideDashboard = () => {
                 return <AddPhoto setProfile={setProfile} />;
             case 'salesReport':
                 return <SalesReport />;
+            case 'ItinerarySummary':
+                return <ItinerarySummary />;
             default:
                 return <Typography variant="h6">Welcome to the Dashboard</Typography>;
         }
@@ -225,6 +228,7 @@ const TourGuideDashboard = () => {
                         { label: 'Update Profile', section: 'updateProfile' },
                         { label: 'Upload Profile Picture', section: 'uploadProfilePicture' },
                         { label: 'Sales Report', section: 'salesReport' },
+                        { label : 'Itinerary Summary', section : 'ItinerarySummary'}
                     ].map((item, index) => (
                         <ListItem key={index} disablePadding>
                             <ListItemButton

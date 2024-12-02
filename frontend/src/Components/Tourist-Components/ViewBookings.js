@@ -81,25 +81,30 @@ const ViewBookings = () => {
 
     const submitRating = async (booking, type) => {
         if (!ratings[booking._id]) {
-            alert("Please enter a rating.");
+            alert('Please enter a rating.');
             return;
         }
-
+    
         try {
             const token = localStorage.getItem('token');
-            const endpoint = type === 'activity'
-                ? `/tourists/activity-bookings/add-rating/${booking._id}`
-                : `/tourists/itinerary-bookings/add-rating/${booking._id}`;
-
-            await axios.post(endpoint, { rating: ratings[booking._id] }, {
-                headers: { Authorization: `Bearer ${token}` }
+            const endpoint =
+                type === 'activity'
+                    ? `/tourists/activity-bookings/add-rating/${booking._id}`
+                    : `/tourists/itinerary-bookings/add-rating/${booking._id}`;
+    
+            console.log('Sending rating:', ratings[booking._id]);
+            console.log('Endpoint:', endpoint);
+    
+            const response = await axios.post(endpoint, { rating: ratings[booking._id] }, {
+                headers: { Authorization: `Bearer ${token}` },
             });
-
-            alert("Rating submitted successfully!");
-            setRatings(prev => ({ ...prev, [booking._id]: '' }));
-            fetchBookings();  // Refresh bookings to reflect new rating
+    
+            console.log('Rating API response:', response.data);
+            alert('Rating submitted successfully!');
+            setRatings((prev) => ({ ...prev, [booking._id]: '' }));
+            fetchBookings(); // Refresh bookings to reflect the new rating
         } catch (error) {
-            console.error('Error submitting rating:', error);
+            console.error('Error submitting rating:', error.response || error.message);
             setErrorMessage('Error submitting rating.');
         }
     };
@@ -184,13 +189,21 @@ const ViewBookings = () => {
     }}
 >
                             <CardContent>
-                                <Typography variant="h6">{booking.Activity.name}</Typography>
-                                <Typography><strong>Date:</strong> {new Date(booking.Activity.date).toLocaleDateString()}</Typography>
-                                <Typography><strong>Status:</strong> {booking.Status}</Typography>
+                                <Typography variant="h6">  {booking.Activity?.name || 'Activity has been removed by the Advertiser.'}</Typography>
+                                {booking.Activity?.date && (
+                    <Typography>
+                        <strong>Date:</strong>{' '}
+                        {new Date(booking.Activity?.date).toLocaleDateString()}
+                    </Typography>
+                )}                               <Typography>
+                <strong>Status:</strong>{' '}
+                {booking.Activity?.name ? booking.Status : 'Status unavailable'}
+            </Typography>
+            
                                 <Typography><strong>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}</Typography>
                                 <Typography><strong>Cancellation Deadline:</strong> {new Date(booking.CancellationDeadline).toLocaleDateString()}</Typography>
                                 
-                                {isPastDate(booking.Activity.date) ? (
+                                {isPastDate(booking.Activity?.date) ? (
                                     <Box>
                                         {booking.rating !== undefined ? (
                                             <Typography><strong>Your Rating:</strong> {booking.rating}</Typography>
@@ -203,15 +216,6 @@ const ViewBookings = () => {
                                                     precision={1}
                                                     max={5}
                                                 />
-                                                {/* <TextField
-                                                    label="Rating (1-5)"
-                                                    type="number"
-                                                    value={ratings[booking._id] || ''}
-                                                    onChange={(e) => handleRatingChange(booking, e.target.value)}
-                                                    inputProps={{ min: 1, max: 5 }}
-                                                    fullWidth
-                                                    sx={{ mb: 1 }}
-                                                /> */}
                                                 <p></p>
                                                 <Button
                                                     variant="contained"
@@ -328,8 +332,8 @@ const ViewBookings = () => {
     }}
 >
                             <CardContent>
-                                <Typography variant="h6">{booking.Itinerary.name}</Typography>
-                                <Typography><strong>Date:</strong> {new Date(booking.Itinerary.AvailableDates[0]).toLocaleDateString()}</Typography>
+                                <Typography variant="h6">{booking.Itinerary?.name}</Typography>
+                                <Typography><strong>Date:</strong> {new Date(booking.Itinerary?.AvailableDates[0]).toLocaleDateString()}</Typography>
                                 <Typography><strong>Status:</strong> {booking.Status}</Typography>
                                 <Typography><strong>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}</Typography>
                                 <Typography><strong>Cancellation Deadline:</strong> {new Date(booking.CancellationDeadline).toLocaleDateString()}</Typography>

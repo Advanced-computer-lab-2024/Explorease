@@ -7,6 +7,7 @@ import MyActivities from './MyActivities';
 import CreateActivity from './CreateActivity';
 import UploadLogo from './UploadLogo';
 import SalesReport from './AdvertiserSalesReport';
+import ActivitySummary from './ActivitySummary';
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -187,6 +188,8 @@ const AdvertiserDashboard = () => {
                 return <UploadLogo setProfile={setProfile} />;
             case 'Sales Report':
                 return <SalesReport/>;
+            case 'ActivitySummary' :
+                return <ActivitySummary />;
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
@@ -220,6 +223,7 @@ const AdvertiserDashboard = () => {
                             { label: 'Create Activity', component: 'createActivity' },
                             { label: 'Upload a Logo', component: 'uploadLogo' },
                             { label: 'Sales Report', component: 'Sales Report' },
+                            {label : 'Activity Summary', component : 'ActivitySummary'}
                         ].map((item) => (
                             <Button
                                 key={item.component}

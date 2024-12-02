@@ -173,17 +173,27 @@ const deleteBooking = async (req, res) => {
 const setRatingForActivityBooking = async (req, res) => {
     const { bookingId } = req.params;
     const { rating } = req.body;
+    const { id: userId } = req.user; // Extract user ID from authenticated user
 
     if (!rating || rating < 1 || rating > 5) {
         return res.status(400).json({ error: 'Rating should be between 1 and 5.' });
     }
 
     try {
-        // Find the booking and check if a rating already exists
-        const booking = await bookingModel.findById(bookingId);
+        // Find the booking using Activity ID and User ID
+        const booking = await bookingModel
+            .findOne({ _id: bookingId, Tourist: userId })
+            .populate('Activity');
+        
         if (!booking) {
             return res.status(404).json({ error: 'Booking not found.' });
         }
+
+        if (!booking.Activity) {
+            return res.status(404).json({ error: 'Associated activity not found.' });
+        }
+
+        console.log(booking.Activity.name); // Log activity name for debugging
 
         if (booking.rating !== undefined) {
             return res.status(400).json({ error: 'Rating has already been set and cannot be updated.' });
@@ -195,9 +205,11 @@ const setRatingForActivityBooking = async (req, res) => {
 
         return res.status(200).json({ message: 'Rating set successfully.', rating: booking.rating });
     } catch (error) {
+        console.error('Error setting rating:', error); // Log error for debugging
         return res.status(500).json({ error: 'An error occurred while setting the rating.' });
     }
 };
+
 
 // Set a comment for an activity booking (one-time only)
 const setCommentForActivityBooking = async (req, res) => {

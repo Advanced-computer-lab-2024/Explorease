@@ -38,14 +38,7 @@
     "name": "James' Deals",
     "description": "Special travel discounts."
   },
-  {
-    "username": "advertiser_benjamin",
-    "email": "benjamin_advertiser@example.com",
-    "password": "BenjaminPassword101",
-    "name": "Benjamin's Adventures",
-    "description": "Adventure deals and offers."
-  },
-  {
+ {
     "username": "advertiser_mia",
     "email": "mia_advertiser@example.com",
     "password": "MiaPassword112",
@@ -55,7 +48,6 @@
 ]
 
 ## Tourists : 
-
 [
   {
     "email": "lucas12@example.com",
@@ -67,7 +59,7 @@
   },
   {
     email : fizo@gmail.com,
-    password : fizo1234
+    password : Fizo1234
   }
 ]
 

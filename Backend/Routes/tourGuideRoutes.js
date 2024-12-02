@@ -87,5 +87,8 @@ router.delete('/notifications/:id', roleAuth(['tourGuide']), notificationControl
 router.get('/salesReport', roleAuth(['tourGuide']), tourGuideController.getTourGuideSalesReport);
 router.get('/salesReport/filter', roleAuth(['tourGuide']), tourGuideController.getFilteredTourGuideSalesReport);
 
+
+router.get('/itinerary-summary', roleAuth(['tourGuide']), tourGuideController.getTourGuideItinerarySummary);
+
 // Export the router
 module.exports = router;

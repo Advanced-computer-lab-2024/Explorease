@@ -337,6 +337,72 @@ const getFilteredAdvertiserSalesReport = async (req, res) => {
     }
 };
 
+const getAdvertiserActivitySummary = async (req, res) => {
+    try {
+        const advertiserId = req.user.id; // Assuming authentication middleware sets `req.user`
+
+        // Fetch all activities created by the advertiser
+        const activities = await mongoose
+            .model('Activity') // Replace with your actual Activity model
+            .find({ createdBy: advertiserId });
+
+        if (!activities.length) {
+            return res.status(404).json({ message: 'No activities found for this advertiser.' });
+        }
+
+        const currentDate = new Date(); // Current date for comparison
+
+        // Prepare activity IDs
+        const activityIds = activities.map(activity => activity._id);
+
+        // Aggregate bookings for these activities
+        const bookingSummary = await Booking.aggregate([
+            {
+                $match: {
+                    Activity: { $in: activityIds }, // Match bookings for the advertiser's activities
+                    Status: { $ne: 'Cancelled' }, // Exclude canceled bookings
+                },
+            },
+            {
+                $lookup: {
+                    from: 'activities', // MongoDB collection name for activities
+                    localField: 'Activity',
+                    foreignField: '_id',
+                    as: 'activityDetails',
+                },
+            },
+            { $unwind: '$activityDetails' }, // Flatten activityDetails array
+            {
+                $group: {
+                    _id: '$Activity', // Group by activity ID
+                    activityName: { $first: '$activityDetails.name' }, // Activity name
+                    activityDate: { $first: '$activityDetails.date' }, // Activity date
+                    uncanceledBookings: { $sum: 1 }, // Count uncanceled bookings
+                },
+            },
+            {
+                $project: {
+                    _id: 0, // Exclude MongoDB `_id`
+                    activityName: 1,
+                    activityDate: 1,
+                    uncanceledBookings: 1,
+                    hasPassed: {
+                        $lt: ['$activityDate', currentDate], // Check if the activity date has passed
+                    },
+                },
+            },
+            { $match: { hasPassed: true } }, // Filter for activities whose date has passed
+        ]);
+
+        // Return the summary
+        res.status(200).json({ bookingSummary });
+    } catch (error) {
+        console.error('Error fetching activity summary:', error);
+        res.status(500).json({ error: 'Server Error' });
+    }
+};
+
+
 
 module.exports = {
     upload, 
@@ -351,4 +417,5 @@ module.exports = {
     deleteReq,
     getAdvertiserSalesReport,
     getFilteredAdvertiserSalesReport,
+    getAdvertiserActivitySummary
 };

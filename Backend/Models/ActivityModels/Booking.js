@@ -9,7 +9,7 @@ const BookingSchema = new Schema({
     CancellationDeadline : {type: Date, required : true},
     rating: { type: Number, min: 1, max: 5 },
     comment: { type: String },
-    amountPaid: { type: Number, required: true },
+    amountPaid: { type: Number, required: false },
 }, { timestamps: true });
 
 const Booking = mongoose.model('Booking', BookingSchema);
