@@ -31,7 +31,7 @@ const ViewBookings = () => {
 
         } catch (error) {
             if (error.response && error.response.status === 404) {
-                setErrorMessage('No Bookings Found');
+                //setErrorMessage('No Bookings Found');
             } else {
                 console.error('Error fetching guides:', error);
                 setErrorMessage('Error loading guides for review.');
@@ -268,13 +268,15 @@ const ViewBookings = () => {
                                     </Box>
                                 ) : isCancellationAllowed(booking.CancellationDeadline) && (
                                     <Button
-                                        variant="outlined"
-                                        color="error"
-                                        onClick={() => handleCancelActivityBooking(booking._id)}
-                                        sx={{ mt: 2, mb: 2 }}
-                                    >
-                                        {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}
-                                    </Button>
+    variant="outlined"
+    color="error"
+    onClick={() => handleCancelActivityBooking(booking._id)}
+    sx={{ mt: 2, mb: 2 }}
+    disabled={booking.Status === 'Cancelled'} // Pass the boolean value
+>
+    {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}
+</Button>
+
                                 )}
                             </CardContent>
                         </Card>
@@ -407,6 +409,7 @@ const ViewBookings = () => {
                                         color="error"
                                         onClick={() => handleCancelItineraryBooking(booking._id)}
                                         sx={{ mt: 2, mb: 2 }}
+                                        disabled={booking.Status === 'Cancelled'} // Pass the boolean value
                                     >
                                         {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}
                                     </Button>

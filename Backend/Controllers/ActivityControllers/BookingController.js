@@ -2,9 +2,10 @@ const bookingModel = require('../../Models/ActivityModels/Booking.js');
 const { default: mongoose } = require('mongoose');
 const Activity = require('../../Models/ActivityModels/Activity.js');
 const Tourist= require('../../Models/UserModels/Tourist.js');
-
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Notification = require('../../Models/UserModels/Notification');
 const { sendEmail } = require('../../utils/emailService.js'); // Assuming you have an email service
+const { sendActivityReceiptEmail } = require('../../utils/receiptService'); // Import the email function
 
 const sendBookingReminders = async () => {
     try {
@@ -147,6 +148,7 @@ const getMyBookings = async (req, res) => {
 
 const deleteBooking = async (req, res) => {
     const { bookingId } = req.params;
+    const touristId = req.user.id;
 
     try {
         const booking = await bookingModel.findById(bookingId);
@@ -159,15 +161,24 @@ const deleteBooking = async (req, res) => {
             return res.status(400).json({ message: 'Cancellation deadline has passed, booking cannot be canceled' });
         }
 
-        // Update the status to 'Cancelled'
-        booking.Status = 'Cancelled';
-        await booking.save();
+        // Refund the amount to the tourist's wallet
+        const tourist = await Tourist.findById(touristId);
+        if (!tourist) {
+            return res.status(404).json({ message: 'Tourist not found' });
+        }
 
-        res.status(200).json({ message: 'Booking canceled successfully', booking });
+        tourist.wallet += booking.amountPaid;
+        await tourist.save();
+
+        // Delete the booking document
+        await bookingModel.findByIdAndDelete(bookingId);
+
+        res.status(200).json({ message: 'Booking canceled and deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error canceling booking', error: error.message });
     }
 };
+
 
 // Set a rating for an activity booking (one-time only)
 const setRatingForActivityBooking = async (req, res) => {
@@ -241,6 +252,135 @@ const setCommentForActivityBooking = async (req, res) => {
     }
 };
 
+const createStripeSession = async (req, res) => {
+    try {
+        const { activityId, amountPaid } = req.body;
+        const touristId = req.user.id; // Assuming you have the tourist's ID from the auth middleware
+
+        const activity = await Activity.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found.' });
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: { name: activity.name },
+                        unit_amount: Math.round(amountPaid * 100), // Amount in cents
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            client_reference_id: touristId, // Tourist ID
+            metadata: { activityId },
+            success_url: `${process.env.FRONTEND_URL}/activity-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/tourist`,
+        });
+
+        res.status(200).json({ url: session.url });
+    } catch (error) {
+        console.error('Error creating Stripe session:', error.message);
+        res.status(500).json({ message: 'Failed to create Stripe session.' });
+    }
+};
+
+const handleStripeWebhook = async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+
+    try {
+        const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+
+        if (event.type === 'checkout.session.completed') {
+            const session = event.data.object;
+            const activityId = session.metadata.activityId;
+            const touristId = session.client_reference_id;
+
+            // Ensure activity and tourist exist
+            const activity = await Activity.findById(activityId);
+            const tourist = await Tourist.findById(touristId);
+            if (!activity || !tourist) {
+                console.error('Invalid activity or tourist ID in session metadata');
+                return res.status(400).send('Invalid activity or tourist');
+            }
+        }
+
+        res.json({ received: true });
+    } catch (error) {
+        console.error('Webhook error:', error);
+        res.status(400).send(`Webhook Error: ${error.message}`);
+    }
+};
+
+const stripeSuccessActivity = async (req, res) => {
+    const { sessionId } = req.body; // Stripe session ID from the frontend
+
+    try {
+        // Fetch the Stripe session
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        // Extract tourist ID and activity ID from session metadata
+        const touristId = session.client_reference_id;
+        const activityId = session.metadata.activityId;
+
+        // Validate the tourist and activity
+        const tourist = await Tourist.findById(touristId);
+        const activity = await Activity.findById(activityId);
+
+        if (!tourist || !activity) {
+            return res.status(404).json({ message: 'Tourist or Activity not found.' });
+        }
+
+        const existingBooking = await bookingModel.findOne({
+            Tourist: touristId,
+            Activity: activityId,
+        });
+
+        if (existingBooking) {
+            return res.status(200).json({
+                message: 'Booking already exists',
+                booking: existingBooking,
+            });
+        }
+        
+        // Calculate cancellation deadline (48 hours before activity date)
+        const CancellationDeadline = new Date(activity.date.getTime() - 48 * 60 * 60 * 1000);
+
+        // **Get amountPaid from session.amount_total (convert from cents to dollars)**
+        const amountPaid = session.amount_total / 100;
+
+        // Create the booking
+        const booking = new bookingModel({
+            Tourist: touristId,
+            Activity: activityId,
+            Status: 'Active',
+            BookedAt: new Date(),
+            CancellationDeadline,
+            paymentMethod: 'Stripe',
+            amountPaid, // Include amountPaid
+        });
+
+        await booking.save();
+
+        try {
+            await sendActivityReceiptEmail(booking);
+            console.log(`Receipt email sent to ${tourist.email}`);
+        } catch (emailError) {
+            console.error('Failed to send receipt email:', emailError.message);
+        }
+
+        res.status(200).json({ message: 'Booking successful', booking });
+    } catch (error) {
+        console.error('Error in Stripe success for activity:', error.message);
+        res.status(500).json({ message: 'Error verifying payment', error: error.message });
+    }
+};
+
+
+
 
 module.exports = {
     setRatingForActivityBooking,
@@ -251,4 +391,7 @@ module.exports = {
     getMyBookings,
     deleteBooking,
     sendBookingReminders,
+    createStripeSession, 
+    handleStripeWebhook,
+    stripeSuccessActivity
 };

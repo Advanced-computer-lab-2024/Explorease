@@ -155,7 +155,7 @@ const notifySubscribedUsers = async () => {
             await activity.save();
         }
 
-        console.log('Notifications sent and subscribers removed for activities with open booking.');
+       // console.log('Notifications sent and subscribers removed for activities with open booking.');
     } catch (error) {
         console.error('Error sending notifications and updating subscriber list:', error.message);
     }

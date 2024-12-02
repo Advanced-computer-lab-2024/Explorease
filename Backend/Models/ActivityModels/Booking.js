@@ -10,6 +10,7 @@ const BookingSchema = new Schema({
     rating: { type: Number, min: 1, max: 5 },
     comment: { type: String },
     amountPaid: { type: Number, required: false },
+    paymentMethod : {type : String, required : false}
 }, { timestamps: true });
 
 const Booking = mongoose.model('Booking', BookingSchema);

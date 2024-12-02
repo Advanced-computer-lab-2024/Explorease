@@ -142,7 +142,7 @@ schedule.scheduleJob('0 0 * * *', generateBirthdayPromoCodes);
 
 // Schedule the reminder function to run every day at 9:00 AM using node-schedule
 schedule.scheduleJob('0 9 * * *', async () => {
-    console.log('Running daily booking reminder task...');
+    //console.log('Running daily booking reminder task...');
     await sendBookingReminders();
 });
 

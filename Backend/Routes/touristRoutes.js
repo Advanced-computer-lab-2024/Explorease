@@ -146,7 +146,13 @@ router.get('/saved-activity/', roleAuth(['tourist']), savedActivityController.ge
 router.delete('/saved-activity/:activityId', roleAuth(['tourist']), savedActivityController.deleteSavedActivity);
 
 // Stripe routes for itineraries
-router.post('/itineraries/stripe-session/:itineraryId', roleAuth(['tourist']), itineraryControllers.createStripeSession);
-router.get('/itineraries/stripe-success', roleAuth(['tourist']), itineraryControllers.stripeSuccess);
+//router.post('/itineraries/stripe-session/:itineraryId', roleAuth(['tourist']), itineraryControllers.createStripeSession);
+//router.get('/itineraries/stripe-success', roleAuth(['tourist']), itineraryControllers.stripeSuccess);
+
+router.post('/activities/stripe-session', roleAuth(['tourist']), bookingController.createStripeSession);
+router.post('/activities/stripe-success', roleAuth(['tourist']), bookingController.stripeSuccessActivity);
+
+router.post('/itineraries/stripe-session', roleAuth(['tourist']), itineraryBookingController.createStripeSessionForItinerary);
+router.post('/itineraries/stripe-success', roleAuth(['tourist']), itineraryBookingController.stripeSuccessItinerary);
 
 module.exports = router;

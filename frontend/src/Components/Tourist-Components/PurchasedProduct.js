@@ -140,71 +140,81 @@ export default function PurchasedProduct() {
 
   const renderOrders = (orders, isDelivered) => (
     <Grid container spacing={4}>
-      {orders.map((purchase) => (
-        <Grid item xs={12} sm={6} md={4} key={purchase._id}>
-          <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <CardMedia
-              component="img"
-              height="200"
-              image={purchase.productId.imageUrl || 'https://via.placeholder.com/150'}
-              alt={purchase.productId.Name}
-            />
-            <CardContent>
-              <Typography variant="h6">{purchase.productId.Name}</Typography>
-              <Typography variant="body2" color="textSecondary">
-                Price: ${purchase.productId.Price}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" gutterBottom>
-                Description: {purchase.productId.Description}
-              </Typography>
-              {isDelivered ? (
-                <>
-                  <Typography variant="body2" color="primary" gutterBottom>
-                    Status: Delivered
-                  </Typography>
-                  {purchase.review || purchase.rating ? (
-                    <Box mt={1}>
-                      <Typography variant="body2" color="textSecondary">
-                        Your Review:
-                      </Typography>
-                      <Rating value={purchase.rating} readOnly size="small" />
-                      <Typography variant="body2">{purchase.review}</Typography>
-                    </Box>
-                  ) : (
-                    <Button
-                      size="small"
-                      color="primary"
-                      onClick={() => handleReviewOpen(purchase)}
-                      sx={{ mt: 1 }}
-                    >
-                      Write a Review
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <>
-                  <Typography variant="body2" color="secondary" gutterBottom>
-                    Status: Delivering
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-  Payment Method: {purchase.paymentMethod ? purchase.paymentMethod.charAt(0).toUpperCase() + purchase.paymentMethod.slice(1) : 'Unknown'}
-</Typography>
-<Button
-                                    size="small"
-                                    color="error"
-                                    onClick={() => handleCancelOrder(purchase._id)}
-                                    sx={{ mt: 1 }}
-                                >
-                                    Cancel Order
-                                </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
+        {orders.map((purchase) => (
+            <Grid item xs={12} sm={6} md={4} key={purchase._id}>
+                <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    {purchase.productId?.Name ? (
+                        <>
+                            <CardMedia
+                                component="img"
+                                height="200"
+                                image={purchase.productId.imageUrl || 'https://via.placeholder.com/150'}
+                                alt={purchase.productId.Name}
+                            />
+                            <CardContent>
+                                <Typography variant="h6">{purchase.productId.Name}</Typography>
+                                <Typography variant="body2" color="textSecondary">
+                                    Price: ${purchase.productId.Price || 'N/A'}
+                                </Typography>
+                                <Typography variant="body2" color="textSecondary" gutterBottom>
+                                    Description: {purchase.productId.Description || 'No description available'}
+                                </Typography>
+                                {isDelivered ? (
+                                    <>
+                                        <Typography variant="body2" color="primary" gutterBottom>
+                                            Status: Delivered
+                                        </Typography>
+                                        {purchase.review || purchase.rating ? (
+                                            <Box mt={1}>
+                                                <Typography variant="body2" color="textSecondary">
+                                                    Your Review:
+                                                </Typography>
+                                                <Rating value={purchase.rating} readOnly size="small" />
+                                                <Typography variant="body2">{purchase.review}</Typography>
+                                            </Box>
+                                        ) : (
+                                            <Button
+                                                size="small"
+                                                color="primary"
+                                                onClick={() => handleReviewOpen(purchase)}
+                                                sx={{ mt: 1 }}
+                                            >
+                                                Write a Review
+                                            </Button>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Typography variant="body2" color="secondary" gutterBottom>
+                                            Status: Delivering
+                                        </Typography>
+                                        <Typography variant="body2" color="textSecondary">
+                                            Payment Method: {purchase.paymentMethod ? purchase.paymentMethod.charAt(0).toUpperCase() + purchase.paymentMethod.slice(1) : 'Unknown'}
+                                        </Typography>
+                                        <Button
+                                            size="small"
+                                            color="error"
+                                            onClick={() => handleCancelOrder(purchase._id)}
+                                            sx={{ mt: 1 }}
+                                        >
+                                            Cancel Order
+                                        </Button>
+                                    </>
+                                )}
+                            </CardContent>
+                        </>
+                    ) : (
+                        <CardContent>
+                            <Typography variant="h6" color="error">
+                                Product has been removed from the market. 
+                            </Typography>
+                        </CardContent>
+                    )}
+                </Card>
+            </Grid>
+        ))}
     </Grid>
-  );
+);
 
   return (
     <Container maxWidth="lg">

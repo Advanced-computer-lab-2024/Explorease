@@ -28,7 +28,9 @@ const BookActivitiesPage = () => {
     const [bookmarkErrorMessage, setBookmarkErrorMessage] = useState('');
     const [bookmarkSuccessMessage, setBookmarkSuccessMessage] = useState('');
     const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
-
+    const [promoCode, setPromoCode] = useState('');
+    const [discountedAmount, setDiscountedAmount] = useState(0);
+    
 
     const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
     const fetchBookmarkedActivities = async () => {
@@ -47,6 +49,24 @@ const BookActivitiesPage = () => {
         }
     };
     
+    const applyPromoCode = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post(
+                '/tourists/promocode',
+                { promoCode, cartTotal: selectedActivity.price },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            const discount = response.data.discount;
+            setDiscountedAmount(discount);
+            setSuccessMessage(`Promo code applied! You saved $${discount.toFixed(2)}.`);
+            // setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (error) {
+            console.error('Error applying promo code:', error);
+            setErrorMessage(error.response?.data?.message || 'Failed to apply promo code.');
+            setTimeout(() => setErrorMessage(''), 3000);
+        }
+    };
     
     
     useEffect(() => {
@@ -196,36 +216,51 @@ const BookActivitiesPage = () => {
     };
     
 
-    const handlePayment = async () => {
+    const handlePayment = async (paymentMethod) => {
         try {
             const token = localStorage.getItem('token');
-            const amountPaid = selectedActivity.price; // Rename for consistency with backend
     
-            // First, make the booking request and include amountPaid in the request body
-            const response = await axios.post(
-                `/tourists/activities/book/${selectedActivity._id}`,
-                { amountPaid }, // Send amountPaid in the request body
-                {
-                    headers: { Authorization: `Bearer ${token}` },
+            // Calculate the final amount after applying the discount
+            const finalAmount = selectedActivity.price - discountedAmount;
+    
+            if (finalAmount <= 0) {
+                setErrorMessage('The final amount cannot be zero or negative.');
+                return;
+            }
+    
+            if (paymentMethod === 'wallet') {
+                // Wallet Payment
+                const response = await axios.post(
+                    `/tourists/activities/book/${selectedActivity._id}`,
+                    { amountPaid: finalAmount },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                setSuccessMessage('Payment successful! Booking created.');
+                setWalletBalance(response.data.walletBalance);
+            } else if (paymentMethod === 'stripe') {
+                // Stripe Payment
+                const response = await axios.post(
+                    `/tourists/activities/stripe-session`,
+                    {
+                        activityId: selectedActivity._id,
+                        amountPaid: finalAmount,
+                    },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+    
+                if (response.data.url) {
+                    window.location.href = response.data.url; // Redirect to Stripe checkout
+                } else {
+                    setErrorMessage('Failed to create Stripe session.');
                 }
-            );
+            }
     
-            setSuccessMessage('Payment successful! Booking created.');
-            setWalletBalance(response.data.walletBalance);
-    
-            // After successful booking, add points based on the activity's price
-            await axios.post(
-                '/tourists/addpoints',
-                { amountPaid },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-    
-            // Redirect to tourist dashboard after 3 seconds
+            // Reset UI state after payment
             setTimeout(() => {
                 setActiveComponent('BookActivity');
                 setSelectedActivity(null);
+                setDiscountedAmount(0); // Reset discount for next activity
+                setPromoCode(''); // Clear promo code input
                 setSuccessMessage('');
             }, 3000);
         } catch (error) {
@@ -235,45 +270,79 @@ const BookActivitiesPage = () => {
     };
     
     
-    if (activeComponent === 'PayForActivity' && selectedActivity) {
-        return (
-            <Box sx={{ maxWidth: 600, margin: '0 auto', padding: '20px' }}>
-                <Typography variant="h4" gutterBottom>Pay for Activity</Typography>
-                
-                {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
-                {successMessage && <Alert severity="success" sx={{ mb: 2 }}>{successMessage}</Alert>}
+    
+    
+if (activeComponent === 'PayForActivity' && selectedActivity) {
+    return (
+        <Box sx={{ maxWidth: 600, margin: '0 auto', padding: '20px' }}>
+    <Typography variant="h4" gutterBottom>Book Activity</Typography>
+    
+    {errorMessage && <Alert severity="error" sx={{ mb: 2 }}>{errorMessage}</Alert>}
+    {successMessage && <Alert severity="success" sx={{ mb: 2 }}>{successMessage}</Alert>}
 
-                <Typography variant="h6" gutterBottom>Activity Details</Typography>
-                <Typography><strong>Activity:</strong> {selectedActivity.name}</Typography>
-                <Typography><strong>Date:</strong> {new Date(selectedActivity.date).toLocaleDateString()}</Typography>
-                <Typography><strong>Price:</strong> ${selectedActivity.price}</Typography>
-                <Typography><strong>Current Wallet Balance:</strong> ${Number(walletBalance)}</Typography>
-<Typography><strong>Balance After Payment:</strong> ${Number(walletBalance) - Number(selectedActivity.price)}</Typography>
+    <Typography variant="h6" gutterBottom>Activity Details</Typography>
+    <Typography><strong>Activity:</strong> {selectedActivity.name}</Typography>
+    <Typography><strong>Date:</strong> {new Date(selectedActivity.date).toLocaleDateString()}</Typography>
+    <Typography><strong>Original Price:</strong> ${selectedActivity.price}</Typography>
+    {discountedAmount > 0 && (
+        <Typography><strong>Discount:</strong> -${discountedAmount.toFixed(2)}</Typography>
+    )}
+    <Typography><strong>Final Price:</strong> ${selectedActivity.price - discountedAmount}</Typography>
 
-
-                {walletBalance >= selectedActivity.price ? (
-                    <Button 
-                        variant="contained" 
-                        color="primary" 
-                        onClick={handlePayment}
-                        sx={{ mt: 2 }}
-                    >
-                        Pay and Book
-                    </Button>
-                ) : (
-                    <Typography color="error" sx={{ mt: 2 }}>Insufficient funds in wallet. Please add more funds.</Typography>
-                )}
-                <Button 
-                    variant="outlined" 
-                    color="secondary" 
-                    onClick={() => setActiveComponent('BookActivity')}
-                    sx={{ mt: 2 }}
+    <TextField
+                    label="Promo Code"
+                    variant="outlined"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                    sx={{ mt: 2, width: '100%' }}
+                />
+                <Button
+                    variant="contained"
+                    onClick={applyPromoCode}
+                    sx={{
+                        mt: 2,
+                        backgroundColor: '#111E56',
+                        color: 'white',
+                        '&:hover': {
+                            backgroundColor: 'white',
+                            color: '#111E56',
+                            border: '1px solid #111E56',
+                        },
+                    }}
                 >
-                    Back to Activities
+                    Apply Promo
                 </Button>
-            </Box>
-        );
-    }
+
+    <Typography variant="h6" sx={{ mt: 3 }}>Select Payment Method</Typography>
+    <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={() => handlePayment('wallet')}
+        sx={{ mt: 2, mr: 2 }}
+        disabled={walletBalance < (selectedActivity.price - discountedAmount)}
+    >
+        Pay with Wallet
+    </Button>
+    <Button 
+        variant="contained" 
+        color="secondary" 
+        onClick={() => handlePayment('stripe')}
+        sx={{ mt: 2 }}
+    >
+        Pay with Stripe
+    </Button>
+    <Button 
+        variant="outlined" 
+        color="secondary" 
+        onClick={() => setActiveComponent('BookActivity')}
+        sx={{ ml : 2, mt: 2 }}
+    >
+        Back to Activities
+    </Button>
+</Box>
+
+    );
+}
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>

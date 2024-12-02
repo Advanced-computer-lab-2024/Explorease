@@ -44,7 +44,7 @@ const purchaseSchema = new Schema({
         default : false,
     },
     paymentMethod : {
-        type : String, required : true,
+        type : String, required : false,
     }
 
 });

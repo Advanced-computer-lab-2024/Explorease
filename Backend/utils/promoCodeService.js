@@ -26,7 +26,7 @@ const generateBirthdayPromoCodes = async () => {
                 <h2>${promoCode.name}</h2>
                 <p>Discount of : ${promoCode.percentage}%</p>
                 <p>Use it to enjoy discounts on your next adventure with us.</p>
-                <p>Cheers,<br>Your Travel Team</p>
+                <p>Cheers,<br> Explorease</p>
             `;
 
             await sendEmail(tourist.email, subject, message);

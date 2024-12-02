@@ -18,6 +18,9 @@ import UploadDocuments from './Components/MainPage-Components/UploadDocuments';
 import SingleItinerary from './Components/MainPage-Components/SingleItinerary';
 import SingleActivity from './Components/MainPage-Components/SingleActivity';
 import Success from './Components/Tourist-Components/Success';
+import PaymentStatus from './Components/Tourist-Components/PaymentStatus';
+import ActivitySuccess from './Components/Tourist-Components/ActivitySuccess';
+import ItinerarySuccess from './Components/Tourist-Components/ItinerarySuccess';
 
 function App() {
             // All paths needed
@@ -43,6 +46,9 @@ function App() {
           <Route path="/itinerary/:id" element={<SingleItinerary />} />
           <Route path="/activity/:id" element={<SingleActivity />} />
           <Route path="/success" element={<Success />} />
+          <Route path="/payment-status" element={<PaymentStatus />} />
+          <Route path="/activity-success" element={<ActivitySuccess />} />
+          <Route path='/itinerary-success' element={<ItinerarySuccess />} />
 
         </Routes>
       </div>

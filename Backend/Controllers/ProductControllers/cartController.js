@@ -379,54 +379,7 @@ const stripeWebhook = async (req, res) => {
         const event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
 
         if (event.type === 'checkout.session.completed') {
-            const session = event.data.object;
-
-
-            // Retrieve the buyer ID
-            const buyerId = req.user.id;
-
-            // Retrieve tourist's cart
-            const cart = await Cart.findOne({ touristId: buyerId }).populate('items.productId');
-            if (!cart || cart.items.length === 0) {
-                return res.status(400).json({ message: 'Cart is empty' });
-            }
-
-            // Create purchases and update stock
-            const purchases = await Promise.all(
-                cart.items.map(async (item) => {
-                    const product = item.productId;
-
-                    // Check stock availability
-                    if (product.AvailableQuantity < item.quantity) {
-                        throw new Error(`Insufficient stock for product: ${product.Name}`);
-                    }
-
-                    // Decrement stock
-                    product.AvailableQuantity -= item.quantity;
-                    product.Sales += item.quantity;
-                    await product.save();
-
-                    // Create purchase
-                    const purchase = new Purchase({
-                        productId: product._id,
-                        buyerId,
-                        quantity: item.quantity,
-                        totalPrice: product.Price * item.quantity,
-                        address: session.metadata.address, // Use metadata for address
-                        paymentMethod: 'stripe',
-                        status: 'Paid',
-                    });
-
-                    await purchase.save();
-                    return purchase;
-                })
-            );
-
-            // Clear the cart
-            cart.items = [];
-            await cart.save();
-
-            res.status(200).json({ message: 'Purchase completed', purchases });
+  
         } else {
             res.status(400).json({ message: 'Unhandled event type' });
         }
