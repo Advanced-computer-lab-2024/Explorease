@@ -138,7 +138,9 @@ const ViewComplaints = () => {
             <h2>Complaints</h2>
             {errorMessage && <p style={errorMessageStyle}>{errorMessage}</p>}
             
-            {loading ? <CircularProgress /> : (
+            {loading ? (
+    <CircularProgress />
+) : filteredComplaints.length > 0 ? (
     <div style={listStyle}>
         {filteredComplaints.map((complaint) => (
             <div key={complaint._id} style={cardStyle}>
@@ -162,7 +164,12 @@ const ViewComplaints = () => {
             </div>
         ))}
     </div>
+) : (
+    <Typography variant="h6" color="textSecondary">
+        No Complaints Made
+    </Typography>
 )}
+
 
 
 {selectedComplaint && (

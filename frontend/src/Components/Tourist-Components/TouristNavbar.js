@@ -293,10 +293,10 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
             <Drawer anchor="right" open={isNotificationDrawerOpen} onClose={() => toggleNotificationDrawer(false)}>
                 <Box sx={{ width: 350, padding: 2 }}>
                     <Typography variant="h6" sx={{
-        fontWeight: 'bold',
-        position: 'relative',
-        display: 'inline-block',
-        '&::after': {
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
             content: '""',
             position: 'absolute',
             width: '100%',

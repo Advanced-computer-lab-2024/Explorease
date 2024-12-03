@@ -24,6 +24,9 @@ import Checkout from './Checkout';
 import SavedEvents from './SavedEvents';
 import CircularProgress from '@mui/material/CircularProgress';
 import { CurrencyContext } from './CurrencyContext';
+import EditIcon from '@mui/icons-material/Edit';
+import Tooltip from '@mui/material/Tooltip';
+
 
 const TouristDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -115,19 +118,6 @@ const TouristDashboard = () => {
             case 'profile':
                 return (
                     <>
-                        <Typography
-                            variant="h4"
-                            gutterBottom
-                            sx={{
-                                fontWeight: 'bold',
-                                color: '#111E56',
-                                marginBottom: '20px',
-                                textAlign: 'left',
-                                paddingLeft: '20px',
-                            }}
-                        >
-                            Profile
-                        </Typography>
                         {message && (
                             <Typography
                                 color="error"
@@ -142,11 +132,21 @@ const TouristDashboard = () => {
                             </Typography>
                         )}
                         {profile && profile.username ? (
-                            <Box sx={{ paddingLeft: '20px' }}>
-                                {/* Profile Details Card */}
+                          <Box
+                          sx={{
+                              display: 'flex',
+                              alignItems: 'center', // Flex layout for Profile + Update form
+                              flexDirection: 'column', // Align profile and update form horizontally
+                              gap: '20px', // Space between profile card and update form
+                              width: '100%',
+                              position : 'relative' // Ensure they take up the full width
+                          }}
+                      >
+                            {/* Profile Details Card */}
                                 <Box
                                     sx={{
                                         display: 'flex',
+                                        alignItems: 'center',
                                         flexDirection: 'column',
                                         backgroundColor: 'white',
                                         borderRadius: '16px',
@@ -200,36 +200,48 @@ const TouristDashboard = () => {
                                                 {profile.email || 'yourname@gmail.com'}
                                             </Typography>
                                         </Box>
+                                        <Box sx={{ marginLeft: '180px'}} >
+                                        <Tooltip title="Edit Profile" arrow>
+                                <IconButton
+                                    onClick={() => setUpdateProfileVisible(!updateProfileVisible)}
+                                    sx={{
+                                        color: '#111E56',
+                                        '&:hover': { color: '#111E60' },
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
+                            </Box>
                                     </Box>
             
                                     {/* Profile Details */}
                                     <Box
-        component="div"
-        sx={{
-            fontSize: '16px',
-            lineHeight: '1.8',
-            '& strong': {
-                color: '#111E56',
-                fontWeight: 'bold',
-            },
-            alignItems: 'left',
-        }}
-    >
-        <p>
-            <strong>Date of Birth:</strong>{' '}
-            {new Date(profile.dob).toLocaleDateString()}
-        </p>
-        <p>
-            <strong>Nationality:</strong> {profile.nationality}
-        </p>
-        <p>
-            <strong>Mobile Number:</strong> {profile.mobileNumber}
-        </p>
-        <p>
-            <strong>Wallet Balance:</strong> {convertPrice(profile.wallet)}{' '}
-            {selectedCurrency}
-        </p>
-    </Box>
+                                        component="div"
+                                        sx={{
+                                            fontSize: '16px',
+                                            lineHeight: '1.8',
+                                            '& strong': {
+                                                color: '#111E56',
+                                                fontWeight: 'bold',
+                                            },
+                                            alignItems : 'left'
+                                        }}
+                                    >
+                                        <p>
+                                            <strong>Date of Birth</strong>{' '}
+                                            {new Date(profile.dob).toLocaleDateString()}
+                                        </p>
+                                        <p>
+                                            <strong>Nationality</strong> {profile.nationality}
+                                        </p>
+                                        <p>
+                                            <strong>Mobile Number </strong> {profile.mobileNumber}
+                                        </p>
+                                        <p>
+                                            <strong>Wallet Balance</strong> {convertPrice(profile.wallet)} {selectedCurrency}
+                                        </p>
+                                    </Box>
             
                                     {/* Delete Account Button */}
                                     <Button
@@ -256,63 +268,35 @@ const TouristDashboard = () => {
                                     </Button>
                                 </Box>
             
-                                {/* Dropdown to Toggle Update Profile */}
-                                <Box
-                                    sx={{
-                                        marginTop: '10px',
-                                        width: '400px',
-                                        textAlign: 'left',
-                                    }}
-                                >
-                                    <Button
-                                        onClick={() => setUpdateProfileVisible(!updateProfileVisible)}
-                                        sx={{
-                                            width: '100%',
-                                            backgroundColor: '#111E56',
-                                            color: 'white',
-                                            fontWeight: 'bold',
-                                            fontSize: '14px',
-                                            padding: '10px',
-                                            borderRadius: '8px',
-                                            textTransform: 'uppercase',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            '&:hover': {
-                                                backgroundColor: '#0D164A',
-                                                color: 'white',
-                                            },
-                                        }}
-                                    >
-                                        {updateProfileVisible ? 'Finished yet? ' : 'Edit Profile'}
-                                    </Button>
-                                </Box>
-            
-                                {/* Update Profile Component */}
-                                {updateProfileVisible && (
-                                    <Box
-                                        sx={{
-                                            backgroundColor: 'white',
-                                            borderRadius: '16px',
-                                            width: '400px',
-                                            marginTop: '30px',
-                                        }}
-                                    >
-                                        <UpdateProfile profile={profile} setProfile={setProfile} />
-                                    </Box>
-                                )}
-                            </Box>
+                             
+                          
+                    {/* Render Update Profile Form */}
+                    {updateProfileVisible && (
+                     <Box
+                     sx={{
+                         flex: 1,
+                         flexDirection: 'column',
+                         padding: '20px',
+                         borderRadius: '16px',
+                         backgroundColor: 'white',
+                     }}
+                 >
+                            <UpdateProfile profile={profile} setProfile={setProfile} />
+                        </Box>
+                    )}
+                </Box>
                         ) : (
                             <Box
                                 sx={{
                                     display: 'flex',
-                                    justifyContent: 'flex-start',
+                                    justifyContent: 'center',
                                     alignItems: 'center',
                                     height: '100px',
                                     paddingLeft: '20px',
                                 }}
                             >
                                 <CircularProgress size={50} sx={{ color: '#111E56' }} />
+                                
                             </Box>
                         )}
                     </>
@@ -391,7 +375,6 @@ const TouristDashboard = () => {
         <nav>
             {[
                 { label: 'Complaints', component: 'fileComplaint' },
-                { label: 'View Complaints', component: 'ViewComplaints' },
                 { label: 'View Bookings', component: 'ViewBookings' },
                 { label: 'Review Tour Guides', component: 'reviewGuides' },
                 { label: 'Purchased Products', component: 'PurchasedProduct' },
