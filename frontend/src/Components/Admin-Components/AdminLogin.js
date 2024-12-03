@@ -18,7 +18,8 @@ import {
     CircularProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
-
+import backgroundImage from '../../Misc/bg.jpg'; // Adjust the path based on your project structure
+import GuestNavBarforGuest from '../MainPage-Components/GuestNavBarforGuest';
 const AdminLogin = () => {
     const [emailOrUsername, setEmailOrUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -114,10 +115,35 @@ const AdminLogin = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-            <Card sx={{ maxWidth: 400, p: 3, boxShadow: 3 }}>
+        <>
+        <GuestNavBarforGuest />
+        <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '91.3vh', // Ensures it covers the entire height of the viewport
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: 'rgba(255, 255, 255, 0)', // Fallback color
+            backgroundBlendMode: 'overlay',
+        }}>
+            <Card  sx={{
+        maxWidth: 400,
+        p: 3,
+        boxShadow: 4, // Default shadow intensity
+        transition: 'all 0.3s ease', // Smooth transition for hover effects
+        backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent white background
+        borderRadius: 2, // Optional: Rounded corners for a sleek look
+        '&:hover': {
+            boxShadow: 10, // Dramatically increase shadow on hover
+            transform: 'scale(1.05)', // Slightly scale up the card
+            backgroundColor: 'rgba(255, 255, 255, 0.7)', // Slightly less transparent on hover
+        },
+    }}>
                 <CardContent>
-                    <Typography variant="h4" align="center" gutterBottom>
+                    <Typography variant="h4" align="center" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
                         Admin Login
                     </Typography>
                     {error && (
@@ -164,10 +190,11 @@ const AdminLogin = () => {
                             sx={{
                                 backgroundColor: isLoading ? 'grey' : '#111E56',
                                 color: 'white',
+                                border: '2px solid #111E56',
                                 '&:hover': {
-                                    backgroundColor: 'white',
+                                    backgroundColor: 'transparent',
                                     color: '#111E56',
-                                    border: '1px solid #111E56',
+                                    border: '2px solid #111E56',
                                 },
                                 mb: 2,
                             }}
@@ -401,6 +428,7 @@ const AdminLogin = () => {
                 </DialogActions>
             </Dialog>
         </Box>
+        </>
     );
 };
 

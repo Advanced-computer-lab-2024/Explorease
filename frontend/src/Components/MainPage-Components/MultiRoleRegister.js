@@ -1,13 +1,26 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate for redirection
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import {
+    TextField,
+    Button,
+    Box,
+    Typography,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel,
+} from '@mui/material';
+
+import backgroundImage from '../../Misc/bg.jpg'; // Adjust the path based on your project structure
+import GuestNavBarforGuest from '../MainPage-Components/GuestNavBarforGuest';
 
 const MultiRoleRegister = () => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
         password: '',
-        userType: '',  // Default is empty until selected
+        userType: '',
         mobileNumber: '',
         nationality: '',
         dob: '',
@@ -24,11 +37,10 @@ const MultiRoleRegister = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`/register`, formData);  // Adjust the API endpoint if necessary
+            await axios.post(`/register`, formData); // Adjust the API endpoint if necessary
             setMessage('Registration successful! Redirecting to login page...');
-            // Redirect to login page after successful registration
             setTimeout(() => {
-                navigate('/login');  // Redirect to the login page
+                navigate('/login'); // Redirect to the login page
             }, 2000);
         } catch (error) {
             setMessage('Error during registration. Please try again.');
@@ -36,177 +48,174 @@ const MultiRoleRegister = () => {
         }
     };
 
-    // Styling
-    const formStyle = {
-        maxWidth: '400px',
-        margin: '0 auto',
-        padding: '20px',
-        border: '1px solid #ccc',
-        borderRadius: '10px',
-        backgroundColor: '#f9f9f9',
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-    };
-
-    const inputStyle = {
-        width: '95%',
-        padding: '10px',
-        marginBottom: '15px',
-        border: '1px solid #ccc',
-        borderRadius: '5px',
-        fontSize: '16px',
-    };
-
-    const buttonStyle = {
-        width: '100%',
-        padding: '10px',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '16px',
-    };
-
-    const buttonStyle2 = {
-        width: '100%',
-        padding: '10px',
-        backgroundColor: '#111E56',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '16px',
-    };
-
-    const errorStyle = {
-        color: 'red',
-        textAlign: 'center',
-        marginBottom: '15px',
-    };
-
-    const titleStyle = {
-        textAlign: 'center',
-        marginBottom: '20px',
-        fontSize: '24px',
-        fontWeight: 'bold',
-    };
-
     return (
-        <div style={{ padding: '40px' }}>
-            <div style={formStyle}>
-                <h2 style={titleStyle}>User Registration</h2>
-                {message && <p style={errorStyle}>{message}</p>}
+        <>
+        <GuestNavBarforGuest />
+        <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '97vh', // Ensures it covers the entire height of the viewport
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: 'rgba(255, 255, 255, 0)', // Fallback color
+            backgroundBlendMode: 'overlay',
+        }}>
+            <Box
+                sx={{
+                    marginTop:'40px',
+                    marginBottom:'50px',
+                    maxWidth: 400,
+                    p: 3,
+                    boxShadow: 4, // Default shadow intensity
+                    transition: 'all 0.3s ease', // Smooth transition for hover effects
+                    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent white background
+                    borderRadius: 2, // Optional: Rounded corners for a sleek look
+                    '&:hover': {
+                        boxShadow: 10, // Dramatically increase shadow on hover
+                        transform: 'scale(1.05)', // Slightly scale up the card
+                        backgroundColor: 'rgba(255, 255, 255, 0.7)', // Slightly less transparent on hover
+                    },
+                }}
+            >
+                <Typography
+                    variant="h4"
+                    component="h2"
+                    textAlign="center"
+                    marginBottom={3}
+                    fontWeight="bold"
+                    color='#111E56'
+                >
+                    User Registration
+                </Typography>
+                {message && (
+                    <Typography
+                        sx={{
+                            color: message.includes('Error') ? 'red' : 'green',
+                            textAlign: 'center',
+                            marginBottom: 2,
+                        }}
+                    >
+                        {message}
+                    </Typography>
+                )}
                 <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Username:</label>
-                        <input 
-                            type="text" 
-                            name="username" 
-                            value={formData.username} 
-                            onChange={handleChange} 
-                            required 
-                            style={inputStyle}
-                        />
-                    </div>
-                    <div>
-                        <label>Email:</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            value={formData.email} 
-                            onChange={handleChange} 
-                            required 
-                            style={inputStyle}
-                        />
-                    </div>
-                    <div>
-                        <label>Password:</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            value={formData.password} 
-                            onChange={handleChange} 
-                            required 
-                            minLength="6" 
-                            style={inputStyle}
-                        />
-                    </div>
-                    <div>
-                        <label>User Type:</label>
-                        <select 
-                            name="userType" 
-                            value={formData.userType} 
-                            onChange={handleChange} 
-                            required 
-                            style={inputStyle}
+                    <TextField
+                        fullWidth
+                        label="Username"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                    />
+                    <TextField
+                        fullWidth
+                        label="Email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                    />
+                    <TextField
+                        fullWidth
+                        label="Password"
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        margin="normal"
+                        required
+                        inputProps={{ minLength: 6 }}
+                    />
+                    <FormControl fullWidth margin="normal" required>
+                        <InputLabel>User Type</InputLabel>
+                        <Select
+                            name="userType"
+                            value={formData.userType}
+                            onChange={handleChange}
                         >
-                            <option value="">Select User Type</option>
-                            <option value="tourist">Tourist</option>
-                            <option value="tourGuide">Tour Guide</option>
-                            <option value="seller">Seller</option>
-                            <option value="advertiser">Advertiser</option>
-                        </select>
-                    </div>
+                            <MenuItem value="">Select User Type</MenuItem>
+                            <MenuItem value="tourist">Tourist</MenuItem>
+                            <MenuItem value="tourGuide">Tour Guide</MenuItem>
+                            <MenuItem value="seller">Seller</MenuItem>
+                            <MenuItem value="advertiser">Advertiser</MenuItem>
+                        </Select>
+                    </FormControl>
 
-                    {/* Additional fields for tourist role */}
                     {formData.userType === 'tourist' && (
                         <>
-                            <div>
-                                <label>Mobile Number:</label>
-                                <input 
-                                    type="text" 
-                                    name="mobileNumber" 
-                                    value={formData.mobileNumber} 
-                                    onChange={handleChange} 
-                                    style={inputStyle} 
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label>Nationality:</label>
-                                <input 
-                                    type="text" 
-                                    name="nationality" 
-                                    value={formData.nationality} 
-                                    onChange={handleChange} 
-                                    style={inputStyle} 
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label>Date of Birth:</label>
-                                <input 
-                                    type="date" 
-                                    name="dob" 
-                                    value={formData.dob} 
-                                    onChange={handleChange} 
-                                    style={inputStyle} 
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label>Job or Student:</label>
-                                <select 
-                                    name="jobOrStudent" 
-                                    value={formData.jobOrStudent} 
-                                    onChange={handleChange} 
-                                    style={inputStyle} 
-                                    required
+                            <TextField
+                                fullWidth
+                                label="Mobile Number"
+                                name="mobileNumber"
+                                value={formData.mobileNumber}
+                                onChange={handleChange}
+                                margin="normal"
+                                required
+                            />
+                            <TextField
+                                fullWidth
+                                label="Nationality"
+                                name="nationality"
+                                value={formData.nationality}
+                                onChange={handleChange}
+                                margin="normal"
+                                required
+                            />
+                            <TextField
+                                fullWidth
+                                label="Date of Birth"
+                                type="date"
+                                name="dob"
+                                value={formData.dob}
+                                onChange={handleChange}
+                                margin="normal"
+                                InputLabelProps={{ shrink: true }}
+                                required
+                            />
+                            <FormControl fullWidth margin="normal" required>
+                                <InputLabel>Job or Student</InputLabel>
+                                <Select
+                                    name="jobOrStudent"
+                                    value={formData.jobOrStudent}
+                                    onChange={handleChange}
                                 >
-                                    <option value="">Select</option>
-                                    <option value="Job">Job</option>
-                                    <option value="Student">Student</option>
-                                </select>
-                            </div>
+                                    <MenuItem value="">Select</MenuItem>
+                                    <MenuItem value="Job">Job</MenuItem>
+                                    <MenuItem value="Student">Student</MenuItem>
+                                </Select>
+                            </FormControl>
                         </>
                     )}
 
-                    <button type="submit" style={buttonStyle2}>Register</button>
+                    <Button
+                        fullWidth
+                        type="submit"
+                        variant="contained"
+                        sx={{
+                            backgroundColor: '#111E56',
+                            color: 'white',
+                            border: '2px solid #111E56',
+                            '&:hover': {
+                                backgroundColor: 'transparent',
+                                color: '#111E56',
+                                border: '2px solid #111E56',
+                            },
+                            mb: 2,
+                        }}
+                    >
+                        Register
+                    </Button>
                 </form>
-            </div>
-        </div>
+            </Box>
+        </Box>
+        </>
     );
 };
-
 
 export default MultiRoleRegister;

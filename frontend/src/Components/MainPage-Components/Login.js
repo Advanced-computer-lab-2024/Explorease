@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
 import GuestNavBarforGuest from './GuestNavBarforGuest'; // Replace with the actual path to your navbar file
-import backgroundImage from '../../Misc/heroBackground.jpg'; // Adjust the path based on your project structure
+import backgroundImage from '../../Misc/bg.jpg'; // Adjust the path based on your project structure
 
 const Login = () => {
     const [emailOrUsername, setEmailOrUsername] = useState('');
