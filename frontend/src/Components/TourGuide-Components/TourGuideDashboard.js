@@ -243,7 +243,7 @@ const TourGuideDashboard = () => {
         >
                 <List>
                     {[
-                        { label: 'View Profile', section: 'profile' },
+                        
                         { label: 'View Itineraries', section: 'viewActivities' },
                         { label: 'Create Itinerary', section: 'createActivity' },
                         { label: 'Update Profile', section: 'updateProfile' },
