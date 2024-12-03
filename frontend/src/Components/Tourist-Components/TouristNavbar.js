@@ -209,6 +209,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
                     onClick={() => setActiveComponent('bookItinerary')}>
                     Itineraries
                     </Typography>
+
                     <Typography
     sx={{
         ...linkStyle,
@@ -218,6 +219,30 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
 >
     Historical Places
 </Typography>
+<Typography
+                        sx={{
+                            ...linkStyle,
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setActiveComponent('bookFlight')}>
+                        Flights
+                    </Typography>    
+                    <Typography
+                        sx={{
+                            ...linkStyle,
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setActiveComponent('bookHotel')}>
+                        Hotels
+                    </Typography>             
+                    <Typography
+                        sx={{
+                            ...linkStyle,
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => setActiveComponent('bookTransportation')}>
+                        Transportation
+                    </Typography>               
                     </Box>
                 </Box>
 
