@@ -19,12 +19,14 @@ import AddProduct from './AddProduct';
 import UpdateProfile from './UpdateProfile';
 import UploadLogo from './UploadLogo';
 import SalesReport from './SellerSalesReport';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
+
 
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar visibility state
-
+    const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
     const [activeComponent, setActiveComponent] = useState('profile');
     const navigate = useNavigate();
 
@@ -74,6 +76,19 @@ const SellerDashboard = () => {
         setIsSidebarOpen((prevState) => !prevState);
     };
     
+     const handleSectionChange = (section) => {
+        setNavigationStack((prevStack) => [...prevStack, activeComponent]); // Push current section to stack
+        setActiveComponent(section); // Set new section
+    };
+    
+        // Function to handle Back button
+        const handleBack = () => {
+            if (navigationStack.length > 0) {
+                const lastSection = navigationStack.pop(); // Get the last section
+                setNavigationStack([...navigationStack]); // Update the stack
+                setActiveComponent(lastSection); // Navigate to the last section
+            }
+        };
 
     const renderContent = () => {
         switch (activeComponent) {
@@ -235,7 +250,7 @@ const SellerDashboard = () => {
                         ].map((item, index) => (
                             <Button
                                 key={index}
-                                onClick={() => setActiveComponent(item.section)}
+                                onClick={() => handleSectionChange(item.section)}
                                 sx={{
                                     color: 'white',
                                     textAlign: 'left',
@@ -266,6 +281,27 @@ const SellerDashboard = () => {
         transition: 'margin-left 0.3s ease',
     }}
 >
+{navigationStack.length > 0 && (
+        <Button
+            onClick={handleBack}
+            startIcon={<ArrowBackIcon />}
+            sx={{
+                position: 'fixed',
+                top: '80px',
+                left: isSidebarOpen ? '270px' : '20px',
+                backgroundColor: '#111E56',
+                color: 'white',
+                '&:hover': {
+                    backgroundColor: 'white',
+                    color: '#111E56',
+                    border: '1px solid #111E56',
+                },
+                zIndex: 1000,
+            }}
+        >
+            Back
+        </Button>
+    )}
     {renderContent()}
 </Box>
 
