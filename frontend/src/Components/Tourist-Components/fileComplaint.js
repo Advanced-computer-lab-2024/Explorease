@@ -43,8 +43,7 @@ const FileComplaint = () => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>File a Complaint</Typography>
-
+            <h2>File a Complaint</h2>
             {successMessage && (
                 <Typography color="primary" sx={{ mb: 2 }}>
                     {successMessage}
