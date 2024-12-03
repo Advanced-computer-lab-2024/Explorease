@@ -240,7 +240,7 @@ const SellerDashboard = () => {
                         }}
                     >
                         {[
-                            { label: 'View Profile', section: 'profile' },
+                           
                             { label: 'View All Products', section: 'viewProducts' },
                             { label: 'Update Profile', section: 'updateProfile' },
                             { label: 'View My Products', section: 'myProducts' },

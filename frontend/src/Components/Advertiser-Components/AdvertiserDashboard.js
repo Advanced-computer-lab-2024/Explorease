@@ -233,7 +233,7 @@ const AdvertiserDashboard = () => {
                 >
                     <nav>
                         {[
-                            { label: 'View Profile', component: 'profile' },
+                            
                             { label: 'Edit Profile', component: 'updateProfile' },
                             { label: 'Get My Activities', component: 'viewActivities' },
                             { label: 'Create Activity', component: 'createActivity' },

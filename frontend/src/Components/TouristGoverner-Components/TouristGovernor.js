@@ -252,8 +252,6 @@ const TouristGovernorDashboard = () => {
 
     const renderContent = () => {
         switch (activeComponent) {
-            case 'profile':
-                return renderProfile();
             case 'viewHistoricalPlaces':
                 return renderHistoricalPlaces();
             case 'createHistoricalPlaces':
