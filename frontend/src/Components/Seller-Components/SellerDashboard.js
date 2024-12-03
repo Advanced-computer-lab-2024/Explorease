@@ -217,7 +217,7 @@ const SellerDashboard = () => {
 
     return (
         <Box>
-            <SellerNavbar toggleSidebar={toggleSidebar} />
+            <SellerNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
             <Box
                 sx={{
                     display: 'flex',

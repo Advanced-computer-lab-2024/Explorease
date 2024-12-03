@@ -19,10 +19,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import axios from 'axios';
 import logo from '../../Misc/logo.png';
+import PersonIcon from '@mui/icons-material/Person'; // Import Person icon for profile
+import {useNavigate} from 'react-router-dom'
 
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = ({ toggleSidebar , setActiveComponent }) => {
     const [notifications, setNotifications] = useState([]);
     const [isNotificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
+    const navigate = useNavigate(); // Hook for navigation
 
     const linkContainerStyle = {
         display: 'flex',
@@ -182,33 +185,47 @@ const Navbar = ({ toggleSidebar }) => {
     return (
         <AppBar position="sticky" sx={{ backgroundColor: '#111E56', zIndex: 1000, fontFamily: 'Poppins, sans-serif' }}>
             <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                {/* Sidebar Toggle Icon */}
-                <IconButton
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    sx={{ marginRight: '16px' }}
-                    onClick={toggleSidebar} // Call the toggleSidebar function passed as a prop
-                >
-                    <MenuIcon />
-                </IconButton>
+            <Box
+    sx={{
+        display: 'flex',       // Set the parent container as a flex container
+        alignItems: 'center',  // Vertically center-align items
+        gap: 2,                // Add spacing between items (you can adjust the value)
+    }}
+>
+    {/* Sidebar Toggle Icon */}
+    <IconButton
+        edge="start"
+        color="inherit"
+        aria-label="menu"
+        sx={{ marginRight: '16px' }}
+        onClick={toggleSidebar} // Call the toggleSidebar function passed as a prop
+    >
+        <MenuIcon />
+    </IconButton>
 
-                {/* Clickable Logo */}
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Link to="/">
-                        <img src={logo} alt="Logo" style={logoStyle} />
-                    </Link>
-                </Box>
+    {/* Clickable Logo */}
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Link to="/">
+            <img src={logo} alt="Logo" style={{ height: '50px', marginLeft: '-10px' }} />
+        </Link>
+    </Box>
+</Box>
 
-                {/* Navigation Links */}
-                <Box style={linkContainerStyle}>
-                    <Link to="/activities" style={linkStyle}>View All Activities</Link>
-                    <Link to="/itineraries" style={linkStyle}>View All Itineraries</Link>
-                    <Link to="/historical-places" style={linkStyle}>View All Historical Places</Link>
-                </Box>
+
+                
 
                 {/* Notification Icon */}
                 <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: '20px' }}>
+                <Tooltip title="Profile" arrow>
+    <IconButton
+        sx={{
+            color: 'white',
+        }}
+        onClick={() => setActiveComponent('profile')} // Navigate or trigger profile component
+    >
+        <PersonIcon />
+    </IconButton>
+</Tooltip>
                     <IconButton sx={{ color: 'white' }} onClick={() => toggleNotificationDrawer(true)}>
                         <Badge
                             badgeContent={notifications.filter((notif) => !notif.isRead).length}
@@ -225,8 +242,10 @@ const Navbar = ({ toggleSidebar }) => {
                             <NotificationsIcon />
                         </Badge>
                     </IconButton>
+                    
                 </Box>
             </Toolbar>
+            
 
             {/* Notification Drawer */}
             <Drawer anchor="right" open={isNotificationDrawerOpen} onClose={() => toggleNotificationDrawer(false)}>
@@ -234,6 +253,30 @@ const Navbar = ({ toggleSidebar }) => {
             </Drawer>
         </AppBar>
     );
+};
+
+const linkStyle = {
+    color: 'white',
+    textDecoration: 'none',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    position: 'relative',
+    display: 'inline-block',
+    '&::after': {
+        content: '""',
+        position: 'absolute',
+        width: '100%',
+        height: '2px',
+        backgroundColor: 'white',
+        bottom: '-2px',
+        left: '0',
+        transform: 'scaleX(0)',
+        transformOrigin: 'left',
+        transition: 'transform 0.3s ease-in-out',
+    },
+    '&:hover::after': {
+        transform: 'scaleX(1)',
+    },
 };
 
 export default Navbar;

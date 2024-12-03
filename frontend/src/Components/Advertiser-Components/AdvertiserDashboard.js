@@ -214,7 +214,7 @@ const AdvertiserDashboard = () => {
     return (
         <div>
             {/* Navbar */}
-            <AdvertiserNavbar toggleSidebar={toggleSidebar} />
+            <AdvertiserNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
 
             {/* Sidebar */}
             {isSidebarOpen && (
