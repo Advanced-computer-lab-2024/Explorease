@@ -147,15 +147,15 @@ schedule.scheduleJob('0 9 * * *', async () => {
 });
 
 //Schedule task to notify subscribed users about activities with open booking
-// schedule.scheduleJob('0 * * * *', async () => {
-//     console.log('Running scheduled task to notify subscribed users...');
-//     await notifySubscribedUsers();
-// });
-
-schedule.scheduleJob('*/1 * * * *', async () => {
-    //console.log('Running scheduled task to notify subscribed users every 5 minutes...');
+schedule.scheduleJob('0 * * * *', async () => {
+    console.log('Running scheduled task to notify subscribed users...');
     await notifySubscribedUsers();
 });
+
+// schedule.scheduleJob('*/1 * * * *', async () => {
+//     //console.log('Running scheduled task to notify subscribed users every 5 minutes...');
+//     await notifySubscribedUsers();
+// });
 
 
 // Schedule the birthday promo code task every 5 minutes

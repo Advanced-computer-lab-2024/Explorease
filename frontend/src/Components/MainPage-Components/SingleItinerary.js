@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Card, CardContent, Typography, Box, Button } from '@mui/material';
-import Navbar from  './GuestNavbar';
-
+import { Card, CardContent, Typography, Box } from '@mui/material';
+import Navbar from './GuestNavbar';
 
 const SingleItinerary = () => {
   const { id } = useParams();
@@ -17,8 +16,8 @@ const SingleItinerary = () => {
         const token = localStorage.getItem('token');
         const response = await axios.get(`/tourists/itineraries/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         setItinerary(response.data);
       } catch (err) {
@@ -31,26 +30,52 @@ const SingleItinerary = () => {
     fetchItinerary();
   }, [id]);
 
-  if (loading) return <Typography>Loading...</Typography>;
-  if (error) return <Typography color="error">{error}</Typography>;
+  if (loading) return <p className="tw-text-center tw-text-gray-500">Loading...</p>;
+  if (error) return <p className="tw-text-center tw-text-red-500">{error}</p>;
 
   return itinerary ? (
-    <Box> 
-        <Navbar />
-    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-      <Card sx={{ maxWidth: 500, boxShadow: 3 }}>
-        <CardContent>
-          <Typography variant="h4">{itinerary.name}</Typography>
-          <Typography><strong>Price:</strong> ${itinerary.totalPrice}</Typography>
-          <Typography><strong>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}</Typography>
-          <Typography><strong>Available Dates:</strong> {itinerary.AvailableDates.join(', ')}</Typography>
-          <Typography variant="body2" color="text.secondary">{itinerary.description}</Typography>
-        </CardContent>
-      </Card>
-    </Box>
-    </Box>
+    <div>
+      <Navbar />
+      <div className="tw-flex tw-justify-center tw-mt-10">
+        <Card
+          sx={{
+            width: '100%',
+            maxWidth: 500,
+            boxShadow: 3,
+            borderRadius: 3,
+            padding: 3,
+            backgroundColor: 'white',
+          }}
+          className="tw-shadow-lg tw-rounded-lg"
+        >
+          <CardContent>
+            <Typography variant="h4" className="tw-text-2xl tw-font-bold tw-text-gray-800">
+              {itinerary.name}
+            </Typography>
+            <Typography className="tw-text-lg tw-text-gray-700 tw-mt-2">
+              <strong>Price:</strong> ${itinerary.totalPrice}
+            </Typography>
+            <Typography className="tw-text-lg tw-text-gray-700 tw-mt-2">
+              <strong>Languages:</strong>{' '}
+              {Array.isArray(itinerary.LanguageOfTour)
+                ? itinerary.LanguageOfTour.join(', ')
+                : 'N/A'}
+            </Typography>
+            <Typography className="tw-text-lg tw-text-gray-700 tw-mt-2">
+              <strong>Available Dates:</strong>{' '}
+              {Array.isArray(itinerary.AvailableDates)
+                ? itinerary.AvailableDates.join(', ')
+                : 'N/A'}
+            </Typography>
+            <Typography className="tw-text-gray-600 tw-mt-4">
+              {itinerary.description || 'No description available.'}
+            </Typography>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   ) : (
-    <Typography>No itinerary found</Typography>
+    <p className="tw-text-center tw-text-gray-500">No itinerary found</p>
   );
 };
 

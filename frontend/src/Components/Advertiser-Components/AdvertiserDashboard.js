@@ -8,12 +8,14 @@ import CreateActivity from './CreateActivity';
 import UploadLogo from './UploadLogo';
 import SalesReport from './AdvertiserSalesReport';
 import ActivitySummary from './ActivitySummary';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('profile');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
 
     const toggleSidebar = () => {
         setIsSidebarOpen((prev) => !prev);
@@ -68,6 +70,20 @@ const AdvertiserDashboard = () => {
             }
         }
     };
+
+    const handleSectionChange = (section) => {
+        setNavigationStack((prevStack) => [...prevStack, activeComponent]); // Push current section to stack
+        setActiveComponent(section); // Set new section
+    };
+    
+        // Function to handle Back button
+        const handleBack = () => {
+            if (navigationStack.length > 0) {
+                const lastSection = navigationStack.pop(); // Get the last section
+                setNavigationStack([...navigationStack]); // Update the stack
+                setActiveComponent(lastSection); // Navigate to the last section
+            }
+        };
 
     const renderContent = () => {
         switch (activeComponent) {
@@ -240,7 +256,8 @@ const AdvertiserDashboard = () => {
                                         transform: 'scale(1.01)',
                                     },
                                 }}
-                                onClick={() => setActiveComponent(item.component)}
+                                onClick={() => handleSectionChange(item.component)}
+
                             >
                                 {item.label}
                             </Button>
@@ -251,14 +268,36 @@ const AdvertiserDashboard = () => {
 
             {/* Main Content */}
             <Box
-                sx={{
-                    marginLeft: isSidebarOpen ? '250px' : '0',
-                    transition: 'margin-left 0.3s ease',
-                    padding: '20px',
-                }}
-            >
-                {renderContent()}
-            </Box>
+    sx={{
+        marginLeft: isSidebarOpen ? '250px' : '0',
+        transition: 'margin-left 0.3s ease',
+        padding: '20px',
+    }}
+>
+    {navigationStack.length > 0 && (
+        <Button
+            onClick={handleBack}
+            startIcon={<ArrowBackIcon />}
+            sx={{
+                position: 'fixed',
+                top: '80px',
+                left: isSidebarOpen ? '270px' : '20px',
+                backgroundColor: '#111E56',
+                color: 'white',
+                '&:hover': {
+                    backgroundColor: 'white',
+                    color: '#111E56',
+                    border: '1px solid #111E56',
+                },
+                zIndex: 1000,
+            }}
+        >
+            Back
+        </Button>
+    )}
+    {renderContent()}
+</Box>
+
         </div>
     );
 };

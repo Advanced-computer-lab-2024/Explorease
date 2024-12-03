@@ -20,6 +20,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import GuestNavbar from '../MainPage-Components/GuestNavbar';
 import CreateHistoricalPlace from './CreateHistoricalPlace';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 
 
 const TouristGovernorDashboard = () => {
@@ -29,6 +30,7 @@ const TouristGovernorDashboard = () => {
     const [activeComponent, setActiveComponent] = useState('profile');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [editingPlaceId, setEditingPlaceId] = useState(null);
+    const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
     
 
     // Fetch profile
@@ -47,6 +49,20 @@ const TouristGovernorDashboard = () => {
             setMessage('Error fetching profile');
         }
     };
+
+    const handleSectionChange = (section) => {
+        setNavigationStack((prevStack) => [...prevStack, activeComponent]); // Push current section to stack
+        setActiveComponent(section); // Set new section
+    };
+    
+        // Function to handle Back button
+        const handleBack = () => {
+            if (navigationStack.length > 0) {
+                const lastSection = navigationStack.pop(); // Get the last section
+                setNavigationStack([...navigationStack]); // Update the stack
+                setActiveComponent(lastSection); // Navigate to the last section
+            }
+        };
 
     // Fetch historical places
     const fetchHistoricalPlaces = async () => {
@@ -286,7 +302,7 @@ const TouristGovernorDashboard = () => {
                     ].map((item, index) => (
                         <Button
                             key={index}
-                            onClick={() => setActiveComponent(item.section)}
+                            onClick={() => handleSectionChange(item.section)}
                             sx={{
                                 color: 'white',
                                 textAlign: 'left',
@@ -318,6 +334,27 @@ const TouristGovernorDashboard = () => {
                         transition: 'margin-left 0.3s ease',
                     }}
                 >
+                    {navigationStack.length > 0 && (
+        <Button
+            onClick={handleBack}
+            startIcon={<ArrowBackIcon />}
+            sx={{
+                position: 'fixed',
+                top: '80px',
+                left: isSidebarOpen ? '270px' : '20px',
+                backgroundColor: '#111E56',
+                color: 'white',
+                '&:hover': {
+                    backgroundColor: 'white',
+                    color: '#111E56',
+                    border: '1px solid #111E56',
+                },
+                zIndex: 1000,
+            }}
+        >
+            Back
+        </Button>
+    )}
                     {renderContent()}
                 </Box>
             </Box>

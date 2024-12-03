@@ -15,7 +15,7 @@ import ItinerariesIcon from '@mui/icons-material/Event';
 import HistoricalPlacesIcon from '@mui/icons-material/Place';
 
 // Import the background image
-import heroBackground from '../../Misc/heroBackground.jpg';
+import heroBackground from '../../Misc/bg.jpg';
 
 const HomePage = () => {
     const navigate = useNavigate();

@@ -20,6 +20,7 @@ import TextField from '@mui/material/TextField';
 import SalesReport from './SalesReport';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 
 
 const AdminDashboard = () => {
@@ -32,6 +33,7 @@ const AdminDashboard = () => {
     const [newCategoryName, setNewCategoryName] = useState('');
     const [categoryMessage, setCategoryMessage] = useState('');
     const [editedCategory, setEditedCategory] = useState({});
+    const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
 
 
     // State for Product Management
@@ -59,11 +61,19 @@ const [isSidebarVisible, setIsSidebarVisible] = useState(true);
     const [activeSection, setActiveSection] = useState('home');
 
     const handleSectionChange = (section) => {
-        setActiveSection(section);
+        setNavigationStack((prevStack) => [...prevStack, activeSection]); // Push current section to stack
+        setActiveSection(section); // Set new section
     };
+    
+        // Function to handle Back button
+        const handleBack = () => {
+            if (navigationStack.length > 0) {
+                const lastSection = navigationStack.pop(); // Get the last section
+                setNavigationStack([...navigationStack]); // Update the stack
+                setActiveSection(lastSection); // Navigate to the last section
+            }
+        };
 
-    
-    
     const handleAddGovernor = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
@@ -405,6 +415,30 @@ const handleTagChange = (id, newName) => {
             padding: '20px',
           }}
         >
+             {/* Back Button */}
+{navigationStack.length > 0 && (
+    <Button
+        onClick={handleBack}
+        startIcon={<ArrowBackIcon />}
+        sx={{
+            position: 'fixed', // Fix position relative to the viewport
+            top: '80px', // Slightly below the navbar
+            left: isSidebarVisible ? '270px' : '20px', // Adjust based on sidebar visibility
+            backgroundColor: '#111E56',
+            color: 'white',
+            '&:hover': {
+                backgroundColor: 'white',
+                color: '#111E56',
+                border: '1px solid #111E56',
+            },
+            zIndex: 1000, // Ensure it appears on top of other content
+        }}
+    >
+        Back
+    </Button>
+)}
+
+           
     
                 {/* Conditionally render sections */}
                 {activeSection === 'home' && (
