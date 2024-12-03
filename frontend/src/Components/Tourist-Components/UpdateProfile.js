@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment, FormControl, InputLabel, Select, MenuItem, Chip } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import {
+    TextField,
+    Button,
+    Typography,
+    Box,
+    IconButton,
+    InputAdornment,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Chip,
+    CircularProgress,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const UpdateProfile = ({ profile, setProfile }) => {
@@ -12,9 +25,9 @@ const UpdateProfile = ({ profile, setProfile }) => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [passwordMessage, setPasswordMessage] = useState('');
-    const navigate = useNavigate(); // Initialize navigate
-    const [showCurrentPassword, setShowCurrentPassword] = useState(false); 
-    const [showNewPassword, setShowNewPassword] = useState(false); 
+    const navigate = useNavigate();
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
 
     // Handle profile updates
     const handleChange = (e) => {
@@ -26,10 +39,10 @@ const UpdateProfile = ({ profile, setProfile }) => {
         const token = localStorage.getItem('token');
         try {
             const response = await axios.put('/tourists/myProfile', formProfile, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
             setUpdateMessage('Profile updated successfully');
-            setProfile(response.data.tourist);  // Update main profile state
+            setProfile(response.data.tourist); // Update main profile state
             setSuccess(true);
         } catch (error) {
             setUpdateMessage('Error updating profile');
@@ -42,12 +55,16 @@ const UpdateProfile = ({ profile, setProfile }) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            await axios.put('/tourists/editPassword', {
-                currentPassword,
-                newPassword
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await axios.put(
+                '/tourists/editPassword',
+                {
+                    currentPassword,
+                    newPassword,
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
             setPasswordMessage('Password updated successfully');
             setCurrentPassword('');
             setNewPassword('');
@@ -59,7 +76,6 @@ const UpdateProfile = ({ profile, setProfile }) => {
         } catch (error) {
             setPasswordMessage('Error updating password');
             setRedirecting(false);
-
         }
     };
 
@@ -72,14 +88,35 @@ const UpdateProfile = ({ profile, setProfile }) => {
             preferences: typeof value === 'string' ? value.split(',') : value,
         });
     };
-    
 
     return (
-        <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>Update Profile</Typography>
+        <Box
+            sx={{
+                marginTop: '20px',
+                width: '400px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                margin: '20px auto',
+                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                textAlign: 'center',
+                fontFamily: 'Poppins, sans-serif',
+                padding: '20px',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                    transform: 'scale(1.05)',
+                    boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
+                },
+            }}
+        >
 
             {updateMessage && (
-                <Typography color={success ? 'green' : 'red'} sx={{ mb: 2 }}>
+                <Typography
+                    color={success ? 'green' : 'red'}
+                    sx={{
+                        mb: 2,
+                        fontWeight: 'bold',
+                    }}
+                >
                     {updateMessage}
                 </Typography>
             )}
@@ -120,7 +157,7 @@ const UpdateProfile = ({ profile, setProfile }) => {
                 </TextField>
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Preferences</InputLabel>
-                <Select
+                    <Select
                         label="Preferences"
                         name="preferences"
                         multiple
@@ -129,44 +166,80 @@ const UpdateProfile = ({ profile, setProfile }) => {
                         renderValue={(selected) => (
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                 {selected.map((value) => (
-                                    <Chip key={value} label={value} />
+                                    <Chip
+                                        key={value}
+                                        label={value}
+                                        sx={{
+                                            backgroundColor: '#111E56',
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                        }}
+                                    />
                                 ))}
                             </Box>
                         )}
-                >
-                    {['Bazaars', 'Concert', 'Castle', 'Palace', 'Party', 'Park', 'Exhibitions', 'Monument'].map((preference) => (
-                        <MenuItem key={preference} value={preference}>
-                            {preference}
-                        </MenuItem>
-                    ))}
-                </Select>
+                    >
+                        {[
+                            'Bazaars',
+                            'Concert',
+                            'Castle',
+                            'Palace',
+                            'Party',
+                            'Park',
+                            'Exhibitions',
+                            'Monument',
+                        ].map((preference) => (
+                            <MenuItem key={preference} value={preference}>
+                                {preference}
+                            </MenuItem>
+                        ))}
+                    </Select>
                 </FormControl>
                 <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
                     fullWidth
-                    sx={{ backgroundColor: '#111E56', 
-                        color: 'white', 
-                        border: '2px solid #111E56',
-                        '&:hover': { 
-                            backgroundColor: 'white', 
+                    sx={{
+                        backgroundColor: '#111E56',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        marginTop: '20px',
+                        '&:hover': {
+                            backgroundColor: 'white',
                             color: '#111E56',
-                            border: '2px solid #111E56', // Optional: adds a border to match the dark blue on hover
-                        },mt: 2 }}
+                            border: '2px solid #111E56',
+                        },
+                    }}
                 >
                     Update Profile
                 </Button>
             </form>
 
             {/* Update Password Section */}
-             <Box sx={{ mt: 4 }}>
-                <Typography variant="h5" gutterBottom>Update Password</Typography>
-                
+            <Box sx={{ mt: 4 }}>
+                <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}
+                >
+                    Update Password
+                </Typography>
+
                 {passwordMessage && (
-                    <Typography color={redirecting ? 'primary' : 'error'} sx={{ mb: 2 }}>
+                    <Typography
+                        color={redirecting ? 'green' : 'red'}
+                        sx={{
+                            mb: 2,
+                            fontWeight: 'bold',
+                        }}
+                    >
                         {passwordMessage}
-                        {redirecting && <CircularProgress size={20} sx={{ ml: 1 }} />} {/* Loading spinner */}
+                        {redirecting && <CircularProgress size={20} sx={{ ml: 1 }} />}
                     </Typography>
                 )}
 
@@ -190,7 +263,7 @@ const UpdateProfile = ({ profile, setProfile }) => {
                                         {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
-                            )
+                            ),
                         }}
                     />
                     <TextField
@@ -212,21 +285,25 @@ const UpdateProfile = ({ profile, setProfile }) => {
                                         {showNewPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
-                            )
+                            ),
                         }}
                     />
                     <Button
                         type="submit"
                         variant="contained"
-                        color="primary"
                         fullWidth
-                        sx={{ backgroundColor: '#111E56', 
-                            color: 'white', 
-                            '&:hover': { 
-                                backgroundColor: 'white', 
+                        sx={{
+                            backgroundColor: '#111E56',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            marginTop: '20px',
+                            '&:hover': {
+                                backgroundColor: 'white',
                                 color: '#111E56',
-                                border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                            },mt: 2 }}
+                                border: '2px solid #111E56',
+                            },
+                        }}
                     >
                         Update Password
                     </Button>

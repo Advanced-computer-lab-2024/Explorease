@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import {
     Box,
@@ -12,6 +12,8 @@ import {
     FormLabel,
     Alert,
 } from '@mui/material';
+import { CurrencyContext } from './CurrencyContext';
+
 
 const Checkout = () => {
     const [addresses, setAddresses] = useState([]);
@@ -30,6 +32,10 @@ const Checkout = () => {
     const [finalCost, setFinalCost] = useState(0);
     const [checkoutMessage, setCheckoutMessage] = useState('');
     const [isStripeRedirecting, setIsStripeRedirecting] = useState(false);
+
+    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
+
+
 
     useEffect(() => {
         fetchCartDetails();
@@ -66,6 +72,10 @@ const Checkout = () => {
         } catch (error) {
             console.error('Error fetching addresses:', error);
         }
+    };
+
+    const convertPrice = (price) => {
+        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
 
     // Add a new delivery address
@@ -141,7 +151,7 @@ const Checkout = () => {
             const token = localStorage.getItem('token');
             const response = await axios.post(
                 '/tourists/cart/stripe-session',
-                { address: selectedAddress, promoCode },
+                { address: selectedAddress, promoCode, currency : selectedCurrency },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log(promoCode.discount);
@@ -287,7 +297,7 @@ const Checkout = () => {
                             Apply
                         </Button>
                         <Typography variant="body1" color="primary">
-                            Discount: ${discount}
+                            Discount: {convertPrice(discount)} {selectedCurrency}
                         </Typography>
                     </Box>
                 </Box>
@@ -295,9 +305,9 @@ const Checkout = () => {
             </Box>
             <Box sx ={{display:'flex', justifyContent:'center'}}>
                 <Box sx={{ mt: 5 , marginRight:'100px'}}>
-                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Cart Total: ${totalCost}</Typography>
-                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Discount: ${discount}</Typography>
-                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Final Total: ${finalCost}</Typography>
+                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Cart Total: {convertPrice(totalCost)} {selectedCurrency}</Typography>
+                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Discount: {convertPrice(discount)} {selectedCurrency} </Typography>
+                    <Typography variant="h6" sx={{fontSize:'2rem' , fontWeight:'bold' , color:'#111E56'}}>Final Total: {convertPrice(finalCost)} {selectedCurrency} </Typography>
                 </Box>
                 {/* Payment Method Section */}
                 <Box sx={{ mt: 4 }}>

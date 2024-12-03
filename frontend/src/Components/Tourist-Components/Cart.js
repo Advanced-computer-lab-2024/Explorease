@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import {
     Box,
@@ -14,6 +14,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useNavigate } from 'react-router-dom';
+import { CurrencyContext } from './CurrencyContext';
 
 const Cart = ({ setActiveComponent }) => {
     const [cartItems, setCartItems] = useState([]);
@@ -27,6 +28,13 @@ const Cart = ({ setActiveComponent }) => {
         fetchCartItems();
         fetchWalletBalance();
     }, []);
+
+    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
+
+
+    const convertPrice = (price) => {
+        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
+    };
 
     const fetchCartItems = async () => {
         try {
@@ -122,10 +130,10 @@ const Cart = ({ setActiveComponent }) => {
                                         {item.productId.Name}
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1 }}>
-                                        Price: ${item.productId.Price}
+                                        Price: {convertPrice(item.productId.Price)} {selectedCurrency}
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1 }}>
-                                        Total: ${item.productId.Price * item.quantity}
+                                        Total: {convertPrice(item.productId.Price * item.quantity)} {selectedCurrency}
                                     </Typography>
                                     <Box display="flex" alignItems="center" gap={2}>
                                         <IconButton
@@ -163,10 +171,10 @@ const Cart = ({ setActiveComponent }) => {
           
                     {/* Summary and Checkout */}
                     <Box mt={4}>
-                        <Typography variant="h6">Total Cost: ${totalCost.toFixed(2)}</Typography>
-                        <Typography variant="h6">Wallet Balance: ${walletBalance}</Typography>
+                        <Typography variant="h6">Total Cost: {convertPrice(totalCost.toFixed(2))} {selectedCurrency}</Typography>
+                        <Typography variant="h6">Wallet Balance: {convertPrice(walletBalance)} {selectedCurrency}</Typography>
                         <Typography variant="h6">
-                            Balance After Purchase: ${(walletBalance - totalCost).toFixed(2)}
+                            Balance After Purchase: {convertPrice((walletBalance - totalCost).toFixed(2))} {selectedCurrency}
                         </Typography>
                         <Button
                             variant="contained"

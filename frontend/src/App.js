@@ -21,10 +21,12 @@ import Success from './Components/Tourist-Components/Success';
 import PaymentStatus from './Components/Tourist-Components/PaymentStatus';
 import ActivitySuccess from './Components/Tourist-Components/ActivitySuccess';
 import ItinerarySuccess from './Components/Tourist-Components/ItinerarySuccess';
+import { CurrencyProvider } from './Components/Tourist-Components/CurrencyContext';
 
 function App() {
             // All paths needed
   return (
+    <CurrencyProvider>
     <Router>
 
       <div className="App">
@@ -34,7 +36,10 @@ function App() {
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/register" element={<MultiRoleRegister />} />
+
+          
           <Route path="/tourist/" element={<TouristDashboard />} />
+
           <Route path="/tourguide/" element={<TourGuideDashboard />} />
           <Route path="/seller/" element={<SellerDashboard />} />  {/* Seller Dashboard */}
           <Route path="/activities" element={<Activities />} />
@@ -53,6 +58,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </CurrencyProvider>
   );
 }
 

@@ -3,6 +3,7 @@ const { default: mongoose } = require('mongoose');
 const Product = require('../../Models/ProductModels/Product.js');
 const Tourist = require('../../Models/UserModels/Tourist.js');
 
+
 const createPurchase = async (req, res) => {
     const { productId, quantity } = req.body;
     const buyerId = req.user.id;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 import {
     Box,
@@ -15,6 +15,7 @@ import {
     IconButton,
     
 } from '@mui/material';
+import { CurrencyContext } from './CurrencyContext';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
@@ -26,11 +27,12 @@ const Products = ( {incrementCartCount} ) => {
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [sortByRatings, setSortByRatings] = useState('');
-    const [exchangeRates, setExchangeRates] = useState({});
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [wishlist, setWishlist] = useState([]);
     const [wishlistItems, setWishlistItems] = useState([]);
     const [wishlistMessage, setWishlistMessage] = useState('');
+
+    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
+
 
     const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
@@ -74,19 +76,8 @@ const Products = ( {incrementCartCount} ) => {
     useEffect(() => {
         fetchAllProducts();
         fetchWishlist();
-        fetchExchangeRates();
 
     }, []);
-
-
-    const fetchExchangeRates = async () => {
-        try {
-            const response = await axios.get(`https://v6.exchangerate-api.com/v6/${YOUR_API_KEY}/latest/USD`);
-            setExchangeRates(response.data.conversion_rates);
-        } catch (error) {
-            console.error('Error fetching exchange rates:', error);
-        }
-    };
 
     const convertToUSD = (price) => {
         return (price / (exchangeRates[selectedCurrency] || 1)).toFixed(2);
@@ -118,9 +109,6 @@ const Products = ( {incrementCartCount} ) => {
         fetchFilteredProducts();
     };
 
-    const handleCurrencyChange = (e) => {
-        setSelectedCurrency(e.target.value);
-    };
 
     const convertPrice = (price) => {
         return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
@@ -309,16 +297,6 @@ const Products = ( {incrementCartCount} ) => {
                             <MenuItem value="desc">Descending</MenuItem>
                         </Select>
                     </FormControl>
-                    <FormControl variant="outlined" sx={{ mb: 2, minWidth: 120 }}>
-                <InputLabel>Currency</InputLabel>
-                <Select value={selectedCurrency} onChange={handleCurrencyChange} label="Currency">
-                    {Object.keys(exchangeRates).map((currency) => (
-                        <MenuItem key={currency} value={currency}>
-                            {currency}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
             <Button
                 type="submit"
                 variant="contained"

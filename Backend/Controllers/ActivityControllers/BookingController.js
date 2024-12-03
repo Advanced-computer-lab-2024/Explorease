@@ -254,7 +254,7 @@ const setCommentForActivityBooking = async (req, res) => {
 
 const createStripeSession = async (req, res) => {
     try {
-        const { activityId, amountPaid } = req.body;
+        const { activityId, amountPaid, currency } = req.body;
         const touristId = req.user.id; // Assuming you have the tourist's ID from the auth middleware
 
         const activity = await Activity.findById(activityId);
@@ -267,7 +267,7 @@ const createStripeSession = async (req, res) => {
             line_items: [
                 {
                     price_data: {
-                        currency: 'usd',
+                        currency: currency || 'usd',
                         product_data: { name: activity.name },
                         unit_amount: Math.round(amountPaid * 100), // Amount in cents
                     },

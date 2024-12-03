@@ -8,6 +8,20 @@ const Notification = require('../../Models/UserModels/Notification');
 const Seller = require('../../Models/UserModels/Seller');
 const Admin = require('../../Models/UserModels/Admin');
 const { sendEmail } = require('../../utils/emailService');
+const axios = require('axios');
+
+
+const fetchExchangeRates = async (baseCurrency = 'USD') => {
+    const YOUR_API_KEY = "6a52872f2fdad94794ee0bca";
+    const apiUrl = `https://v6.exchangerate-api.com/v6/${YOUR_API_KEY}/latest/${baseCurrency}`;
+    try {
+        const response = await axios.get(apiUrl);
+        return response.data.conversion_rates; // Returns an object with exchange rates
+    } catch (error) {
+        console.error('Error fetching exchange rates:', error.message);
+        throw new Error('Failed to fetch exchange rates');
+    }
+};
 
 // Validate and Apply Promo Code
 const applyPromoCode = async (req, res) => {
@@ -296,7 +310,7 @@ const checkoutCart = async (req, res) => {
 
 const createStripeSession = async (req, res) => {
     const buyerId = req.user.id; // Tourist's ID from authentication
-    const { address, promoCode } = req.body;
+    const { address, promoCode, currency } = req.body;
 
     try {
         // Retrieve tourist's cart
@@ -311,6 +325,7 @@ const createStripeSession = async (req, res) => {
             0
         );
 
+        // Apply promo code discount
         let discount = 0;
         if (promoCode) {
             const promo = await PromoCode.findOne({ name: promoCode });
@@ -321,26 +336,28 @@ const createStripeSession = async (req, res) => {
             }
         }
 
-        const finalCost = cartTotal - discount;
-        if (finalCost < 0) {
+        const finalCostInUSD = cartTotal - discount;
+        if (finalCostInUSD < 0) {
             return res.status(400).json({ message: 'Discount exceeds total cost.' });
         }
 
-        // // Log values for debugging
-        // console.log("Cart Total:", cartTotal);
-        // console.log("Discount:", discount);
-        // console.log("Final Cost:", finalCost);
+        // Fetch exchange rates
+        const exchangeRates = await fetchExchangeRates('USD');
+        const exchangeRate = exchangeRates[currency] || 1;
+
+        // Convert final cost to selected currency
+        const finalCost = (finalCostInUSD * exchangeRate).toFixed(2);
 
         // Create a single line item for the discounted total
         const lineItems = [
             {
                 price_data: {
-                    currency: 'usd',
+                    currency: currency || 'usd', // Use selected currency or default to USD
                     product_data: {
                         name: 'Cart Total',
                         description: promoCode ? `Discount applied: ${promoCode}` : 'No promo code applied',
                     },
-                    unit_amount: Math.round(finalCost * 100), // Convert to cents
+                    unit_amount: Math.round(finalCost * 100), // Convert to smallest currency unit
                 },
                 quantity: 1,
             },
@@ -358,9 +375,10 @@ const createStripeSession = async (req, res) => {
                 cartTotal,
                 discount,
                 finalCost,
+                currency,
             },
             success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.FRONTEND_URL}/cart`,
+            cancel_url: `${process.env.FRONTEND_URL}/tourist`,
         });
 
         // Return the session URL
@@ -370,7 +388,6 @@ const createStripeSession = async (req, res) => {
         res.status(500).json({ message: 'Error creating Stripe session', error: error.message });
     }
 };
-
 
 const stripeWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature'];

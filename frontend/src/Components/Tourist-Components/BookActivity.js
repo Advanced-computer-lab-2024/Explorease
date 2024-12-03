@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Box, Card, CardContent, Button, TextField,IconButton, Tooltip,Typography, MenuItem, Select, InputLabel, FormControl, Alert } from '@mui/material';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import BookIcon from '@mui/icons-material/Book';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import { CurrencyContext } from './CurrencyContext'; // Import CurrencyContext
+
 
 const BookActivitiesPage = () => {
     const [activities, setActivities] = useState([]);
@@ -23,23 +25,23 @@ const BookActivitiesPage = () => {
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const [exchangeRates, setExchangeRates] = useState({});
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [bookmarkErrorMessage, setBookmarkErrorMessage] = useState('');
     const [bookmarkSuccessMessage, setBookmarkSuccessMessage] = useState('');
     const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
     const [promoCode, setPromoCode] = useState('');
     const [discountedAmount, setDiscountedAmount] = useState(0);
     
+    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
+
 
     const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
+
     const fetchBookmarkedActivities = async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get('/tourists/saved-activity/', {
                 headers: { Authorization: `Bearer ${token}` },
             });
-    
             // Check the actual structure of response.data
             const activities = response.data.activities || []; // Update this based on your API's response structure
             const bookmarkedIds = activities.map((activity) => activity._id); // Extract IDs if activities is an array
@@ -72,7 +74,7 @@ const BookActivitiesPage = () => {
     useEffect(() => {
         fetchActivities();
         fetchWalletBalance();
-        fetchExchangeRates();
+        //fetchExchangeRates();
         fetchBookmarkedActivities(); // Fetch bookmarked activities on mount
     }, []);
 
@@ -99,8 +101,7 @@ const BookActivitiesPage = () => {
                 setBookmarkedActivities([...bookmarkedActivities, activity._id]);
                 setBookmarkSuccessMessage('Activity bookmarked successfully!');
             }
-    
-            setTimeout(() => setBookmarkSuccessMessage(''), 3000);
+            setTimeout(() => setBookmarkSuccessMessage(''), 3000);    
         } catch (error) {
             console.error('Error toggling bookmark:', error);
             setBookmarkErrorMessage(error.response?.data?.msg || 'Error toggling bookmark');
@@ -108,7 +109,6 @@ const BookActivitiesPage = () => {
         }
     };
     
-
     const fetchActivities = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -144,20 +144,6 @@ const BookActivitiesPage = () => {
         }
     };
     
-    const fetchExchangeRates = async () => {
-        try {
-            const response = await axios.get(`https://v6.exchangerate-api.com/v6/${YOUR_API_KEY}/latest/USD`);
-            setExchangeRates(response.data.conversion_rates);
-        } catch (error) {
-            console.error('Error fetching exchange rates:', error);
-        }
-    };
-    
-
-    const handleCurrencyChange = (e) => {
-        setSelectedCurrency(e.target.value);
-    };
-
     const convertPrice = (price) => {
         return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
@@ -243,7 +229,8 @@ const BookActivitiesPage = () => {
                     `/tourists/activities/stripe-session`,
                     {
                         activityId: selectedActivity._id,
-                        amountPaid: finalAmount,
+                        amountPaid: convertPrice(finalAmount),
+                        currency: selectedCurrency
                     },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -283,11 +270,11 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
     <Typography variant="h6" gutterBottom>Activity Details</Typography>
     <Typography><strong>Activity:</strong> {selectedActivity.name}</Typography>
     <Typography><strong>Date:</strong> {new Date(selectedActivity.date).toLocaleDateString()}</Typography>
-    <Typography><strong>Original Price:</strong> ${selectedActivity.price}</Typography>
+    <Typography><strong>Original Price:</strong> {convertPrice(selectedActivity.price)} {selectedCurrency} </Typography>
     {discountedAmount > 0 && (
-        <Typography><strong>Discount:</strong> -${discountedAmount.toFixed(2)}</Typography>
+        <Typography><strong>Discount:</strong> -{convertPrice(discountedAmount.toFixed(2))} {selectedCurrency}</Typography>
     )}
-    <Typography><strong>Final Price:</strong> ${selectedActivity.price - discountedAmount}</Typography>
+    <Typography><strong>Final Price:</strong> {convertPrice(selectedActivity.price - discountedAmount)} {selectedCurrency}</Typography>
 
     <TextField
                     label="Promo Code"
@@ -432,17 +419,6 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                 >
                     <MenuItem value="asc">Ascending</MenuItem>
                     <MenuItem value="desc">Descending</MenuItem>
-                </Select>
-            </FormControl>
-
-            <FormControl sx={{ marginBottom: 3, minWidth: 120 }}>
-                <InputLabel>Currency</InputLabel>
-                <Select value={selectedCurrency} onChange={handleCurrencyChange}>
-                    {Object.keys(exchangeRates).map((currency) => (
-                        <MenuItem key={currency} value={currency}>
-                            {currency}
-                        </MenuItem>
-                    ))}
                 </Select>
             </FormControl>
 

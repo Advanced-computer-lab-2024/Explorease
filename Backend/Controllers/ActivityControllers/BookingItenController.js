@@ -240,7 +240,7 @@ const stripeSuccessItinerary = async (req, res) => {
 
 const createStripeSessionForItinerary = async (req, res) => {
     try {
-        const { itineraryId, amountPaid } = req.body;
+        const { itineraryId, amountPaid, currency } = req.body;
 
         const itinerary = await Itinerary.findById(itineraryId);
         if (!itinerary) {
@@ -252,7 +252,7 @@ const createStripeSessionForItinerary = async (req, res) => {
             line_items: [
                 {
                     price_data: {
-                        currency: 'usd',
+                        currency: currency || 'usd',
                         product_data: {
                             name: itinerary.name,
                         },

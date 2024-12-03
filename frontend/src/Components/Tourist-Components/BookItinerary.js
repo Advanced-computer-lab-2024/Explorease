@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext  } from 'react';
 import axios from 'axios';
 import { Box, Card, CardContent, Button, TextField, Typography, MenuItem, Select, InputLabel, FormControl, Alert } from '@mui/material';
+import { CurrencyContext } from './CurrencyContext';
 
 const BookItinerariesPage = () => {
     const [itineraries, setItineraries] = useState([]);
@@ -19,8 +20,6 @@ const BookItinerariesPage = () => {
     const [selectedItinerary, setSelectedItinerary] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const [exchangeRates, setExchangeRates] = useState({});
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [promoCode, setPromoCode] = useState('');
     const [promoMessage, setPromoMessage] = useState('');
     const [discount, setDiscount] = useState(0); // Store discount value
@@ -28,10 +27,12 @@ const BookItinerariesPage = () => {
 
     const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
+    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
+
+
     useEffect(() => {
         fetchItineraries();
         fetchWalletBalance();
-        fetchExchangeRates();
     }, []);
 
     const handleApplyPromo = async () => {
@@ -111,19 +112,6 @@ const BookItinerariesPage = () => {
         }
     };
 
-    const fetchExchangeRates = async () => {
-        try {
-            const response = await axios.get(`https://v6.exchangerate-api.com/v6/${YOUR_API_KEY}/latest/USD`);
-            setExchangeRates(response.data.conversion_rates);
-        } catch (error) {
-            console.error('Error fetching exchange rates:', error);
-        }
-    };
-
-    const handleCurrencyChange = (e) => {
-        setSelectedCurrency(e.target.value);
-    };
-
     const convertPrice = (price) => {
         return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
@@ -156,7 +144,11 @@ const BookItinerariesPage = () => {
                 // Stripe Payment
                 const response = await axios.post(
                     `/tourists/itineraries/stripe-session`,
-                    { itineraryId: selectedItinerary._id, amountPaid, promoCode },
+                    { itineraryId: selectedItinerary._id,
+                        amountPaid:  convertPrice(amountPaid), 
+                        promoCode,                        
+                         currency: selectedCurrency
+                    },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 if (response.data.url) {
@@ -189,10 +181,10 @@ const BookItinerariesPage = () => {
 
                 <Typography variant="h6" gutterBottom>Itinerary Details</Typography>
                 <Typography><strong>Itinerary:</strong> {selectedItinerary.name}</Typography>
-                <Typography><strong>Total Price:</strong> ${selectedItinerary.totalPrice}</Typography>
-                <Typography><strong>Discount:</strong> ${discount.toFixed(2)}</Typography>
-                <Typography><strong>Final Price:</strong> ${finalAmount.toFixed(2)}</Typography>
-                <Typography><strong>Wallet Balance:</strong> ${walletBalance}</Typography>
+                <Typography><strong>Total Price:</strong> {convertPrice(selectedItinerary.totalPrice)} {selectedCurrency}</Typography>
+                <Typography><strong>Discount:</strong> {convertPrice(discount.toFixed(2))} {selectedCurrency}</Typography>
+                <Typography><strong>Final Price:</strong> {convertPrice(finalAmount.toFixed(2))} {selectedCurrency} </Typography>
+                <Typography><strong>Wallet Balance:</strong> {convertPrice(walletBalance)} {selectedCurrency}</Typography>
 
                 <TextField
                     label="Promo Code"
@@ -360,16 +352,6 @@ const BookItinerariesPage = () => {
                     </Select>
                 </FormControl>
 
-                <FormControl sx={{ marginBottom: 3, minWidth: 120 }}>
-                <InputLabel>Currency</InputLabel>
-                <Select value={selectedCurrency} onChange={handleCurrencyChange}>
-                    {Object.keys(exchangeRates).map((currency) => (
-                        <MenuItem key={currency} value={currency}>
-                            {currency}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
                 <Button type="submit" variant="contained" color="primary" sx={{ height: '56px', alignSelf: 'center' }}>
                     Search & Filter
                 </Button>
