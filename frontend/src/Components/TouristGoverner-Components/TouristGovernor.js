@@ -21,6 +21,7 @@ import GuestNavbar from '../MainPage-Components/GuestNavbar';
 import CreateHistoricalPlace from './CreateHistoricalPlace';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
+import updateProfile from './UpdateTouristGovernor'
 
 
 const TouristGovernorDashboard = () => {
@@ -108,7 +109,7 @@ const TouristGovernorDashboard = () => {
     const renderProfile = () => (
         <>
         <Typography variant="h5" color="#111E56" gutterBottom sx={{fontWeight:'bold', fontSize:'30px'}}>
-                Tourist Governor Profile
+                My Profile
             </Typography>
             <Card
                                 sx={{
@@ -271,7 +272,7 @@ const TouristGovernorDashboard = () => {
 
     return (
         <Box>
-            <GuestNavbar toggleSidebar={toggleSidebar} />
+            <GuestNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
             <Box
                 sx={{
                     display: 'flex',
@@ -356,6 +357,7 @@ const TouristGovernorDashboard = () => {
         </Button>
     )}
                     {renderContent()}
+                    
                 </Box>
             </Box>
         </Box>

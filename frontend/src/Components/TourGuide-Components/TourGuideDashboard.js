@@ -220,7 +220,7 @@ const TourGuideDashboard = () => {
 
     return (
         <Box>
-    <TouristNavbar toggleSidebar={toggleSidebar} />
+    <TouristNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
     <Box
         sx={{
             display: 'flex',
