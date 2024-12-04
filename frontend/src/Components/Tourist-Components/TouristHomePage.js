@@ -79,13 +79,20 @@ const TouristHomePage = ({profile}) => {
                         transform: 'scale(1.05)',
                         boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
                     },
+                    width: 350, // Fixed width
+                    height: 300, // Fixed height
                 }}
             >
                 <CardMedia
                     component="img"
                     height="140"
-                    image={activity.imageUrl || placeholderImage}
+                    image={placeholderImage} // Check for empty or blank string
                     alt="Activity Image"
+                    sx={{
+                        height: "70%",
+                        width: "100%",
+                        objectFit: "cover", // Ensures image scales properly
+                      }}
                 />
                 <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#111E56' }}>
@@ -112,6 +119,8 @@ const TouristHomePage = ({profile}) => {
                         transform: 'scale(1.05)',
                         boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
                     },
+                    width: 350, // Fixed width
+                    height: 300, // Fixed height
                 }}
             >
                 <CardMedia
@@ -119,6 +128,11 @@ const TouristHomePage = ({profile}) => {
                     height="140"
                     image={itinerary.imageUrl || placeholderImage}
                     alt="Itinerary Image"
+                    sx={{
+                        height: "70%",
+                        width: "100%",
+                        objectFit: "cover", // Ensures image scales properly
+                      }}
                 />
                 <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#111E56' }}>
@@ -142,6 +156,8 @@ const TouristHomePage = ({profile}) => {
                         transform: 'scale(1.05)',
                         boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
                     },
+                    width: 350, // Fixed width
+                    height: 300, // Fixed height
                 }}
             >
                 <CardMedia
@@ -149,6 +165,11 @@ const TouristHomePage = ({profile}) => {
                     height="140"
                     image={place.imageUrl || placeholderImage}
                     alt="Historical Place Image"
+                    sx={{
+                        height: "70%",
+                        width: "100%",
+                        objectFit: "cover", // Ensures image scales properly
+                      }}
                 />
                 <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#111E56' }}>
@@ -364,13 +385,15 @@ const TouristHomePage = ({profile}) => {
     ) : (
         <>
             {/* Itineraries Section */}
-            <Box sx={{ padding: '20px 0', marginBottom: '40px' }}>
+            <Box sx={{ padding: '0 0', marginBottom: '40px' }} >
                 <Typography
                     variant="h5"
                     sx={{
                         fontWeight: 'bold',
                         marginBottom: '10px',
                         color: '#111E56',
+                        textAlign: 'left',
+
                     }}
                 >
                     Popular Itineraries
@@ -388,6 +411,7 @@ const TouristHomePage = ({profile}) => {
                         fontWeight: 'bold',
                         marginBottom: '10px',
                         color: '#111E56',
+                        textAlign: 'left',
                     }}
                 >
                     Featured Activities
@@ -405,6 +429,8 @@ const TouristHomePage = ({profile}) => {
                         fontWeight: 'bold',
                         marginBottom: '10px',
                         color: '#111E56',
+                        textAlign: 'left',
+
                     }}
                 >
                     Explore Historical Places
@@ -420,5 +446,6 @@ const TouristHomePage = ({profile}) => {
 
     );
 };
+
 
 export default TouristHomePage;
