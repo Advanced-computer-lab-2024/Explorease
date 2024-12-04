@@ -27,6 +27,7 @@ import { CurrencyContext } from './CurrencyContext';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
 import TouristHomePage from './TouristHomePage';
+import HistoricalPlace from './HistoricalPlaces';
 
 
 
@@ -117,6 +118,8 @@ const TouristDashboard = () => {
 
     const renderContent = () => {
         switch (activeComponent) {
+            case 'historical-places':
+                return <HistoricalPlace />;
             case 'welcomePage': 
                 return <TouristHomePage profile={profile}/>;
             case 'profile':
