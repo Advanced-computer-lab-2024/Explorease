@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdvertiserNavbar from '../MainPage-Components/GuestNavbar'; // Assuming a similar Navbar exists
-import { Box, Typography, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import UpdateAdvertiser from './UpdateAdvertiser';
 import MyActivities from './MyActivities';
 import CreateActivity from './CreateActivity';
@@ -9,6 +9,8 @@ import UploadLogo from './UploadLogo';
 import SalesReport from './AdvertiserSalesReport';
 import ActivitySummary from './ActivitySummary';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
+import MenuIcon from '@mui/icons-material/Menu';
+import { Edit, Event, Dashboard, Upload, BarChart, Report   } from '@mui/icons-material';
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -210,66 +212,77 @@ const AdvertiserDashboard = () => {
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
     };
-
+    const menuItems = [
+        { label: 'Edit Profile', component: 'updateProfile', icon: <Edit /> },
+        { label: 'Get My Activities', component: 'viewActivities', icon: <Event /> },
+        { label: 'Create Activity', component: 'createActivity', icon: <Dashboard /> },
+        { label: 'Upload a Logo', component: 'uploadLogo', icon: <Upload /> },
+        { label: 'Sales Report', component: 'Sales Report', icon: <BarChart /> },
+        { label: 'Activity Summary', component: 'ActivitySummary', icon: <Report /> },
+    ];
     return (
         <div>
             {/* Navbar */}
             <AdvertiserNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
-
-            {/* Sidebar */}
-            {isSidebarOpen && (
-                <Box
+{/* Sidebar */}
+{/* Sidebar */}
+<Box
+    sx={{
+        width: isSidebarOpen ? '250px' : '70px', // Sidebar width
+        backgroundColor: '#111E40',
+        color: 'white',
+        height: 'calc(100vh - 64px)', // Sidebar height less than navbar
+        position: 'fixed',
+        top: '64px', // Sidebar starts below navbar
+        left: 0,
+        padding: '10px',
+        transition: 'width 0.3s ease', // Smooth transition for width
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 1000,
+        overflow: 'hidden', // Prevent overflow when collapsed
+    }}
+>
+    <nav>
+        {menuItems.map((item) => (
+            <Tooltip
+                title={!isSidebarOpen ? item.label : ''} // Show tooltip only when collapsed
+                arrow
+                placement="right"
+                key={item.component}
+            >
+                <Button
+                    startIcon={item.icon} // Always display the icon
                     sx={{
-                        width: '250px',
-                        backgroundColor: '#111E40',
                         color: 'white',
-                        height: 'calc(100vh - 64px)',
-                        position: 'fixed',
-                        top: '64px',
-                        padding: '10px',
+                        justifyContent: 'flex-start', // Align buttons to the left
+                        alignItems: 'center', // Ensure vertical centering
+                        width: '100%', // Ensure button width matches sidebar width
+                        padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px', // Adjust padding for collapsed state
+                        marginTop: '10px',
                         display: 'flex',
-                        flexDirection: 'column',
+                        gap: isSidebarOpen ? 2 : 0, // Space between icon and text in expanded state
+                        textAlign: 'left', // Align text properly
+                        backgroundColor: activeComponent === item.component ? '#7BAFD0' : 'transparent',
+                        borderLeft: activeComponent === item.component ? '4px solid #4FC3F7' : '4px solid transparent', // Highlight active state
+                        transition: 'background-color 0.3s ease, border 0.3s ease', // Remove scaling
+                        '&:hover': {
+                            backgroundColor: '#7BAFD0', // Change color on hover
+                        },
                     }}
+                    onClick={() => handleSectionChange(item.component)}
                 >
-                    <nav>
-                        {[
-                            
-                            { label: 'Edit Profile', component: 'updateProfile' },
-                            { label: 'Get My Activities', component: 'viewActivities' },
-                            { label: 'Create Activity', component: 'createActivity' },
-                            { label: 'Upload a Logo', component: 'uploadLogo' },
-                            { label: 'Sales Report', component: 'Sales Report' },
-                            {label : 'Activity Summary', component : 'ActivitySummary'}
-                        ].map((item) => (
-                            <Button
-                                key={item.component}
-                                sx={{
-                                    color: 'white',
-                                    textAlign: 'left',
-                                    justifyContent: 'flex-start',
-                                    width: '100%',
-                                    padding: '10px',
-                                    marginTop: '10px',
-                                    backgroundColor: activeComponent === item.component ? '#7BAFD0' : 'transparent',
-                                    '&:hover': {
-                                        backgroundColor: '#7BAFD0',
-                                        transform: 'scale(1.01)',
-                                    },
-                                }}
-                                onClick={() => handleSectionChange(item.component)}
-
-                            >
-                                {item.label}
-                            </Button>
-                        ))}
-                    </nav>
-                </Box>
-            )}
+                    {isSidebarOpen ? item.label : null} {/* Show label only when expanded */}
+                </Button>
+            </Tooltip>
+        ))}
+    </nav>
+</Box>
 
             {/* Main Content */}
             <Box
     sx={{
-        marginLeft: isSidebarOpen ? '250px' : '0',
+        marginLeft: isSidebarOpen ? '250px' : '55px',
         transition: 'margin-left 0.3s ease',
         padding: '20px',
     }}
@@ -281,7 +294,8 @@ const AdvertiserDashboard = () => {
             sx={{
                 position: 'fixed',
                 top: '80px',
-                left: isSidebarOpen ? '270px' : '20px',
+                left: isSidebarOpen ? '270px' : '80px',
+                transition: 'margin-left 0.3s ease',
                 backgroundColor: '#111E56',
                 color: 'white',
                 '&:hover': {
