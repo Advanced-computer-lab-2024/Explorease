@@ -220,7 +220,8 @@ const TouristDashboard = () => {
                                         component="div"
                                         sx={{
                                             fontSize: '16px',
-                                            lineHeight: '1.8',
+                                            lineHeight: '2.5',
+                                            width: '120%',
                                             '& strong': {
                                                 color: '#111E56',
                                                 fontWeight: 'bold',

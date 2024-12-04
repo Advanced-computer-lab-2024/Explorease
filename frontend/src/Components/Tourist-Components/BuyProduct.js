@@ -187,61 +187,159 @@ const Products = ( {incrementCartCount} ) => {
             <Card
     key={product._id}
     sx={{
-        width: '100%',
-        maxWidth: 280,
+        width: 300, // Fixed width for consistency
+        height: 450, // Fixed height for consistency
         m: 2,
-        boxShadow: 3,
+        borderRadius: 4, // Rounded corners
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Subtle shadow
         flexGrow: 1,
-        transition: 'transform 0.3s, box-shadow 0.3s', // Smooth transition for hover effect
+        transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', // Smooth hover effects
         '&:hover': {
             transform: 'scale(1.05)', // Slightly enlarge the card
-            boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)', // Add shadow effect
+            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)', // Enhanced shadow on hover
         },
+        display: 'flex',
+        flexDirection: 'column',
     }}
 >
-    <CardMedia
-        component="img"
-        height="250"
-        image={product.imageUrl}
-        alt={product.Name}
-        sx={{ objectFit: 'contain', padding: 1 }}
-    />
-    <CardContent>
-        <Typography variant="h6">{product.Name}</Typography>
-        <Typography variant="body2" color="text.secondary">
-            <strong>Price:</strong> {convertPrice(product.Price)} {selectedCurrency}
+    {/* Image Section */}
+    <Box
+        sx={{
+            position: 'relative',
+            height: 200, // Fixed height for the image container
+            overflow: 'hidden', // Ensure the image does not exceed this container
+            borderRadius: '12px 12px 0 0', // Rounded top corners
+        }}
+    >
+        <CardMedia
+            component="img"
+            image={product.imageUrl}
+            alt={product.Name}
+            sx={{
+                objectFit: 'cover', // Ensure the image scales properly
+                width: '100%', // Full width
+                height: '100%', // Full height to fit the container
+            }}
+        />
+        {/* Price Badge */}
+        <Typography
+            sx={{
+                position: 'absolute',
+                top: 10,
+                left: 10,
+                backgroundColor: '#4F46E5',
+                color: 'white',
+                fontSize: '0.875rem',
+                fontWeight: 'bold',
+                borderRadius: 2,
+                padding: '2px 8px',
+            }}
+        >
+            ${convertPrice(product.Price)} {selectedCurrency}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-            <strong>Description:</strong> {product.Description}
+    </Box>
+
+    {/* Content Section */}
+    <Box
+        sx={{
+            flex: 1, // Ensure this section grows to fill the space between the image and buttons
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+        }}
+    >
+        {/* Product Name */}
+        <Typography
+            variant="h6"
+            sx={{
+                fontWeight: 'bold',
+                color: '#111E56',
+                marginBottom: '8px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+            }}
+        >
+            {product.Name}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-            <strong>Ratings:</strong> {'★'.repeat(product.Ratings)}{'☆'.repeat(5 - product.Ratings)}
+
+        {/* Description */}
+        <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+                marginBottom: 2,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 3, // Limit to 3 lines
+            }}
+        >
+            {product.Description}
         </Typography>
+
+        {/* Ratings */}
+        <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'center', // Center horizontally
+                alignItems: 'center', // Center vertically
+                marginBottom: 2,
+                height: 40, // Fixed height for star section
+            }}
+        >
+            <Typography
+                variant="body2"
+                sx={{
+                    color: '#FFC107', // Yellow stars
+                    fontSize: '1.5rem', // Larger stars
+                }}
+            >
+                {'★'.repeat(product.Ratings)}{'☆'.repeat(5 - product.Ratings)}
+            </Typography>
+        </Box>
+    </Box>
+
+    {/* Action Buttons */}
+    <Box
+        sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px',
+            borderTop: '1px solid #E5E7EB', // Divider above buttons
+        }}
+    >
         <Button
             variant="contained"
             color="primary"
             sx={{
                 backgroundColor: '#111E56',
                 color: 'white',
-                border: '2px solid #111E56',
+                textTransform: 'none', // Remove uppercase text
+                borderRadius: 2, // Rounded corners
+                fontWeight: 'medium',
                 '&:hover': {
                     backgroundColor: 'white',
                     color: '#111E56',
-                    border: '2px solid #111E56', // Adds border on hover
+                    border: '2px solid #111E56',
                 },
-                mt: 2,
+                flex: 1, // Ensures it takes available space
+                marginRight: 1,
             }}
-            fullWidth
             onClick={() => addToCart(product._id)}
         >
             Add to Cart
         </Button>
+        {/* Wishlist Button */}
         <IconButton
             onClick={() => toggleWishlist(product._id)}
             sx={{
-                transition: 'color 0.3s', // Smooth color transition
+                transition: 'color 0.3s ease-in-out', // Smooth hover effect
                 '&:hover': {
-                    color: '#ff4081', // Change color on hover
+                    color: '#ff4081', // Pink on hover
                 },
             }}
         >
@@ -251,8 +349,10 @@ const Products = ( {incrementCartCount} ) => {
                 <FavoriteBorderIcon sx={{ color: '#ff4081' }} /> // Outlined pink heart
             )}
         </IconButton>
-    </CardContent>
+    </Box>
 </Card>
+
+
 
         ));
     };
