@@ -18,7 +18,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 
 
 
-const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistCount }) => {
+const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlistCount }) => {
     // const [anchorEl, setAnchorEl] = useState(null);
     const [notifications, setNotifications] = useState([]); // Store notifications
     const [isNotificationDrawerOpen, setNotificationDrawerOpen] = useState(false); // Manage drawer state
@@ -198,7 +198,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
                             ...linkStyle,
                             cursor: 'pointer',
                         }}
-                        onClick={() => setActiveComponent('bookActivity')}>
+                        onClick={() => handleSectionChange('bookActivity')}>
                         Activities
                     </Typography>                        
                     <Typography
@@ -206,7 +206,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
                         ...linkStyle,
                         cursor: 'pointer',
                         }}
-                    onClick={() => setActiveComponent('bookItinerary')}>
+                    onClick={() => handleSectionChange('bookItinerary')}>
                     Itineraries
                     </Typography>
 
@@ -224,7 +224,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
                             ...linkStyle,
                             cursor: 'pointer',
                         }}
-                        onClick={() => setActiveComponent('bookFlight')}>
+                        onClick={() => handleSectionChange('bookFlight')}>
                         Flights
                     </Typography>    
                     <Typography
@@ -232,7 +232,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
                             ...linkStyle,
                             cursor: 'pointer',
                         }}
-                        onClick={() => setActiveComponent('bookHotel')}>
+                        onClick={() => handleSectionChange('bookHotel')}>
                         Hotels
                     </Typography>             
                     <Typography
@@ -240,7 +240,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
                             ...linkStyle,
                             cursor: 'pointer',
                         }}
-                        onClick={() => setActiveComponent('bookTransportation')}>
+                        onClick={() => handleSectionChange('bookTransportation')}>
                         Transportation
                     </Typography>               
                     </Box>
@@ -274,7 +274,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
         sx={{
             color: 'white',
         }}
-        onClick={() => setActiveComponent('profile')} // Navigate or trigger profile component
+        onClick={() => handleSectionChange('profile')} // Navigate or trigger profile component
     >
         <AccountCircle />
     </IconButton>
@@ -282,17 +282,17 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
 
                     
                     <Tooltip title="Wallet" arrow>
-                        <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('wallet')}>
+                        <IconButton sx={{ color: 'white' }} onClick={() => handleSectionChange('wallet')}>
                             <AccountBalanceWalletIcon />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Marketplace" arrow>
-                        <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('viewProducts')}>
+                        <IconButton sx={{ color: 'white' }} onClick={() => handleSectionChange('viewProducts')}>
                             <StoreIcon />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="View Cart" arrow>
-                        <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('cart')}>
+                        <IconButton sx={{ color: 'white' }} onClick={() => handleSectionChange('cart')}>
                             <Badge badgeContent={cartCount} color="error">
                                 <ShoppingCartIcon />
                             </Badge>
@@ -300,7 +300,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
                     </Tooltip>
 
                     <Tooltip title="Wishlist" arrow>
-                        <IconButton sx={{ color: 'white' }} onClick={() => setActiveComponent('wishlist')}>
+                        <IconButton sx={{ color: 'white' }} onClick={() => handleSectionChange('wishlist')}>
                             <Badge badgeContent={wishlistCount} color="error">
                                 <FavoriteIcon />
                             </Badge>

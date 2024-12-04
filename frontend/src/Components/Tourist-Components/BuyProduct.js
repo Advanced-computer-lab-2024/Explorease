@@ -387,7 +387,7 @@ const Products = ( { updateWishlistCount , incrementCartCount}) => {
 
     return (
         <Box sx={{ p: 3 }}>
-            <Typography variant="h4" sx={{ mb: 3 }}>All Products</Typography>
+            <Typography variant="h4" sx={{ mb: 3 , fontWeight:'bold' , color:'#111E56' }}>Products</Typography>
             <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
                 <Box display="flex" flexWrap="wrap" gap={2} mb={3}>
                     <TextField

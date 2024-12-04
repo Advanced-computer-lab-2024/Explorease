@@ -373,9 +373,9 @@ const TouristDashboard = () => {
                  </Box>
                  );
             case 'cart':
-                return <Cart setActiveComponent={setActiveComponent} />;
+                return <Cart handleSectionChange={handleSectionChange} />;
             case 'checkout':
-                return <Checkout setActiveComponent={setActiveComponent}></Checkout>
+                return <Checkout handleSectionChange={handleSectionChange}></Checkout>
             case 'wallet':
                 return <h2> Still Implementing Wallet!</h2>;
             case 'bookFlight':
@@ -408,7 +408,7 @@ const TouristDashboard = () => {
     return (
         <div>
    {/* Navbar */}
-   <TouristNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} cartCount={cartCount} wishlistCount={wishlistCount}/>
+   <TouristNavbar toggleSidebar={toggleSidebar} handleSectionChange={handleSectionChange} cartCount={cartCount} wishlistCount={wishlistCount}/>
 
 {/* Tourist Sidebar */}
 {isSidebarOpen && (

@@ -16,7 +16,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { useNavigate } from 'react-router-dom';
 import { CurrencyContext } from './CurrencyContext';
 
-const Cart = ({ setActiveComponent }) => {
+const Cart = ({ handleSectionChange}) => {
     const [cartItems, setCartItems] = useState([]);
     const [walletBalance, setWalletBalance] = useState(0);
     const [totalCost, setTotalCost] = useState(0);
@@ -100,7 +100,7 @@ const Cart = ({ setActiveComponent }) => {
     };
 
     const handleCheckout = async () => {
-        setActiveComponent('checkout'); // Navigate to Checkout component
+        handleSectionChange('checkout'); // Navigate to Checkout component
     };
 
 
