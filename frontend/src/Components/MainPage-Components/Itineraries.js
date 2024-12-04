@@ -19,7 +19,7 @@ import {
   
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
-import Navbar from './GuestNavbar';
+import Navbar from './GuestNavBarforGuest';
 
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -108,8 +108,8 @@ const Itineraries = () => {
     <Box>
       <Navbar />
       <Box sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          All Itineraries
+        <Typography variant="h4" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
+          Itineraries
         </Typography>
 
         {/* Search Form */}
@@ -313,7 +313,7 @@ const Itineraries = () => {
                   >
                     {/* Left Section */}
                     <Box sx={{ flex: 2, paddingRight: 2 }}>
-                      <Typography variant="h6" gutterBottom>
+                      <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
                         {itinerary.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" gutterBottom>

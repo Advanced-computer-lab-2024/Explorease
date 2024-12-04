@@ -35,9 +35,9 @@ const NavbarGuest = () => {
 
                 {/* Navigation Links */}
                 <Box style={linkContainerStyle}>
-                    <Link to="/activities" style={linkStyle}>View All Activities</Link>
-                    <Link to="/itineraries" style={linkStyle}>View All Itineraries</Link>
-                    <Link to="/historical-places" style={linkStyle}>View All Historical Places</Link>
+                    <Link to="/activities" style={linkStyle}>Activities</Link>
+                    <Link to="/itineraries" style={linkStyle}>Itineraries</Link>
+                    <Link to="/historical-places" style={linkStyle}>Historical Places</Link>
                 </Box>
             </Toolbar>
         </AppBar>

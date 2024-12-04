@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
-import Navbar from './GuestNavbar';
+import Navbar from './GuestNavBarforGuest';
 
 const HistoricalPlaces = () => {
   const [places, setPlaces] = useState([]);
@@ -83,8 +83,8 @@ const HistoricalPlaces = () => {
     <Box>
       <Navbar />
       <Box sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          All Historical Places
+        <Typography variant="h4" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
+          Historical Places
         </Typography>
 
         {/* Search Form */}
@@ -190,7 +190,7 @@ const HistoricalPlaces = () => {
                   >
                     {/* Left Section */}
                     <Box sx={{ flex: 2, paddingRight: 2 }}>
-                      <Typography variant="h6" gutterBottom>
+                      <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
                         {place.Name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" gutterBottom>
