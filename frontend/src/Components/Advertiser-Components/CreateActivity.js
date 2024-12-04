@@ -78,6 +78,10 @@ const CreateActivity = () => {
         fetchCategoriesAndTags();
     }, []);
 
+    const handleFileChange = (e) => {
+        setFormData({ ...formData, image: e.target.files[0] });
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -98,10 +102,11 @@ const CreateActivity = () => {
             setMessage('Please select a location on the map.');
             return;
         }
-
+        console.log(formData);
         try {
             const response = await axios.post('/advertiser/createActivity', formData, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: {  'Content-Type': 'multipart/form-data', 
+                    Authorization: `Bearer ${token}` },
             });
             if (response.status === 201) {
                 setMessage('Activity created successfully');
@@ -271,6 +276,13 @@ const CreateActivity = () => {
                 backgroundColor:'white'// Enhances the shadow on hover
             }, }}
     />
+   
+    {/* Add Image Upload */}
+    <Box sx={{ marginBottom: '20px' }}>
+        <Typography>Upload Image:</Typography>
+        <input type="file" name="image" accept="image/*" onChange={handleFileChange} />
+    </Box>
+   
 </FormControl>
 
                 <Button type="submit" variant="contained" color="primary" fullWidth sx={{backgroundColor: '#111E56', 

@@ -18,17 +18,9 @@ const HistoricalPlaceSchema = new Schema({
     tags: [{ 
         type: Schema.Types.ObjectId, 
         ref: 'PreferenceTag',
-        validate: {
-            validator: async function(tagIds) {
-                // Fetch all tag names corresponding to these tagIds from the PreferenceTag collection
-                const tags = await mongoose.model('PreferenceTag').find({ _id: { $in: tagIds } });
-                const allowedTags = ['Monument', 'Museum', 'Religious Site', 'Palace', 'Castle'];
-
-                // Check if all tags correspond to allowed types
-                return tags.every(tag => allowedTags.includes(tag.name));
-            },
-            message: 'Invalid tag. Allowed tags are Monument, Museum, Religious Site, Palace/Castle.'
-        }
+        
+        message: 'Invalid tag. Allowed tags are Monument, Museum, Religious Site, Palace/Castle.'
+        
     }],
     imageUrl: {type : String, default : false}
 }, { timestamps: true });

@@ -2,52 +2,76 @@ const HistoricalPlaceModel = require('../../Models/ActivityModels/HistoricalPlac
 const preferenceTagModel = require('../../Models/ActivityModels/PreferenceTags')
 const { default: mongoose } = require('mongoose');
 const { searchActivitiesByNameOrCategoryOrTag } = require('./ActivityController');
+const cloudinary = require('cloudinary').v2;
 
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 // Create Historical Place
+
 const createHistoricalPlace = async (req, res) => {
     const { Name, Description, Location, OpeningHours, ClosingHours, TicketPrices, Period, Type, tags } = req.body;
+    const image = req.file ? req.file : null; // Image will be available in req.file if uploaded
     const managedBy = req.user.id;
-
     try {
-        // Validate required fields
-        if (!Name || !Description || !Location || !OpeningHours || !ClosingHours || !TicketPrices || !Period || !Type) {
-            return res.status(400).json({ message: 'All fields (Name, Description, Location, OpeningHours, ClosingHours, TicketPrices, Period, Type) are required.' });
+        // Handle image upload to Cloudinary
+        if (req.file) {
+            try {
+                const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+                const result = await cloudinary.uploader.upload(base64Image, {
+                    folder: 'historical-places',  // Optional: organize your images in a specific folder
+                });
+
+                imageUrl = result.secure_url;
+
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                return res.status(500).json({ message: 'Failed to upload image to Cloudinary', error: uploadError.message });
+            }
         }
 
-        // Find existing tags, or create new ones if they don't exist
+
+        // Handle tags
         const tagDocs = await Promise.all(
-            tags.map(async (tagName) => {
+            tags.split(',').map(async (tagName) => {
                 let tag = await preferenceTagModel.findOne({ name: tagName });
                 if (!tag) {
-                    // Create the tag if it doesn't exist
                     tag = await preferenceTagModel.create({ name: tagName });
                 }
                 return tag;
             })
         );
 
-        const historicalPlace = await HistoricalPlaceModel.create({
+        // Create the historical place
+        const newHistoricalPlace = new HistoricalPlaceModel({
             Name,
             Description,
             Location,
             OpeningHours,
             ClosingHours,
-            TicketPrices: {
-                foreigner: TicketPrices.foreigner,
-                native: TicketPrices.native,
-                student: TicketPrices.student
-            },
+            TicketPrices,
             Period,
             Type,
-            managedBy,
-            tags: tagDocs.map(tag => tag._id) // Save the tag IDs
+            tags: tagDocs,
+            imageUrl,
+            managedBy // Add imageUrl to the historical place model
         });
 
-        res.status(201).json({ message: 'Historical Place created successfully', historicalPlace });
+        await newHistoricalPlace.save();
+
+        res.status(201).json({
+            message: 'Historical place created successfully!',
+            historicalPlace: newHistoricalPlace,
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error creating Historical Place', error: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Server error while creating historical place', error });
     }
 };
+
 
 
 
