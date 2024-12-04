@@ -5,14 +5,24 @@ const advertiserController = require('../Controllers/UserControllers/advertiserC
 const activityController = require('../Controllers/ActivityControllers/ActivityController');
 const { roleAuth } = require('../Middleware/authMiddleware'); // Assuming roleAuth is already defined
 const notificationController = require('../Controllers/UserControllers/NotificationController');
-
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 // Advertiser-specific routes
 router.get('/myProfile', roleAuth(['advertiser']), advertiserController.getAdvertiserById);  // Get own profile
 router.put('/updateProfile',roleAuth(['advertiser']), advertiserController.updateAdvertiser);
 router.delete('/deleteProfile', roleAuth(['advertiser']), advertiserController.deleteAdvertiser); // Delete own profile
 
 // Advertiser can create activities
-router.post('/createActivity', roleAuth(['advertiser']), activityController.createActivity);
+const storage = multer.memoryStorage(); // Use memory storage if you're only uploading to Cloudinary
+const upload = multer({ storage });
+
+router.post(
+    '/createActivity',
+    roleAuth(['advertiser']),
+    upload.single('image'), // Add Multer middleware for single file upload
+    activityController.createActivity
+);
+
 router.get('/getMyActivities',  roleAuth(['advertiser']) , activityController.readActivities);
 router.get('/filter-sort-search', roleAuth(['advertiser']), activityController.filterSortSearchActivitiesByAdvertiser);
 router.delete('/deleteActivity/:id', roleAuth(['advertiser']), activityController.deleteActivity);

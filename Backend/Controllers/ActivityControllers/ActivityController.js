@@ -94,12 +94,22 @@ const unflagActivity = async (req, res) => {
     }
 };
 
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 
-// Create Activity
 const createActivity = async (req, res) => {
-    const { name, date, time, location, price, category, tags, specialDiscounts, bookingOpen, duration } = req.body;
-    const createdBy = req.user.id; 
+    const {
+        name, date, time, location, price, category, tags,
+        specialDiscounts, bookingOpen, duration
+    } = req.body;
+    const createdBy = req.user.id; // ID of the advertiser creating the activity
 
     try {
         // Check required fields
@@ -119,19 +129,35 @@ const createActivity = async (req, res) => {
             return res.status(400).json({ message: 'One or more tags not found' });
         }
 
-        // Create new activity with resolved category and tag ObjectIds
+        // Handle image upload to Cloudinary
+        if (req.file) {
+            try {
+                const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+                const result = await cloudinary.uploader.upload(base64Image, {
+                    folder: 'activities',  // Optional: organize your images in a specific folder
+                });
+
+                imageUrl = result.secure_url;
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                return res.status(500).json({ message: 'Failed to upload image to Cloudinary', error: uploadError.message });
+            }
+        }
+
+        // Create new activity with resolved category, tags, and image URL
         const activity = new activityModel({
             name,
             date,
             time,
             location,
             price,
-            category: categoryDoc._id,  // Save category as ObjectId
-            tags: tagDocs.map(tag => tag._id),  // Save tags as an array of ObjectIds
+            category: categoryDoc._id, // Save category as ObjectId
+            tags: tagDocs.map(tag => tag._id), // Save tags as an array of ObjectIds
             specialDiscounts,
             bookingOpen,
-            createdBy, 
-            duration
+            createdBy,
+            duration,
+            imageUrl, // Save the image URL
         });
 
         await activity.save();

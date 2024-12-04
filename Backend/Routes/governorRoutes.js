@@ -5,11 +5,14 @@ const preferenceTagController = require('../Controllers/ActivityControllers/Pref
 const touristGovernorController = require('../Controllers/UserControllers/tourismGovernorController');
 const { roleAuth } = require('../Middleware/authMiddleware');
 const notificationController = require('../Controllers/UserControllers/NotificationController');
+const multer = require('multer');
+const storage = multer.memoryStorage();  // Store file in memory
+const upload = multer({ storage: storage });  // Create Multer instance with memory storage
 
 // Tourist Governor Routes
 
 // Create Historical Place (Tourist Governor only)
-router.post('/createHistoricalPlace', roleAuth(['touristGovernor']), historicalPlaceController.createHistoricalPlace);
+router.post('/createHistoricalPlace', roleAuth(['touristGovernor']), upload.single('image'), historicalPlaceController.createHistoricalPlace);
 
 // Update Historical Place (Tourist Governor only)
 router.put('/updateHistoricalPlace/:id', roleAuth(['touristGovernor']), historicalPlaceController.updateHistoricalPlace);
