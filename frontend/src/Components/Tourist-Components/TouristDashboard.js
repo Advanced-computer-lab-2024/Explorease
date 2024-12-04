@@ -27,7 +27,11 @@ import { CurrencyContext } from './CurrencyContext';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
 import TouristHomePage from './TouristHomePage';
+
 import HistoricalPlace from './HistoricalPlaces';
+
+
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 
 
 
@@ -36,11 +40,46 @@ const TouristDashboard = () => {
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('welcomePage');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [cartCount, setCartCount] = useState(0);
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
+    const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
+    const [wishlistCount, setWishlistCount] = useState(0); // Holds the number of items in the wishlist
+    const [cartCount, setCartCount] = useState(0); // Holds the number of items in the cart
 
+    const fetchCartItems = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/tourists/cart', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setCartCount(response.data.items.length);
+        } catch (error) {
+            console.error('Error fetching cart items:', error);
+        }
+    };
+
+    const fetchWishlist = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/tourists/wishlist', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
     
+            console.log('Wishlist response:', response.data); // Debugging response
+    
+            // Assuming `response.data.wishlist.products` is an array of product objects
+            const productIds = response.data.wishlist.products.map((item) => item._id); // Extract product IDs
+            setWishlistCount(productIds.length); // Update the count in the parent component
+        } catch (error) {
+            console.error('Error fetching wishlist items:', error);
+        }
+    };
+
+    const updateWishlistCount = (count) => {
+        setWishlistCount(count); // Callback to update the wishlist count
+    };
+
+    const navigate = useNavigate();
     const convertPrice = (price) => {
         return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
@@ -49,12 +88,26 @@ const TouristDashboard = () => {
  const incrementCartCount = () => {
     setCartCount((prevCount) => prevCount + 1);
 };
-    const sidebarWidth = isSidebarOpen ? 250 : 0;
-        const navigate = useNavigate();
+    
 
     const toggleSidebar = () => {
         setIsSidebarOpen((prev) => !prev);
     };
+
+
+    const handleSectionChange = (section) => {
+        setNavigationStack((prevStack) => [...prevStack, activeComponent]); // Push current section to stack
+        setActiveComponent(section); // Set new section
+    };
+    
+        // Function to handle Back button
+        const handleBack = () => {
+            if (navigationStack.length > 0) {
+                const lastSection = navigationStack.pop(); // Get the last section
+                setNavigationStack([...navigationStack]); // Update the stack
+                setActiveComponent(lastSection); // Navigate to the last section
+            }
+        };
 
 
     useEffect(() => {
@@ -84,6 +137,8 @@ const TouristDashboard = () => {
         };
 
         fetchProfile();
+        fetchCartItems();
+        fetchWishlist();
     }, [navigate]);
 
     const stringAvatar = (name) => {
@@ -313,7 +368,7 @@ const TouristDashboard = () => {
 
                 
             case 'viewProducts':
-                return <Products incrementCartCount={incrementCartCount} />
+                return <Products incrementCartCount={incrementCartCount} updateWishlistCount={updateWishlistCount} />
 
             // case 'updateProfile':
             //     return <UpdateProfile profile={profile} setProfile={setProfile} />;
@@ -325,9 +380,9 @@ const TouristDashboard = () => {
                  </Box>
                  );
             case 'cart':
-                return <Cart setActiveComponent={setActiveComponent} />;
+                return <Cart handleSectionChange={handleSectionChange} />;
             case 'checkout':
-                return <Checkout setActiveComponent={setActiveComponent}></Checkout>
+                return <Checkout handleSectionChange={handleSectionChange}></Checkout>
             case 'wallet':
                 return <h2> Still Implementing Wallet!</h2>;
             case 'bookFlight':
@@ -360,7 +415,7 @@ const TouristDashboard = () => {
     return (
         <div>
    {/* Navbar */}
-   <TouristNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} cartCount={cartCount} />
+   <TouristNavbar toggleSidebar={toggleSidebar} handleSectionChange={handleSectionChange} cartCount={cartCount} wishlistCount={wishlistCount}/>
 
 {/* Tourist Sidebar */}
 {isSidebarOpen && (
@@ -406,7 +461,7 @@ const TouristDashboard = () => {
                             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow
                         },
                     }}
-                    onClick={() => setActiveComponent(item.component)}
+                    onClick={() => handleSectionChange(item.component)}
                 >
                     {item.label}
                 </Button>
@@ -425,6 +480,27 @@ const TouristDashboard = () => {
         padding: '20px',
     }}
 >
+{navigationStack.length > 0 && (
+        <Button
+            onClick={handleBack}
+            startIcon={<ArrowBackIcon />}
+            sx={{
+                position: 'fixed',
+                top: '80px',
+                left: isSidebarOpen ? '270px' : '20px',
+                backgroundColor: '#111E56',
+                color: 'white',
+                '&:hover': {
+                    backgroundColor: 'white',
+                    color: '#111E56',
+                    border: '1px solid #111E56',
+                },
+                zIndex: 1000,
+            }}
+        >
+            Back
+        </Button>
+    )}
     {renderContent()}
 </Box>
         </div>
