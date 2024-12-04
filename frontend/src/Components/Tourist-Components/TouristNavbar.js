@@ -215,7 +215,7 @@ const TouristNavbar = ({ setActiveComponent, toggleSidebar, cartCount, wishlistC
         ...linkStyle,
         cursor: 'pointer',
     }}
-    onClick={() => navigate('/historical-places')} // Use useNavigate for navigation
+    onClick={() => setActiveComponent('historical-places')} // Use useNavigate for navigation
 >
     Historical Places
 </Typography>

@@ -17,3 +17,13 @@ code {
 }
 
 
+/* Add custom styles to ensure proper spacing between the cards */
+.carousel .react-multiple-carousel__item {
+  margin: 10px;  /* Adjust the gap between cards */
+}
+
+@media (max-width: 600px) {
+  .carousel .react-multiple-carousel__item {
+    margin: 5px;  /* Reduce gap for smaller screens */
+  }
+}
