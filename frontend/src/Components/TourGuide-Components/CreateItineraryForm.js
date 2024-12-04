@@ -35,6 +35,7 @@ const CreateItineraryForm = () => {
         tags: [], // Add tags field
     });
 
+    const [selectedImage, setSelectedImage] = useState(null); // State to store the uploaded image
     const [singleTime, setSingleTime] = useState(''); // Single input for AvailableTimes
     const [singleDate, setSingleDate] = useState(''); // Single input for AvailableDates
     const [singleLanguage, setSingleLanguage] = useState('');
@@ -137,10 +138,27 @@ const CreateItineraryForm = () => {
             return;
         }
 
+        const formDataWithImage = new FormData();
+        formDataWithImage.append('image', selectedImage); // This field must match 'image' in upload.single('image')
+        Object.keys(formData).forEach((key) => {
+            if (Array.isArray(formData[key])) {
+                formData[key].forEach((item) => formDataWithImage.append(key, item));
+            } else {
+                formDataWithImage.append(key, formData[key]);
+            }
+        });
+        
+        console.log([...formDataWithImage.entries()]);
+
+
         try {
-            const response = await axios.post('/tourguide/createItinerary', formData, {
-                headers: { Authorization: `Bearer ${token}` },
+            await axios.post('/tourguide/createItinerary', formDataWithImage, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Required for file uploads
+                    Authorization: `Bearer ${token}`,      // Include your token for authentication
+                },
             });
+            
             setMessage('Itinerary created successfully!');
             setFormData({
                 name: '',
@@ -154,6 +172,7 @@ const CreateItineraryForm = () => {
                 DropOffLocation: '',
                 tags: [],
             });
+            setSelectedImage(null); // Reset the image input
         } catch (err) {
             console.error('Error creating itinerary:', err);
             setError('Failed to create itinerary. Please try again.');
@@ -195,6 +214,8 @@ const CreateItineraryForm = () => {
                     margin="normal"
                     variant="outlined"
                 />
+                 
+
                 <FormControl fullWidth margin="normal">
                     <InputLabel shrink>Activities</InputLabel>
                     <Select
@@ -405,6 +426,35 @@ const CreateItineraryForm = () => {
                     margin="normal"
                     variant="outlined"
                 />
+                 {/* Add Image Upload Field */}
+                 <Box sx={{ mb: 3 }}>
+                    <Typography variant="h6">Upload Image</Typography>
+                    <Button
+                        variant="contained"
+                        component="label"
+                        sx={{
+                            backgroundColor: '#111E56',
+                            color: 'white',
+                            mt: 1,
+                            '&:hover': {
+                                backgroundColor: 'white',
+                                color: '#111E56',
+                                border: '2px solid #111E56',
+                            },
+                        }}
+                    >
+                        Choose File
+                        <input
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={(e) => setSelectedImage(e.target.files[0])}
+                        />
+                    </Button>
+                    {selectedImage && (
+                        <Typography sx={{ mt: 1 }}>{selectedImage.name}</Typography>
+                    )}
+                </Box>
                 <Button
                     type="submit"
                     variant="contained"

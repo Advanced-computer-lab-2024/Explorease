@@ -86,6 +86,15 @@ const getTouristById = async (req, res) => {
 const updateTourist = async (req, res) => {
     try {
         const tourist = await userModel.findByIdAndUpdate(req.user.id, req.body, { new: true });
+        const {FirstName, LastName} = req.body;
+
+        const touristNameControl = await userModel.findById(req.user.id);
+        touristNameControl.FirstName = FirstName;
+        touristNameControl.LastName = LastName;
+
+        await touristNameControl.save();
+
+
         if (!tourist) {
             return res.status(404).json({ message: 'Tourist not found' });
         }

@@ -26,12 +26,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { CurrencyContext } from './CurrencyContext';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
+import TouristHomePage from './TouristHomePage';
 
 
 const TouristDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
-    const [activeComponent, setActiveComponent] = useState('profile');
+    const [activeComponent, setActiveComponent] = useState('welcomePage');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [cartCount, setCartCount] = useState(0);
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
@@ -115,6 +116,8 @@ const TouristDashboard = () => {
 
     const renderContent = () => {
         switch (activeComponent) {
+            case 'welcomePage': 
+                return <TouristHomePage profile={profile}/>;
             case 'profile':
                 return (
                     <>

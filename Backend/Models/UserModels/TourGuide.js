@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 
 const tourGuideSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
+    FirstName : {type : String, required : false},
+    LastName : {type : String, required : false},
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ }, // Basic email validation
     password: { type: String, required: true },
     mobileNumber: { type: String, required: false },

@@ -9,7 +9,6 @@ const ActivitySchema = new Schema({
     latitude: { type: Number, required: false },
     longitude: { type: Number, required: false },
     price: { type: Number, required: true },
-    tags: { type: [String], required: false, default: [] },
     specialDiscounts: { type: String, required: true },
     bookingOpen: { type: Boolean, required: true },
     createdBy: { type: Schema.Types.ObjectId, ref: 'Advertiser', required: true },
@@ -19,6 +18,7 @@ const ActivitySchema = new Schema({
     duration : {type : Number, required : true},
     isFlagged: { type: Boolean, default: false },
     subscribedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }],
+    imageUrl: {type : String, default : false}
 }, { timestamps: true });
 
 const Activity = mongoose.model('Activity', ActivitySchema);

@@ -29,7 +29,8 @@ const HistoricalPlaceSchema = new Schema({
             },
             message: 'Invalid tag. Allowed tags are Monument, Museum, Religious Site, Palace/Castle.'
         }
-    }]
+    }],
+    imageUrl: {type : String, default : false}
 }, { timestamps: true });
 
 const HistoricalPlace = mongoose.model('HistoricalPlace', HistoricalPlaceSchema);

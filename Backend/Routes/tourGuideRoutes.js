@@ -38,7 +38,6 @@ router.get('/allActivities', activityController.getAllActivity);
 router.get('/allTags', preferenceTagController.getAllTags);
 
 // Create Itinerary (Tour Guide specific)
-router.post('/createItinerary', roleAuth(['tourGuide']), itineraryController.createItinerary);
 
 // Read all itineraries created by the tour guide
 router.get('/myItineraries', roleAuth(['tourGuide']), itineraryController.readItinerary);
@@ -71,6 +70,8 @@ router.post(
     tourGuideController.uploadTourGuidePhoto
 );
 
+
+router.post('/createItinerary', roleAuth(['tourGuide']), upload.single('image'), itineraryController.createItinerary);
 
 router.put('/editPassword', roleAuth(['tourGuide']), tourGuideController.updatePassword);
 router.get('/getall', tourGuideController.getAllTourGuides);

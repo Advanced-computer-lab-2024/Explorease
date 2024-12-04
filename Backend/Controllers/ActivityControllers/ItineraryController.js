@@ -67,9 +67,17 @@ const flagItinerary = async (req, res) => {
     }
 };
 
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const createItinerary = async (req, res) => {
     try {
-        // Extract fields from the request body
         const {
             name,
             activities,
@@ -83,60 +91,72 @@ const createItinerary = async (req, res) => {
             tags,
         } = req.body;
 
-        const createdBy = req.user.id; // Assuming `req.user` is set by authentication middleware
+        const createdBy = req.user.id;
+        let imageUrl;
+        console.log('Received file:', req.file);
 
+        // Ensure the file is uploaded and processed correctly
+        if (req.file) {
+            try {
+                const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+                const result = await cloudinary.uploader.upload(base64Image, {
+                    folder: 'itineraries',  // Optional: organize your images in a specific folder
+                });
+
+                imageUrl = result.secure_url;
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                return res.status(500).json({ message: 'Failed to upload image to Cloudinary', error: uploadError.message });
+            }
+        }
         // Validate required fields
         if (
             !name ||
-            !activities.length ||
-            !timeline.length ||
-            !LanguageOfTour.length ||
-            !AvailableDates.length ||
-            !AvailableTimes.length ||
+            !activities?.length ||
+            !timeline?.length ||
+            !LanguageOfTour?.length ||
+            !AvailableDates?.length ||
+            !AvailableTimes?.length ||
             !accessibility ||
             !PickUpLocation ||
             !DropOffLocation
         ) {
             return res.status(400).json({
-                message: 'All required fields (name, activities, timeline, LanguageOfTour, AvailableDates, AvailableTimes, accessibility, PickUpLocation, DropOffLocation) must be provided.',
+                message:
+                    'All required fields (name, activities, timeline, LanguageOfTour, AvailableDates, AvailableTimes, accessibility, PickUpLocation, DropOffLocation, image) must be provided.',
             });
         }
 
         // Validate activities
         const activityDocs = await ActivityModel.find({ _id: { $in: activities } });
         if (!activityDocs || activityDocs.length !== activities.length) {
-            return res.status(400).json({
-                message: 'One or more activities not found. Ensure valid activity IDs are provided.',
-            });
+            return res.status(400).json({ message: 'One or more activities not found.' });
         }
 
-        // Validate and calculate the total price of the itinerary
-        const tourGuideConvenienceFee = 50; // Adjust this value as needed
+        // Calculate the total price
+        const tourGuideConvenienceFee = 50;
         const totalPrice =
             activityDocs.reduce((sum, activity) => sum + activity.price, 0) + tourGuideConvenienceFee;
 
         // Validate tags
         const tagDocs = await preferenceTagModel.find({ _id: { $in: tags } });
         if (!tagDocs || tagDocs.length !== tags.length) {
-            return res.status(400).json({
-                message: 'One or more tags not found. Ensure valid tag IDs are provided.',
-            });
+            return res.status(400).json({ message: 'One or more tags not found.' });
         }
 
-        // Validate timeline format (if timeline contains string times like "11:20/12:20")
-        const parsedTimeline = timeline.map((entry) => {
-            const [startTime, endTime] = entry.split('/');
-            if (!startTime || !endTime) {
-                throw new Error(`Invalid timeline format: ${entry}. Expected format is "HH:mm/HH:mm".`);
-            }
-            return { startTime, endTime }; // Store as objects for clarity
-        });
+        // // Parse timeline
+        // const parsedTimeline = timeline.map((entry) => {
+        //     const [startTime, endTime] = entry.split('/');
+        //     if (!startTime || !endTime) {
+        //         throw new Error(`Invalid timeline format: ${entry}. Expected format: "HH:mm/HH:mm".`);
+        //     }
+        //     return { startTime, endTime };
+        // });
 
-        // Create the new itinerary
+        // Create the itinerary
         const itinerary = new ItineraryModel({
             name,
             activities,
-            timeline: parsedTimeline, // Save parsed timeline
             LanguageOfTour,
             totalPrice,
             AvailableDates,
@@ -145,23 +165,17 @@ const createItinerary = async (req, res) => {
             PickUpLocation,
             DropOffLocation,
             createdBy,
-            tags: tagDocs.map((tag) => tag._id), // Save the tag IDs
-            isActivated: false, // By default, new itineraries are not activated
+            tags,
+            imageUrl, // Store the uploaded image URL
+            isActivated: true,
         });
 
-        // Save to the database
         await itinerary.save();
 
-        res.status(201).json({
-            message: 'Itinerary created successfully!',
-            itinerary,
-        });
+        res.status(201).json({ message: 'Itinerary created successfully!', itinerary });
     } catch (error) {
-        console.error('Error Creating Itinerary:', error);
-        res.status(500).json({
-            message: 'Error creating itinerary',
-            error: error.message,
-        });
+        console.error('Error creating itinerary:', error);
+        res.status(500).json({ message: 'Error creating itinerary', error: error.message });
     }
 };
 

@@ -23,6 +23,7 @@ const ItinerarySchema = new Schema({
     BookedBy: { type: Schema.Types.ObjectId, ref: 'Tourist', default: null }, // Null when not booked
     isActivated: { type: Boolean, default: false },
     isFlagged: { type: Boolean, default: false },
+    imageUrl: {type : String, default : false}
 }, { timestamps: true });
 
 

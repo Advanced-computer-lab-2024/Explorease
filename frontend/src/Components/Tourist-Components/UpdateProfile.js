@@ -93,22 +93,17 @@ const UpdateProfile = ({ profile, setProfile }) => {
         <Box
             sx={{
                 marginTop: '20px',
-                width: '400px',
+                width: '100%',
+                maxWidth: '500px',
                 borderRadius: '16px',
                 backgroundColor: 'white',
                 margin: '20px auto',
                 boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
                 textAlign: 'center',
                 fontFamily: 'Poppins, sans-serif',
-                padding: '20px',
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                '&:hover': {
-                    transform: 'scale(1.05)',
-                    boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
-                },
+                padding: '30px',
             }}
         >
-
             {updateMessage && (
                 <Typography
                     color={success ? 'green' : 'red'}
@@ -122,6 +117,24 @@ const UpdateProfile = ({ profile, setProfile }) => {
             )}
 
             <form onSubmit={handleSubmit}>
+                <TextField
+                    label="First Name"
+                    name="firstName"
+                    value={formProfile.firstName || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Last Name"
+                    name="lastName"
+                    value={formProfile.lastName || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
                 <TextField
                     label="Email"
                     name="email"

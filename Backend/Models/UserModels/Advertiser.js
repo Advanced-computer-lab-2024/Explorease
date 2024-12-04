@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 
 const advertiserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
+    FirstName : {type : String, required : false},
+    LastName : {type : String, required : false},
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ }, // email validation
     password: { type: String, required: true },
     companyName: { type: String, required: false },

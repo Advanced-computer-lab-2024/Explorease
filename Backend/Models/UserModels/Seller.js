@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 
 const sellerSchema = new Schema({
     username: { type: String, required: true, unique: true },
+    FirstName : {type : String, required : false},
+    LastName : {type : String, required : false},
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
     password: { type: String, required: true },
     name: { type: String, required: false },
