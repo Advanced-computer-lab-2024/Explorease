@@ -190,6 +190,19 @@ const readActivities = async (req, res) => {
 // Get All Activities
 const getAllActivity = async (req, res) => {
     try {
+        const activities = await activityModel.find({}).populate('category').populate('tags');
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'No activities found.' });
+        }
+        res.status(200).json(activities);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching activities', error: error.message });
+    }
+};
+
+// Get All Activities
+const getAllActivityTourist = async (req, res) => {
+    try {
         const activities = await activityModel.find({ isFlagged : false }).populate('category').populate('tags');
         if (activities.length === 0) {
             return res.status(404).json({ message: 'No activities found.' });
@@ -563,6 +576,7 @@ module.exports = {
     deleteActivitiesByAdvertiserId,
     flagActivity,
     unflagActivity,
-    subscribeToActivity
+    subscribeToActivity,
+    getAllActivityTourist
     
 };

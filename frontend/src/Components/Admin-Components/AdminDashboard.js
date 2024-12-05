@@ -22,6 +22,9 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 import Tooltip from '@mui/material/Tooltip'; // Import Tooltip
+import logo2 from '../../Misc/logo.png';
+import { Container, Stack , Link} from '@mui/material';
+
 
 import {
     Home,
@@ -341,11 +344,11 @@ const handleTagChange = (id, newName) => {
         { label: 'Product', section: 'product', icon: <ShoppingCart /> },
         { label: 'Add Tourism Governor', section: 'tourismGoverner', icon: <PersonAdd /> },
         { label: 'Review Users', section: 'ReviewUsers', icon: <Reviews /> },
-        { label: 'Block Event', section: 'BlockEvent', icon: <Block /> },
+        { label: 'Block Event', section: 'Block event', icon: <Block /> },
         { label: 'Complaints', section: 'Complaints', icon: <Feedback /> },
-        { label: 'Delete Requests', section: 'DeleteRequests', icon: <DeleteForever /> },
-        { label: 'Promo Code', section: 'PromoCode', icon: <LocalOffer /> },
-        { label: 'Sales Report', section: 'SalesReport', icon: <BarChart /> },
+        { label: 'Delete Requests', section: 'Delete Requests', icon: <DeleteForever /> },
+        { label: 'Promo Code', section: 'Promo Code', icon: <LocalOffer /> },
+        { label: 'Sales Report', section: 'Sales Report', icon: <BarChart /> },
       ];
 
     return (
@@ -955,6 +958,92 @@ const handleTagChange = (id, newName) => {
 
             </Box>
         </Box>
+        <footer style={{ backgroundColor: '#111E56', color: 'white', padding: '30px 0' , marginLeft: isSidebarVisible ? '250px' : 0,}}>
+                <Container>
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ textAlign: { xs: 'center', sm: 'left' } }}
+                    >
+                        <img
+                            src={logo2}
+                            alt="Explorease"
+                            style={{ height: '3em', marginLeft: '5px' }}
+                        />
+                        <Typography variant="body2">© 2024. All rights reserved.</Typography>
+                        <Stack direction="row" spacing={3}>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Terms & Conditions
+                            </Link>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Privacy Policy
+                            </Link>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Contact Us
+                            </Link>
+                        </Stack>
+                    </Stack>
+                </Container>
+            </footer>
         </Box>
     );
     

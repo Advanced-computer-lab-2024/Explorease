@@ -27,12 +27,23 @@ import { CurrencyContext } from './CurrencyContext';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
 import TouristHomePage from './TouristHomePage';
-
 import HistoricalPlace from './HistoricalPlaces';
-
-
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 
+import logo2 from '../../Misc/logo.png';
+import { Container, Stack , Link} from '@mui/material';
+
+import {
+    Feedback,          // For Complaints
+    CalendarToday,     // For View Bookings
+    Star,              // For Review Tour Guides
+    ShoppingBasket,    // For Purchased Products
+    EmojiEvents,       // For My Points
+    Bookmark,          // For Saved Events
+  } from '@mui/icons-material';
+  
+
+  
 
 
 const TouristDashboard = () => {
@@ -412,70 +423,78 @@ const TouristDashboard = () => {
         }
     };
 
+    const touristMenuItems = [
+        { label: 'Complaints', component: 'fileComplaint', icon: <Feedback /> },
+        { label: 'View Bookings', component: 'ViewBookings', icon: <CalendarToday /> },
+        { label: 'Review Tour Guides', component: 'reviewGuides', icon: <Star /> },
+        { label: 'Purchased Products', component: 'PurchasedProduct', icon: <ShoppingBasket /> },
+        { label: 'My Points', component: 'MyPoints', icon: <EmojiEvents /> },
+        { label: 'Saved Events', component: 'SavedEvents', icon: <Bookmark /> },
+      ];
+
     return (
         <div>
    {/* Navbar */}
    <TouristNavbar toggleSidebar={toggleSidebar} handleSectionChange={handleSectionChange} cartCount={cartCount} wishlistCount={wishlistCount}/>
 
-{/* Tourist Sidebar */}
-{isSidebarOpen && (
-    <Box
-        sx={{
-            width: '250px',
-            backgroundColor: '#111E40', // Same color as Admin sidebar
+   <Box
+  sx={{
+    width: isSidebarOpen ? '250px' : '70px', // Sidebar width
+    backgroundColor: '#111E40',
+    color: 'white',
+    height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
+    position: 'fixed',
+    top: '64px',
+    padding: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    transition: 'width 0.3s ease', // Smooth width transition
+    zIndex: 1000,
+    overflow: 'hidden',
+  }}
+>
+  <nav>
+    {touristMenuItems.map((item) => (
+      <Tooltip
+        title={!isSidebarOpen ? item.label : ''} // Tooltip for collapsed sidebar
+        arrow
+        placement="right"
+        key={item.component}
+      >
+        <Button
+          sx={{
             color: 'white',
-            height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
-            position: 'fixed',
-            top: '64px', // Start below the Navbar
-            padding: '10px',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            width: '100%',
+            padding: isSidebarOpen ? '10px 20px' : '10px 0 10px 10px',
+            marginTop: '10px',
             display: 'flex',
-            flexDirection: 'column',
-            transition: 'transform 0.3s ease-in-out',
-        }}
-    >
-        {/* Sidebar Navigation */}
-        
-        <nav>
-            {[
-                { label: 'Complaints', component: 'fileComplaint' },
-                { label: 'View Bookings', component: 'ViewBookings' },
-                { label: 'Review Tour Guides', component: 'reviewGuides' },
-                { label: 'Purchased Products', component: 'PurchasedProduct' },
-                { label: 'My Points', component: 'MyPoints' },
-                { label: 'Saved Events', component: 'SavedEvents' },
-            ].map((item) => (
-                <Button
-                    key={item.component}
-                    sx={{
-                        color: 'white',
-                        textAlign: 'left',
-                        justifyContent: 'flex-start',
-                        width: '100%',
-                        padding: '10px',
-                        marginTop: '10px',
-                        backgroundColor: activeComponent === item.component ? '#7BAFD0' : 'transparent',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Smooth animation for scaling and shadow
-                        '&:hover': {
-                            backgroundColor: '#7BAFD0', // Hover effect
-                            transform: 'scale(1.01)', // Slight scaling
-                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow
-                        },
-                    }}
-                    onClick={() => handleSectionChange(item.component)}
-                >
-                    {item.label}
-                </Button>
-            ))}
-        </nav>
-    </Box>
-)}
+            gap: isSidebarOpen ? 2 : 0,
+            textAlign: 'left',
+            backgroundColor: activeComponent === item.component ? '#7BAFD0' : 'transparent',
+            borderLeft: activeComponent === item.component ? '6px solid #FFFFFF' : '6px solid transparent',
+            transition: 'background-color 0.3s ease, border 0.3s ease',
+            '&:hover': {
+              backgroundColor: '#7BAFD0',
+            },
+          }}
+          onClick={() => handleSectionChange(item.component)}
+        >
+          {item.icon} {/* Render the icon */}
+          {isSidebarOpen && item.label} {/* Show label only when expanded */}
+        </Button>
+      </Tooltip>
+    ))}
+  </nav>
+</Box>
 
 
 
 {/* Main Content */}
 <Box
     sx={{
-        marginLeft: isSidebarOpen ? 40 : 0,
+        marginLeft: isSidebarOpen ? '270px' : '65px',
         transition: 'margin-left 0.3s ease',
         padding: '20px',
     }}
@@ -487,7 +506,7 @@ const TouristDashboard = () => {
             sx={{
                 position: 'fixed',
                 top: '80px',
-                left: isSidebarOpen ? '270px' : '20px',
+                left: isSidebarOpen ? '270px' : '80px',
                 backgroundColor: '#111E56',
                 color: 'white',
                 '&:hover': {
@@ -502,7 +521,96 @@ const TouristDashboard = () => {
         </Button>
     )}
     {renderContent()}
+    
+    {/* Footer */}
+    
 </Box>
+    <footer style={{ backgroundColor: '#111E56', color: 'white', padding: '30px 0' , marginLeft: isSidebarOpen ? '250px' : 0,}}>
+                <Container>
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ textAlign: { xs: 'center', sm: 'left' } }}
+                    >
+                        <img
+                            src={logo2}
+                            alt="Explorease"
+                            style={{ height: '3em', marginLeft: '5px' }}
+                        />
+                        <Typography variant="body2">© 2024. All rights reserved.</Typography>
+                        <Stack direction="row" spacing={3}>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Terms & Conditions
+                            </Link>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Privacy Policy
+                            </Link>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Contact Us
+                            </Link>
+                        </Stack>
+                    </Stack>
+                </Container>
+            </footer>
         </div>
     );
 };

@@ -59,7 +59,7 @@ router.post('/cart/apply-promo', roleAuth(['tourist']), cartController.applyProm
 
 // Tourist shared routes for viewing and filtering
 // Guest shared routes for viewing and filtering
-router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.getAllActivity );  // View all activities
+router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.getAllActivityTourist );  // View all activities
 router.get('/itineraries', optionalAuth(['tourist', 'guest']), itineraryControllers.getAllActivatedItinerary);  // View all itineraries
 router.get('/historical-places', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.getallHistoricalPlaces);  // View all historical places
 
