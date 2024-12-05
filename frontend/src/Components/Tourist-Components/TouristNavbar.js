@@ -247,8 +247,8 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
                 </Box>
 
                 {/* Currency Selector */}
-                <FormControl sx={{ minWidth: 120, backgroundColor: 'white', borderRadius: '4px' }}>
-                    <InputLabel>Currency</InputLabel>
+                <FormControl sx={{ backgroundColor: 'white', borderRadius: '10px' }}>
+                    <InputLabel></InputLabel>
                     <Select
                         value={selectedCurrency}
                         onChange={handleCurrencyChange}

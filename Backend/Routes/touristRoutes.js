@@ -18,7 +18,7 @@ const wishlistController = require('../Controllers/ProductControllers/wishlistCo
 const promoCodeController = require('../Controllers/ProductControllers/PromoCodeController');
 const savedActivityController = require('../Controllers/ActivityControllers/SavedActivityController');
 const notificationController = require('../Controllers/UserControllers/NotificationController');
-
+const savedItineraryController = require('../Controllers/ActivityControllers/SavedItinerary');
 // Tourist-specific routes
 router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristById);  // Tourist can read their own profile
 router.put('/myProfile', roleAuth(['tourist']), touristControllers.updateTourist);   // Tourist can update their profile
@@ -144,6 +144,12 @@ router.post('/cart/stripe-success', roleAuth(['tourist']), cartController.stripe
 router.post('/saved-activity/:activityId', roleAuth(['tourist']), savedActivityController.saveActivity);
 router.get('/saved-activity/', roleAuth(['tourist']), savedActivityController.getSavedActivities);
 router.delete('/saved-activity/:activityId', roleAuth(['tourist']), savedActivityController.deleteSavedActivity);
+
+
+//Saved Itinerary Routes : 
+router.post('/save/:itineraryId',roleAuth(['tourist']) , savedItineraryController.saveItinerary); // Save itinerary
+router.get('/saved-itineraries', roleAuth(['tourist']), savedItineraryController.getSavedItineraries); // Get saved itineraries
+router.delete('/saved-itineraries/:itineraryId', roleAuth(['tourist']), savedItineraryController.deleteSavedItinerary); // Delete saved itinerary
 
 // Stripe routes for itineraries
 //router.post('/itineraries/stripe-session/:itineraryId', roleAuth(['tourist']), itineraryControllers.createStripeSession);

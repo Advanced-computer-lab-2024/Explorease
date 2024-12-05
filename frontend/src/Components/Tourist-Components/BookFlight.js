@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import {
     TextField,
@@ -13,7 +13,7 @@ import {
     Grid,
     Paper,
 } from '@mui/material';
-
+import { CurrencyContext } from './CurrencyContext';
 const BookFlight = () => {
     // State variables
     const [origin, setOrigin] = useState('');
@@ -22,9 +22,10 @@ const BookFlight = () => {
     const [currency, setCurrency] = useState('USD'); // Default currency
     const [flights, setFlights] = useState([]);
     const [error, setError] = useState('');
-    const [displayedCurrency, setDisplayedCurrency] = useState('USD');
+    //const [displayedCurrency, setDisplayedCurrency] = useState('USD');
     const [loading, setLoading] = useState(false);
     const [searchTriggered, setSearchTriggered] = useState(false);
+    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
 
     // Helper function: Fetch IATA code
     const getIATACode = async (city) => {
@@ -64,7 +65,6 @@ const BookFlight = () => {
             });
 
             setFlights(response.data || []);
-            setDisplayedCurrency(currency);
         } catch (err) {
             setError('Error fetching flights. Please try again.');
             console.error('API Error:', err);
@@ -73,6 +73,9 @@ const BookFlight = () => {
         }
     };
 
+    const convertPrice = (price) => {
+        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
+    };
     // Handler: Book a flight
     const handleBookNow = (flight) => {
         alert(`Booking flight with ID: ${flight.id}`);
@@ -116,19 +119,7 @@ const BookFlight = () => {
                         InputLabelProps={{ shrink: true }}
                     />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth margin="normal" variant="outlined">
-                        <InputLabel>Currency</InputLabel>
-                        <Select
-                            value={currency}
-                            onChange={(e) => setCurrency(e.target.value)}
-                            label="Currency"
-                        >
-                            <MenuItem value="USD">USD</MenuItem>
-                            <MenuItem value="EUR">EUR</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Grid>
+               
             </Grid>
             <Button
                 variant="contained"
@@ -199,7 +190,7 @@ const BookFlight = () => {
                                 {flight.itineraries[0].segments[0].arrival.at.split('T')[1]}
                             </Typography>
                             <Typography sx={{ mt: 2 }}>
-                                <strong>Price:</strong> {displayedCurrency} {flight.price.total}
+                                <strong>Price:</strong>  {convertPrice(flight.price.total)} {selectedCurrency}
                             </Typography>
                             <Typography>
                                 <strong>Carrier:</strong> {flight.validatingAirlineCodes.join(', ')}

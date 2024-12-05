@@ -84,7 +84,7 @@ const createProduct = async (req, res) => {
 // Get all products
 const getAllProducts = async (req, res) => {
     try {
-        const products = await productModel.find({});
+        const products = await productModel.find({ AvailableQuantity: { $gte: 0 } });
         if (products.length === 0) {
             return res.status(404).json({ message: "No products found." });
         }
@@ -277,6 +277,7 @@ const getFilteredSortedProducts = async (req, res) => {
         // Create the filter object
         let filter = {};
 
+        filter.AvailableQuantity.$gte = 0;
         // If a name is provided, add it to the filter with a case-insensitive regex
         if (name) {
             filter.Name = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial matches

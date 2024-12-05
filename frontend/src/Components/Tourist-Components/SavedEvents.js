@@ -18,8 +18,9 @@ const mapContainerStyle = {
     height: '150px',
 };
 
-const SavedEvents = () => {
+const SavedEvents = ({handleSectionChange, }) => {
     const [savedActivities, setSavedActivities] = useState([]);
+    const [savedItineraries, setSavedItineraries] = useState([]);
     const [walletBalance, setWalletBalance] = useState(0);
     const [message, setMessage] = useState('');
     const { isLoaded } = useLoadScript({
@@ -39,6 +40,19 @@ const SavedEvents = () => {
         }
     };
 
+    const fetchSavedItineraries = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/tourists/saved-itineraries', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setSavedItineraries(response.data.itineraries || []);
+        } catch (error) {
+            setMessage('Error fetching saved itineraries');
+            console.error('Error fetching saved itineraries:', error);
+        }
+    };
+
     const fetchWalletBalance = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -51,18 +65,24 @@ const SavedEvents = () => {
             console.error('Error fetching wallet balance:', error);
         }
     };
-
-    const handleUnbookmark = async (activityId) => {
+    const handleUnbookmark = async (type, id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/tourists/saved-activity/${activityId}`, {
+            const endpoint = type === 'activity' ? `/tourists/saved-activity/${id}` : `/tourists/saved-itineraries/${id}`;
+            await axios.delete(endpoint, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setMessage('Activity removed from saved activities!');
-            setSavedActivities(savedActivities.filter((activity) => activity._id !== activityId));
+
+            setMessage(`${type === 'activity' ? 'Activity' : 'Itinerary'} removed from saved!`);
+
+            if (type === 'activity') {
+                setSavedActivities(savedActivities.filter((item) => item._id !== id));
+            } else {
+                setSavedItineraries(savedItineraries.filter((item) => item._id !== id));
+            }
         } catch (error) {
-            setMessage('Error removing activity from saved activities');
-            console.error('Error removing activity:', error);
+            setMessage(`Error removing ${type}`);
+            console.error(`Error removing ${type}:`, error);
         }
     };
 
@@ -86,129 +106,148 @@ const SavedEvents = () => {
 
     useEffect(() => {
         fetchSavedActivities();
+        fetchSavedItineraries();
         fetchWalletBalance();
     }, []);
 
     return (
-        <Box sx={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom sx={{fontWeight:'bold', color:'#111E56', marginBottom:'50px'}}>
-                Saved Activities
-            </Typography>
-
-            {message && <Alert severity="info" sx={{ mb: 2 }}>{message}</Alert>}
-
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
-                {savedActivities.length > 0 ? (
-                    savedActivities.map((activity) => (
-                        <Card
-                            key={activity._id}
-                            sx={{
-                                width: '300px',
-                                boxShadow: 3,
-                                padding: 2,
-                                textAlign: 'center',
-                                position: 'relative',
-                                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                                '&:hover': {
-                                    transform: 'scale(1.03)',
-                                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                                },
-                            }}
-                        >
-                            <CardContent>
-                                <Typography
-                                    variant="h6"
-                                    sx={{
-                                        color: '#111E56',
-                                        fontWeight: 'bold',
-                                        marginBottom: '10px',
-                                    }}
-                                >
-                                    {activity.name}
-                                </Typography>
-                                <Typography>
-                                    <strong>Date:</strong>{' '}
-                                    {new Date(activity.date).toLocaleDateString()}
-                                </Typography>
-                                {/* <Typography>
-                                    <strong>Location:</strong> {activity.location}
-                                </Typography> */}
-                                <Typography>
-                                    <strong>Price:</strong> ${activity.price}
-                                </Typography>
-                                {/* Right Section */}
-                                <Box
-                                    sx={{
-                                        flex: 1,
-                                        marginTop: '5px',
-                                        minWidth: '250px',
-                                        height: '200px',
-                                        border: '1px solid #ccc',
-                                        borderRadius: 2,
-                                        overflow: 'hidden',
-                                    }}
-                                >
-                                    <iframe
-                                        width="100%"
-                                        height="100%"
-                                        frameBorder="0"
-                                        style={{ border: 0 }}
-                                        src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyDUP5fw3jw8bvJ7yj9OskV5wdm5sNUbII4&q=${encodeURIComponent(
-                                            activity.location
-                                          )}`}
-                                        allowFullScreen
-                                    ></iframe>
-                                </Box>
-                            </CardContent>
-                            <Box
+            <Box sx={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+              
+        
+                {message && <Alert severity="info" sx={{ mt : 2, mb: 2 }}>{message}</Alert>}
+                <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#111E56', marginBottom: '50px' }}>
+                    Saved Activities
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+                    {savedActivities.length > 0 ? (
+                        savedActivities.map((activity) => (
+                            <Card
+                                key={activity._id}
                                 sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-around',
-                                    padding: 1,
-                                    marginTop: '-5px',
+                                    width: '300px',
+                                    boxShadow: 3,
+                                    padding: 2,
+                                    textAlign: 'center',
+                                    position: 'relative',
+                                    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                                    '&:hover': {
+                                        transform: 'scale(1.03)',
+                                        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                                    },
                                 }}
                             >
-                                <Tooltip title="Book Now">
-                                    <IconButton
-                                        onClick={() => handleBookActivity(activity)}
+                                <CardContent>
+                                    <Typography
+                                        variant="h6"
                                         sx={{
-                                            backgroundColor: '#111E56',
-                                            color: 'white',
-                                            border: '2px solid #111E56',
-                                            '&:hover': {
-                                                backgroundColor: 'white',
-                                                color: '#111E56',
-                                                border: '2px solid #111E56',
-                                            },
+                                            color: '#111E56',
+                                            fontWeight: 'bold',
+                                            marginBottom: '10px',
                                         }}
                                     >
-                                        <BookIcon />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Unbookmark">
-                                    <IconButton
-                                        onClick={() => handleUnbookmark(activity._id)}
+                                        {activity.name}
+                                    </Typography>
+                                    <Typography>
+                                        <strong>Date:</strong>{' '}
+                                        {new Date(activity.date).toLocaleDateString()}
+                                    </Typography>
+                                    <Typography>
+                                        <strong>Price:</strong> ${activity.price}
+                                    </Typography>
+                                </CardContent>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-around', padding: 1, marginTop: '-5px' }}>
+                                    
+                                    <Tooltip title="Unbookmark">
+                                        <IconButton
+                                            onClick={() => handleUnbookmark('activity',activity._id)}
+                                            sx={{
+                                                backgroundColor: '#FF5733',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: '#FF7961',
+                                                    color: 'black',
+                                                },
+                                            }}
+                                        >
+                                            <BookmarkRemoveIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                            </Card>
+                        ))
+                    ) : (
+                        <Typography>No saved activities available</Typography>
+                    )}
+                </Box>
+        
+                {/* Saved Itineraries Section */}
+                <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#111E56', marginTop: '50px' }}>
+                    Saved Itineraries
+                </Typography>
+        
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+                    {savedItineraries.length > 0 ? (
+                        savedItineraries.map((itinerary) => (
+                            <Card
+                                key={itinerary._id}
+                                sx={{
+                                    width: '300px',
+                                    boxShadow: 3,
+                                    padding: 2,
+                                    textAlign: 'center',
+                                    position: 'relative',
+                                    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                                    '&:hover': {
+                                        transform: 'scale(1.03)',
+                                        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                                    },
+                                }}
+                            >
+                                <CardContent>
+                                    <Typography
+                                        variant="h6"
                                         sx={{
-                                            backgroundColor: '#FF5733',
-                                            color: 'white',
-                                            '&:hover': {
-                                                backgroundColor: '#FF7961',
-                                                color: 'black',
-                                            },
+                                            color: '#111E56',
+                                            fontWeight: 'bold',
+                                            marginBottom: '10px',
                                         }}
                                     >
-                                        <BookmarkRemoveIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            </Box>
-                        </Card>
-                    ))
-                ) : (
-                    <Typography>No saved activities available</Typography>
-                )}
+                                        {itinerary.name}
+                                    </Typography>
+                                    <Typography>
+                                        <strong>Date:</strong>{' '}
+                                        {new Date(itinerary.AvailableDates[0]).toLocaleDateString()}
+                                    </Typography>
+                                    <Typography>
+                                        <strong>Total Price:</strong> ${itinerary.totalPrice}
+                                    </Typography>
+                                </CardContent>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-around', padding: 1, marginTop: '-5px' }}>
+                                    
+                                    <Tooltip title="Unbookmark">
+                                        <IconButton
+                                            onClick={() => handleUnbookmark('itinerary', itinerary._id)}
+                                            sx={{
+                                                backgroundColor: '#FF5733',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: '#FF7961',
+                                                    color: 'black',
+                                                },
+                                            }}
+                                        >
+                                            <BookmarkRemoveIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                            </Card>
+                        ))
+                    ) : (
+                        <Typography>No saved itineraries available</Typography>
+                    )}
+                </Box>
             </Box>
-        </Box>
-    );
+        );        
 };
 
 export default SavedEvents;

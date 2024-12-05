@@ -203,7 +203,7 @@ const getAllActivatedItinerary = async (req, res) => {
 // Get All Itineraries
 const getAllItinerary = async (req, res) => {
     try {
-        const itineraries = await ItineraryModel.find({}).populate('tags activities createdBy BookedBy');
+        const itineraries = await ItineraryModel.find({isFlagged : false, isActivated : true }).populate('tags activities createdBy BookedBy');
         if (itineraries.length === 0) {
             return res.status(404).json({ message: 'No itineraries found' });
         }
@@ -344,7 +344,7 @@ const filterSortSearchItineraries = async (req, res) => {
         } = req.query;
 
         // Initialize query object
-        let query = {};
+        let query = {isFlagged : false, isActivated : true};
 
         // Search by name
         if (searchQuery) {
