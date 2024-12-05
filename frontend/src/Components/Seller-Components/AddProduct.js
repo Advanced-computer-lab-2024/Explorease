@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
@@ -66,8 +67,8 @@ const AddProduct = () => {
     };
 
     return (
-        <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" align="center" gutterBottom>
+        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2, backgroundColor: '#fafafa' }}>
+            <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', mb: 5 }}>
                 Add Product
             </Typography>
 
@@ -77,9 +78,18 @@ const AddProduct = () => {
                 </Alert>
             )}
 
-            <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <Box sx={{ marginBottom: '10px' }}>
-                    <InputLabel htmlFor="Name">Name</InputLabel>
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                encType="multipart/form-data"
+                sx={{ display: 'flex', flexDirection: 'column', gap: 4 }} 
+            >
+                
+
+                <Box sx={{ mb: 3 }}>
+                    <InputLabel htmlFor="Name" sx={{ fontWeight: 'bold', color: 'black', marginBottom: '6px' }}>
+                        NAME
+                    </InputLabel>
                     <TextField
                         fullWidth
                         id="Name"
@@ -88,12 +98,16 @@ const AddProduct = () => {
                         onChange={handleInputChange}
                         required
                         variant="outlined"
-                        sx={{ marginBottom: '10px' }}
+                        sx={{ backgroundColor: 'white' }}
                     />
                 </Box>
 
-                <Box sx={{ marginBottom: '10px' }}>
-                    <InputLabel htmlFor="Price">Price</InputLabel>
+
+                
+                <Box sx={{ mb: 3 }}>
+                    <InputLabel htmlFor="Price" sx={{ fontWeight: 'bold', color: 'black', marginBottom: '6px' }}>
+                        PRICE
+                    </InputLabel>
                     <TextField
                         fullWidth
                         id="Price"
@@ -103,12 +117,16 @@ const AddProduct = () => {
                         onChange={handleInputChange}
                         required
                         variant="outlined"
-                        sx={{ marginBottom: '10px' }}
+                        sx={{ backgroundColor: 'white' }}
                     />
                 </Box>
 
-                <Box sx={{ marginBottom: '10px' }}>
-                    <InputLabel htmlFor="Description">Description</InputLabel>
+
+                
+                <Box sx={{ mb: 2 }}>
+                    <InputLabel htmlFor="Description" sx={{ fontWeight: 'bold', color: 'black', marginBottom: '6px' }}>
+                        DESCRIPTION
+                    </InputLabel>
                     <TextareaAutosize
                         id="Description"
                         name="Description"
@@ -118,16 +136,20 @@ const AddProduct = () => {
                         minRows={4}
                         placeholder="Enter product description"
                         style={{
-                            width: '96%',
+                            width: '100%',
                             padding: '10px',
                             border: '1px solid #ccc',
                             borderRadius: '4px',
+                            fontSize: '16px',
                         }}
                     />
                 </Box>
 
-                <Box sx={{ marginBottom: '10px' }}>
-                    <InputLabel htmlFor="AvailableQuantity">Available Quantity</InputLabel>
+                
+                <Box sx={{ mb: 3 }}>
+                    <InputLabel htmlFor="AvailableQuantity" sx={{ fontWeight: 'bold', color: 'black', marginBottom: '6px' }}>
+                        AVAILABLE QUANTITY
+                    </InputLabel>
                     <TextField
                         fullWidth
                         id="AvailableQuantity"
@@ -137,12 +159,16 @@ const AddProduct = () => {
                         onChange={handleInputChange}
                         required
                         variant="outlined"
-                        sx={{ marginBottom: '10px' }}
+                        sx={{ backgroundColor: 'white' }}
                     />
                 </Box>
 
-                <Box sx={{ marginBottom: '10px' }}>
-                    <InputLabel htmlFor="image">Upload Image</InputLabel>
+               
+
+                <Box sx={{ mb: 3 }}>
+                    <InputLabel htmlFor="image" sx={{ fontWeight: 'bold', color: 'black', marginBottom: '6px' }}>
+                        UPLOAD IMAGE
+                    </InputLabel>
                     <OutlinedInput
                         id="image"
                         name="image"
@@ -151,15 +177,17 @@ const AddProduct = () => {
                         onChange={handleImageChange}
                         required
                         fullWidth
-                        sx={{ padding: '10px' }}
+                        sx={{ backgroundColor: 'white' }}
                     />
                 </Box>
+
+
 
                 <Button
                     type="submit"
                     fullWidth
                     sx={{
-                        marginTop: '10px',
+                        mt: 6,
                         padding: '10px',
                         backgroundColor: '#111E56',
                         color: 'white',
@@ -173,9 +201,13 @@ const AddProduct = () => {
                 >
                     Add Product
                 </Button>
-            </form>
+
+
+
+            </Box>
         </Box>
     );
 };
 
 export default AddProduct;
+
