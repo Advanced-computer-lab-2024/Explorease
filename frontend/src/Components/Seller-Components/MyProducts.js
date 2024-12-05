@@ -126,8 +126,10 @@ const SellerProducts = () => {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Typography variant="h4" gutterBottom>
+
+ 
+            <Box sx={{ p: 3 }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 7 }}>
                 My Products
             </Typography>
 
@@ -137,16 +139,41 @@ const SellerProducts = () => {
                 </Alert>
             )}
 
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 5 , mt:5, marginLeft:'100px' }}>
-                <Box >
+            {/* Search and Filter Fields */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    flexWrap: 'wrap',
+                    mb: 5,
+                }}
+            >
                 <TextField
                     label="Search by Name"
                     variant="outlined"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    fullWidth
+                    sx={{ flex: 1 }}
+                    
                 />
-                <FormControl fullWidth sx={{marginTop:'10px'}}>
+                <TextField
+                    label="Min Price"
+                    variant="outlined"
+                    type="number"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    sx={{ flex: 1 }}
+                />
+                <TextField
+                    label="Max Price"
+                    variant="outlined"
+                    type="number"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    sx={{ flex: 1 }}
+                />
+                <FormControl sx={{ flex: 1 }}>
                     <InputLabel>Sort by Ratings</InputLabel>
                     <Select
                         value={sortByRatings}
@@ -158,35 +185,15 @@ const SellerProducts = () => {
                         <MenuItem value="desc">Descending</MenuItem>
                     </Select>
                 </FormControl>
-                </Box>
-                <Box>
-                <TextField
-                    label="Min Price"
-                    variant="outlined"
-                    type="number"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    fullWidth
-                />
-                <TextField
-                    label="Max Price"
-                    variant="outlined"
-                    type="number"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    fullWidth
-                    sx={{ marginTop: '10px' }}
-                />
-                </Box>
-                <Box >
                 <Button
                     variant="contained"
                     onClick={handleSearch}
                     sx={{
                         backgroundColor: '#111E56',
                         color: 'white',
-                        height: '56px',
-                        marginTop: '65px',
+                        height: '40px', //'56px',
+                        padding: '0 16px', // Adjusted padding
+                        fontSize: '14px', // Smaller text
                         border: '2px solid #111E56',
                         '&:hover': {
                             backgroundColor: 'white',
@@ -197,7 +204,6 @@ const SellerProducts = () => {
                 >
                     Search
                 </Button>
-                </Box>
             </Box>
 
 
@@ -230,7 +236,7 @@ const SellerProducts = () => {
                     flexDirection: "column",
                   }}
                 >
-                  {/* Image Section */}
+                  
 <Box
     sx={{
         position: "relative",
@@ -253,7 +259,7 @@ const SellerProducts = () => {
             height: "100%", // Full height to ensure proper coverage
         }}
     />
-    {/* Price Badge */}
+    
     <Typography
         sx={{
             position: "absolute",
@@ -272,7 +278,7 @@ const SellerProducts = () => {
 </Box>
 
       
-                  {/* Content Section */}
+                  
                   <Box
                     sx={{
                       flex: 1,
@@ -282,7 +288,8 @@ const SellerProducts = () => {
                       justifyContent: "space-between",
                     }}
                   >
-                    {/* Product Name */}
+                    
+
                     <Box
                       sx={{
                         height: 35,
@@ -304,7 +311,8 @@ const SellerProducts = () => {
                       </Typography>
                     </Box>
       
-                    {/* Description */}
+
+                    
                     <Box
                       sx={{
                         height: 50,
@@ -328,7 +336,7 @@ const SellerProducts = () => {
         </Typography>
                     </Box>
       
-                    {/* Ratings */}
+                    
                     <Box
                       sx={{
                         display: "flex",
@@ -350,7 +358,7 @@ const SellerProducts = () => {
                     </Box>
                   </Box>
       
-                  {/* Action Buttons */}
+                  
                   <Box
                     sx={{
                       display: "flex",
@@ -410,3 +418,14 @@ const SellerProducts = () => {
 };
 
 export default SellerProducts;
+
+
+
+
+
+
+
+
+
+
+

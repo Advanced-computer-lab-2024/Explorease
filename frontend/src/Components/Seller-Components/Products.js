@@ -66,7 +66,7 @@ const Products = () => {
 
     return (
         <Box sx={{ p: 3 }}>
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 7 }}>
                 All Products
             </Typography>
 
@@ -76,82 +76,79 @@ const Products = () => {
                 </Alert>
             )}
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 2,
-                    mb: 3,
-                    alignItems: 'center',
-                    width: '800px',
-                    marginLeft: '110px',
-                }}
-            >
-                <Box>
-                <TextField
-                    label="Search by Name"
-                    variant="outlined"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    fullWidth
-                />
-                
 
-<FormControl fullWidth variant="outlined" sx={{marginTop:'10px'}}>
-                    <InputLabel>Sort by Ratings</InputLabel>
-                    <Select
-                        value={sortByRatings}
-                        onChange={(e) => setSortByRatings(e.target.value)}
-                        label="Sort by Ratings"
-                    >
-                        <MenuItem value="">None</MenuItem>
-                        <MenuItem value="asc">Ascending</MenuItem>
-                        <MenuItem value="desc">Descending</MenuItem>
-                    </Select>
-                </FormControl>
-                </Box>
-                <Box >
-                <TextField
-                    label="Max Price"
-                    variant="outlined"
-                    type="number"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    fullWidth
-                />
-                
 
-                <TextField
-                    label="Min Price"
-                    variant="outlined"
-                    type="number"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    fullWidth
-                    sx={{marginTop: '10px'}}
-                />
-                
-                </Box>
-                <Box sx={{marginTop:'64px'}}>
-                <Button
-                    variant="contained"
-                    onClick={handleSearch}
-                    sx={{
-                        backgroundColor: '#111E56',
-                        color: 'white',
-                        height: '56px',
-                        border: '2px solid #111E56',
-                        '&:hover': {
-                            backgroundColor: 'white',
-                            color: '#111E56',
-                            border: '2px solid #111E56',
-                        },
-                    }}
-                >
-                    Search
-                </Button>
-                </Box>
-            </Box>
+         
+<Box
+    sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        flexWrap: 'wrap',
+        mb: 5,
+    }}
+>
+    <TextField
+        label="Search by Name"
+        variant="outlined"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        sx={{ flex: 1 }}
+    />
+    <TextField
+        label="Min Price"
+        variant="outlined"
+        type="number"
+        value={minPrice}
+        onChange={(e) => setMinPrice(e.target.value)}
+        sx={{ flex: 1 }}
+    />
+    <TextField
+        label="Max Price"
+        variant="outlined"
+        type="number"
+        value={maxPrice}
+        onChange={(e) => setMaxPrice(e.target.value)}
+        sx={{ flex: 1 }}
+    />
+    <FormControl sx={{ flex: 1 }}>
+        <InputLabel>Sort by Ratings</InputLabel>
+        <Select
+            value={sortByRatings}
+            onChange={(e) => setSortByRatings(e.target.value)}
+            label="Sort by Ratings"
+        >
+            <MenuItem value="">None</MenuItem>
+            <MenuItem value="asc">Ascending</MenuItem>
+            <MenuItem value="desc">Descending</MenuItem>
+        </Select>
+    </FormControl>
+    <Button
+        variant="contained"
+        onClick={handleSearch}
+        sx={{
+            backgroundColor: '#111E56',
+            color: 'white',
+            height: '40px',
+            padding: '0 16px',
+            fontSize: '14px',
+            border: '2px solid #111E56',
+            '&:hover': {
+                backgroundColor: 'white',
+                color: '#111E56',
+                border: '2px solid #111E56',
+            },
+        }}
+    >
+        Search
+    </Button>
+</Box>
+
+
+
+
+
+
 
             <Box
                 sx={{
