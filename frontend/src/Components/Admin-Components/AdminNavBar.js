@@ -20,8 +20,9 @@ import EditNoteIcon from '@mui/icons-material/EditNote'; // New icon
 import axios from 'axios';
 import logo from '../../Misc/logo.png';
 import { useNavigate } from 'react-router-dom';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
-const AdminNavBar = ({ toggleSidebar }) => {
+const AdminNavBar = ({ toggleSidebar , handleSectionChange }) => {
     const [notifications, setNotifications] = useState([]);
     const [isNotificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
     const navigate = useNavigate();
@@ -153,11 +154,10 @@ const AdminNavBar = ({ toggleSidebar }) => {
     return (
         <AppBar position="sticky" sx={{ backgroundColor: '#111E56', zIndex: 1000 }}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <IconButton onClick={toggleSidebar} sx={{ color: 'white' }}>
                     <MenuIcon />
                 </IconButton>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Box
                     sx={{
                         display: 'flex',
@@ -168,6 +168,20 @@ const AdminNavBar = ({ toggleSidebar }) => {
                 >
                     <img src={logo} alt="Admin Logo" style={{ height: '50px' }} />
                 </Box>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    
+                <Tooltip title="Profile" arrow>
+    <IconButton
+        sx={{
+            color: 'white',
+        }}
+        onClick={() => handleSectionChange('home')} // Navigate or trigger profile component
+    >
+        <AccountCircle />
+    </IconButton>
+</Tooltip>
                     <Tooltip title="Notifications">
                         <IconButton sx={{ color: 'white' }} onClick={() => toggleNotificationDrawer(true)}>
                             <Badge
@@ -186,7 +200,7 @@ const AdminNavBar = ({ toggleSidebar }) => {
                             </Badge>
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Logout">
+                    {/* <Tooltip title="Logout">
                         <IconButton
                             onClick={handleLogout}
                             sx={{
@@ -199,7 +213,7 @@ const AdminNavBar = ({ toggleSidebar }) => {
                         >
                             <LogoutIcon />
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip> */}
                 </Box>
             </Toolbar>
             <Drawer anchor="right" open={isNotificationDrawerOpen} onClose={() => toggleNotificationDrawer(false)}>

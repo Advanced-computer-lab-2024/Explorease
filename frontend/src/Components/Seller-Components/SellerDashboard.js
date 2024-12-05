@@ -11,6 +11,8 @@ import {
     Alert,
     List,
     ListItem,
+    ListItemText,
+    Tooltip,
 } from '@mui/material';
 import SellerNavbar from '../MainPage-Components/GuestNavbar';
 import Products from './Products';
@@ -19,7 +21,13 @@ import AddProduct from './AddProduct';
 import UpdateProfile from './UpdateProfile';
 import UploadLogo from './UploadLogo';
 import SalesReport from './SellerSalesReport';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import EditIcon from '@mui/icons-material/Edit';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import InsertChartIcon from '@mui/icons-material/InsertChart';
+import UploadIcon from '@mui/icons-material/Upload';
+
 
 
 const SellerDashboard = () => {
@@ -215,67 +223,76 @@ const SellerDashboard = () => {
         }
     };
 
+    const menuItems = [
+        { label: 'View All Products', component: 'viewProducts', icon: <ViewModuleIcon /> },
+        { label: 'Update Profile', component: 'updateProfile', icon: <EditIcon /> },
+        { label: 'View My Products', component: 'myProducts', icon: <ViewModuleIcon /> },
+        { label: 'Add a Product', component: 'addProduct', icon: <AddBoxIcon /> },
+        { label: 'Upload Logo', component: 'addLogo', icon: <UploadIcon /> },
+        { label: 'Sales Report', component: 'salesReport', icon: <InsertChartIcon /> },
+      ];
+
     return (
         <Box>
             <SellerNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
-            <Box
+            <Box sx={{ display: 'flex' }}>
+        {/* Sidebar */}
+        <Box
+         sx={{
+            width: isSidebarOpen ? '250px' : '70px', // Sidebar width
+            backgroundColor: '#111E40',
+            color: 'white',
+            height: 'calc(100vh - 64px)', // Sidebar height less than navbar
+            position: 'fixed',
+            top: '64px', // Sidebar starts below navbar
+            left: 0,
+            padding: '10px',
+            transition: 'width 0.3s ease', // Smooth transition for width
+            display: 'flex',
+            flexDirection: 'column',
+            zIndex: 1000,
+            overflow: 'hidden', // Prevent overflow when collapsed
+        }}
+        >
+          {menuItems.map((item) => (
+            <Tooltip
+            title={!isSidebarOpen ? item.label : ''} // Show tooltip only when collapsed
+            arrow
+            placement="right"
+            key={item.component}
+        >
+          
+              <Button
+                startIcon={item.icon}
+                onClick={() => handleSectionChange(item.component)}
                 sx={{
+                    color: 'white',
+                    justifyContent: 'flex-start', // Align buttons to the left
+                    alignItems: 'center', // Ensure vertical centering
+                    width: '100%', // Ensure button width matches sidebar width
+                    padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px', // Adjust padding for collapsed state
+                    marginTop: '10px',
                     display: 'flex',
-                    minHeight: '100vh',
+                    gap: isSidebarOpen ? 2 : 0, // Space between icon and text in expanded state
+                    textAlign: 'left', // Align text properly
+                    backgroundColor: activeComponent === item.component ? '#7BAFD0' : 'transparent',
+                    borderLeft: activeComponent === item.component ? '6px solid #FFFFFF' : '6px solid transparent', // Highlight active state
+                    transition: 'background-color 0.3s ease, border 0.3s ease', // Remove scaling
+                    '&:hover': {
+                        backgroundColor: '#7BAFD0', // Change color on hover
+                    },
                 }}
-            >
-                {isSidebarOpen && (
-                    <Box
-                        sx={{
-                            width: '250px',
-                            backgroundColor: '#111E40',
-                            color: 'white',
-                            height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
-                            position: 'fixed',
-                            top: '64px', // Start below the navbar
-                            padding: '10px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            transition: 'transform 0.3s ease-in-out',
-                        }}
-                    >
-                        {[
-                           
-                            { label: 'View All Products', section: 'viewProducts' },
-                            { label: 'Update Profile', section: 'updateProfile' },
-                            { label: 'View My Products', section: 'myProducts' },
-                            { label: 'Add A Product', section: 'addProduct' },
-                            { label: 'Add A Logo', section: 'addLogo' },
-                            { label: 'Sales Report', section: 'salesReport' },
-                        ].map((item, index) => (
-                            <Button
-                                key={index}
-                                onClick={() => handleSectionChange(item.section)}
-                                sx={{
-                                    color: 'white',
-                                    textAlign: 'left',
-                                    justifyContent: 'flex-start',
-                                    width: '100%',
-                                    padding: '10px',
-                                    marginTop: '10px',
-                                    backgroundColor: activeComponent === item.section ? '#7BAFD0' : 'transparent',
-                                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                    '&:hover': {
-                                        backgroundColor: '#7BAFD0',
-                                        transform: 'scale(1.01)',
-                                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-                                    },
-                                }}
-                            >
-                                {item.label}
-                            </Button>
-                        ))}
-                    </Box>
-                )}
+              >
+                {isSidebarOpen && item.label}
+              </Button>
+            </Tooltip>
+          ))}
+        </Box>
+                
 
 <Box
     sx={{
-        marginLeft: isSidebarOpen ? '260px' : '0px',
+        marginLeft: isSidebarOpen ? '260px' : '55px',
         padding: '20px',
         width: '100%',
         transition: 'margin-left 0.3s ease',
@@ -288,7 +305,7 @@ const SellerDashboard = () => {
             sx={{
                 position: 'fixed',
                 top: '80px',
-                left: isSidebarOpen ? '270px' : '20px',
+                left: isSidebarOpen ? '270px' : '80px',
                 backgroundColor: '#111E56',
                 color: 'white',
                 '&:hover': {

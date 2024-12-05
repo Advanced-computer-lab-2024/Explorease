@@ -225,7 +225,6 @@ const AdvertiserDashboard = () => {
             {/* Navbar */}
             <AdvertiserNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
 {/* Sidebar */}
-{/* Sidebar */}
 <Box
     sx={{
         width: isSidebarOpen ? '250px' : '70px', // Sidebar width
@@ -264,7 +263,7 @@ const AdvertiserDashboard = () => {
                         gap: isSidebarOpen ? 2 : 0, // Space between icon and text in expanded state
                         textAlign: 'left', // Align text properly
                         backgroundColor: activeComponent === item.component ? '#7BAFD0' : 'transparent',
-                        borderLeft: activeComponent === item.component ? '4px solid #4FC3F7' : '4px solid transparent', // Highlight active state
+                        borderLeft: activeComponent === item.component ? '6px solid #FFFFFF' : '6px solid transparent', // Highlight active state
                         transition: 'background-color 0.3s ease, border 0.3s ease', // Remove scaling
                         '&:hover': {
                             backgroundColor: '#7BAFD0', // Change color on hover

@@ -21,7 +21,22 @@ import SalesReport from './SalesReport';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
+import Tooltip from '@mui/material/Tooltip'; // Import Tooltip
 
+import {
+    Home,
+    Delete,
+    Tag,
+    Category,
+    ShoppingCart,
+    PersonAdd,
+    Reviews,
+    Block,
+    Feedback,
+    DeleteForever,
+    LocalOffer,
+    BarChart,
+  } from '@mui/icons-material'; // Import Material-UI icons
 
 const AdminDashboard = () => {
     const [message, setMessage] = useState('');
@@ -318,9 +333,24 @@ const handleTagChange = (id, newName) => {
         }
     }, [navigate]);
 
+
+    const adminMenuItems = [
+        { label: 'Delete Accounts', section: 'deleteAccounts', icon: <Delete /> },
+        { label: 'Preference Tag', section: 'preferenceTag', icon: <Tag /> },
+        { label: 'Activity Category', section: 'activityCategory', icon: <Category /> },
+        { label: 'Product', section: 'product', icon: <ShoppingCart /> },
+        { label: 'Add Tourism Governor', section: 'tourismGoverner', icon: <PersonAdd /> },
+        { label: 'Review Users', section: 'ReviewUsers', icon: <Reviews /> },
+        { label: 'Block Event', section: 'BlockEvent', icon: <Block /> },
+        { label: 'Complaints', section: 'Complaints', icon: <Feedback /> },
+        { label: 'Delete Requests', section: 'DeleteRequests', icon: <DeleteForever /> },
+        { label: 'Promo Code', section: 'PromoCode', icon: <LocalOffer /> },
+        { label: 'Sales Report', section: 'SalesReport', icon: <BarChart /> },
+      ];
+
     return (
-        <>
-        <AdminNavBar toggleSidebar={toggleSidebar} />
+        <Box>
+        <AdminNavBar toggleSidebar={toggleSidebar} handleSectionChange={handleSectionChange} />
 {/* Container */}
 <Box
         sx={{
@@ -328,88 +358,73 @@ const handleTagChange = (id, newName) => {
           minHeight: '100vh', // Allows content to expand naturally
         }}
       >
+
+
+
+
+
         {/* Sidebar */}
-        {isSidebarVisible && (
-          <Box
-          sx={{
-            width: '250px',
-            backgroundColor: '#111E40',
+    <Box
+      sx={{
+        width: isSidebarVisible ? '250px' : '70px', // Sidebar width
+        backgroundColor: '#111E40',
+        color: 'white',
+        height: 'calc(100vh - 64px)', // Sidebar height below navbar
+        position: 'fixed',
+        top: '64px',
+        left: 0,
+        padding: '10px',
+        transition: 'width 0.3s ease', // Smooth width transition
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 1000,
+        overflow: 'hidden', // Prevent overflow in collapsed state
+      }}
+    >
+      <nav>
+        {adminMenuItems.map((item) => (
+          <Tooltip
+            title={!isSidebarVisible ? item.label : ''} // Show tooltip only in collapsed state
+            arrow
+            placement="right"
+            key={item.section}
+          >
+            <Button
+  sx={{
+    color: 'white',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
+    padding: isSidebarVisible ? '10px 20px' : '10px 0 10px 10px',
+    marginTop: '10px',
+    display: 'flex',
+    gap: isSidebarVisible ? 2 : 0,
+    textAlign: 'left',
+    backgroundColor: activeSection === item.section ? '#7BAFD0' : 'transparent',
+    borderLeft: activeSection === item.section ? '6px solid #FFFFFF' : '6px solid transparent',
+    transition: 'background-color 0.3s ease, border 0.3s ease',
+    '&:hover': {
+      backgroundColor: '#7BAFD0',
+    },
+  }}
+  onClick={() => handleSectionChange(item.section)}
+>
+  {item.icon} {/* Render the icon */}
+  {isSidebarVisible && item.label} {/* Show label only when sidebar is expanded */}
+</Button>
 
-            color: 'white',
-            height: 'calc(100vh - 64px)', // Sidebar height excluding navbar
-            position: 'fixed',
-            top: '64px', // Start below the navbar
-            padding: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            transition: 'transform 0.3s ease-in-out',
-            '&:hover': { backgroundColor: '#111E40' }, // Hover effect for the sidebar
-          }}
-        >
-            {/* <Button
-              sx={{
-                color: 'white',
-                textAlign: 'left',
-                justifyContent: 'flex-start',
-                width: '100%',
-                padding: '10px',
-                '&:hover': { backgroundColor: '#555' }, // Hover effect
-              }}
-              onClick={toggleSidebar}
-            >
-              Close Sidebar
-            </Button> */}
-
-            {/* Navigation Buttons */}
-            <nav>
-              {[
-                { label: 'Home', section: 'home' },
-                
-                { label: 'Delete Accounts', section: 'deleteAccounts' },
-                { label: 'Preference Tag', section: 'preferenceTag' },
-                { label: 'Activity Category', section: 'activityCategory' },
-                { label: 'Product', section: 'product' },
-                { label: 'Add Tourism Governor', section: 'tourismGoverner' },
-                { label: 'Review Users', section: 'ReviewUsers' },
-                { label: 'Block Event', section: 'Block event' },
-                { label: 'Complaints', section: 'Complaints' },
-                { label: 'Delete Requests', section: 'Delete Requests' },
-                { label: 'Promo Code', section: 'Promo Code' },
-                { label: 'Sales Report', section: 'Sales Report' },
-              ].map((item) => (
-                <Button
-                  key={item.section}
-                  sx={{
-                    color: 'white',
-                    textAlign: 'left',
-                    justifyContent: 'flex-start',
-                    width: '100%',
-                    padding: '10px',
-                    marginTop: '5px',
-                    backgroundColor: activeSection === item.section ? '#7BAFD0' : 'transparent',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease', // Smooth animation for scaling and shadow
-                    '&:hover': {
-                      backgroundColor: '#7BAFD0', // Hover effect
-                      transform: 'scale(1.01)', // Slight scaling
-                      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow
-                    },
-                  }}
-                  
-                  onClick={() => handleSectionChange(item.section)}
-                >
-                  {item.label}
-                </Button>
-              ))}
-            </nav>
-          </Box>
-        )}
+          </Tooltip>
+        ))}
+      </nav>
+    </Box>
+        
 
 
         {/* Main Content */}
         <Box
           sx={{
             flex: 1,
-            marginLeft: isSidebarVisible ? '250px' : '0',
+            marginLeft: isSidebarVisible ? '250px' : '55px',
             transition: 'margin-left 0.3s ease-in-out',
            // overflowY: 'auto', // Enables scrolling for the main content
             padding: '20px',
@@ -423,7 +438,7 @@ const handleTagChange = (id, newName) => {
         sx={{
             position: 'fixed', // Fix position relative to the viewport
             top: '80px', // Slightly below the navbar
-            left: isSidebarVisible ? '270px' : '20px', // Adjust based on sidebar visibility
+            left: isSidebarVisible ? '270px' : '80px', // Adjust based on sidebar visibility
             backgroundColor: '#111E56',
             color: 'white',
             '&:hover': {
@@ -940,7 +955,7 @@ const handleTagChange = (id, newName) => {
 
             </Box>
         </Box>
-        </>
+        </Box>
     );
     
     };
