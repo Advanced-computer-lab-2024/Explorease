@@ -15,6 +15,7 @@ import {
     IconButton,
     Tooltip,
     Alert,
+    Grid,
 } from '@mui/material';
 import { Delete, Edit, Archive, Unarchive, Save, Cancel, Visibility } from '@mui/icons-material';
 
@@ -199,99 +200,168 @@ const SellerProducts = () => {
                 </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center' }}>
-                {products.map((product) => (
-                    <Card
-                        key={product._id}
-                        sx={{
-                            width: 300,
-                            boxShadow: 3,
-                            borderRadius: 2,
-                            transition: 'transform 0.2s ease-in-out',
-                            '&:hover': {
-                                transform: 'scale(1.03)',
-                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-                            },
-                        }}
+
+
+            <Grid
+            container
+            spacing={3} // Spacing between grid items
+            sx={{ padding: 2 }}
+          >
+            {products.map((product) => (
+              <Grid
+                item
+                key={product._id}
+                xs={12} // For small screens (mobile): full width
+                sm={6} // For medium screens: 2 cards per row
+                md={3} // For large screens: 4 cards per row
+              >
+                <Card
+                  sx={{
+                    width: "100%", // Full width of the grid item
+                    height: 450, // Fixed height for all cards
+                    borderRadius: 4,
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", // Subtle shadow
+                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out", // Hover effects
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0 6px 20px rgba(0, 0, 0, 0.3)",
+                    },
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  {/* Image Section */}
+<Box
+    sx={{
+        position: "relative",
+        height: 250, // Increased height for the image container
+        overflow: "hidden", // Ensure the image does not exceed this container
+        borderRadius: "12px 12px 0 0", // Rounded top corners
+        display: "flex", // Flexbox for centering the image
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f5f5f5", // Optional placeholder background
+    }}
+>
+    <CardMedia
+        component="img"
+        image={product.imageUrl}
+        alt={product.Name}
+        sx={{
+            objectFit: "cover", // Ensures the image covers the full container width
+            width: "100%", // Full width of the card
+            height: "100%", // Full height to ensure proper coverage
+        }}
+    />
+    {/* Price Badge */}
+    <Typography
+        sx={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            backgroundColor: "#4F46E5",
+            color: "white",
+            fontSize: "0.875rem",
+            fontWeight: "bold",
+            borderRadius: 2,
+            padding: "2px 8px",
+        }}
+    >
+        ${product.Price} 
+    </Typography>
+</Box>
+
+      
+                  {/* Content Section */}
+                  <Box
+                    sx={{
+                      flex: 1,
+                      padding: "16px",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    {/* Product Name */}
+                    <Box
+                      sx={{
+                        height: 35,
+                        overflow: "hidden",
+                        textAlign: "center",
+                      }}
                     >
-                        <CardMedia
-                            component="img"
-                            image={product.imageUrl}
-                            alt={product.Name}
-                            sx={{
-                                height: 200,
-                                objectFit: 'contain',
-                                backgroundColor: '#f9f9f9',
-                            }}
-                        />
-                        <CardContent>
-                            {editingProductId === product._id ? (
-                                <>
-                                    <TextField
-                                        label="Name"
-                                        value={updatedProductData.Name || ''}
-                                        onChange={(e) => handleInputChange(e, 'Name')}
-                                        fullWidth
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <TextField
-                                        label="Price"
-                                        type="number"
-                                        value={updatedProductData.Price || ''}
-                                        onChange={(e) => handleInputChange(e, 'Price')}
-                                        fullWidth
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <TextField
-                                        label="Description"
-                                        value={updatedProductData.Description || ''}
-                                        onChange={(e) => handleInputChange(e, 'Description')}
-                                        fullWidth
-                                        multiline
-                                        rows={3}
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <TextField
-                                        label="Available Quantity"
-                                        type="number"
-                                        value={updatedProductData.AvailableQuantity || ''}
-                                        onChange={(e) => handleInputChange(e, 'AvailableQuantity')}
-                                        fullWidth
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <Button
-                                        variant="contained"
-                                        onClick={() => handleUpdateSubmit(product._id)}
-                                        sx={{
-                                            backgroundColor: '#111E56',
-                                            color: 'white',
-                                            '&:hover': {
-                                                backgroundColor: 'white',
-                                                color: '#111E56',
-                                                border: '1px solid #111E56',
-                                            },
-                                        }}
-                                    >
-                                        <Save /> Save Changes
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        color="error"
-                                        onClick={() => setEditingProductId(null)}
-                                    >
-                                        <Cancel /> Cancel
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <Typography variant="h6">{product.Name}</Typography>
-                                    <Typography variant="body2">
-                                        <strong>Price:</strong> ${product.Price}
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        <strong>Description:</strong> {product.Description}
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#111E56",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {product.Name}
+                      </Typography>
+                    </Box>
+      
+                    {/* Description */}
+                    <Box
+                      sx={{
+                        height: 50,
+                        overflow: "hidden",
+                        marginTop: 1,
+                        textAlign: "left",
+                      }}
+                    >
+                      <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2, // Limit to 2 lines instead of 3
+            }}
+        >
+            {product.Description}
+        </Typography>
+                    </Box>
+      
+                    {/* Ratings */}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginBottom: 2,
+                        height: 25,
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "#FFC107",
+                          fontSize: "1.5rem",
+                        }}
+                      >
+                        {"★".repeat(product.Ratings)}{"☆".repeat(5 - product.Ratings)}
+                      </Typography>
+                    </Box>
+                  </Box>
+      
+                  {/* Action Buttons */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "16px",
+                      borderTop: "1px solid #E5E7EB",
+                    }}
+                  >
+                    
+          
                                         <Tooltip title="Edit Product" arrow>
                                             <IconButton
                                                 color="primary"
@@ -329,13 +399,12 @@ const SellerProducts = () => {
                                                 <Visibility />
                                             </IconButton>
                                         </Tooltip>
-                                    </Box>
-                                </>
-                            )}
-                        </CardContent>
-                    </Card>
-                ))}
-            </Box>
+
+                  </Box>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
     );
 };

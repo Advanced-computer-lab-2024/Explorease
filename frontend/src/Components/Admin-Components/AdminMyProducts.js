@@ -13,6 +13,8 @@ import {
     FormControl,
     IconButton,
     Alert,
+    CardMedia,
+    Grid,
 } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { Delete, Edit, Archive, Unarchive, Save, Cancel, Visibility } from '@mui/icons-material';
@@ -124,146 +126,112 @@ const AdminMyProducts = () => {
         }
     };
 
-    return (
-        <Box sx={{ p: 4 }}>
-            <Typography variant="h4" gutterBottom>
-                My Products
-            </Typography>
-
-            {productMessage && (
-                <Alert severity={productMessage.includes('Error') ? 'error' : 'success'} sx={{ mb: 3 }}>
-                    {productMessage}
-                </Alert>
-            )}
-            {products.length !== 0 && (
-    <Box
-        sx={{
-            display: 'flex',
-            gap: 2,
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            mb: 4,
-        }}
-    >
-        <TextField
-            label="Search by Name"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            variant="outlined"
-            fullWidth
-        />
-        <TextField
-            label="Min Price"
-            type="number"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            variant="outlined"
-            fullWidth
-        />
-        <TextField
-            label="Max Price"
-            type="number"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            variant="outlined"
-            fullWidth
-        />
-        <FormControl fullWidth>
-            <InputLabel>Sort by Ratings</InputLabel>
-            <Select
-                value={sortByRatings}
-                onChange={(e) => setSortByRatings(e.target.value)}
-                label="Sort by Ratings"
-            >
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="asc">Ascending</MenuItem>
-                <MenuItem value="desc">Descending</MenuItem>
-            </Select>
-        </FormControl>
-        <Button
-            variant="contained"
-            onClick={handleSearch}
-            sx={{
-                backgroundColor: '#111E56',
-                color: 'white',
-                border: '2px solid #111E56',
-                '&:hover': {
-                    backgroundColor: 'white',
-                    color: '#111E56',
-                    border: '2px solid #111E56',
-                },
-            }}
-        >
-            Search
-        </Button>
-    </Box>
-)}
-
-            <Box
+    const renderProductCards = () => {
+        if (!products.length) {
+            return (
+                <Typography
+                    variant="h6"
+                    align="center"
+                    sx={{ marginTop: 4, color: 'text.secondary' }}
+                >
+                    No products available
+                </Typography>
+            );
+        }
+    
+        return (
+            <Grid
+                container
+                spacing={3} // Space between cards
                 sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 3,
-                    justifyContent: 'center',
+                    padding: 2,
+                    justifyContent: 'center', // Center the cards
                 }}
             >
                 {products.map((product) => (
-                    <Card
+                    <Grid
+                        item
                         key={product._id}
-                        sx={{
-                            width: 350,
-                            boxShadow: 3,
-                            borderRadius: 2,
-                            marginTop: 2,
-                            transition: 'transform 0.2s ease-in-out',
-                            '&:hover': {
-                                transform: 'scale(1.03)',
-                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-                            },
-                        }}
+                        xs={12} // Full width on small screens
+                        sm={6} // Two cards per row on medium screens
+                        md={5} // Four cards per row on large screens
                     >
-                        <CardContent>
-                            {editingProductId === product._id ? (
-                                <>
-                                    <TextField
-                                        label="Name"
-                                        value={updatedProductData.Name || ''}
-                                        onChange={(e) => handleInputChange(e, 'Name')}
-                                        fullWidth
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <TextField
-                                        label="Price"
-                                        type="number"
-                                        value={updatedProductData.Price || ''}
-                                        onChange={(e) => handleInputChange(e, 'Price')}
-                                        fullWidth
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <TextField
-                                        label="Description"
-                                        value={updatedProductData.Description || ''}
-                                        onChange={(e) => handleInputChange(e, 'Description')}
-                                        fullWidth
-                                        multiline
-                                        rows={3}
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <TextField
-                                        label="Available Quantity"
-                                        type="number"
-                                        value={updatedProductData.AvailableQuantity || ''}
-                                        onChange={(e) => handleInputChange(e, 'AvailableQuantity')}
-                                        fullWidth
-                                        sx={{ mb: 2 }}
-                                    />
+                        {editingProductId === product._id ? (
+                            <Card
+                                sx={{
+                                    width: '100%', // Full width of the grid item
+                                    height: 450, // Fixed card height
+                                    borderRadius: 4,
+                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Subtle shadow
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    padding: 2,
+                                }}
+                            >
+                                <TextField
+                                    label="Name"
+                                    value={updatedProductData.Name || ''}
+                                    onChange={(e) =>
+                                        setUpdatedProductData({
+                                            ...updatedProductData,
+                                            Name: e.target.value,
+                                        })
+                                    }
+                                    fullWidth
+                                    sx={{ mb: 2 }}
+                                />
+                                <TextField
+                                    label="Price"
+                                    type="number"
+                                    value={updatedProductData.Price || ''}
+                                    onChange={(e) =>
+                                        setUpdatedProductData({
+                                            ...updatedProductData,
+                                            Price: e.target.value,
+                                        })
+                                    }
+                                    fullWidth
+                                    sx={{ mb: 2 }}
+                                />
+                                <TextField
+                                    label="Description"
+                                    value={updatedProductData.Description || ''}
+                                    onChange={(e) =>
+                                        setUpdatedProductData({
+                                            ...updatedProductData,
+                                            Description: e.target.value,
+                                        })
+                                    }
+                                    fullWidth
+                                    multiline
+                                    rows={3}
+                                    sx={{ mb: 2 }}
+                                />
+                                <TextField
+                                    label="Available Quantity"
+                                    type="number"
+                                    value={updatedProductData.AvailableQuantity || ''}
+                                    onChange={(e) =>
+                                        setUpdatedProductData({
+                                            ...updatedProductData,
+                                            AvailableQuantity: e.target.value,
+                                        })
+                                    }
+                                    fullWidth
+                                    sx={{ mb: 2 }}
+                                />
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
                                     <Button
                                         variant="contained"
                                         onClick={() => handleUpdateSubmit(product._id)}
                                         sx={{
                                             backgroundColor: '#111E56',
                                             color: 'white',
-                                            border: '2px solid #111E56',
                                             '&:hover': {
                                                 backgroundColor: 'white',
                                                 color: '#111E56',
@@ -271,74 +239,245 @@ const AdminMyProducts = () => {
                                             },
                                         }}
                                     >
-                                        <Save /> Save Changes
+                                        Save Changes
                                     </Button>
                                     <Button
                                         variant="outlined"
                                         color="error"
                                         onClick={() => setEditingProductId(null)}
                                     >
-                                        <Cancel /> Cancel
+                                        Cancel
                                     </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <img
-                                        src={product.imageUrl}
+                                </Box>
+                            </Card>
+                        ) : (
+                            <Card
+                                sx={{
+                                    width: '100%', // Full width of the grid item
+                                    height: 450, // Fixed card height
+                                    borderRadius: 4,
+                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Subtle shadow
+                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effects
+                                    '&:hover': {
+                                        transform: 'scale(1.05)',
+                                        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
+                                    },
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                }}
+                            >
+                                {/* Image Section */}
+                                <Box
+                                    sx={{
+                                        position: 'relative',
+                                        height: 250, // Image container height
+                                        overflow: 'hidden',
+                                        borderRadius: '12px 12px 0 0', // Rounded top corners
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: '#f5f5f5', // Placeholder background
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={product.imageUrl}
                                         alt={product.Name}
-                                        style={{ maxWidth: '100%', height: 'auto', marginBottom: '10px' }}
+                                        sx={{
+                                            objectFit: 'cover',
+                                            width: '100%', // Full width
+                                            height: '100%', // Full height
+                                        }}
                                     />
-                                    <Typography variant="h6">{product.Name}</Typography>
-                                    <Typography variant="body2">
-                                        <strong>Price:</strong> ${product.Price}
+                                    {/* Price Badge */}
+                                    <Typography
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 10,
+                                            left: 10,
+                                            backgroundColor: '#4F46E5',
+                                            color: 'white',
+                                            fontSize: '0.875rem',
+                                            fontWeight: 'bold',
+                                            borderRadius: 2,
+                                            padding: '2px 8px',
+                                        }}
+                                    >
+                                        ${product.Price}
                                     </Typography>
-                                    <Typography variant="body2">
-                                        <strong>Description:</strong> {product.Description}
+                                </Box>
+    
+                                {/* Content Section */}
+                                <Box
+                                    sx={{
+                                        flex: 1,
+                                        padding: '16px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    {/* Product Name */}
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            color: '#111E56',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            textAlign: 'center',
+                                            marginBottom: '8px',
+                                        }}
+                                    >
+                                        {product.Name}
                                     </Typography>
-                                    <Typography variant="body2">
-                                        <strong>Available Quantity:</strong> {product.AvailableQuantity}
+    
+                                    {/* Description */}
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            display: '-webkit-box',
+                                            WebkitBoxOrient: 'vertical',
+                                            WebkitLineClamp: 2, // Limit to 2 lines
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        {product.Description}
                                     </Typography>
-                                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-                                        <Tooltip title="Edit Product" arrow>
-                                            <IconButton
-                                                color="primary"
-                                                onClick={() => handleEditProduct(product)}
-                                            >
-                                                <Edit />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title={product.Archived ? 'Unarchive Product' : 'Archive Product'} arrow>
-                                            <IconButton
-                                                color={product.Archived ? 'success' : 'warning'}
-                                                onClick={() => handleArchiveProduct(product._id)}
-                                            >
-                                                {product.Archived ? <Unarchive /> : <Archive />}
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="Delete Product" arrow>
-                                            <IconButton
-                                                color="error"
-                                                onClick={() => handleDeleteProduct(product._id)}
-                                            >
-                                                <Delete />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="View Sales" arrow>
-                                            <IconButton
-                                                color="info"
-                                                onClick={() => handleViewSales(product)}
-                                            >
-                                                <Visibility />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                </>
-                            )}
-                        </CardContent>
-                    </Card>
+                                </Box>
+    
+                                {/* Action Buttons */}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        padding: '8px 16px',
+                                        borderTop: '1px solid #E5E7EB', // Divider
+                                    }}
+                                >
+                                    <Tooltip title="Edit Product">
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() => handleEditProduct(product)}
+                                        >
+                                            <Edit />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title={product.Archived ? 'Unarchive Product' : 'Archive Product'}
+                                    >
+                                        <IconButton
+                                            color={product.Archived ? 'success' : 'warning'}
+                                            onClick={() => handleArchiveProduct(product._id)}
+                                        >
+                                            {product.Archived ? <Unarchive /> : <Archive />}
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Delete Product">
+                                        <IconButton
+                                            color="error"
+                                            onClick={() => handleDeleteProduct(product._id)}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="View Sales">
+                                        <IconButton
+                                            color="info"
+                                            onClick={() => setProductMessage(`Total Sales: ${product.Sales || 0}`)}
+                                        >
+                                            <Visibility />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                            </Card>
+                        )}
+                    </Grid>
                 ))}
-            </Box>
-        </Box>
+            </Grid>
+        );
+    };
+
+    return (
+//        
+<Box  sx={{ p: 4 }}>
+<Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
+    Admin Products
+</Typography>
+{productMessage && (
+    <Alert severity={productMessage.includes('Error') ? 'error' : 'success'} sx={{ mb: 3 }}>
+        {productMessage}
+    </Alert>
+)}
+<Box
+    sx={{
+        display: 'flex',
+        gap: 2,
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        mb: 4,
+    }}
+>
+    <TextField
+        label="Search by Name"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        variant="outlined"
+        fullWidth
+    />
+    <TextField
+        label="Min Price"
+        type="number"
+        value={minPrice}
+        onChange={(e) => setMinPrice(e.target.value)}
+        variant="outlined"
+        fullWidth
+    />
+    <TextField
+        label="Max Price"
+        type="number"
+        value={maxPrice}
+        onChange={(e) => setMaxPrice(e.target.value)}
+        variant="outlined"
+        fullWidth
+    />
+    <FormControl fullWidth>
+        <InputLabel>Sort by Ratings</InputLabel>
+        <Select
+            value={sortByRatings}
+            onChange={(e) => setSortByRatings(e.target.value)}
+            label="Sort by Ratings"
+        >
+            <MenuItem value="">None</MenuItem>
+            <MenuItem value="asc">Ascending</MenuItem>
+            <MenuItem value="desc">Descending</MenuItem>
+        </Select>
+    </FormControl>
+    <Button
+        variant="contained"
+        onClick={handleSearch}
+        sx={{
+            backgroundColor: '#111E56',
+            color: 'white',
+            border: '2px solid #111E56',
+            '&:hover': {
+                backgroundColor: 'white',
+                color: '#111E56',
+                border: '2px solid #111E56',
+            },
+        }}
+    >
+        Search
+    </Button>
+</Box>
+<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center' , width:'100%' }}>
+    {renderProductCards()}
+</Box>
+</Box>
     );
 };
 
