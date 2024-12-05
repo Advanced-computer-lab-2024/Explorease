@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, CardMedia, CircularProgress, Chip, Tooltip, IconButton, Dialog } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardMedia, CircularProgress, Chip, Tooltip, IconButton, Dialog,Grid , Button, Link , Stack, Container} from '@mui/material';
 import Carousel from 'react-multi-carousel'; // Carousel library
 import 'react-multi-carousel/lib/styles.css'; // Carousel styles
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import EmailIcon from '@mui/icons-material/Email';
+import LinkIcon from '@mui/icons-material/Link';
+import CloseIcon from '@mui/icons-material/Close';
+import Divider from '@mui/material/Divider';
+import CssBaseline from '@mui/material/CssBaseline';
+import logo2 from '../../Misc/image.png';
+
 
 const TouristHomePage = ({profile}) => {
     const [activities, setActivities] = useState([]);
@@ -29,6 +36,23 @@ const TouristHomePage = ({profile}) => {
     };
     
     
+  const handleCopyLink = (activityId) => {
+    const link = `${window.location.origin}/activity/${activityId}`;
+    navigator.clipboard.writeText(link)
+      .then(() => {
+        alert('Link copied to clipboard!');
+      })
+      .catch((err) => {
+        console.error('Error copying link:', err);
+      });
+  };
+
+  const handleShareEmail = (activity) => {
+    const subject = `Check out this activity: ${activity.name}`;
+    const body = `Here is an activity you might be interested in:\n\nName: ${activity.name}\nDate: ${new Date(activity.date).toLocaleDateString()}\nLocation: ${activity.location}\nPrice: $${activity.price}\n\nCheck it out here: ${window.location.origin}/activity/${activity._id}`;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+  };
 
     const fetchWelcomeData = async () => {
         try {
@@ -181,78 +205,215 @@ const TouristHomePage = ({profile}) => {
         );
         
 
-    const renderDetailsPopup = () => (
-        <Dialog
-            open={!!selectedItem}
-            onClose={handleClosePopup}
-            maxWidth="md"
-            fullWidth
-        >
-            <Box sx={{ display: 'flex', flexDirection: 'row', height: '400px' }}>
-                {/* Left Section: Image */}
-                <Box sx={{ flex: 1, overflow: 'hidden' }}>
-                    <img
-                        src={selectedItem?.imageUrl || placeholderImage}
-                        alt="Item Detail"
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            borderRadius: '8px 0 0 8px',
+        const renderDetailsPopup = () => (
+            <Dialog
+                open={!!selectedItem}
+                onClose={handleClosePopup}
+                maxWidth="md"
+                fullWidth
+                sx={{
+                    '& .MuiPaper-root': {
+                        borderRadius: '16px', // Rounded corners
+                        position: 'relative', // Positioning for the close button
+                    },
+                }}
+            >
+                {/* Close Button */}
+                <IconButton
+                    onClick={handleClosePopup}
+                    sx={{
+                        position: 'absolute',
+                        top: 16,
+                        right: 16,
+                        color: '#111E56',
+                        zIndex: 1,
+                        '&:hover': {
+                            backgroundColor: 'rgba(17, 30, 86, 0.1)', // Slight hover effect
+                        },
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+        
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        height: '500px', // Adjust height as needed
+                    }}
+                >
+                    {/* Left Section: Image */}
+                    <Box
+                        sx={{
+                            flex: 1,
+                            overflow: 'hidden',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderRadius: '16px 0 0 16px', // Rounded left corners
+                            backgroundColor: '#f0f0f0',
                         }}
-                    />
+                    >
+                        <img
+                            src={selectedItem?.imageUrl || placeholderImage}
+                            alt="Item Detail"
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                borderRadius: '16px 0 0 16px',
+                            }}
+                        />
+                    </Box>
+        
+                    {/* Right Section: Details */}
+                    <Box
+                        sx={{
+                            flex: 1,
+                            padding: '20px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        {/* Top Section: Title */}
+                        <Box>
+                            <Typography
+                                variant="h5"
+                                sx={{
+                                    fontWeight: 'bold',
+                                    color: '#111E56',
+                                    marginBottom: '16px',
+                                }}
+                            >
+                                {selectedItem?.name || 'Untitled'}
+                            </Typography>
+        
+                            {/* Activity Details */}
+                            {selectedType === 'Activity' && (
+                                <>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Date:</strong> {new Date(selectedItem.date).toLocaleDateString()}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Time:</strong> {selectedItem.time || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Price:</strong> ${selectedItem.price || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        <strong>Duration:</strong> {selectedItem.duration || 'N/A'} hours
+                                    </Typography>
+                                </>
+                            )}
+        
+                            {/* Itinerary Details */}
+                            {selectedType === 'Itinerary' && (
+                                <>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Activities:</strong>{' '}
+                                        {selectedItem.activities?.map((activity) => activity.name).join(', ') || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Language of Tour:</strong> {selectedItem.LanguageOfTour?.join(', ') || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Total Price:</strong> ${selectedItem.totalPrice || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Available Dates:</strong>{' '}
+                                        {selectedItem.AvailableDates?.map((date) =>
+                                            new Date(date).toLocaleDateString()
+                                        ).join(', ') || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Available Times:</strong> {selectedItem.AvailableTimes?.join(', ') || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Accessibility:</strong> {selectedItem.accessibility || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Pick-Up Location:</strong> {selectedItem.PickUpLocation || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        <strong>Drop-Off Location:</strong> {selectedItem.DropOffLocation || 'N/A'}
+                                    </Typography>
+                                </>
+                            )}
+        
+                            {/* Historical Place Details */}
+                            {selectedType === 'Historical Place' && (
+                                <>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Foreigner Ticket Price:</strong> $
+                                        {selectedItem.TicketPrices?.foreigner || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Native Ticket Price:</strong> $
+                                        {selectedItem.TicketPrices?.native || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Student Ticket Price:</strong> $
+                                        {selectedItem.TicketPrices?.student || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+                                        <strong>Description:</strong> {selectedItem.description || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        <strong>Location:</strong> {selectedItem.location || 'N/A'}
+                                    </Typography>
+                                </>
+                            )}
+                        </Box>
+        
+                        {/* Bottom Section: Buttons */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                marginTop: 'auto',
+                            }}
+                        >
+                            <Button
+                                onClick={() => handleCopyLink(selectedItem._id)}
+                                variant="outlined"
+                                startIcon={<LinkIcon />}
+                                sx={{
+                                    backgroundColor: 'white',
+                                    color: '#5A8CFF',
+                                    border: '1px solid #5A8CFF',
+                                    '&:hover': {
+                                        backgroundColor: '#5A8CFF',
+                                        color: 'white',
+                                    },
+                                    textTransform: 'none',
+                                }}
+                            >
+                                Copy Link
+                            </Button>
+                            <Button
+                                onClick={() => handleShareEmail(selectedItem)}
+                                variant="outlined"
+                                startIcon={<EmailIcon />}
+                                sx={{
+                                    backgroundColor: 'white',
+                                    color: '#5A8CFF',
+                                    border: '1px solid #5A8CFF',
+                                    '&:hover': {
+                                        backgroundColor: '#5A8CFF',
+                                        color: 'white',
+                                    },
+                                    textTransform: 'none',
+                                }}
+                            >
+                                Share via Email
+                            </Button>
+                        </Box>
+                    </Box>
                 </Box>
-    
-                {/* Right Section: Details */}
-                <Box sx={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#111E56' }}>
-                        {selectedItem?.name || 'Untitled'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ marginBottom: '10px' }}>
-                        {selectedItem?.description || 'No description available.'}
-                    </Typography>
-                    {/* Additional Details */}
-                    {selectedType === 'Activity' && (
-                        <>
-                            <Typography variant="body2">
-                                <strong>Date:</strong> {new Date(selectedItem.date).toLocaleDateString()}
-                            </Typography>
-                            <Typography variant="body2">
-                                <strong>Tags:</strong> {selectedItem.tags?.map(tag => tag.name).join(', ') || 'N/A'}
-                            </Typography>
-                        </>
-                    )}
-                    {selectedType === 'Itinerary' && (
-                        <>
-                            <Typography variant="body2">
-                                <strong>Activities:</strong>{' '}
-                                {selectedItem.activities?.map(activity => activity.name).join(', ') || 'N/A'}
-                            </Typography>
-                            <Typography variant="body2">
-                                <strong>Available Dates:</strong>{' '}
-                                {selectedItem.AvailableDates?.map(date =>
-                                    new Date(date).toLocaleDateString()
-                                ).join(', ') || 'N/A'}
-                            </Typography>
-                        </>
-                    )}
-                    {selectedType === 'Historical Place' && (
-                        <>
-                            <Typography variant="body2">
-                                <strong>Ticket Prices:</strong>
-                                <ul>
-                                    <li>Foreigner: ${selectedItem.TicketPrices?.foreigner || 'N/A'}</li>
-                                    <li>Native: ${selectedItem.TicketPrices?.native || 'N/A'}</li>
-                                    <li>Student: ${selectedItem.TicketPrices?.student || 'N/A'}</li>
-                                </ul>
-                            </Typography>
-                        </>
-                    )}
-                </Box>
-            </Box>
-        </Dialog>
-    );
-    
+            </Dialog>
+        );
+            
 
     // const renderItineraryCard = (itinerary) => (
     //     <Card
@@ -360,12 +521,16 @@ const TouristHomePage = ({profile}) => {
 
     return (
         <Box
-    sx={{
-        padding: 0, // Remove padding
-        margin: 0, // Remove margin
-        overflowX: 'hidden', // Prevent horizontal scroll
-    }}
->
+        sx={{
+            padding: 0,
+            margin: 0,
+            
+            background: 'radial-gradient(circle, #111E56 0%, #d4d4d4 50%, #ffffff 100%)',
+            backgroundSize: 'cover', // Ensures the gradient stretches to fit
+            backgroundRepeat: 'no-repeat', // Prevents repeating
+        }}
+    >
+
     <Typography
         variant="h4"
         sx={{ fontWeight: 'bold', color: '#111E56', marginBottom: '10px', textAlign: 'left' }}
@@ -403,7 +568,7 @@ const TouristHomePage = ({profile}) => {
                     {itineraries.map(renderItineraryCard)}
                 </Carousel>
             </Box>
-
+            <Divider sx={{ marginY: '16px' }} /> {/* Divider for Itinerary */}
             {/* Activities Section */}
             <Box sx={{ padding: '0', marginBottom: '20px' }}>
                 <Typography
@@ -421,7 +586,7 @@ const TouristHomePage = ({profile}) => {
                     {activities.map(renderActivityCard)}
                 </Carousel>
             </Box>
-
+            <Divider sx={{ marginY: '16px' }} /> {/* Divider for Itinerary */}
             {/* Historical Places Section */}
             <Box sx={{ padding: ' 0', marginBottom: '20px' }}>
                 <Typography
@@ -443,7 +608,51 @@ const TouristHomePage = ({profile}) => {
         </>
     )}
     {renderDetailsPopup()}
+    
+    <CssBaseline /> {/* This removes default margins and paddings */}
+    {/* Footer */}
+    <footer style={{ backgroundColor: '#111E56', color: 'white', padding: '30px 0' }}>
+                <Container>
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ textAlign: { xs: 'center', sm: 'left' } }}
+                    >
+                        <img
+                            src={logo2}
+                            alt="Explorease"
+                            style={{ height: '3em', marginLeft: '5px' }}
+                        />
+                        <Typography variant="body2">© 2024. All rights reserved.</Typography>
+                        <Stack direction="row" spacing={3}>
+                            <Link
+                                to="/admin/login"
+                                style={{
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    fontSize: '16px',
+                                }}
+                            >
+                                Admin Login
+                            </Link>
+                            <Link
+                                to="/uploadDocuments"
+                                style={{
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    fontSize: '16px',
+                                }}
+                            >
+                                Upload Documents
+                            </Link>
+                        </Stack>
+                    </Stack>
+                </Container>
+            </footer>
 </Box>
+
 
     );
 };

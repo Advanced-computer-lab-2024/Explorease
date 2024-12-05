@@ -364,7 +364,7 @@ const handleTagChange = (id, newName) => {
             <nav>
               {[
                 { label: 'Home', section: 'home' },
-                { label: 'Edit Password', section: 'editPassword' },
+                
                 { label: 'Delete Accounts', section: 'deleteAccounts' },
                 { label: 'Preference Tag', section: 'preferenceTag' },
                 { label: 'Activity Category', section: 'activityCategory' },
@@ -442,9 +442,10 @@ const handleTagChange = (id, newName) => {
     
                 {/* Conditionally render sections */}
                 {activeSection === 'home' && (
-                    <div className="section">
-                        <h1>Welcome to the Admin Dashboard</h1>
+                    <div className="section" style={{fontWeight:'bold',color:'#111E56',fontSize:'32px'}}>
+                        <h1>Welcome to your Dashboard</h1>
                         <CreateAdminForm />
+                        <EditMyPassword />
                     </div>
                 )}
                 {activeSection === 'deleteAccounts' && <ManageUsers />}
@@ -452,7 +453,7 @@ const handleTagChange = (id, newName) => {
                 {activeSection === 'Block event' && <BlockItinerary />}
                 {activeSection === 'Complaints' && <Complaints />}
                 {activeSection === 'Delete Requests' && <DeleteRequests />}
-                {activeSection === 'editPassword' && <EditMyPassword />}
+                
                 {activeSection === 'Promo Code' && <PromoCode />}
                 {activeSection === 'Sales Report' && <SalesReport />}
     
@@ -828,7 +829,7 @@ const handleTagChange = (id, newName) => {
             padding: '20px',
         }}
     >
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{fontWeight:'bold' , color:'#111E56' , fontSize:'32px'}}>
             Manage Products
         </Typography>
 
