@@ -189,6 +189,7 @@ const TouristHomePage = ({profile}) => {
             fullWidth
         >
             <Box sx={{ display: 'flex', flexDirection: 'row', height: '400px' }}>
+                
                 {/* Left Section: Image */}
                 <Box sx={{ flex: 1, overflow: 'hidden' }}>
                     <img
