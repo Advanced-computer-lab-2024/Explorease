@@ -70,7 +70,7 @@ const UploadLogo = ({ setProfile }) => {
                         backgroundColor: 'white', 
                         color: '#111E56',
                         border: '2px solid #111E56', // Optional: adds a border to match the dark blue on hover
-                    },mt: 2, width: '100%', padding: '10px' }}
+                    },mt: 4, width: '100%', padding: '10px' }}
                 disabled={uploading}
             >
                 {uploading ? <CircularProgress size={24} /> : 'Upload Logo'}
