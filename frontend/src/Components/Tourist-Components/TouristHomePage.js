@@ -278,7 +278,12 @@ const TouristHomePage = ({profile}) => {
                     >
                         {/* Top Section: Title */}
                         <Box>
-                            <Typography
+                           
+        
+                            {/* Activity Details */}
+                            {selectedType === 'Activity' && (
+                                <>
+                                     <Typography
                                 variant="h5"
                                 sx={{
                                     fontWeight: 'bold',
@@ -288,10 +293,6 @@ const TouristHomePage = ({profile}) => {
                             >
                                 {selectedItem?.name || 'Untitled'}
                             </Typography>
-        
-                            {/* Activity Details */}
-                            {selectedType === 'Activity' && (
-                                <>
                                     <Typography variant="body2" sx={{ marginBottom: '8px' }}>
                                         <strong>Date:</strong> {new Date(selectedItem.date).toLocaleDateString()}
                                     </Typography>
@@ -310,6 +311,16 @@ const TouristHomePage = ({profile}) => {
                             {/* Itinerary Details */}
                             {selectedType === 'Itinerary' && (
                                 <>
+                                 <Typography
+                                variant="h5"
+                                sx={{
+                                    fontWeight: 'bold',
+                                    color: '#111E56',
+                                    marginBottom: '16px',
+                                }}
+                            >
+                                {selectedItem?.name || 'Untitled'}
+                            </Typography>
                                     <Typography variant="body2" sx={{ marginBottom: '8px' }}>
                                         <strong>Activities:</strong>{' '}
                                         {selectedItem.activities?.map((activity) => activity.name).join(', ') || 'N/A'}
@@ -344,6 +355,16 @@ const TouristHomePage = ({profile}) => {
                             {/* Historical Place Details */}
                             {selectedType === 'Historical Place' && (
                                 <>
+                                 <Typography
+                                variant="h5"
+                                sx={{
+                                    fontWeight: 'bold',
+                                    color: '#111E56',
+                                    marginBottom: '16px',
+                                }}
+                            >
+                                {selectedItem?.Name || 'Untitled'}
+                            </Typography>
                                     <Typography variant="body2" sx={{ marginBottom: '8px' }}>
                                         <strong>Foreigner Ticket Price:</strong> $
                                         {selectedItem.TicketPrices?.foreigner || 'N/A'}
@@ -357,10 +378,10 @@ const TouristHomePage = ({profile}) => {
                                         {selectedItem.TicketPrices?.student || 'N/A'}
                                     </Typography>
                                     <Typography variant="body2" sx={{ marginBottom: '8px' }}>
-                                        <strong>Description:</strong> {selectedItem.description || 'N/A'}
+                                        <strong>Description:</strong> {selectedItem.Description || 'N/A'}
                                     </Typography>
                                     <Typography variant="body2">
-                                        <strong>Location:</strong> {selectedItem.location || 'N/A'}
+                                        <strong>Location:</strong> {selectedItem.Location || 'N/A'}
                                     </Typography>
                                 </>
                             )}
@@ -525,7 +546,7 @@ const TouristHomePage = ({profile}) => {
             padding: 0,
             margin: 0,
             
-            background: 'radial-gradient(circle, #111E56 0%, #d4d4d4 50%, #ffffff 100%)',
+            //background: 'radial-gradient(circle, #111E56 0%, #d4d4d4 50%, #ffffff 100%)',
             backgroundSize: 'cover', // Ensures the gradient stretches to fit
             backgroundRepeat: 'no-repeat', // Prevents repeating
         }}
