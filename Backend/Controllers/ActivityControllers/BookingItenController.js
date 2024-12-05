@@ -6,7 +6,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { sendItineraryReceiptEmail } = require('../../utils/receiptService'); // Import the email function
 // Create a new booking for an itinerary
 const createBookingItinerary = async (req, res) => {
-    const { Tourist, Itinerary } = req.body;
+    const { Tourist, Itinerary, amountPaid } = req.body;
 
     try {
         // Check if the tourist and itinerary exist
@@ -28,6 +28,7 @@ const createBookingItinerary = async (req, res) => {
             Status: 'Active',
             BookedAt: new Date(),
             CancellationDeadline: cancellationDeadline,
+            amountPaid
         });
 
         await booking.save();
@@ -108,7 +109,26 @@ const cancelBookingItinerary = async (req, res) => {
             return res.status(404).json({ message: 'Tourist not found' });
         }
 
-        tourist.wallet += booking.amountPaid;
+        // Ensure booking.amountPaid is a valid number
+        const refundAmount = Number(booking.amountPaid);
+        console.log(refundAmount);
+        if (isNaN(refundAmount)) {
+            await BookingItinerary.findByIdAndDelete(bookingId);
+            return res.status(200).json({ message: 'Invalid amount paid value' });
+        }
+
+        // Ensure tourist wallet is a valid number (fallback to 0 if undefined or null)
+        const currentWallet = Number(tourist.wallet) || 0;
+
+        const newWalletBalance = currentWallet + refundAmount;
+
+        // Validate that new wallet balance is a valid number
+        if (isNaN(newWalletBalance)) {
+            return res.status(400).json({ message: 'Invalid wallet balance after refund' });
+        }
+
+        // Update tourist's wallet
+        tourist.wallet = newWalletBalance;
         await tourist.save();
 
         // Delete the booking document
@@ -116,9 +136,11 @@ const cancelBookingItinerary = async (req, res) => {
 
         res.status(200).json({ message: 'Booking canceled and deleted successfully' });
     } catch (error) {
+        console.error('Error canceling itinerary booking:', error);
         res.status(500).json({ message: 'Error canceling itinerary booking', error: error.message });
     }
 };
+
 
 
 
@@ -132,6 +154,9 @@ const setRatingForItineraryBooking = async (req, res) => {
 
     try {
         const booking = await BookingItinerary.findById(bookingId);
+
+        console.log(booking._id);
+
         if (!booking) {
             return res.status(404).json({ error: 'Booking not found.' });
         }
@@ -183,7 +208,7 @@ const stripeSuccessItinerary = async (req, res) => {
         // Fetch the Stripe session
         const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-        // Extract tourist ID and itinerary ID from session metadata
+        // Extract ID and itinerary ID from session metadata
         const touristId = session.client_reference_id;
         const itineraryId = session.metadata.itineraryId;
 

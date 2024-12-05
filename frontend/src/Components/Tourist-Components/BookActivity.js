@@ -332,7 +332,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
 }
 
     return (
-        <Box sx={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+        <Box sx={{ padding: '20px', maxWidth: '2000px', margin: '0 auto' }}>
         <Typography variant="h4" gutterBottom>Book an Activity</Typography>
         <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
             <TextField
@@ -443,27 +443,46 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
     {activities.length > 0 ? activities.map((activity) => (
         <Card
-            key={activity._id}
-            sx={{
-                width: '300px',
-                boxShadow: 3,
-                padding: 2,
-                textAlign: 'center',
-                position: 'relative',
-                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                '&:hover': {
-                    transform: 'scale(1.03)',
-                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                },
-            }}
-        >
-            <CardContent>
+        key={activity._id}
+        sx={{
+            display: 'flex',
+            width: '100%',
+            maxWidth: '1200px',  // Set a max-width for larger screens
+            boxShadow: 3,
+            padding: 2,
+            borderRadius: 2,
+            transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+            '&:hover': {
+                transform: 'scale(1.03)',
+                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+            },
+        }}
+    >
+        {/* Left Section: Image */}
+        <Box sx={{ flex: '1 1 30%', marginRight: 2 }}>
+            {activity.imageUrl && (
+                <img
+                    src={activity.imageUrl}
+                    alt={activity.name}
+                    style={{
+                        width: '100%',
+                        height: 'auto',
+                        borderRadius: '8px',
+                    }}
+                />
+            )}
+        </Box>
+    
+        {/* Center Section: Details and Action Buttons */}
+        <Box sx={{ flex: '1 1 40%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <CardContent sx={{ padding: 0 }}>
                 <Typography
                     variant="h6"
                     sx={{
                         color: '#111E56',
                         fontWeight: 'bold',
                         marginBottom: '10px',
+                        textAlign: 'center',
                     }}
                 >
                     {activity.name}
@@ -476,38 +495,15 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                     <Typography><strong>Tags:</strong> {activity.tags.map(tag => tag.name).join(', ')}</Typography>
                 )}
                 <Typography><strong>Special Discounts:</strong> {activity.specialDiscounts}</Typography>
-
-                {/* Google Maps Embed */}
-                <Box
-                    sx={{
-                        marginTop: '15px',
-                        minWidth: '250px',
-                        height: '200px',
-                        border: '1px solid #ccc',
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                    }}
-                >
-                    <iframe
-                        width="100%"
-                        height="100%"
-                        frameBorder="0"
-                        style={{ border: 0 }}
-                        src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyDUP5fw3jw8bvJ7yj9OskV5wdm5sNUbII4&q=${encodeURIComponent(
-                            activity.location
-                        )}`}
-                        allowFullScreen
-                    ></iframe>
-                </Box>
             </CardContent>
-
+    
             {/* Action Buttons */}
             <Box
                 sx={{
                     display: 'flex',
                     justifyContent: 'space-around',
                     padding: 1,
-                    marginTop: '-5px',
+                    marginTop: 2,
                 }}
             >
                 {activity.bookingOpen ? (
@@ -545,7 +541,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                         </IconButton>
                     </Tooltip>
                 )}
-
+    
                 <Tooltip title={bookmarkedActivities.includes(activity._id) ? "Unbookmark" : "Bookmark"}>
                     <IconButton
                         onClick={() => handleBookmarkActivity(activity)}
@@ -562,7 +558,33 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                     </IconButton>
                 </Tooltip>
             </Box>
-        </Card>
+        </Box>
+    
+        {/* Right Section: Map */}
+        <Box sx={{ flex: '1 1 30%', marginLeft: 2 }}>
+            <Box
+                sx={{
+                    marginTop: '15px',
+                    height: '200px',
+                    border: '1px solid #ccc',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                }}
+            >
+                <iframe
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    style={{ border: 0 }}
+                    src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyDUP5fw3jw8bvJ7yj9OskV5wdm5sNUbII4&q=${encodeURIComponent(
+                        activity.location
+                    )}`}
+                    allowFullScreen
+                ></iframe>
+            </Box>
+        </Box>
+    </Card>
+    
     )) : (
         <Typography>No activities available</Typography>
     )}

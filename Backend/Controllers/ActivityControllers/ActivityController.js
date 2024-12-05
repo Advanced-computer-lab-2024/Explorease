@@ -190,7 +190,7 @@ const readActivities = async (req, res) => {
 // Get All Activities
 const getAllActivity = async (req, res) => {
     try {
-        const activities = await activityModel.find({}).populate('category').populate('tags');
+        const activities = await activityModel.find({ isFlagged : false }).populate('category').populate('tags');
         if (activities.length === 0) {
             return res.status(404).json({ message: 'No activities found.' });
         }
@@ -321,7 +321,7 @@ const filterSortSearchActivities = async (req, res) => {
     const { searchQuery, category, tag, minPrice, maxPrice, startDate, endDate, minRating, sortBy, order } = req.query;
 
     try {
-        let query = {};
+        let query = {isFlagged : false};
         // Build query based on the received parameters
 
         if (searchQuery) {

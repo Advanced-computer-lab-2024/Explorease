@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Typography, Card, CardContent, Divider, Button, TextField, Rating } from '@mui/material';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import Carousel from 'react-multi-carousel'; // Carousel library
+import 'react-multi-carousel/lib/styles.css'; // Carousel styles
 
 const ViewBookings = () => {
     const [activityBookings, setActivityBookings] = useState([]);
@@ -11,7 +17,7 @@ const ViewBookings = () => {
 
     useEffect(() => {
         fetchBookings();
-    }, []);
+    }, []); 
 
     const fetchBookings = async () => {
         try {
@@ -21,13 +27,16 @@ const ViewBookings = () => {
             const activityResponse = await axios.get('/tourists/activities/bookings', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setActivityBookings(activityResponse.data);
+            const uniqueActivityBookings = [...new Map(activityResponse.data.map(item => [item._id, item])).values()];
+            setActivityBookings(uniqueActivityBookings);
+
 
             // Fetch itinerary bookings
             const itineraryResponse = await axios.get('/tourists/itineraries/bookings', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setItineraryBookings(itineraryResponse.data);
+            const uniqueItineraryBookings = [...new Map(itineraryResponse.data.map(item => [item._id, item])).values()];
+            setItineraryBookings(uniqueItineraryBookings);
 
         } catch (error) {
             if (error.response && error.response.status === 404) {
@@ -134,296 +143,495 @@ const ViewBookings = () => {
         }
     };
 
+    const getFilteredBookings = (bookings, type) => {
+        return bookings.filter((booking) => {
+            const date = type === 'activity' ? booking.Activity?.date : booking.Itinerary?.AvailableDates[0];
+            return isPastDate(date);
+        });
+    };
+
+    const getUpcomingBookings = (bookings, type) => {
+        return bookings.filter((booking) => {
+            const date = type === 'activity' ? booking.Activity?.date : booking.Itinerary?.AvailableDates[0];
+            return isUpcomingDate(date);
+        });
+    };
+
     const isPastDate = (date) => new Date(date) < new Date();
+    const isUpcomingDate = (date) => new Date(date) >= new Date();
+
     const isCancellationAllowed = (cancellationDeadline) => new Date() < new Date(cancellationDeadline);
+    const pastActivityBookings = getFilteredBookings(activityBookings, 'activity');
+    const upcomingActivityBookings = getUpcomingBookings(activityBookings, 'activity');
+    const pastItineraryBookings = getFilteredBookings(itineraryBookings, 'itinerary');
+    const upcomingItineraryBookings = getUpcomingBookings(itineraryBookings, 'itinerary');
+    const placeholderImage =
+    'https://worldwildschooling.com/wp-content/uploads/2024/01/Matterhorn_Mumemories_Adobe-Stock-Photo_682931585.jpg';
 
+    const renderActivityCard = (booking) => (
+        <Card
+            key={booking._id}
+            sx={{
+                m: 2,
+                mb: 10,
+                borderRadius: '12px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                    transform: 'scale(1.02)',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
+                    backgroundColor: 'white',
+                },
+               height: '560px'
+            }}
+            className="carousel-card"
+        >
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                {/* Upper Section: Image */}
+                {booking.Activity?.imageUrl && (
+                    <img
+                        src={placeholderImage}
+                        alt={booking.Activity?.name}
+                        style={{
+                            width: '100%',
+                            height: 'auto',
+                            borderRadius: '8px',
+                            marginBottom: '16px',
+                        }}
+                    />
+                )}
+    
+                {/* Main Content Section (Details + Rating/Comment Side by Side) */}
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1 }}>
+                    {/* Left Section: Details */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                        <Typography variant="h6" noWrap>
+                            {booking.Activity?.name || 'Activity has been removed by the Advertiser.'}
+                        </Typography>
+                        {booking.Activity?.date && (
+                            <Typography variant="body2">
+                                <strong>Date:</strong>{' '}
+                                {new Date(booking.Activity?.date).toLocaleDateString()}
+                            </Typography>
+                        )}
+                        <Typography variant="body2">
+                            <strong>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}
+                        </Typography>
+                        <Typography variant="body2">
+                            <strong>Cancellation Deadline:</strong>{' '}
+                            {new Date(booking.CancellationDeadline).toLocaleDateString()}
+                        </Typography>
+                    </Box>
+    
+                    {/* Right Section: Rating and Comment */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', ml: 2, width: '40%' }}>
+                        {isPastDate(booking.Activity?.date) ? (
+                            <>
+                                {/* If there's a rating, display it */}
+                                {booking.rating !== undefined ? (
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography variant="body2">
+                                            <strong>Your Rating:</strong>
+                                        </Typography>
+                                        <Rating
+                                            name={`rating-${booking._id}`}
+                                            value={booking.rating}
+                                            readOnly
+                                            precision={1}
+                                            max={5}
+                                        />
+                                    </Box>
+                                ) : (
+                                    // If no rating yet, show the rating field
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography variant="body2">
+                                            <strong>Rate this Activity:</strong>
+                                        </Typography>
+                                        <Rating
+                                            name={`rating-${booking._id}`}
+                                            value={ratings[booking._id] || 0}
+                                            onChange={(e, newValue) => handleRatingChange(booking, newValue)}
+                                            precision={1}
+                                            max={5}
+                                        />
+                                         <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => submitRating(booking, 'activity')}
+                                        sx={{
+                                            marginTop: '10px',
+                                            backgroundColor: '#111E56',
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: 'white',
+                                                color: '#111E56',
+                                                border: '1px solid #111E56',
+                                            },
+                                            mb: -4,
+                                            mt : -3
+                                        }}
+                                    >Submit Rating</Button>
+                                    </Box>
+                                )}
+    
+                                {/* Comment Section */}
+                                {booking.comment ? (
+                                    <Typography variant="body2">
+                                        <strong>Your Comment:</strong> {booking.comment}
+                                    </Typography>
+                                ) : (
+                                    <Box sx={{ mt: 2 }}>
+                                        <TextField
+                                            label="Comment"
+                                            
+                                            rows={1}
+                                            value={comments[booking._id] || ''}
+                                            onChange={(e) => handleCommentChange(booking, e.target.value)}
+                                            sx={{ mb: 1, mt : -1 }}
+                                        />
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            sx={{
+                                                marginTop: '10px',
+                                                backgroundColor: '#111E56',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: 'white',
+                                                    color: '#111E56',
+                                                    border: '1px solid #111E56',
+                                                },
+                                                mb: 2,
+                                            }}
+                                            onClick={() => submitComment(booking, 'activity')}
+                                        >
+                                            Submit Comment
+                                        </Button>
+                                    </Box>
+                                )}
+                            </>
+                        ) : (
+                            // If the date is not past, show cancel option
+                            isCancellationAllowed(booking.CancellationDeadline) && (
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={() => handleCancelActivityBooking(booking._id)}
+                                    sx={{ mt: 2, mb: 2 }}
+                                    disabled={booking.Status === 'Cancelled'}
+                                >
+                                    {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}
+                                </Button>
+                            )
+                        )}
+                    </Box>
+                </Box>
+            </CardContent>
+        </Card>
+    );
+    
+    const renderItineraryCard = (booking) => (
+        <Card
+            key={booking._id}
+            sx={{
+                m: 2,
+                mb: 10,
+                marginTop: '5px',
+                borderRadius: '12px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                    transform: 'scale(1.02)',
+                    boxShadow: '0 6px 12px rgba(0,0,0,0.3)',
+                },
+                height: '620px'
+
+            }}
+            className="carousel-card"
+        >
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                {/* Upper Section: Image */}
+                {booking.Itinerary?.imageUrl && (
+                    <img
+                        src={booking.Itinerary?.imageUrl}
+                        alt={booking.Itinerary?.name}
+                        style={{
+                            width: '100%',
+                            height: 'auto',
+                            borderRadius: '8px',
+                            marginBottom: '16px',
+                        }}
+                    />
+                )}
+    
+                {/* Main Content Section (Details + Rating/Comment Side by Side) */}
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1 }}>
+                    {/* Left Section: Details */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                        <Typography variant="h6" noWrap>
+                            {booking.Itinerary?.name || 'Itinerary has been removed by the Advertiser.'}
+                        </Typography>
+                        {booking.Itinerary?.AvailableDates && (
+                            <Typography variant="body2">
+                                <strong>Date:</strong>{' '}
+                                {new Date(booking.Itinerary?.AvailableDates[0]).toLocaleDateString()}
+                            </Typography>
+                        )}
+                        <Typography variant="body2">
+                            <strong>Status:</strong> {booking.Status}
+                        </Typography>
+                        <Typography variant="body2">
+                            <strong>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}
+                        </Typography>
+                        <Typography variant="body2">
+                            <strong>Cancellation Deadline:</strong>{' '}
+                            {new Date(booking.CancellationDeadline).toLocaleDateString()}
+                        </Typography>
+                    </Box>
+    
+                    {/* Right Section: Rating and Comment */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', ml: 2, width: '40%' }}>
+                        {isPastDate(booking.Itinerary.AvailableDates[0]) ? (
+                            <>
+                                {/* If there's a rating, display it */}
+                                {booking.rating !== undefined ? (
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography variant="body2">
+                                            <strong>Your Rating:</strong>
+                                        </Typography>
+                                        <Rating
+                                            name={`rating-${booking._id}`}
+                                            value={booking.rating}
+                                            readOnly
+                                            precision={1}
+                                            max={5}
+                                        />
+                                    </Box>
+                                ) : (
+                                    // If no rating yet, show the rating field
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography variant="body2">
+                                            <strong>Rate this Itinerary:</strong>
+                                        </Typography>
+                                        <Rating
+                                            name={`rating-${booking._id}`}
+                                            value={ratings[booking._id] || 0}
+                                            onChange={(e, newValue) => handleRatingChange(booking, newValue)}
+                                            precision={1}
+                                            max={5}
+                                        />
+                                         <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => submitRating(booking, 'itinerary')}
+                                        sx={{
+                                            marginTop: '10px',
+                                            backgroundColor: '#111E56',
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: 'white',
+                                                color: '#111E56',
+                                                border: '1px solid #111E56',
+                                            },
+                                            mb: -4,
+                                            mt : -3
+                                        }}
+                                    >Submit Rating</Button>
+                                    </Box>
+                                )}
+    
+                                {/* Comment Section */}
+                                {booking.comment ? (
+                                    <Typography variant="body2">
+                                        <strong>Your Comment:</strong> {booking.comment}
+                                    </Typography>
+                                ) : (
+                                    <Box sx={{ mt: 2 }}>
+                                        <TextField
+                                            label="Comment"
+                                            multiline
+                                            rows={1}
+                                            value={comments[booking._id] || ''}
+                                            onChange={(e) => handleCommentChange(booking, e.target.value)}
+                                            fullWidth
+                                            sx={{ mb: 1 }}
+                                        />
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            sx={{
+                                                marginTop: '10px',
+                                                backgroundColor: '#111E56',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: 'white',
+                                                    color: '#111E56',
+                                                    border: '1px solid #111E56',
+                                                },
+                                                mb: 2,
+                                            }}
+                                            onClick={() => submitComment(booking, 'itinerary')}
+                                        >
+                                            Submit Comment
+                                        </Button>
+                                    </Box>
+                                )}
+                            </>
+                        ) : (
+                            // If the date is not past, show cancel option
+                            isCancellationAllowed(booking.CancellationDeadline) && (
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={() => handleCancelItineraryBooking(booking._id)}
+                                    sx={{ mt: 2, mb: 2 }}
+                                    disabled={booking.Status === 'Cancelled'}
+                                >
+                                    {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}
+                                </Button>
+                            )
+                        )}
+                    </Box>
+                </Box>
+            </CardContent>
+        </Card>
+    );
+    
+    const carouselResponsiveSettings = {
+        superLargeDesktop: {
+            // For very large screens (e.g., 1600px+ width)
+            breakpoint: { max: 4000, min: 1200 },
+            items: 1
+        },
+        desktop: {
+            // For regular desktop screens
+            breakpoint: { max: 1200, min: 768 },
+            items: 1
+        },
+        tablet: {
+            // For tablets
+            breakpoint: { max: 768, min: 464 },
+            items: 1
+        },
+        mobile: {
+            // For mobile screens
+            breakpoint: { max: 464, min: 0 },
+            items: 1
+        }
+    };
     return (
-        <Box sx={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>My Bookings</Typography>
-
-            {errorMessage && <Typography color="error">{errorMessage}</Typography>}
-
-            <Box sx={{ mt: 4 }}>
-            <Typography
-    variant="h5"
-    gutterBottom
-    sx={{
-        color: '#111E56', // Blue color
-        fontWeight: 'bold',
-        position: 'relative',
-        display: 'inline-block', // Ensures proper width for underline
-        '&::after': {
-            content: '""',
-            position: 'absolute',
-            width: '100%',
-            height: '2px',
-            backgroundColor: '#111E56',
-            bottom: '-2px',
-            left: '0',
-            transform: 'scaleX(0)',
-            transformOrigin: 'left',
-            transition: 'transform 0.3s ease-in-out',
-        },
-        '&:hover::after': {
-            transform: 'scaleX(1)',
-        },
-    }}
->
-    Activity Bookings
-</Typography>
-
-                {activityBookings.length > 0 ? (
-                    activityBookings.map(booking => (
-                        <Card
-    key={booking._id}
-    sx={{
-        mb: 2,
-        borderRadius: '12px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        '&:hover': {
-            transform: 'scale(1.02)', // Slightly enlarges the card
-            boxShadow: '0 8px 16px rgba(0,0,0,0.3)', // Adds a deeper shadow on hover
-            backgroundColor: 'white', // Optional: Lightens the background color slightly
-        },
-    }}
->
-                            <CardContent>
-                                <Typography variant="h6">  {booking.Activity?.name || 'Activity has been removed by the Advertiser.'}</Typography>
-                                {booking.Activity?.date && (
-                    <Typography>
-                        <strong>Date:</strong>{' '}
-                        {new Date(booking.Activity?.date).toLocaleDateString()}
-                    </Typography>
-                )}                               <Typography>
-                <strong>Status:</strong>{' '}
-                {booking.Activity?.name ? booking.Status : 'Status unavailable'}
-            </Typography>
-            
-                                <Typography><strong>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}</Typography>
-                                <Typography><strong>Cancellation Deadline:</strong> {new Date(booking.CancellationDeadline).toLocaleDateString()}</Typography>
-                                
-                                {isPastDate(booking.Activity?.date) ? (
-                                    <Box>
-                                        {booking.rating !== undefined ? (
-                                            <Typography><strong>Your Rating:</strong> {booking.rating}</Typography>
-                                        ) : (
-                                            <Box sx={{ mt: 2 }}>
-                                                <Rating
-                                                    name={`rating-${booking._id}`}
-                                                    value={ratings[booking._id] || 0}
-                                                    onChange={(e, newValue) => handleRatingChange(booking, newValue)}
-                                                    precision={1}
-                                                    max={5}
-                                                />
-                                                <p></p>
-                                                <Button
-                                                    variant="contained"
-                                                    color="primary"
-                                                    onClick={() => submitRating(booking, 'activity')}
-                                                    sx={{ marginTop: '5px',
-                                                         backgroundColor: '#111E56', 
-                                                        color: 'white', 
-                                                        border: '2px solid #111E56',
-                                                        '&:hover': { 
-                                                            backgroundColor: 'white', 
-                                                            color: '#111E56',
-                                                            border: '2px solid #111E56', // Optional: adds a border to match the dark blue on hover
-                                                        },mb: 2 }}
-                                                >
-                                                    Submit Rating
-                                                </Button>
-                                            </Box>
-                                        )}
-
-                                        {booking.comment ? (
-                                            <Typography><strong>Your Comment:</strong> {booking.comment}</Typography>
-                                        ) : (
-                                            <Box sx={{ mt: 2 }}>
-                                                <TextField
-                                                    label="Comment"
-                                                    multiline
-                                                    rows={3}
-                                                    value={comments[booking._id] || ''}
-                                                    onChange={(e) => handleCommentChange(booking, e.target.value)}
-                                                    fullWidth
-                                                    sx={{ mb: 1 }}
-                                                />
-                                                <Button
-                                                    variant="contained"
-                                                    color="primary"
-                                                    sx={{marginTop: '10px',
-                                                        backgroundColor: '#111E56', 
-                                                        color: 'white', 
-                                                        '&:hover': { 
-                                                            backgroundColor: 'white', 
-                                                            color: '#111E56',
-                                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                                                        },mb: 2 }}
-                                                    onClick={() => submitComment(booking, 'activity')}
-                                                >
-                                                    Submit Comment
-                                                </Button>
-                                            </Box>
-                                        )}
-                                    </Box>
-                                ) : isCancellationAllowed(booking.CancellationDeadline) && (
-                                    <Button
-    variant="outlined"
-    color="error"
-    onClick={() => handleCancelActivityBooking(booking._id)}
-    sx={{ mt: 2, mb: 2 }}
-    disabled={booking.Status === 'Cancelled'} // Pass the boolean value
->
-    {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}
-</Button>
-
-                                )}
-                            </CardContent>
-                        </Card>
-                    ))
+        <Box>
+            {/* Past Activity Carousel */}
+            <Typography variant="h5" sx={{ mb: 2 , mt: 5 }}><h2>Past Activity Bookings</h2></Typography>
+            {pastActivityBookings.length > 0 && (
+                pastActivityBookings.length === 1 ? (
+                    // Render only the single booking without carousel
+                    <div style={{height:'80%', width: '600px'}} key={pastActivityBookings[0]._id}>{renderActivityCard(pastActivityBookings[0])}</div>
                 ) : (
-                    <Typography>No activity bookings available.</Typography>
-                )}
-            </Box>
-
-            <Divider sx={{ my: 4 }} />
-
-            <Box>
-            <Typography
-    variant="h5"
-    gutterBottom
-    sx={{
-        color: '#111E56',
-        fontWeight: 'bold',
-        position: 'relative',
-        display: 'inline-block',
-        '&::after': {
-            content: '""',
-            position: 'absolute',
-            width: '100%',
-            height: '2px',
-            backgroundColor: '#111E56',
-            bottom: '-2px',
-            left: '0',
-            transform: 'scaleX(0)',
-            transformOrigin: 'left',
-            transition: 'transform 0.3s ease-in-out',
-        },
-        '&:hover::after': {
-            transform: 'scaleX(1)',
-        },
-    }}
->
-    Itinerary Bookings
-</Typography>
-
-                {itineraryBookings.length > 0 ? (
-                    itineraryBookings.map(booking => (
-                        <Card
-    key={booking._id}
-    sx={{
-        mb: 4,
-        marginTop: '5px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        '&:hover': {
-            transform: 'scale(1.02)',
-            boxShadow: '0 6px 12px rgba(0,0,0,0.3)',
-        },
-    }}
->
-                            <CardContent>
-                                <Typography variant="h6">{booking.Itinerary?.name}</Typography>
-                                <Typography><strong>Date:</strong> {new Date(booking.Itinerary?.AvailableDates[0]).toLocaleDateString()}</Typography>
-                                <Typography><strong>Status:</strong> {booking.Status}</Typography>
-                                <Typography><strong>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}</Typography>
-                                <Typography><strong>Cancellation Deadline:</strong> {new Date(booking.CancellationDeadline).toLocaleDateString()}</Typography>
-                                
-                                {isPastDate(booking.Itinerary.AvailableDates[0]) ? (
-                                    <Box>
-                                        {booking.rating !== undefined ? (
-                                            <Typography><strong>Your Rating:</strong> {booking.rating}</Typography>
-                                        ) : (
-                                            <Box sx={{ mt: 2 }}>
-                                                 <Rating
-                                                    name={`rating-${booking._id}`}
-                                                    value={ratings[booking._id] || 0}
-                                                    onChange={(e, newValue) => handleRatingChange(booking, newValue)}
-                                                    precision={1}
-                                                    max={5}
-                                                />
-                                                <p></p>
-                                                <Button
-                                                    variant="contained"
-                                                    color="primary"
-                                                    onClick={() => submitRating(booking, 'itinerary')}
-                                                    sx={{ backgroundColor: '#111E56',
-                                                        position: 'center', 
-                                                        color: 'white', 
-                                                        '&:hover': { 
-                                                            backgroundColor: 'white', 
-                                                            color: '#111E56',
-                                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                                                        },mb: 2 }}
-                                                >
-                                                    Submit Rating       
-                                                </Button>
-                                            </Box>
-                                        )}
-
-                                        {booking.comment ? (
-                                            <Typography><strong>Your Comment:</strong> {booking.comment}</Typography>
-                                        ) : (
-                                            <Box sx={{ mt: 2 }}>
-                                                <TextField
-                                                    label="Comment"
-                                                    multiline
-                                                    rows={3}
-                                                    value={comments[booking._id] || ''}
-                                                    onChange={(e) => handleCommentChange(booking, e.target.value)}
-                                                    fullWidth
-                                                    sx={{ mb: 1 }}
-                                                />
-                                                <Button
-                                                    variant="contained"
-                                                    color="primary"
-                                                    onClick={() => submitComment(booking, 'itinerary')}
-                                                    sx={{ marginTop: '10px',
-                                                        backgroundColor: '#111E56', 
-                                                        color: 'white', 
-                                                        '&:hover': { 
-                                                            backgroundColor: 'white', 
-                                                            color: '#111E56',
-                                                            border: '1px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                                                        },mb: 2 }}
-                                                >
-                                                    Submit Comment
-                                                </Button>
-                                            </Box>
-                                        )}
-                                    </Box>
-                                ) : isCancellationAllowed(booking.CancellationDeadline) && (
-                                    <Button
-                                        variant="outlined"
-                                        color="error"
-                                        onClick={() => handleCancelItineraryBooking(booking._id)}
-                                        sx={{ mt: 2, mb: 2 }}
-                                        disabled={booking.Status === 'Cancelled'} // Pass the boolean value
-                                    >
-                                        {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}
-                                    </Button>
-                                )}
-                            </CardContent>
-                        </Card>
-                    ))
+                    <Carousel
+                        responsive={carouselResponsiveSettings}
+                        infinite={true}
+                        showDots={true}
+                        arrows={true}
+                        swipeable={true}
+                        draggable={true}
+                        autoPlay={true}
+                        autoPlaySpeed={3000}
+                        centerMode={true}
+                        containerClass="carousel-container"
+                    >
+                        {pastActivityBookings.map((booking) => (
+                            <div key={booking._id}>{renderActivityCard(booking)}</div>
+                        ))}
+                    </Carousel>
+                )
+            )}
+            {pastActivityBookings.length === 0 && <Typography>No past activity bookings available.</Typography>}
+    
+            {/* Upcoming Activity Carousel */}
+            <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>Upcoming Activity Bookings</Typography>
+            {upcomingActivityBookings.length > 0 && (
+                upcomingActivityBookings.length === 1 ? (
+                    // Render only the single booking without carousel
+                    <div style={{height:'80%', width: '600px'}}key={upcomingActivityBookings[0]._id}>{renderActivityCard(upcomingActivityBookings[0])}</div>
                 ) : (
-                    <Typography>No itinerary bookings available.</Typography>
-                )}
-            </Box>
+                    <Carousel
+                        responsive={carouselResponsiveSettings}
+                        infinite={true}
+                        showDots={true}
+                        arrows={true}
+                        swipeable={true}
+                        draggable={true}
+                        autoPlay={true}
+                        autoPlaySpeed={3000}
+                        centerMode={true}
+                        containerClass="carousel-container"
+                    >
+                        {upcomingActivityBookings.map((booking) => (
+                            <div key={booking._id}>{renderActivityCard(booking)}</div>
+                        ))}
+                    </Carousel>
+                )
+            )}
+            {upcomingActivityBookings.length === 0 && <Typography>No upcoming activity bookings available.</Typography>}
+    
+            {/* Past Itinerary Carousel */}
+            <Typography variant="h5" sx={{ mb: 2 }}>Past Itinerary Bookings</Typography>
+            {pastItineraryBookings.length > 0 && (
+                pastItineraryBookings.length === 1 ? (
+                    // Render only the single booking without carousel
+                    <div style={{height:'80%', width: '600px'}} key={pastItineraryBookings[0]._id}>{renderItineraryCard(pastItineraryBookings[0])}</div>
+                ) : (
+                    <Carousel
+                        responsive={carouselResponsiveSettings}
+                        infinite={true}
+                        showDots={true}
+                        arrows={true}
+                        swipeable={true}
+                        draggable={true}
+                        autoPlay={true}
+                        autoPlaySpeed={3000}
+                        centerMode={true}
+                        containerClass="carousel-container"
+                    >
+                        {pastItineraryBookings.map((booking) => (
+                            <div key={booking._id}>{renderItineraryCard(booking)}</div>
+                        ))}
+                    </Carousel>
+                )
+            )}
+            {pastItineraryBookings.length === 0 && <Typography>No past itinerary bookings available.</Typography>}
+    
+            {/* Upcoming Itinerary Carousel */}
+            <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>Upcoming Itinerary Bookings</Typography>
+            {upcomingItineraryBookings.length > 0 && (
+                upcomingItineraryBookings.length === 1 ? (
+                    // Render only the single booking without carousel
+                    <div style={{height:'80%', width: '600px'}} key={upcomingItineraryBookings[0]._id}>{renderItineraryCard(upcomingItineraryBookings[0])}</div>
+                ) : (
+                    <Carousel
+                        responsive={carouselResponsiveSettings}
+                        infinite={true}
+                        showDots={true}
+                        arrows={true}
+                        swipeable={true}
+                        draggable={true}
+                        autoPlay={true}
+                        autoPlaySpeed={3000}
+                        centerMode={true}
+                        containerClass="carousel-container"
+                    >
+                        {upcomingItineraryBookings.map((booking) => (
+                            <div key={booking._id}>{renderItineraryCard(booking)}</div>
+                        ))}
+                    </Carousel>
+                )
+            )}
+            {upcomingItineraryBookings.length === 0 && <Typography>No upcoming itinerary bookings available.</Typography>}
         </Box>
     );
+    
+    
 };
 
 export default ViewBookings;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import {
     TextField,
@@ -13,6 +13,7 @@ import {
     Grid,
     Paper,
 } from '@mui/material';
+import { CurrencyContext } from './CurrencyContext';
 
 const BookHotel = () => {
     const [location, setLocation] = useState('');
@@ -23,6 +24,7 @@ const BookHotel = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [searchTriggered, setSearchTriggered] = useState(false);
+    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
 
     const handleSearchHotels = async () => {
         if (!location || !checkIn || !checkOut) {
@@ -56,6 +58,10 @@ const BookHotel = () => {
     const renderStars = (rating) => {
         const maxStars = 5;
         return '★'.repeat(rating) + '☆'.repeat(maxStars - rating);
+    };
+
+    const convertPrice = (price) => {
+        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
 
     return (
@@ -117,21 +123,7 @@ const BookHotel = () => {
                         InputLabelProps={{ shrink: true }}
                     />
                 </Grid>
-                <Grid item xs={12}>
-                    <FormControl fullWidth margin="normal" variant="outlined">
-                        <InputLabel>Currency</InputLabel>
-                        <Select
-                            value={currency}
-                            onChange={(e) => setCurrency(e.target.value)}
-                            label="Currency"
-                        >
-                            <MenuItem value="USD">USD</MenuItem>
-                            <MenuItem value="EUR">EUR</MenuItem>
-                            <MenuItem value="GBP">GBP</MenuItem>
-                            <MenuItem value="JPY">JPY</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Grid>
+                
             </Grid>
             <Button
                 variant="contained"
@@ -206,7 +198,7 @@ const BookHotel = () => {
                             </Typography>
                             
                             <Typography>
-                                <strong>Price from:</strong> {currency} {hotel.priceFrom}
+                                <strong>Price from:</strong> {convertPrice(hotel.priceFrom)} {selectedCurrency}
                             </Typography>
                             <Typography>
                                 <strong>Location:</strong> {hotel.location.name}, {hotel.location.country}
