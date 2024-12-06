@@ -386,34 +386,45 @@ const Products = ( { updateWishlistCount , incrementCartCount}) => {
       };
 
     return (
+
         <Box sx={{ p: 3 }}>
-            <Typography variant="h4" sx={{ mb: 3 , fontWeight:'bold' , color:'#111E56' }}>Products</Typography>
+            <Typography variant="h4" sx={{ mb: 3 , fontWeight:'bold' , color:'#111E56' }}>
+              Products
+            </Typography>
+
             <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
-                <Box display="flex" flexWrap="wrap" gap={2} mb={3}>
+
+                <Box display="flex" flexWrap="wrap" gap={2} mb={5}  alignItems="center" >
                     <TextField
                         label="Search by Name"
                         variant="outlined"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        fullWidth
+                        sx={{ flex: 1 }}
+                        //fullWidth
                     />
+
                     <TextField
                         label="Min Price"
                         variant="outlined"
                         type="number"
                         value={minPrice}
                         onChange={(e) => setMinPrice(e.target.value)}
-                        fullWidth
+                        sx={{ flex: 1 }}
+                        //fullWidth
                     />
+
                     <TextField
                         label="Max Price"
                         variant="outlined"
                         type="number"
                         value={maxPrice}
                         onChange={(e) => setMaxPrice(e.target.value)}
-                        fullWidth
+                        sx={{ flex: 1 }}
+                        //fullWidth
                     />
-                    <FormControl variant="outlined" fullWidth>
+
+                    <FormControl variant="outlined" sx={{ flex: 1 }}>
                         <InputLabel>Sort by Ratings</InputLabel>
                         <Select
                             value={sortByRatings}
@@ -425,27 +436,28 @@ const Products = ( { updateWishlistCount , incrementCartCount}) => {
                             <MenuItem value="desc">Descending</MenuItem>
                         </Select>
                     </FormControl>
-            <Button
-                type="submit"
-                variant="contained"
-                sx={{
-                    backgroundColor: '#111E56',
-                    color: 'white',
-                    width: '150px', // Increase the width
-                    height: '55px', // Decrease the height
-                    border: '2px solid #111E56',
-                    '&:hover': {
+
+                   <Button
+                       type="submit"
+                      variant="contained"
+                      sx={{
+                      backgroundColor: '#111E56',
+                      color: 'white',
+                      //width: '150px', // Increase the width
+                      height: '40px', // Decrease the height
+                      padding: '0 16px', // Adjusted padding
+                      fontSize: '14px', // Smaller text
+                      border: '2px solid #111E56',
+                      '&:hover': {
                         backgroundColor: 'white',
                         color: '#111E56',
-                        border: '2px solid #111E56', // Optional: adds a border to match the dark blue on hover
-                    },
-                }}
-            >
-                Search
-            </Button>
-
-                    
-                </Box>
+                        border: '2px solid #111E56', 
+                        },
+                      }}
+                   >
+                   Search
+                  </Button>
+                  </Box>
 
                 {productMessage && <Typography color="error">{productMessage}</Typography>}
             </form>
