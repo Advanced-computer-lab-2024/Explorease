@@ -364,31 +364,45 @@ const TourGuideDashboard = () => {
             }}
         >
             {navigationStack.length > 0 && (
+        
         <Button
-            onClick={handleBack}
-            startIcon={<ArrowBackIcon />}
+        onClick={handleBack}
+        sx={{
+            position: 'fixed',
+            top: '80px',
+            left: isSidebarOpen ? '270px' : '80px',
+            backgroundColor: 'transparent',
+            color: '#111E56',
+            fontSize: '1rem',
+            width:'45px',
+            padding: '10px 20px',
+            borderRadius: '35px',
+            transition: 'left 0.3s ease, background-color 0.3s ease',
+            '&:hover': {
+                backgroundColor: '#e0e0e0',
+                color: '#111E56',
+            },
+            zIndex: 1000,
+        }}
+    >
+        <ArrowBackIcon
             sx={{
-                position: 'fixed',
-                top: '80px',
-                left: isSidebarOpen ? '270px' : '80px',
-                backgroundColor: '#111E56',
-                color: 'white',
-                '&:hover': {
-                    backgroundColor: 'white',
-                    color: '#111E56',
-                    border: '1px solid #111E56',
-                },
-                zIndex: 1000,
+                fontSize: '2rem', // Explicitly setting the icon size
             }}
-        >
-            Back
-        </Button>
+        />
+    </Button>
     )}
             {renderContent()}
         </Box>
     </Box>
     
-<footer style={{ backgroundColor: '#111E56', color: 'white', padding: '30px 0' , marginLeft: isSidebarOpen ? '250px' : 0}}>
+<footer style={{
+        backgroundColor: '#111E56',
+        color: 'white',
+        padding: '30px 0',
+        marginLeft: isSidebarOpen ? '250px' : '70px', // Adjust margin-left with sidebar
+        transition: 'margin-left 0.3s ease', // Smooth transition for margin-left
+    }}>
                 <Container>
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}

@@ -18,6 +18,7 @@ import {
     Grid,
 } from '@mui/material';
 import { Delete, Edit, Archive, Unarchive, Save, Cancel, Visibility } from '@mui/icons-material';
+import AddProduct from './AddProduct';
 
 const SellerProducts = () => {
     const [products, setProducts] = useState([]);
@@ -129,7 +130,7 @@ const SellerProducts = () => {
 
  
             <Box sx={{ p: 3 }}>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 7 }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 7 , color:'#111E56'}}>
                 My Products
             </Typography>
 
@@ -209,210 +210,266 @@ const SellerProducts = () => {
 
 
             <Grid
-            container
-            spacing={3} // Spacing between grid items
-            sx={{ padding: 2 }}
-          >
-            {products.map((product) => (
-              <Grid
-                item
-                key={product._id}
-                xs={12} // For small screens (mobile): full width
-                sm={6} // For medium screens: 2 cards per row
-                md={3} // For large screens: 4 cards per row
-              >
-                <Card
-                  sx={{
-                    width: "100%", // Full width of the grid item
-                    height: 450, // Fixed height for all cards
-                    borderRadius: 4,
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", // Subtle shadow
-                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out", // Hover effects
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: "0 6px 20px rgba(0, 0, 0, 0.3)",
-                    },
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  
-<Box
-    sx={{
-        position: "relative",
-        height: 250, // Increased height for the image container
-        overflow: "hidden", // Ensure the image does not exceed this container
-        borderRadius: "12px 12px 0 0", // Rounded top corners
-        display: "flex", // Flexbox for centering the image
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f5f5f5", // Optional placeholder background
-    }}
->
-    <CardMedia
-        component="img"
-        image={product.imageUrl}
-        alt={product.Name}
-        sx={{
-            objectFit: "cover", // Ensures the image covers the full container width
-            width: "100%", // Full width of the card
-            height: "100%", // Full height to ensure proper coverage
-        }}
-    />
+                container
+                spacing={4} // Space between cards
+                sx={{
+                    padding: 2,
+                    justifyContent: 'center', // Center the cards
+                }}
+            >
+                {products.map((product) => (
+                    <Grid
+                        item
+                        key={product._id}
+                        xs={12} // Full width on small screens
+                        sm={6} // Two cards per row on medium screens
+                        md={4} // Four cards per row on large screens
+                    >
+                        {editingProductId === product._id ? (
+                            <Card
+                                sx={{
+                                    width: '100%', // Full width of the grid item
+                                    height: 450, // Fixed card height
+                                    borderRadius: 4,
+                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Subtle shadow
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    padding: 2,
+                                }}
+                            >
+                                <TextField
+                                    label="Name"
+                                    value={updatedProductData.Name || ''}
+                                    onChange={(e) =>
+                                        setUpdatedProductData({
+                                            ...updatedProductData,
+                                            Name: e.target.value,
+                                        })
+                                    }
+                                    fullWidth
+                                    sx={{ mb: 2 }}
+                                />
+                                <TextField
+                                    label="Price"
+                                    type="number"
+                                    value={updatedProductData.Price || ''}
+                                    onChange={(e) =>
+                                        setUpdatedProductData({
+                                            ...updatedProductData,
+                                            Price: e.target.value,
+                                        })
+                                    }
+                                    fullWidth
+                                    sx={{ mb: 2 }}
+                                />
+                                <TextField
+                                    label="Description"
+                                    value={updatedProductData.Description || ''}
+                                    onChange={(e) =>
+                                        setUpdatedProductData({
+                                            ...updatedProductData,
+                                            Description: e.target.value,
+                                        })
+                                    }
+                                    fullWidth
+                                    multiline
+                                    rows={3}
+                                    sx={{ mb: 2 }}
+                                />
+                                <TextField
+                                    label="Available Quantity"
+                                    type="number"
+                                    value={updatedProductData.AvailableQuantity || ''}
+                                    onChange={(e) =>
+                                        setUpdatedProductData({
+                                            ...updatedProductData,
+                                            AvailableQuantity: e.target.value,
+                                        })
+                                    }
+                                    fullWidth
+                                    sx={{ mb: 2 }}
+                                />
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        onClick={() => handleUpdateSubmit(product._id)}
+                                        sx={{
+                                            backgroundColor: '#111E56',
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: 'white',
+                                                color: '#111E56',
+                                                border: '2px solid #111E56',
+                                            },
+                                        }}
+                                    >
+                                        Save Changes
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        onClick={() => setEditingProductId(null)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Box>
+                            </Card>
+                        ) : (
+                            <Card
+                                sx={{
+                                    width: '100%', // Full width of the grid item
+                                    height: 450, // Fixed card height
+                                    borderRadius: 4,
+                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Subtle shadow
+                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effects
+                                    '&:hover': {
+                                        transform: 'scale(1.05)',
+                                        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
+                                    },
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                }}
+                            >
+                                {/* Image Section */}
+                                <Box
+                                    sx={{
+                                        position: 'relative',
+                                        height: 250, // Image container height
+                                        overflow: 'hidden',
+                                        borderRadius: '12px 12px 0 0', // Rounded top corners
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: '#f5f5f5', // Placeholder background
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={product.imageUrl}
+                                        alt={product.Name}
+                                        sx={{
+                                            objectFit: 'cover',
+                                            width: '100%', // Full width
+                                            height: '100%', // Full height
+                                        }}
+                                    />
+                                    {/* Price Badge */}
+                                    <Typography
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 10,
+                                            left: 10,
+                                            backgroundColor: '#4F46E5',
+                                            color: 'white',
+                                            fontSize: '0.875rem',
+                                            fontWeight: 'bold',
+                                            borderRadius: 2,
+                                            padding: '2px 8px',
+                                        }}
+                                    >
+                                        ${product.Price}
+                                    </Typography>
+                                </Box>
     
-    <Typography
-        sx={{
-            position: "absolute",
-            top: 10,
-            left: 10,
-            backgroundColor: "#4F46E5",
-            color: "white",
-            fontSize: "0.875rem",
-            fontWeight: "bold",
-            borderRadius: 2,
-            padding: "2px 8px",
-        }}
-    >
-        ${product.Price} 
-    </Typography>
-</Box>
-
-      
-                  
-                  <Box
-                    sx={{
-                      flex: 1,
-                      padding: "16px",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    
-
-                    <Box
-                      sx={{
-                        height: 35,
-                        overflow: "hidden",
-                        textAlign: "center",
-                      }}
-                    >
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#111E56",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {product.Name}
-                      </Typography>
-                    </Box>
-      
-
-                    
-                    <Box
-                      sx={{
-                        height: 50,
-                        overflow: "hidden",
-                        marginTop: 1,
-                        textAlign: "left",
-                      }}
-                    >
-                      <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 2, // Limit to 2 lines instead of 3
-            }}
-        >
-            {product.Description}
-        </Typography>
-                    </Box>
-      
-                    
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginBottom: 2,
-                        height: 25,
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: "#FFC107",
-                          fontSize: "1.5rem",
-                        }}
-                      >
-                        {"★".repeat(product.Ratings)}{"☆".repeat(5 - product.Ratings)}
-                      </Typography>
-                    </Box>
-                  </Box>
-      
-                  
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "16px",
-                      borderTop: "1px solid #E5E7EB",
-                    }}
-                  >
-                    
-          
-                                        <Tooltip title="Edit Product" arrow>
-                                            <IconButton
-                                                color="primary"
-                                                onClick={() => handleEditProduct(product)}
-                                            >
-                                                <Edit />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip
-                                            title={
-                                                product.Archived ? 'Unarchive Product' : 'Archive Product'
-                                            }
-                                            arrow
+                                {/* Content Section */}
+                                <Box
+                                    sx={{
+                                        flex: 1,
+                                        padding: '16px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    {/* Product Name */}
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            color: '#111E56',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            textAlign: 'center',
+                                            marginBottom: '8px',
+                                        }}
+                                    >
+                                        {product.Name}
+                                    </Typography>
+    
+                                    {/* Description */}
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            display: '-webkit-box',
+                                            WebkitBoxOrient: 'vertical',
+                                            WebkitLineClamp: 2, // Limit to 2 lines
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        {product.Description}
+                                    </Typography>
+                                </Box>
+    
+                                {/* Action Buttons */}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        padding: '8px 16px',
+                                        borderTop: '1px solid #E5E7EB', // Divider
+                                    }}
+                                >
+                                    <Tooltip title="Edit Product">
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() => handleEditProduct(product)}
                                         >
-                                            <IconButton
-                                                color={product.Archived ? 'success' : 'warning'}
-                                                onClick={() => handleArchiveProduct(product._id)}
-                                            >
-                                                {product.Archived ? <Unarchive /> : <Archive />}
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="Delete Product" arrow>
-                                            <IconButton
-                                                color="error"
-                                                onClick={() => handleDeleteProduct(product._id)}
-                                            >
-                                                <Delete />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title="View Sales" arrow>
-                                            <IconButton
-                                                color="info"
-                                                onClick={() => handleViewSales(product._id)}
-                                            >
-                                                <Visibility />
-                                            </IconButton>
-                                        </Tooltip>
+                                            <Edit />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title={product.Archived ? 'Unarchive Product' : 'Archive Product'}
+                                    >
+                                        <IconButton
+                                            color={product.Archived ? 'success' : 'warning'}
+                                            onClick={() => handleArchiveProduct(product._id)}
+                                        >
+                                            {product.Archived ? <Unarchive /> : <Archive />}
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Delete Product">
+                                        <IconButton
+                                            color="error"
+                                            onClick={() => handleDeleteProduct(product._id)}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="View Sales">
+                                        <IconButton
+                                            color="info"
+                                            onClick={() => setProductMessage(`Total Sales: ${product.Sales || 0}`)}
+                                        >
+                                            <Visibility />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                            </Card>
+                        )}
+                    </Grid>
+                ))}
+            </Grid>
 
-                  </Box>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+            <AddProduct  />
         </Box>
     );
 };
