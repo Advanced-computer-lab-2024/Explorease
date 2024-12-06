@@ -570,21 +570,36 @@ const BookItinerariesPage = () => {
                             </IconButton>
                         </Tooltip>
                 
-                        <Tooltip title={savedItineraries.includes(itinerary._id)? 'Unbookmark' : 'Bookmark'}>
-    <IconButton
-        onClick={() => handleSaveItinerary(itinerary._id)}
-        sx={{
-            backgroundColor: savedItineraries.includes(itinerary._id)? '#FFD54F' : '#FFB800',
-            color:'white',
-            '&:hover': {
-                backgroundColor: savedItineraries.includes(itinerary._id)? '#FF7961' : '#FFD54F',
-                color: 'black',
-            },
-        }}
-    >
-        {savedItineraries[[itinerary._id]] ? <BookmarkIcon /> : <BookmarkRemoveIcon />}
-    </IconButton>
-</Tooltip>
+                        
+                    <Tooltip title={savedItineraries.includes(itinerary._id)? 'Unbookmark' : 'Bookmark'}>
+                        <IconButton
+                            onClick={() => handleSaveItinerary(itinerary._id)}
+                            sx={{
+                                backgroundColor: savedItineraries.includes(itinerary._id)? '#FF5733' : '#FFB800',
+                                color:'white',
+                                '&:hover': {
+                                    backgroundColor: savedItineraries.includes(itinerary._id)? '#FF7961' : '#FFD54F',
+                                    color: 'black',
+                                },
+                            }}>
+                                {savedItineraries[[itinerary._id]] ? <BookmarkIcon /> : <BookmarkRemoveIcon />}
+                        </IconButton>
+                    </Tooltip>
+
+{/* <Tooltip title={bookmarkedActivities.includes(activity._id) ? "Unbookmark" : "Bookmark"}>
+                    <IconButton
+                        onClick={() => handleBookmarkActivity(activity)}
+                        sx={{
+                            backgroundColor: bookmarkedActivities.includes(activity._id) ? '#FF5733' : '#FFB800',
+                            color: 'white',
+                            '&:hover': {
+                                backgroundColor: bookmarkedActivities.includes(activity._id) ? '#FF7961' : '#FFD54F',
+                                color: 'black',
+                            },
+                        }}
+                    >
+                        <BookmarkRemoveIcon />
+                    </IconButton> */}
 
                     </Box>
                 </Card>

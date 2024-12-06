@@ -269,11 +269,9 @@ const ViewBookings = () => {
                                             },
                                             mb: -4,
                                             mt : -3
-                                        }}
-                                    >Submit Rating</Button>
+                                        }}>Submit Rating</Button>
                                     </Box>
                                 )}
-    
                                 {/* Comment Section */}
                                 {booking.comment ? (
                                     <Typography variant="body2">
