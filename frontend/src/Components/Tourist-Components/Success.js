@@ -21,12 +21,8 @@ const Success = () => {
     const verifyStripePayment = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(
-                '/tourists/cart/stripe-success',
-                { sessionId },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            setMessage(response.data.message || 'Payment successful! Your purchase has been completed.');
+            
+            setMessage('Payment successful! Your purchase has been completed.');
         } catch (error) {
             console.error('Error verifying Stripe payment:', error);
             setMessage('Failed to verify payment. Please contact support.');

@@ -19,6 +19,10 @@ const promoCodeController = require('../Controllers/ProductControllers/PromoCode
 const savedActivityController = require('../Controllers/ActivityControllers/SavedActivityController');
 const notificationController = require('../Controllers/UserControllers/NotificationController');
 const savedItineraryController = require('../Controllers/ActivityControllers/SavedItinerary');
+const flightController = require('../Controllers/flightController');
+const hotelController = require('../Controllers/hotelController');
+
+
 // Tourist-specific routes
 router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristById);  // Tourist can read their own profile
 router.put('/myProfile', roleAuth(['tourist']), touristControllers.updateTourist);   // Tourist can update their profile
@@ -160,5 +164,9 @@ router.post('/activities/stripe-success', roleAuth(['tourist']), bookingControll
 
 router.post('/itineraries/stripe-session', roleAuth(['tourist']), itineraryBookingController.createStripeSessionForItinerary);
 router.post('/itineraries/stripe-success', roleAuth(['tourist']), itineraryBookingController.stripeSuccessItinerary);
+
+router.post('/flights/stripe-session', roleAuth(['tourist']), flightController.createStripeSession);
+router.post('/hotels/stripe-session', roleAuth(['tourist']), hotelController.createStripeSession);
+
 
 module.exports = router;

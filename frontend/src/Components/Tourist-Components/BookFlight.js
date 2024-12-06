@@ -77,9 +77,41 @@ const BookFlight = () => {
         return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
     // Handler: Book a flight
-    const handleBookNow = (flight) => {
-        alert(`Booking flight with ID: ${flight.id}`);
-    };
+//     const handleBookNow = (flight) => {
+// //        handleSectionChange('flight-checkout', { flight });
+//     };
+const handleBookNow = async (flight) => {
+    try {
+        // Call the backend API to create a Stripe session
+
+        const departure = `${flight.itineraries[0].segments[0].departure.at.split('T')[0]} at ${flight.itineraries[0].segments[0].departure.at.split('T')[1]}`;
+
+        const arrival = `${flight.itineraries[0].segments[0].arrival.at.split('T')[0]} at ${flight.itineraries[0].segments[0].arrival.at.split('T')[1]}`;
+        
+
+
+        const response = await axios.post('/tourists/flights/stripe-session', {
+            flightId: flight.id,
+            amount: flight.price.total,
+            origin, 
+            destination, 
+            departure,
+            arrival
+        },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+
+        // Redirect to the Stripe checkout URL
+        if (response.data.url) {
+            window.location.href = response.data.url;
+        } else {
+            throw new Error('Stripe URL not received');
+        }
+    } catch (error) {
+        console.error('Error initiating Stripe checkout:', error);
+        setError('Error initiating payment. Please try again.');
+    }
+};
+
 
     return (
         <Box sx={{ px: 3, py: 4, maxWidth: 800, mx: 'auto', backgroundColor: 'white', borderRadius: 2, boxShadow: 2, marginTop:'35px' }}>

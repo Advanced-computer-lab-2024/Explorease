@@ -17,6 +17,10 @@ code {
 }
 
 
+.carousel-item-spacing {
+  margin: 0 0.85%; /* Adjust the spacing between items */
+}
+
 /* Add custom styles to ensure proper spacing between the cards */
 .carousel .react-multiple-carousel__item {
   margin: 10px;  /* Adjust the gap between cards */

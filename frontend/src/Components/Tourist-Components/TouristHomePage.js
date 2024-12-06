@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Divider from '@mui/material/Divider';
 import CssBaseline from '@mui/material/CssBaseline';
 import logo2 from '../../Misc/image.png';
-
+import '../../index.css';
 
 const TouristHomePage = ({profile}) => {
     const [activities, setActivities] = useState([]);
@@ -80,10 +80,10 @@ const TouristHomePage = ({profile}) => {
     }, []);
 
     const responsive = {
-        superLargeDesktop: { breakpoint: { max: 4000, min: 1024 }, items: 6 },
+        superLargeDesktop: { breakpoint: { max: 4000, min: 1024 }, items: 5 },
         LargeDesktop: { breakpoint: { max: 2000, min: 1024 }, items: 4},
         desktop: { breakpoint: { max: 1024, min: 768 }, items: 3},
-        tablet: { breakpoint: { max: 768, min: 464 }, items: 1 },
+        tablet: { breakpoint: { max: 768, min: 464 }, items: 2 },
         mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
     };
 
@@ -572,7 +572,7 @@ const TouristHomePage = ({profile}) => {
     ) : (
         <>
             {/* Itineraries Section */}
-            <Box sx={{ padding: '0 0', marginBottom: '40px' }} >
+            <Box sx={{ padding: '0 0', marginBottom: '20px' }} >
                 <Typography
                     variant="h5"
                     sx={{
@@ -585,7 +585,19 @@ const TouristHomePage = ({profile}) => {
                 >
                     Popular Itineraries
                 </Typography>
-                <Carousel responsive={responsive}>
+                <Carousel 
+                containerClass="carousel-container"
+                itemClass='carousel-item-spacing'
+                responsive={responsive}
+                arrows={true}
+                swipeable={true}
+                draggable={true}
+                autoPlay={true}
+                autoPlaySpeed={3000}
+                centerMode={true}
+                infinite={true}
+                showDots={true}
+                >
                     {itineraries.map(renderItineraryCard)}
                 </Carousel>
             </Box>
@@ -603,7 +615,17 @@ const TouristHomePage = ({profile}) => {
                 >
                     Featured Activities
                 </Typography>
-                <Carousel responsive={responsive}>
+                <Carousel  containerClass="carousel-container"
+                itemClass='carousel-item-spacing'
+                responsive={responsive}
+                arrows={true}
+                swipeable={true}
+                draggable={true}
+                autoPlay={true}
+                autoPlaySpeed={3000}
+                centerMode={true}
+                infinite={true}
+                showDots={true}>
                     {activities.map(renderActivityCard)}
                 </Carousel>
             </Box>
@@ -622,7 +644,17 @@ const TouristHomePage = ({profile}) => {
                 >
                     Explore Historical Places
                 </Typography>
-                <Carousel responsive={responsive}>
+                <Carousel  containerClass="carousel-container"
+                itemClass='carousel-item-spacing'
+                responsive={responsive}
+                arrows={true}
+                swipeable={true}
+                draggable={true}
+                autoPlay={true}
+                autoPlaySpeed={3000}
+                centerMode={true}
+                infinite={true}
+                showDots={true}>
                     {historicalPlaces.map(renderHistoricalPlaceCard)}
                 </Carousel>
             </Box>
@@ -630,7 +662,7 @@ const TouristHomePage = ({profile}) => {
     )}
     {renderDetailsPopup()}
     
-    
+   
 </Box>
 
 

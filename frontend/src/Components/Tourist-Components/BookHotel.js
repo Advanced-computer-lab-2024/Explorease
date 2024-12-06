@@ -50,9 +50,31 @@ const BookHotel = () => {
         }
     };
 
-    const handleBookNow = (hotel) => {
-        alert(`Booking hotel: ${hotel.hotelName}`);
+    const handleBookNow = async (hotel) => {
+        try {
+            // Make a request to the backend to create a Stripe session
+            const response = await axios.post('/tourists/hotels/stripe-session', {
+                hotelId: hotel.id,
+                price: hotel.priceFrom,
+                name : hotel.hotelName,
+                country : hotel.location.country, 
+                currency: selectedCurrency,
+                checkInDate : checkIn, 
+                checkOutDate : checkOut,
+            },  { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+
+            // Redirect to the Stripe Checkout session URL
+            if (response.data.url) {
+                window.location.href = response.data.url;
+            } else {
+                throw new Error('Stripe URL not received');
+            }
+        } catch (err) {
+            console.error('Error creating Stripe session:', err);
+            alert('Failed to initiate payment. Please try again.');
+        }
     };
+
 
     // Helper function to render stars
     const renderStars = (rating) => {

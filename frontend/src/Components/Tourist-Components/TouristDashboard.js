@@ -46,6 +46,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 
+
 const TouristDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
@@ -56,6 +57,7 @@ const TouristDashboard = () => {
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
     const [wishlistCount, setWishlistCount] = useState(0); // Holds the number of items in the wishlist
     const [cartCount, setCartCount] = useState(0); // Holds the number of items in the cart
+    const [sectionProps, setSectionProps] = useState({});
 
     const fetchCartItems = async () => {
         try {
@@ -106,9 +108,10 @@ const TouristDashboard = () => {
     };
 
 
-    const handleSectionChange = (section) => {
+    const handleSectionChange = (section, props) => {
         setNavigationStack((prevStack) => [...prevStack, activeComponent]); // Push current section to stack
         setActiveComponent(section); // Set new section
+        setSectionProps(props); 
     };
     
         // Function to handle Back button
@@ -397,7 +400,7 @@ const TouristDashboard = () => {
             case 'wallet':
                 return <h2> Still Implementing Wallet!</h2>;
             case 'bookFlight':
-                return <BookFlight />;
+                return <BookFlight  />;
             case 'bookHotel':
                 return <BookHotel />;
             case 'bookActivity':
