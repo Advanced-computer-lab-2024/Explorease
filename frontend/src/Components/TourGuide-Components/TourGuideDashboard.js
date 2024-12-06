@@ -43,6 +43,11 @@ import {
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
+
+import GuideActivity from '../MainPage-Components/CommonActivity';
+import GuideItinerary from '../MainPage-Components/CommonItinerary';
+import GuideHistoricalPlaces from '../MainPage-Components/CommonHistoricalPlaces';
+
 const TourGuideDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
@@ -293,6 +298,14 @@ const TourGuideDashboard = () => {
                 return <SalesReport />;
             case 'ItinerarySummary':
                 return <ItinerarySummary />;
+                case 'Activity' :
+                  return <GuideActivity />;
+    
+                case 'Itinerary' :
+                  return <GuideItinerary />;
+    
+                case 'historical-places' :
+                  return <GuideHistoricalPlaces />;
             default:
                 return <Typography variant="h6">Welcome to the Dashboard</Typography>;
         }

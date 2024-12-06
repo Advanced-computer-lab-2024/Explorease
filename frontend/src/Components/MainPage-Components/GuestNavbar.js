@@ -33,13 +33,6 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
         marginLeft: 'auto',
     };
 
-    const linkStyle = {
-        color: 'white',
-        textDecoration: 'none',
-        fontSize: '18px',
-        fontWeight: 500,
-        fontFamily: 'Poppins, sans-serif',
-    };
 
     const logoStyle = {
         height: '50px',
@@ -81,6 +74,36 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
         setNotificationDrawerOpen(open);
     };
 
+    const linkStyle = {
+        color: 'white',
+        textDecoration: 'none',
+        fontSize: '18px',
+        fontWeight: 'bold',
+        position: 'relative',
+        display: 'inline-block',
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: 'white',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    };
+    // const linkContainerStyle = {
+    //     display: 'flex',          // Flexbox layout to line items horizontally
+    //     gap: '20px',              // Space between each button
+    //     alignItems: 'center',     // Vertically align the items (optional, if needed)
+    //     marginLeft: 'auto',       // This ensures the links are aligned to the right side (optional)
+    // };
+    
     const markNotificationAsRead = async (id) => {
         const token = localStorage.getItem('token');
         try {
@@ -192,6 +215,7 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
         gap: 2,                // Add spacing between items (you can adjust the value)
     }}
 >
+    
     {/* Sidebar Toggle Icon */}
     <IconButton
         edge="start"
@@ -202,6 +226,7 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
     >
         <MenuIcon />
     </IconButton>
+    
 
     {/* Clickable Logo */}
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -209,9 +234,33 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
             <img src={logo} alt="Logo" style={{ height: '50px', marginLeft: '-10px' }} />
         </Link>
     </Box>
+    <Box sx={linkContainerStyle}> {/* Ensure this Box wraps all the links */}
+    <Typography
+        sx={linkStyle}
+        onClick={() => setActiveComponent('Activity')}
+    >
+        Activities
+    </Typography>                        
+    <Typography
+        sx={linkStyle}
+        onClick={() => setActiveComponent('Itinerary')}
+    >
+        Itineraries
+    </Typography>
+
+    <Typography
+        sx={linkStyle}
+        onClick={() => setActiveComponent('historical-places')}
+    >
+        Historical Places
+    </Typography>
+</Box>
+
+    
 </Box>
 
 
+                
                 
 
                 {/* Notification Icon */}
@@ -225,7 +274,9 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
     >
         <PersonIcon />
     </IconButton>
+    
 </Tooltip>
+
                     <IconButton sx={{ color: 'white' }} onClick={() => toggleNotificationDrawer(true)}>
                         <Badge
                             badgeContent={notifications.filter((notif) => !notif.isRead).length}
@@ -255,28 +306,6 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
     );
 };
 
-const linkStyle = {
-    color: 'white',
-    textDecoration: 'none',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    position: 'relative',
-    display: 'inline-block',
-    '&::after': {
-        content: '""',
-        position: 'absolute',
-        width: '100%',
-        height: '2px',
-        backgroundColor: 'white',
-        bottom: '-2px',
-        left: '0',
-        transform: 'scaleX(0)',
-        transformOrigin: 'left',
-        transition: 'transform 0.3s ease-in-out',
-    },
-    '&:hover::after': {
-        transform: 'scaleX(1)',
-    },
-};
+
 
 export default Navbar;

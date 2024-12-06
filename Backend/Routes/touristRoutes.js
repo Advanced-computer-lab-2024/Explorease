@@ -28,7 +28,7 @@ router.get('/myProfile', roleAuth(['tourist']), touristControllers.getTouristByI
 router.put('/myProfile', roleAuth(['tourist']), touristControllers.updateTourist);   // Tourist can update their profile
 
 // Tourist-specific routes for products
-router.get('/products', optionalAuth(['tourist']), productControllers.getAllProducts);  // View all products
+router.get('/products', productControllers.getAllProducts);  // View all products
 router.get('/products/filter-sort-search', optionalAuth(['tourist']), productControllers.getFilteredSortedProducts);  // Search products by name
 
 //promo code 
@@ -63,9 +63,9 @@ router.post('/cart/apply-promo', roleAuth(['tourist']), cartController.applyProm
 
 // Tourist shared routes for viewing and filtering
 // Guest shared routes for viewing and filtering
-router.get('/activities', optionalAuth(['tourist', 'guest']), activityControllers.getAllActivityTourist );  // View all activities
-router.get('/itineraries', optionalAuth(['tourist', 'guest']), itineraryControllers.getAllActivatedItinerary);  // View all itineraries
-router.get('/historical-places', optionalAuth(['tourist', 'guest']), historicalPlaceControllers.getallHistoricalPlaces);  // View all historical places
+router.get('/activities',  activityControllers.getAllActivityTourist );  // View all activities
+router.get('/itineraries', itineraryControllers.getAllActivatedItinerary);  // View all itineraries
+router.get('/historical-places',historicalPlaceControllers.getallHistoricalPlaces);  // View all historical places
 
 // Filtering and searching (Activities, Itineraries, Historical Places)
 router.get('/activities/filter-sort-search', optionalAuth(['tourist', 'guest']), activityControllers.filterSortSearchActivities );  // Search activities by name, category, or tag

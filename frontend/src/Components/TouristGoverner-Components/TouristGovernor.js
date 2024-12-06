@@ -40,6 +40,10 @@ import {
     AddLocation,       // For Create Historical Places
     Edit,              // For Update Profile // For Back Navigation
   } from '@mui/icons-material';
+
+import GovernorActivity from '../MainPage-Components/CommonActivity';
+import GovernorHistoricalPlaces from '../MainPage-Components/CommonHistoricalPlaces';
+import GovernorItinerary from '../MainPage-Components/CommonItinerary';
   
 const TouristGovernorDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -385,6 +389,14 @@ const TouristGovernorDashboard = () => {
             //     );
             case 'profile':
                 return renderProfile();
+                case 'Activity' :
+                  return <GovernorActivity />;
+    
+                case 'Itinerary' :
+                  return <GovernorItinerary />;
+    
+                case 'historical-places' :
+                  return <GovernorHistoricalPlaces />;
             default:
                 return <Typography variant="h6">Welcome to the Dashboard</Typography>;
         }

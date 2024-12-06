@@ -35,6 +35,11 @@ import { Container, Stack , Link} from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
+import SellerActivity from '../MainPage-Components/CommonActivity';
+import SellerItinerary from '../MainPage-Components/CommonItinerary';
+import SellerHistoricalPlaces from '../MainPage-Components/CommonHistoricalPlaces';
+
+
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
@@ -271,6 +276,15 @@ const SellerDashboard = () => {
                 return <UploadLogo setProfile={setProfile} />;
             case 'salesReport':
                 return <SalesReport />;
+
+                case 'Activity' :
+                  return <SellerActivity />;
+    
+                case 'Itinerary' :
+                  return <SellerItinerary />;
+    
+                case 'historical-places' :
+                  return <SellerHistoricalPlaces />;
             default:
                 return <Typography variant="h6">Welcome to the Dashboard</Typography>;
         }

@@ -20,6 +20,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 import { useNavigate } from 'react-router-dom';
+import AdvertiserActivity from '../MainPage-Components/CommonActivity';
+import AdvertiserItinerary from '../MainPage-Components/CommonItinerary';
+import AdvertiserHistoricalPlaces from '../MainPage-Components/CommonHistoricalPlaces';
+
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -281,6 +285,14 @@ const AdvertiserDashboard = () => {
                 return <SalesReport/>;
             case 'ActivitySummary' :
                 return <ActivitySummary />;
+            case 'Activity' :
+              return <AdvertiserActivity />;
+
+            case 'Itinerary' :
+              return <AdvertiserItinerary />;
+
+            case 'historical-places' :
+              return <AdvertiserHistoricalPlaces />;
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
