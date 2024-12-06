@@ -522,7 +522,7 @@ const ViewBookings = () => {
     return (
         <Box>
             {/* Past Activity Carousel */}
-            <Typography variant="h5" sx={{ mb: 2 , mt: 5 }}><h2>Past Activity Bookings</h2></Typography>
+            <Typography variant="h5" sx={{ mb: 2 , mt: 5 , fontWeight:'bold' , color:'#111E56'}}><h2>Past Activity Bookings</h2></Typography>
             {pastActivityBookings.length > 0 && (
                 pastActivityBookings.length === 1 ? (
                     // Render only the single booking without carousel
@@ -549,7 +549,7 @@ const ViewBookings = () => {
             {pastActivityBookings.length === 0 && <Typography>No past activity bookings available.</Typography>}
     
             {/* Upcoming Activity Carousel */}
-            <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>Upcoming Activity Bookings</Typography>
+            <Typography variant="h5" sx={{ mb: 2, mt: 4 ,fontWeight:'bold' , color:'#111E56'}}>Upcoming Activity Bookings</Typography>
             {upcomingActivityBookings.length > 0 && (
                 upcomingActivityBookings.length === 1 ? (
                     // Render only the single booking without carousel
@@ -576,7 +576,7 @@ const ViewBookings = () => {
             {upcomingActivityBookings.length === 0 && <Typography>No upcoming activity bookings available.</Typography>}
     
             {/* Past Itinerary Carousel */}
-            <Typography variant="h5" sx={{ mb: 2 }}>Past Itinerary Bookings</Typography>
+            <Typography variant="h5" sx={{ mb: 2 ,fontWeight:'bold' , color:'#111E56'}}>Past Itinerary Bookings</Typography>
             {pastItineraryBookings.length > 0 && (
                 pastItineraryBookings.length === 1 ? (
                     // Render only the single booking without carousel
@@ -603,7 +603,7 @@ const ViewBookings = () => {
             {pastItineraryBookings.length === 0 && <Typography>No past itinerary bookings available.</Typography>}
     
             {/* Upcoming Itinerary Carousel */}
-            <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>Upcoming Itinerary Bookings</Typography>
+            <Typography variant="h5" sx={{ mb: 2, mt: 4 , fontWeight:'bold' , color:'#111E56'}}>Upcoming Itinerary Bookings</Typography>
             {upcomingItineraryBookings.length > 0 && (
                 upcomingItineraryBookings.length === 1 ? (
                     // Render only the single booking without carousel

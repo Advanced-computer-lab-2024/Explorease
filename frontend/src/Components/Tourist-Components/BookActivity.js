@@ -333,7 +333,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '2000px', margin: '0 auto' }}>
-        <Typography variant="h4" gutterBottom>Book an Activity</Typography>
+        <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>Book an Activity</Typography>
         <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
             <TextField
                 label="Search by Name"

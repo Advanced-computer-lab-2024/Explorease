@@ -396,7 +396,7 @@ const BookItinerariesPage = () => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '1600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>Book an Itinerary</Typography>
+            <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>Book an Itinerary</Typography>
             <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
                 <TextField
                     label="Search by Name"
@@ -470,7 +470,14 @@ const BookItinerariesPage = () => {
                     </Select>
                 </FormControl>
 
-                <Button type="submit" variant="contained" color="primary" sx={{ height: '56px', alignSelf: 'center' }}>
+                <Button type="submit" variant="contained" color="primary" sx={{ height: '56px', alignSelf: 'center' ,backgroundColor: '#111E56', 
+                            color: 'white', 
+                            border: '2px solid #111E56', // Optional: adds a border to match the dark blue on hover
+                            '&:hover': { 
+                                backgroundColor: 'white', 
+                                color: '#111E56',
+                                border: '2px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                            }, }}>
                     Search & Filter
                 </Button>
             </form>
@@ -563,15 +570,15 @@ const BookItinerariesPage = () => {
                             </IconButton>
                         </Tooltip>
                 
-                        <Tooltip title={savedItineraries.includes(itinerary._id)? 'Saved' : 'Bookmark'}>
+                        <Tooltip title={savedItineraries.includes(itinerary._id)? 'Unbookmark' : 'Bookmark'}>
     <IconButton
         onClick={() => handleSaveItinerary(itinerary._id)}
         sx={{
             backgroundColor: savedItineraries.includes(itinerary._id)? '#FFD54F' : '#FFB800',
-            color: savedItineraries.includes(itinerary._id)? 'black' : 'white',
+            color:'white',
             '&:hover': {
-                backgroundColor: '#FFD54F',
-                color: savedItineraries.includes(itinerary._id)? '#111E56' : 'black',
+                backgroundColor: savedItineraries.includes(itinerary._id)? '#FF7961' : '#FFD54F',
+                color: 'black',
             },
         }}
     >
