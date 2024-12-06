@@ -291,7 +291,6 @@ const ViewBookings = () => {
     </Box>
                                 
                                 )}
-    
                                 {/* Comment Section */}
                                 {booking.comment ? (
                                     <Typography variant="body2">
