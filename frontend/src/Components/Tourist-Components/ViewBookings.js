@@ -80,17 +80,32 @@ const ViewBookings = () => {
         }
     };
 
-    const handleRatingChange = (booking, value) => {
-        setRatings(prev => ({ ...prev, [booking._id]: value }));
-    };
+    // const handleRatingChange = (booking, value) => {
+    //     setRatings(prev => ({ ...prev, [booking._id]: value }));
+    // };
 
     const handleCommentChange = (booking, value) => {
         setComments(prev => ({ ...prev, [booking._id]: value }));
     };
 
-    const submitRating = async (booking, type) => {
-        if (!ratings[booking._id]) {
-            alert('Please enter a rating.');
+    const handleRatingChange = (booking, value) => {
+        // Directly update the state
+        setRatings((prevRatings) => ({
+            ...prevRatings,
+            [booking._id]: value,
+        }));
+
+        // Determine the type based on the booking object, e.g., by checking if it's an itinerary or activity
+    const type = booking.Itinerary ? 'itinerary' : 'activity';
+    
+        // Submit the rating after the state has been updated
+        submitRating(booking, type, value);
+    };
+    
+    const submitRating = async (booking, type, ratingValue) => {
+        // Use the passed rating value directly instead of reading from state
+        if (!ratingValue) {
+            console.log('No rating selected.');
             return;
         }
     
@@ -101,22 +116,22 @@ const ViewBookings = () => {
                     ? `/tourists/activity-bookings/add-rating/${booking._id}`
                     : `/tourists/itinerary-bookings/add-rating/${booking._id}`;
     
-            console.log('Sending rating:', ratings[booking._id]);
+            console.log('Sending rating:', ratingValue);
             console.log('Endpoint:', endpoint);
     
-            const response = await axios.post(endpoint, { rating: ratings[booking._id] }, {
+            const response = await axios.post(endpoint, { rating: ratingValue }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
     
             console.log('Rating API response:', response.data);
             alert('Rating submitted successfully!');
-            setRatings((prev) => ({ ...prev, [booking._id]: '' }));
             fetchBookings(); // Refresh bookings to reflect the new rating
         } catch (error) {
             console.error('Error submitting rating:', error.response || error.message);
             setErrorMessage('Error submitting rating.');
         }
-    };
+    };    
+    
 
     const submitComment = async (booking, type) => {
         if (!comments[booking._id]) {
@@ -186,45 +201,49 @@ const ViewBookings = () => {
             }}
             className="carousel-card"
         >
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                {/* Upper Section: Image */}
-                {booking.Activity?.imageUrl && (
+            {/* Upper Section: Image */}
+            {booking.Activity?.imageUrl && (
                     <img
                         src={placeholderImage}
                         alt={booking.Activity?.name}
                         style={{
                             width: '100%',
-                            height: 'auto',
-                            borderRadius: '8px',
+                            height: '60%',
+                           
                             marginBottom: '16px',
+                            objectFit: 'cover',
+                    borderTopLeftRadius: '12px',
+                    borderTopRightRadius: '12px',
                         }}
                     />
                 )}
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                
     
                 {/* Main Content Section (Details + Rating/Comment Side by Side) */}
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1 }}>
                     {/* Left Section: Details */}
                     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                        <Typography variant="h6" noWrap>
+                        <Typography variant="h5" noWrap style={{fontWeight:'bold' , color:'#111E56'}}>
                             {booking.Activity?.name || 'Activity has been removed by the Advertiser.'}
                         </Typography>
                         {booking.Activity?.date && (
                             <Typography variant="body2">
-                                <strong>Date:</strong>{' '}
+                                <strong style={{fontWeight:'bold' , color:'#111E56'}}>Date:</strong>{' '}
                                 {new Date(booking.Activity?.date).toLocaleDateString()}
                             </Typography>
                         )}
                         <Typography variant="body2">
-                            <strong>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}
+                            <strong style={{fontWeight:'bold' , color:'#111E56'}}>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Cancellation Deadline:</strong>{' '}
+                            <strong style={{fontWeight:'bold' , color:'#111E56'}}> Cancellation Deadline:</strong>{' '}
                             {new Date(booking.CancellationDeadline).toLocaleDateString()}
                         </Typography>
                     </Box>
     
                     {/* Right Section: Rating and Comment */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', ml: 2, width: '40%' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', ml: 2, width: '40%', alignItems: 'center', }}>
                         {isPastDate(booking.Activity?.date) ? (
                             <>
                                 {/* If there's a rating, display it */}
@@ -242,36 +261,35 @@ const ViewBookings = () => {
                                         />
                                     </Box>
                                 ) : (
-                                    // If no rating yet, show the rating field
-                                    <Box sx={{ mb: 2 }}>
-                                        <Typography variant="body2">
-                                            <strong>Rate this Activity:</strong>
-                                        </Typography>
-                                        <Rating
-                                            name={`rating-${booking._id}`}
-                                            value={ratings[booking._id] || 0}
-                                            onChange={(e, newValue) => handleRatingChange(booking, newValue)}
-                                            precision={1}
-                                            max={5}
-                                        />
-                                         <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => submitRating(booking, 'activity')}
-                                        sx={{
-                                            marginTop: '10px',
-                                            backgroundColor: '#111E56',
-                                            color: 'white',
-                                            '&:hover': {
-                                                backgroundColor: 'white',
-                                                color: '#111E56',
-                                                border: '1px solid #111E56',
-                                            },
-                                            mb: -4,
-                                            mt : -3
-                                        }}
-                                    >Submit Rating</Button>
-                                    </Box>
+                                     
+<Box
+        sx={{
+            mb: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center', // Center the content horizontally
+        }}
+    >
+        <Typography variant="body2" sx={{ textAlign: 'center', mb: 1 }}>
+            <strong>{booking.rating !== undefined ? 'Your Rating:' : 'Rate this Activity:'}</strong>
+        </Typography>
+        <Rating
+            name={`rating-${booking._id}`}
+            value={ratings[booking._id] || booking.rating || 0} // Fallback to 0 if no rating exists
+            onChange={(event, newValue) => {
+                if (newValue !== null) {
+                    handleRatingChange(booking, newValue); // Update state and submit immediately
+                }
+            }}
+            precision={1}
+            max={5}
+            sx={{
+                '& .MuiRating-iconFilled': { color: '#FFDE21' }, // Customize filled star color
+                '& .MuiRating-iconHover': { color: '#3f51b5' }, // Customize hover color
+            }}
+        />
+    </Box>
+                                
                                 )}
     
                                 {/* Comment Section */}
@@ -280,7 +298,7 @@ const ViewBookings = () => {
                                         <strong>Your Comment:</strong> {booking.comment}
                                     </Typography>
                                 ) : (
-                                    <Box sx={{ mt: 2 }}>
+                                    <Box >
                                         <TextField
                                             label="Comment"
                                             
@@ -300,10 +318,11 @@ const ViewBookings = () => {
                                                     backgroundColor: 'white',
                                                     color: '#111E56',
                                                     border: '1px solid #111E56',
+                                                    
                                                 },
                                                 mb: 2,
                                             }}
-                                            onClick={() => submitComment(booking, 'activity')}
+                                            onClick={() => submitComment(booking, 'activity')} 
                                         >
                                             Submit Comment
                                         </Button>
@@ -349,26 +368,29 @@ const ViewBookings = () => {
             }}
             className="carousel-card"
         >
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                {/* Upper Section: Image */}
-                {booking.Itinerary?.imageUrl && (
+            {booking.Itinerary?.imageUrl && (
                     <img
                         src={booking.Itinerary?.imageUrl}
                         alt={booking.Itinerary?.name}
                         style={{
                             width: '100%',
-                            height: 'auto',
-                            borderRadius: '8px',
+                            height: '60%',
                             marginBottom: '16px',
+                            objectFit: 'cover',
+                    borderTopLeftRadius: '12px',
+                    borderTopRightRadius: '12px',
                         }}
                     />
                 )}
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                {/* Upper Section: Image */}
+                
     
                 {/* Main Content Section (Details + Rating/Comment Side by Side) */}
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1 }}>
                     {/* Left Section: Details */}
                     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                        <Typography variant="h6" noWrap>
+                        <Typography variant="h5" noWrap>
                             {booking.Itinerary?.name || 'Itinerary has been removed by the Advertiser.'}
                         </Typography>
                         {booking.Itinerary?.AvailableDates && (
@@ -390,7 +412,7 @@ const ViewBookings = () => {
                     </Box>
     
                     {/* Right Section: Rating and Comment */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', ml: 2, width: '40%' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', ml: 2, width: '40%' }}>
                         {isPastDate(booking.Itinerary.AvailableDates[0]) ? (
                             <>
                                 {/* If there's a rating, display it */}
@@ -409,35 +431,33 @@ const ViewBookings = () => {
                                     </Box>
                                 ) : (
                                     // If no rating yet, show the rating field
-                                    <Box sx={{ mb: 2 }}>
-                                        <Typography variant="body2">
-                                            <strong>Rate this Itinerary:</strong>
-                                        </Typography>
-                                        <Rating
-                                            name={`rating-${booking._id}`}
-                                            value={ratings[booking._id] || 0}
-                                            onChange={(e, newValue) => handleRatingChange(booking, newValue)}
-                                            precision={1}
-                                            max={5}
-                                        />
-                                         <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => submitRating(booking, 'itinerary')}
-                                        sx={{
-                                            marginTop: '10px',
-                                            backgroundColor: '#111E56',
-                                            color: 'white',
-                                            '&:hover': {
-                                                backgroundColor: 'white',
-                                                color: '#111E56',
-                                                border: '1px solid #111E56',
-                                            },
-                                            mb: -4,
-                                            mt : -3
+                                    <Box
+                                    sx={{
+                                        mb: 2,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center', // Center the content horizontally
+                                    }}
+                                >
+                                    <Typography variant="body2" sx={{ textAlign: 'center', mb: 1 }}>
+                                        <strong>{booking.rating !== undefined ? 'Your Rating:' : 'Rate this Itinerary:'}</strong>
+                                    </Typography>
+                                    <Rating
+                                        name={`rating-${booking._id}`}
+                                        value={ratings[booking._id] || booking.rating || 0} // Fallback to 0 if no rating exists
+                                        onChange={(event, newValue) => {
+                                            if (newValue !== null) {
+                                                handleRatingChange(booking, newValue); // Update state and submit immediately
+                                            }
                                         }}
-                                    >Submit Rating</Button>
-                                    </Box>
+                                        precision={1}
+                                        max={5}
+                                        sx={{
+                                            '& .MuiRating-iconFilled': { color: '#FFDE21' }, // Customize filled star color
+                                            '& .MuiRating-iconHover': { color: '#3f51b5' }, // Customize hover color
+                                        }}
+                                    />
+                                </Box>
                                 )}
     
                                 {/* Comment Section */}
@@ -522,7 +542,7 @@ const ViewBookings = () => {
     return (
         <Box>
             {/* Past Activity Carousel */}
-            <Typography variant="h5" sx={{ mb: 2 , mt: 5 , fontWeight:'bold' , color:'#111E56'}}><h2>Past Activity Bookings</h2></Typography>
+            <Typography variant="h5" sx={{ mb: 2 , mt: 5 , fontWeight:'bold' , color:'#111E56'}}>Past Activity Bookings</Typography>
             {pastActivityBookings.length > 0 && (
                 pastActivityBookings.length === 1 ? (
                     // Render only the single booking without carousel
