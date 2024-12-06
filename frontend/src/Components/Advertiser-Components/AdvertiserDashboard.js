@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdvertiserNavbar from '../MainPage-Components/GuestNavbar'; // Assuming a similar Navbar exists
-import { Box, Typography, Button, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import UpdateAdvertiser from './UpdateAdvertiser';
 import MyActivities from './MyActivities';
 import CreateActivity from './CreateActivity';
@@ -12,6 +11,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIc
 import MenuIcon from '@mui/icons-material/Menu';
 import { Edit, Event, Dashboard, Upload, BarChart, Report   } from '@mui/icons-material';
 
+import { Box, Typography, Drawer, IconButton , Button ,Avatar,Tooltip, CircularProgress } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';
 
@@ -27,6 +28,7 @@ const AdvertiserDashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
 
+    const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
     const navigate = useNavigate();
 
     const toggleSidebar = () => {
@@ -59,6 +61,12 @@ const AdvertiserDashboard = () => {
 
         fetchProfile();
     }, []);
+
+    const stringAvatar = (name) => {
+        const initials = name.split(' ').map((n) => n[0]).join('');
+        return { children: initials.toUpperCase() };
+    };
+
 
     const handleDeleteAccountRequest = async () => {
         if (
@@ -102,116 +110,171 @@ const AdvertiserDashboard = () => {
             case 'profile':
                 return (
                     <Box
+                    sx={{
+                      marginTop: '50px',
+                      width: '450px',
+                      borderRadius: '16px',
+                      backgroundColor: 'white',
+                      margin: '30px auto',
+                      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                      padding: '20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
+                      },
+                    }}
+                  >
+                    {message && (
+                      <Typography
+                        color="error"
                         sx={{
-                            marginTop: '50px',
-                            width: '400px',
-                            height: '400px',
-                            borderRadius: '16px',
-                            backgroundColor: 'white',
-                            margin: '30px auto',
-                            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
-                            textAlign: 'center',
-                            padding: '20px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                            '&:hover': {
-                                transform: 'scale(1.05)',
-                                boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
-                            },
+                          marginBottom: '10px',
+                          fontWeight: 'bold',
+                          width: '100%',
+                          textAlign: 'center',
                         }}
-                    >
-                        <Typography
-                            variant="h5"
-                            gutterBottom
+                      >
+                        {message}
+                      </Typography>
+                    )}
+                    {profile.username ? (
+                      <>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginBottom: '20px',
+                            width: '100%',
+                          }}
+                        >
+                          <Avatar
+                            {...stringAvatar(profile.username || 'User')}
                             sx={{
+                              width: 60,
+                              height: 60,
+                              marginRight: '15px',
+                              backgroundColor: '#111E56',
+                              color: '#fff',
+                              fontSize: '20px',
+                              fontWeight: 'bold',
+                            }}
+                          />
+                          <Box sx={{ flexGrow: 1, textAlign: 'left' }}>
+                            <Typography
+                              variant="h6"
+                              sx={{
                                 fontWeight: 'bold',
                                 color: '#111E56',
-                                marginBottom: '15px',
-                            }}
-                        >
-                            Advertiser Profile
-                        </Typography>
-                        {message && (
-                            <Typography color="error" sx={{ marginBottom: '10px', fontWeight: 'bold' }}>
-                                {message}
+                              }}
+                            >
+                              {profile.username || 'Your Name'}
                             </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: '#888',
+                              }}
+                            >
+                              {profile.email || 'yourname@gmail.com'}
+                            </Typography>
+                          </Box>
+                          <Tooltip title="Edit Profile" arrow>
+                            <IconButton
+                              onClick={() => setUpdateProfileVisible(!updateProfileVisible)}
+                              sx={{
+                                color: '#111E56',
+                                '&:hover': { color: '#111E60' },
+                              }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                        <Box
+                          component="div"
+                          sx={{
+                            fontSize: '16px',
+                            lineHeight: '1.8',
+                            width: '100%',
+                            textAlign: 'center',
+                            '& strong': {
+                              color: '#111E56',
+                              fontWeight: 'bold',
+                            },
+                          }}
+                        >
+                          <p>
+                            <strong>Company Name:</strong> {profile.companyName}
+                          </p>
+                          <p>
+                            <strong>Website Link:</strong>{' '}
+                            <a
+                              href={profile.websiteLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: '#111E56', textDecoration: 'underline' }}
+                            >
+                              {profile.websiteLink}
+                            </a>
+                          </p>
+                          <p>
+                            <strong>Hotline:</strong> {profile.hotline}
+                          </p>
+                          <p>
+                            <strong>Company Profile:</strong> {profile.companyProfile}
+                          </p>
+                        </Box>
+                        <Button
+                          onClick={handleDeleteAccountRequest}
+                          sx={{
+                            marginTop: '20px',
+                            backgroundColor: '#f44336',
+                            color: 'white',
+                            border: '2px solid #f44336',
+                            padding: '10px 20px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            borderRadius: '8px',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              backgroundColor: 'white',
+                              color: '#f44336',
+                              border: '2px solid #f44336',
+                            },
+                          }}
+                        >
+                          Delete Account
+                        </Button>
+                        {updateProfileVisible && (
+                          <Box
+                            sx={{
+                              marginTop: '20px',
+                              width: '100%',
+                              padding: '20px',
+                              borderRadius: '8px',
+                           
+                            }}
+                          >
+                            <UpdateAdvertiser profile={profile} setProfile={setProfile} />
+                          </Box>
                         )}
-                        {profile.username ? (
-                            <>
-                                <Box
-                                    component="div"
-                                    sx={{
-                                        fontSize: '16px',
-                                        lineHeight: '1.8',
-                                        '& strong': {
-                                            color: '#111E56',
-                                            fontWeight: 'bold',
-                                        },
-                                    }}
-                                >
-                                    <p>
-                                        <strong>Username:</strong> {profile.username}
-                                    </p>
-                                    <p>
-                                        <strong>Email:</strong> {profile.email}
-                                    </p>
-                                    <p>
-                                        <strong>Company Name:</strong> {profile.companyName}
-                                    </p>
-                                    <p>
-                                        <strong>Website Link:</strong>{' '}
-                                        <a
-                                            href={profile.websiteLink}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ color: '#111E56', textDecoration: 'underline' }}
-                                        >
-                                            {profile.websiteLink}
-                                        </a>
-                                    </p>
-                                    <p>
-                                        <strong>Hotline:</strong> {profile.hotline}
-                                    </p>
-                                    <p>
-                                        <strong>Company Profile:</strong> {profile.companyProfile}
-                                    </p>
-                                </Box>
-                                <Button
-                                    onClick={handleDeleteAccountRequest}
-                                    sx={{
-                                        marginTop: '20px',
-                                        backgroundColor: '#f44336',
-                                        color: 'white',
-                                        border: '2px solid #f44336',
-                                        padding: '10px 20px',
-                                        fontWeight: 'bold',
-                                        textTransform: 'uppercase',
-                                        borderRadius: '8px',
-                                        transition: 'all 0.3s ease',
-                                        '&:hover': {
-                                            backgroundColor: 'white',
-                                            color: '#f44336',
-                                            border: '2px solid #f44336',
-                                        },
-                                    }}
-                                >
-                                    Delete Account
-                                </Button>
-                            </>
-                        ) : (
-                            <CircularProgress sx={{ color: '#111E56' }} />
-                        )}
-                    </Box>
+                      </>
+                    ) : (
+                      <CircularProgress sx={{ color: '#111E56' }} />
+                    )}
+                  </Box>
+
                 );
             case 'viewActivities':
                 return <MyActivities />;
             case 'createActivity':
                 return <CreateActivity />;
-            case 'updateProfile':
-                return <UpdateAdvertiser profile={profile} setProfile={setProfile} />;
+            // case 'updateProfile':
+            //     return <UpdateAdvertiser profile={profile} setProfile={setProfile} />;
             case 'uploadLogo':
                 return <UploadLogo setProfile={setProfile} />;
             case 'Sales Report':
@@ -223,7 +286,7 @@ const AdvertiserDashboard = () => {
         }
     };
     const menuItems = [
-        { label: 'Edit Profile', component: 'updateProfile', icon: <Edit /> },
+     //   { label: 'Edit Profile', component: 'updateProfile', icon: <Edit /> },
         { label: 'Get My Activities', component: 'viewActivities', icon: <Event /> },
         { label: 'Create Activity', component: 'createActivity', icon: <Dashboard /> },
         { label: 'Upload a Logo', component: 'uploadLogo', icon: <Upload /> },
