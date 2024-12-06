@@ -31,6 +31,8 @@ import UploadIcon from '@mui/icons-material/Upload';
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';
 
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -237,7 +239,7 @@ const SellerDashboard = () => {
     return (
         <Box>
             <SellerNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex' , minHeight: '100vh', }}>
         {/* Sidebar */}
         <Box
          sx={{
@@ -289,15 +291,60 @@ const SellerDashboard = () => {
               </Button>
             </Tooltip>
           ))}
+                        {/* Bottom Buttons */}
+  <Box sx={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+    {/* Settings Button */}
+    <Tooltip title="Settings" arrow placement="right">
+      <Button
+        startIcon={<SettingsIcon />} // Settings icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => handleSectionChange('settings')} // Set to navigate to the settings section
+      >
+        {isSidebarOpen ? 'Settings' : null}
+      </Button>
+    </Tooltip>
+
+    {/* Logout Button */}
+    <Tooltip title="Logout" arrow placement="right">
+      <Button
+        startIcon={<LogoutIcon />} // Logout icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => {
+          // Perform logout functionality
+          localStorage.removeItem('token'); // Clear token
+          navigate('/login'); // Navigate to login
+        }}
+      >
+        {isSidebarOpen ? 'Logout' : null}
+      </Button>
+    </Tooltip>
+  </Box>
         </Box>
                 
-
+{/* Main Content */}
 <Box
     sx={{
         marginLeft: isSidebarOpen ? '260px' : '55px',
         padding: '20px',
         width: '100%',
         transition: 'margin-left 0.3s ease',
+        flexGrow: 1 // Grow to fill available space
     }}
 >
 {navigationStack.length > 0 && (

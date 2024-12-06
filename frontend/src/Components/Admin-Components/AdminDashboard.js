@@ -41,6 +41,9 @@ import {
     BarChart,
   } from '@mui/icons-material'; // Import Material-UI icons
 
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 const AdminDashboard = () => {
     const [message, setMessage] = useState('');
     const [governorUsername, setGovernorUsername] = useState('');
@@ -361,11 +364,6 @@ const handleTagChange = (id, newName) => {
           minHeight: '100vh', // Allows content to expand naturally
         }}
       >
-
-
-
-
-
         {/* Sidebar */}
     <Box
       sx={{
@@ -415,10 +413,54 @@ const handleTagChange = (id, newName) => {
   {item.icon} {/* Render the icon */}
   {isSidebarVisible && item.label} {/* Show label only when sidebar is expanded */}
 </Button>
-
           </Tooltip>
+          
         ))}
       </nav>
+      {/* Bottom Buttons */}
+      {/* <Box sx={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}> */}
+    {/* Settings Button */}
+    {/* <Tooltip title="Settings" arrow placement="right">
+      <Button
+        startIcon={<SettingsIcon />} // Settings icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarVisible ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => handleSectionChange('settings')} // Set to navigate to the settings section
+      >
+        {isSidebarVisible ? 'Settings' : null}
+      </Button>
+    </Tooltip> */}
+
+    {/* Logout Button */}
+    {/* <Tooltip title="Logout" arrow placement="right">
+      <Button
+        startIcon={<LogoutIcon />} // Logout icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarVisible ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => {
+          // Perform logout functionality
+          localStorage.removeItem('token'); // Clear token
+          navigate('/login'); // Navigate to login
+        }}
+      >
+        {isSidebarVisible ? 'Logout' : null}
+      </Button>
+    </Tooltip>
+  </Box> */}
     </Box>
         
 

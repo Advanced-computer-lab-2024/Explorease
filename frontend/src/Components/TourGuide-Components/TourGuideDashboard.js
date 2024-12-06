@@ -26,6 +26,22 @@ import CreateItineraryForm from './CreateItineraryForm';
 import ItinerarySummary from './ItinerarySummary';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 
+import logo2 from '../../Misc/logo.png';
+import { Container, Stack , Link} from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
+
+import {
+    AccountCircle,
+    AddLocation,
+    Edit,
+    Description,
+    PictureAsPdf,
+    InsertChart,
+  } from '@mui/icons-material';
+
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 const TourGuideDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
@@ -218,6 +234,17 @@ const TourGuideDashboard = () => {
         }
     };
 
+
+    const menuItems = [
+        { label: 'View Itineraries', section: 'viewActivities', icon: <Description /> },
+        { label: 'Create Itinerary', section: 'createActivity', icon: <AddLocation /> },
+        { label: 'Update Profile', section: 'updateProfile', icon: <Edit /> },
+        { label: 'Upload Profile Picture', section: 'uploadProfilePicture', icon: <AccountCircle /> },
+        { label: 'Sales Report', section: 'salesReport', icon: <InsertChart /> },
+        { label: 'Itinerary Summary', section: 'ItinerarySummary', icon: <PictureAsPdf /> },
+      ];
+
+
     return (
         <Box>
     <TouristNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
@@ -227,64 +254,110 @@ const TourGuideDashboard = () => {
             minHeight: '100vh',
         }}
     >
-        {isSidebarOpen && (
-            <Box
-            sx={{
-                width: '250px',
-                backgroundColor: '#111E40',
-                color: 'white',
-                height: 'calc(100vh - 64px)',
-                position: 'fixed',
-                top: '64px',
-                padding: '10px',
-                display: 'flex',
-                flexDirection: 'column',
-            }}
+       {/* Sidebar */}
+       <Box
+    sx={{
+        width: isSidebarOpen ? '250px' : '70px', // Sidebar width
+        backgroundColor: '#111E40',
+        color: 'white',
+        height: 'calc(100vh - 64px)', // Sidebar height less than navbar
+        position: 'fixed',
+        top: '64px', // Sidebar starts below navbar
+        left: 0,
+        padding: '10px',
+        transition: 'width 0.3s ease', // Smooth transition for width
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 1000,
+        overflow: 'hidden', // Prevent overflow when collapsed
+    }}
+>
+        <List>
+          {menuItems.map((item) => (
+            <Tooltip
+            title={!isSidebarOpen ? item.label : ''} // Show tooltip only when collapsed
+            arrow
+            placement="right"
+            key={item.component}
         >
-                <List>
-                    {[
-                        
-                        { label: 'View Itineraries', section: 'viewActivities' },
-                        { label: 'Create Itinerary', section: 'createActivity' },
-                        { label: 'Update Profile', section: 'updateProfile' },
-                        { label: 'Upload Profile Picture', section: 'uploadProfilePicture' },
-                        { label: 'Sales Report', section: 'salesReport' },
-                        { label : 'Itinerary Summary', section : 'ItinerarySummary'}
-                    ].map((item, index) => (
-                        <ListItem key={index} disablePadding>
-                            <ListItemButton
-                                onClick={() => {
-                                    handleSectionChange(item.section);
-                                }}
-                                sx={{
-                                    color: 'white',
-                                    textAlign: 'left',
-                                    justifyContent: 'flex-start',
-                                    borderRadius: '8px',
-                                    width: '100%',
-                                    padding: '10px',
-                                    marginTop: '10px',
-                                    height: '70%',
-                                    backgroundColor: activeComponent === item.section ? '#7BAFD0' : 'transparent',
-                                    '&:hover': {
-                                        backgroundColor: '#7BAFD0',
-                                        transform: 'scale(1.01)',
-                                    },
-                                }}
-                            >
-                                <ListItemText primary={item.label} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Box>
-        )}
+              <Button
+                    startIcon={item.icon} // Always display the icon
+                    sx={{
+                        color: 'white',
+                        justifyContent: 'flex-start', // Align buttons to the left
+                        alignItems: 'center', // Ensure vertical centering
+                        width: '100%', // Ensure button width matches sidebar width
+                        padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px', // Adjust padding for collapsed state
+                        marginTop: '10px',
+                        display: 'flex',
+                        gap: isSidebarOpen ? 2 : 0, // Space between icon and text in expanded state
+                        textAlign: 'left', // Align text properly
+                        backgroundColor: activeComponent === item.section ? '#7BAFD0' : 'transparent',
+                        borderLeft: activeComponent === item.section ? '6px solid #FFFFFF' : '6px solid transparent', // Highlight active state
+                        transition: 'background-color 0.3s ease, border 0.3s ease', // Remove scaling
+                        '&:hover': {
+                            backgroundColor: '#7BAFD0', // Change color on hover
+                        },
+                    }}
+                    onClick={() => handleSectionChange(item.section)}
+                >
+                    {isSidebarOpen ? item.label : null} {/* Show label only when expanded */}
+                </Button>
+            </Tooltip>
+          ))}
+
+        </List>
+                  {/* Bottom Buttons */}
+  <Box sx={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+    {/* Settings Button */}
+    <Tooltip title="Settings" arrow placement="right">
+      <Button
+        startIcon={<SettingsIcon />} // Settings icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => handleSectionChange('settings')} // Set to navigate to the settings section
+      >
+        {isSidebarOpen ? 'Settings' : null}
+      </Button>
+    </Tooltip>
+
+    {/* Logout Button */}
+    <Tooltip title="Logout" arrow placement="right">
+      <Button
+        startIcon={<LogoutIcon />} // Logout icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => {
+          // Perform logout functionality
+          localStorage.removeItem('token'); // Clear token
+          navigate('/login'); // Navigate to login
+        }}
+      >
+        {isSidebarOpen ? 'Logout' : null}
+      </Button>
+    </Tooltip>
+  </Box>
+      </Box>
 
         {/* Main Content Area */}
         <Box
             sx={{
                 padding: '20px',
-                marginLeft: isSidebarOpen ? '250px' : '0', // Adjust content margin when sidebar is open
+                marginLeft: isSidebarOpen ? '250px' : '55px', // Adjust content margin when sidebar is open
                 width: '100%',
                 transition: 'margin-left 0.3s ease-in-out',
                 marginTop: '64px', // Space for navbar
@@ -297,7 +370,7 @@ const TourGuideDashboard = () => {
             sx={{
                 position: 'fixed',
                 top: '80px',
-                left: isSidebarOpen ? '270px' : '20px',
+                left: isSidebarOpen ? '270px' : '80px',
                 backgroundColor: '#111E56',
                 color: 'white',
                 '&:hover': {
@@ -314,6 +387,94 @@ const TourGuideDashboard = () => {
             {renderContent()}
         </Box>
     </Box>
+    
+<footer style={{ backgroundColor: '#111E56', color: 'white', padding: '30px 0' , marginLeft: isSidebarOpen ? '250px' : 0}}>
+                <Container>
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ textAlign: { xs: 'center', sm: 'left' } }}
+                    >
+                        <img
+                            src={logo2}
+                            alt="Explorease"
+                            style={{ height: '3em', marginLeft: '5px' }}
+                        />
+                        <Typography variant="body2">© 2024. All rights reserved.</Typography>
+                        <Stack direction="row" spacing={3}>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Terms & Conditions
+                            </Link>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Privacy Policy
+                            </Link>
+                            <Link href="#" underline="hover" sx={{
+            fontWeight: 'bold',
+            position: 'relative',
+            display: 'inline-block',
+            '&::after': {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: '#111E56',
+            bottom: '-2px',
+            left: '0',
+            transform: 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        '&:hover::after': {
+            transform: 'scaleX(1)',
+        },
+    }}>
+                                Contact Us
+                            </Link>
+                        </Stack>
+                    </Stack>
+                </Container>
+            </footer>
+
 </Box>
 
     );

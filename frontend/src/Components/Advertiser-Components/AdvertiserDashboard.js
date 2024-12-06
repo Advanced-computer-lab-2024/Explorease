@@ -15,6 +15,10 @@ import { Edit, Event, Dashboard, Upload, BarChart, Report   } from '@mui/icons-m
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';
 
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+
+import { useNavigate } from 'react-router-dom';
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
@@ -22,6 +26,8 @@ const AdvertiserDashboard = () => {
     const [activeComponent, setActiveComponent] = useState('profile');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
+
+    const navigate = useNavigate();
 
     const toggleSidebar = () => {
         setIsSidebarOpen((prev) => !prev);
@@ -225,9 +231,10 @@ const AdvertiserDashboard = () => {
         { label: 'Activity Summary', component: 'ActivitySummary', icon: <Report /> },
     ];
     return (
-        <div>
+        <div >
             {/* Navbar */}
             <AdvertiserNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
+            <Box sx={{ display: 'flex' , minHeight: '100vh', }}>
 {/* Sidebar */}
 <Box
     sx={{
@@ -280,6 +287,50 @@ const AdvertiserDashboard = () => {
             </Tooltip>
         ))}
     </nav>
+              {/* Bottom Buttons */}
+  <Box sx={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+    {/* Settings Button */}
+    <Tooltip title="Settings" arrow placement="right">
+      <Button
+        startIcon={<SettingsIcon />} // Settings icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => handleSectionChange('settings')} // Set to navigate to the settings section
+      >
+        {isSidebarOpen ? 'Settings' : null}
+      </Button>
+    </Tooltip>
+
+    {/* Logout Button */}
+    <Tooltip title="Logout" arrow placement="right">
+      <Button
+        startIcon={<LogoutIcon />} // Logout icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => {
+          // Perform logout functionality
+          localStorage.removeItem('token'); // Clear token
+          navigate('/login'); // Navigate to login
+        }}
+      >
+        {isSidebarOpen ? 'Logout' : null}
+      </Button>
+    </Tooltip>
+  </Box>
 </Box>
 
             {/* Main Content */}
@@ -288,6 +339,7 @@ const AdvertiserDashboard = () => {
         marginLeft: isSidebarOpen ? '250px' : '55px',
         transition: 'margin-left 0.3s ease',
         padding: '20px',
+        flexGrow: 1 // Grow to fill available space
     }}
 >
     {navigationStack.length > 0 && (
@@ -313,6 +365,7 @@ const AdvertiserDashboard = () => {
         </Button>
     )}
     {renderContent()}
+</Box>
 </Box>
 <footer style={{ backgroundColor: '#111E56', color: 'white', padding: '30px 0' , marginLeft: isSidebarOpen ? '250px' : 0,}}>
                 <Container>

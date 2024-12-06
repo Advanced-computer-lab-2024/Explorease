@@ -41,9 +41,9 @@ import {
     EmojiEvents,       // For My Points
     Bookmark,          // For Saved Events
   } from '@mui/icons-material';
-  
 
-  
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 
 const TouristDashboard = () => {
@@ -433,10 +433,10 @@ const TouristDashboard = () => {
       ];
 
     return (
-        <div>
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
    {/* Navbar */}
    <TouristNavbar toggleSidebar={toggleSidebar} handleSectionChange={handleSectionChange} cartCount={cartCount} wishlistCount={wishlistCount}/>
-
+    {/* Sidebar */} 
    <Box
   sx={{
     width: isSidebarOpen ? '250px' : '70px', // Sidebar width
@@ -487,8 +487,51 @@ const TouristDashboard = () => {
       </Tooltip>
     ))}
   </nav>
-</Box>
+                {/* Bottom Buttons */}
+                <Box sx={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+    {/* Settings Button */}
+    <Tooltip title="Settings" arrow placement="right">
+      <Button
+        startIcon={<SettingsIcon />} // Settings icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => handleSectionChange('settings')} // Set to navigate to the settings section
+      >
+        {isSidebarOpen ? 'Settings' : null}
+      </Button>
+    </Tooltip>
 
+    {/* Logout Button */}
+    <Tooltip title="Logout" arrow placement="right">
+      <Button
+        startIcon={<LogoutIcon />} // Logout icon
+        sx={{
+          color: 'white',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          width: '100%',
+          padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
+          textAlign: 'left',
+          '&:hover': { backgroundColor: '#7BAFD0' },
+        }}
+        onClick={() => {
+          // Perform logout functionality
+          localStorage.removeItem('token'); // Clear token
+          navigate('/login'); // Navigate to login
+        }}
+      >
+        {isSidebarOpen ? 'Logout' : null}
+      </Button>
+    </Tooltip>
+  </Box>
+</Box>
 
 
 {/* Main Content */}
@@ -497,6 +540,7 @@ const TouristDashboard = () => {
         marginLeft: isSidebarOpen ? '270px' : '65px',
         transition: 'margin-left 0.3s ease',
         padding: '20px',
+        flexGrow: 1, // Ensures content takes up available space, pushing footer dow
     }}
 >
 {navigationStack.length > 0 && (
@@ -521,10 +565,8 @@ const TouristDashboard = () => {
         </Button>
     )}
     {renderContent()}
-    
-    {/* Footer */}
-    
 </Box>
+{/* Footer */}
     <footer style={{ backgroundColor: '#111E56', color: 'white', padding: '30px 0' , marginLeft: isSidebarOpen ? '250px' : 0,}}>
                 <Container>
                     <Stack
@@ -611,7 +653,7 @@ const TouristDashboard = () => {
                     </Stack>
                 </Container>
             </footer>
-        </div>
+        </Box>
     );
 };
 
