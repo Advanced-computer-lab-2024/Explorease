@@ -69,4 +69,63 @@ const sendItineraryReceiptEmail = async (booking) => {
 };
 
 
-module.exports = { sendActivityReceiptEmail, sendItineraryReceiptEmail  };
+const sendFlightReceiptEmail = async (amount, origin, destination, departure, userId) => {
+    try {
+        const tourist = await Tourist.findById(userId);
+        // Prepare the receipt email
+        const subject = `Receipt for Your Flight Booking}`;
+        const message = `
+            <h1>Thank You for Your Booking, ${tourist.username}!</h1>
+            <p>Here are your booking details:</p>
+            <ul>
+                <li><strong>Total Amount Paid:</strong> $${amount}</li>
+                <li><strong>Origin :</strong> ${origin}</li>
+                <li><strong>Destination :</strong> ${destination}</li>
+                <li><strong>Departure At :</strong> ${departure}</li>
+
+            </ul>
+            <p>We hope you have an amazing adventure!</p>
+            <p>Cheers,<br>Explorease </p>
+        `;
+
+        // Send the email
+        await sendEmail(tourist.email, subject, message);
+        console.log(`Itinerary receipt email sent to ${tourist.email}`);
+    } catch (error) {
+        console.error('Error sending itinerary receipt email:', error.message);
+    }
+};
+
+
+const sendHotelReceiptEmail = async (price, name, country, currency, checkInDate, checkOutDate, userId) => {
+    try {
+        const tourist = await Tourist.findById(userId);
+        // Prepare the receipt email
+        const subject = `Receipt for Your Hotel Booking`;
+        const message = `
+            <h1>Thank You for Your Booking, ${tourist.username}!</h1>
+            <p>Here are your booking details:</p>
+            <ul>
+                <li><strong>Total Amount Paid:</strong> $${price}  ${currency}</li>
+                <li><strong>Hotel Name :</strong> ${name} </li>
+                <li><strong>Country :</strong> ${country} </li>
+                <li><strong>Check In Date :</strong> ${new Date(checkInDate).toLocaleString()}</li>
+                <li><strong>Check Out Date :</strong> ${new Date(checkOutDate).toLocaleString()}</li>
+
+            </ul>
+            <p>We hope you have an amazing adventure!</p>
+            <p>Cheers,<br>Explorease </p>
+        `;
+
+        // Send the email
+        await sendEmail(tourist.email, subject, message);
+        console.log(`Itinerary receipt email sent to ${tourist.email}`);
+    } catch (error) {
+        console.error('Error sending itinerary receipt email:', error.message);
+    }
+};
+
+
+
+
+module.exports = { sendActivityReceiptEmail, sendItineraryReceiptEmail, sendFlightReceiptEmail, sendHotelReceiptEmail };

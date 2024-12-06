@@ -8,7 +8,7 @@ const mg = mailgun({ apiKey: API_KEY, domain: DOMAIN });
 const sendEmail = async (to, subject, html) => {
     try {
         const data = {
-            from: 'Your Travel Team <no-reply@yourdomain.com>',
+            from: 'Explorease <no-reply@explorease.com>',
             to,
             subject,
             html,

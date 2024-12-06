@@ -1,4 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { sendHotelReceiptEmail } = require('../utils/receiptService'); // Import the email function
 
 
 const createStripeSession = async (req, res) => {
@@ -47,7 +48,7 @@ const createStripeSession = async (req, res) => {
             success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/tourist`,
         });
-
+        sendHotelReceiptEmail(price, name, country, currency, checkInDate, checkOutDate, req.user.id);
         // Return the session URL to the frontend
         res.status(200).json({ url: session.url });
     } catch (error) {

@@ -213,7 +213,7 @@ const TouristDashboard = () => {
                               display: 'flex',
                               alignItems: 'center', // Flex layout for Profile + Update form
                               flexDirection: 'column', // Align profile and update form horizontally
-                              gap: '20px', // Space between profile card and update form
+                              gap: '10px', // Space between profile card and update form
                               width: '100%',
                               position : 'relative' // Ensure they take up the full width
                           }}
@@ -276,7 +276,7 @@ const TouristDashboard = () => {
                                                 {profile.email || 'yourname@gmail.com'}
                                             </Typography>
                                         </Box>
-                                        <Box sx={{ marginLeft: '180px'}} >
+                                        <Box sx={{ marginLeft: '100px'}} >
                                         <Tooltip title="Edit Profile" arrow>
                                 <IconButton
                                     onClick={() => setUpdateProfileVisible(!updateProfileVisible)}

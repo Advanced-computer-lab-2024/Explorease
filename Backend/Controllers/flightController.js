@@ -1,5 +1,7 @@
 const Tourist = require('../Models/UserModels/Tourist');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { sendFlightReceiptEmail } = require('../utils/receiptService'); // Import the email function
+
 
 // Controller to handle booking with wallet
 const bookFlightWithWallet = async (req, res) => {
@@ -87,7 +89,8 @@ const createStripeSession = async (req, res) => {
             success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/tourist`,
         });
-
+        const userId = req.user.id;
+        sendFlightReceiptEmail(amount, origin, destination, departure, userId);
         // Return the session URL to the frontend
         res.status(200).json({ url: session.url });
     } catch (error) {
