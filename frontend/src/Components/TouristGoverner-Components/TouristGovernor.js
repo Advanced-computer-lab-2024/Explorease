@@ -10,8 +10,12 @@ import {
     Divider,
     Card,
     CardContent,
+    CardMedia, 
     IconButton,
+    ListItemButton, 
     Alert,
+    Avatar,
+    CircularProgress,
     Tooltip,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -45,6 +49,7 @@ const TouristGovernorDashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [editingPlaceId, setEditingPlaceId] = useState(null);
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
+    const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
     
     const navigate = useNavigate();
     // Fetch profile
@@ -62,6 +67,11 @@ const TouristGovernorDashboard = () => {
         } catch (error) {
             setMessage('Error fetching profile');
         }
+    };
+
+    const stringAvatar = (name) => {
+        const initials = name.split(' ').map((n) => n[0]).join('');
+        return { children: initials.toUpperCase() };
     };
 
     const handleSectionChange = (section) => {
@@ -120,63 +130,160 @@ const TouristGovernorDashboard = () => {
     };
 
     const renderProfile = () => (
-        <>
-        <Typography variant="h5" color="#111E56" gutterBottom sx={{fontWeight:'bold', fontSize:'30px'}}>
-                My Profile
-            </Typography>
-            <Card
-                                sx={{
-                                    maxWidth: 400,
-                                    margin: '0 auto',
-                                    marginTop: '50px',
-                                    p: 3,
-                                    borderRadius: '16px',
-                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                    backgroundColor: 'white',
-                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                                    '&:hover': {
-                                        transform: 'scale(1.03)',
-                                        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
-                                    },
-                                    textAlign: 'center',
-                                }}
+     
+<Box
+                    sx={{
+                      marginTop: '50px',
+                      width: '450px',
+                      borderRadius: '16px',
+                      backgroundColor: 'white',
+                      margin: '30px auto',
+                      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                      padding: '20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
+                      },
+                    }}
+                  >
+              
+              
+                    {message && (
+                      <Alert severity="error" sx={{ mb: 2, width: '100%' }}>
+                        {message}
+                      </Alert>
+                    )}
+              
+                    {profile && profile.username ? (
+                      <>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginBottom: '20px',
+                            width: '100%',
+                          }}
+                        >
+                          {profile.imageUrl ? (
+                            <Avatar
+                              src={profile.imageUrl}
+                              alt="Profile Picture"
+                              sx={{
+                                width: 60,
+                                height: 60,
+                                marginRight: '15px',
+                              }}
+                            />
+                          ) : (
+                            <Avatar
+                              {...stringAvatar(profile.username || 'User')}
+                              sx={{
+                                width: 60,
+                                height: 60,
+                                marginRight: '15px',
+                                backgroundColor: '#111E56',
+                                color: '#fff',
+                                fontSize: '20px',
+                                fontWeight: 'bold',
+                              }}
+                            />
+                          )}
+                          <Box sx={{ flexGrow: 1, textAlign: 'left' }}>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontWeight: 'bold',
+                                color: '#111E56',
+                              }}
                             >
-            <Typography variant="h5" color="#111E56" gutterBottom sx={{fontWeight:'bold' }}>
-                Profile Details
-            </Typography>
-            {message && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {message}
-                </Alert>
-            )}
-            {profile && (
-                <Box>
-                    <Typography variant="body1" sx={{ mb: 1 }}>
-                        <strong sx={{fontWeight:'bold' , color:'#111E56'}}>Username:</strong> {profile.username}
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 1 }}>
-                        <strong sx={{fontWeight:'bold' , color:'#111E56'}}>Email:</strong> {profile.email}
-                    </Typography>
-                    <Button
-                                        onClick={handleDelete}
-                                        sx={{
-                                            mt: 2,
-                                            backgroundColor: '#f44336',
-                                            color: 'white',
-                                            border: '1px solid #f44336',
-                                            '&:hover': {
-                                                backgroundColor: 'white',
-                                                color: '#f44336',
-                                                border: '1px solid #f44336',
-                                            },
-                                        }}
-                                    >
-                                        Delete Account
-                                    </Button>
-                </Box>
-            )}
-        </Card>
-        </>
+                              {profile.username || 'Your Name'}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: '#888',
+                              }}
+                            >
+                              {profile.email || 'yourname@gmail.com'}
+                            </Typography>
+                          </Box>
+                          <Tooltip title="Edit Profile" arrow>
+                            <IconButton
+                              onClick={() => setUpdateProfileVisible(!updateProfileVisible)}
+                              sx={{
+                                color: '#111E56',
+                                '&:hover': { color: '#111E60' },
+                              }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                        <Box
+                          component="div"
+                          sx={{
+                            fontSize: '16px',
+                            lineHeight: '1.8',
+                            width: '100%',
+                            textAlign: 'center',
+                            '& strong': {
+                              color: '#111E56',
+                              fontWeight: 'bold',
+                            },
+                          }}
+                        >
+                   
+                        </Box>
+                        <Button
+                          onClick={handleDelete}
+                          sx={{
+                            marginTop: '20px',
+                            backgroundColor: '#f44336',
+                            color: 'white',
+                            border: '2px solid #f44336',
+                            padding: '10px 20px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            borderRadius: '8px',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              backgroundColor: 'white',
+                              color: '#f44336',
+                              border: '2px solid #f44336',
+                            },
+                          }}
+                        >
+                          Delete Account
+                        </Button>
+                        {updateProfileVisible && (
+                          <Box
+                            sx={{
+                              marginTop: '20px',
+                              width: '100%',
+                              padding: '20px',
+                              borderRadius: '8px',
+                      
+                            }}
+                          >
+                            <UpdateTouristGovernorProfile
+                        profile={profile}
+                        setProfile={setProfile}
+                    />
+                          </Box>
+                        )}
+                      </>
+                    ) : (
+                      <CircularProgress sx={{ color: '#111E56' }} />
+                    )}
+                  </Box>
+
+
+
+
     );
     
 
@@ -269,13 +376,13 @@ const TouristGovernorDashboard = () => {
                 return renderHistoricalPlaces();
             case 'createHistoricalPlaces':
                 return <CreateHistoricalPlace />;
-            case 'updateProfile':
-                return (
-                    <UpdateTouristGovernorProfile
-                        profile={profile}
-                        setProfile={setProfile}
-                    />
-                );
+            // case 'updateProfile':
+            //     return (
+            //         <UpdateTouristGovernorProfile
+            //             profile={profile}
+            //             setProfile={setProfile}
+            //         />
+            //     );
             case 'profile':
                 return renderProfile();
             default:
@@ -286,7 +393,7 @@ const TouristGovernorDashboard = () => {
     const guestMenuItems = [
         { label: 'View Historical Places', section: 'viewHistoricalPlaces', icon: <LocationOn /> },
         { label: 'Create Historical Places', section: 'createHistoricalPlaces', icon: <AddLocation /> },
-        { label: 'Update Profile', section: 'updateProfile', icon: <Edit /> },
+      //  { label: 'Update Profile', section: 'updateProfile', icon: <Edit /> },
       ];
       
       return (
