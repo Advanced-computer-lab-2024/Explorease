@@ -616,7 +616,7 @@ const TouristDashboard = () => {
             borderRadius: '35px',
             transition: 'left 0.3s ease, background-color 0.3s ease',
             '&:hover': {
-                backgroundColor: '#e0e0e0',
+              backgroundColor: 'rgba(0, 0, 0, 0.1)', // Transparent gray
                 color: '#111E56',
             },
             zIndex: 1000,

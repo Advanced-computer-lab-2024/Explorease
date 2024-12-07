@@ -20,6 +20,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import axios from 'axios';
 import logo from '../../Misc/logo.png';
 import PersonIcon from '@mui/icons-material/Person'; // Import Person icon for profile
+import HomeIcon from '@mui/icons-material/Home';
 import {useNavigate} from 'react-router-dom'
 
 const Navbar = ({ toggleSidebar , setActiveComponent }) => {
@@ -270,9 +271,9 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
         sx={{
             color: 'white',
         }}
-        onClick={() => setActiveComponent('profile')} // Navigate or trigger profile component
+        onClick={() => setActiveComponent('home')} // Navigate or trigger profile component
     >
-        <PersonIcon />
+        <HomeIcon />
     </IconButton>
     
 </Tooltip>

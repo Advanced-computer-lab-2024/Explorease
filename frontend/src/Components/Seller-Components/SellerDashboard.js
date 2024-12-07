@@ -41,13 +41,14 @@ import SellerActivity from '../MainPage-Components/CommonActivity';
 import SellerItinerary from '../MainPage-Components/CommonItinerary';
 import SellerHistoricalPlaces from '../MainPage-Components/CommonHistoricalPlaces';
 
+import heroBackground from '../../Misc/heroBackground.jpg';
 
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar visibility state
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
-    const [activeComponent, setActiveComponent] = useState('profile');
+    const [activeComponent, setActiveComponent] = useState('home');
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
 
     const navigate = useNavigate();
@@ -120,6 +121,39 @@ const SellerDashboard = () => {
 
     const renderContent = () => {
         switch (activeComponent) {
+          case 'home':
+            return (<Box
+              sx={{
+                height: '90vh', // Full viewport height
+                objectFit: 'cover',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+                padding: 2,
+                boxSizing: 'border-box',
+                borderRadius: '8px', // Optional: rounded corners for the container
+               
+              }}
+            >
+              <Typography
+                variant="h2"
+                sx={{
+                  color: 'white', // Text color
+                  fontWeight: 'bold',
+                  letterSpacing: '2px',
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, // Responsive font size
+                  textTransform: 'uppercase', // Uppercase text for emphasis
+                  lineHeight: '1.2',
+                  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Subtle text shadow for contrast
+                  padding: '10px 20px',
+                }}
+              >
+                Welcome, {profile.username || 'User'}!
+              </Typography>
+              
+            </Box>
+          );
             case 'profile':
                 return (
                     <Box
@@ -301,7 +335,25 @@ const SellerDashboard = () => {
       ];
 
     return (
-        <Box>
+      <Box>
+      {/* Conditional Background */}
+      {activeComponent === 'home' && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            minHeight: '115vh',
+            background: `url(${heroBackground}) no-repeat center center`,
+            backgroundSize: 'cover',
+            filter: 'blur(2px)',
+            boxShadow: 'inset 0 0 0 1000px rgba(0, 0, 0, 0.2)',
+            zIndex: -1,
+          }}
+        />
+      )}
             <SellerNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
             <Box sx={{ display: 'flex' , minHeight: '100vh', }}>
         {/* Sidebar */}
@@ -504,7 +556,7 @@ const SellerDashboard = () => {
             borderRadius: '35px',
             transition: 'left 0.3s ease, background-color 0.3s ease',
             '&:hover': {
-                backgroundColor: '#e0e0e0',
+              backgroundColor: 'rgba(0, 0, 0, 0.1)', // Transparent gray
                 color: '#111E56',
             },
             zIndex: 1000,
