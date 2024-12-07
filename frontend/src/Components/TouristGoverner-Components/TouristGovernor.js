@@ -311,66 +311,72 @@ const TouristGovernorDashboard = () => {
                     }}
                 >
                     {historicalPlaces.map((place) => (
-                        <Card
-                            key={place._id}
-                            sx={{
-                                p: 2,
-                                width: '300px',
-                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-                                borderRadius: '12px',
-                                marginTop: '20px',
-                                '&:hover': {
-                                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                                    transform: 'scale(1.02)',
-                                    transition: 'transform 0.2s ease-in-out',
-                                },
-                            }}
-                        >
-                            <CardContent>
-                                <Typography variant="h6">{place.Name}</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {place.Description}
-                                </Typography>
-                                
-                                    <Box sx={{ display: 'flex', gap: 1 , alignItems:'center',marginTop:'15px' , marginBottom:'-15px'}}>
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => setEditingPlaceId(place._id)}
-                                            sx={{
-                                                backgroundColor: '#111E56',
-                                                color: 'white',
-                                                borderRadius: '50%',
-                                                marginLeft: '90px',
-                                                border: '2px solid #111E56',
-                                                '&:hover': {
-                                                    backgroundColor: 'white',
-                                                    color: '#111E56',
-                                                    border: '2px solid #111E56',
-                                                },
-                                            }}
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(place._id)}
-                                            sx={{
-                                                backgroundColor: '#FF5A5A',
-                                                color: 'white',
-                                                borderRadius: '50%',
-                                                '&:hover': {
-                                                    backgroundColor: 'white',
-                                                    color: '#FF5A5A',
-                                                    border: '1px solid #FF5A5A',
-                                                },
-                                            }}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Box>
-                                
-                            </CardContent>
-                        </Card>
+                      <Card
+                          key={place._id}
+                          sx={{
+                              p: 2,
+                              width: '300px',
+                              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+                              borderRadius: '12px',
+                              marginTop: '20px',
+                              display: 'flex',           // Added
+                              flexDirection: 'column',   // Added
+                              '&:hover': {
+                                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                                  transform: 'scale(1.02)',
+                                  transition: 'transform 0.2s ease-in-out',
+                              },
+                          }}
+                      >
+                          <CardContent sx={{ flex: 1 }}>  {/* Added flex: 1 */}
+                              <Typography variant="h6">{place.Name}</Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                  {place.Description}
+                              </Typography>
+                          </CardContent>
+                          
+                          <Box sx={{ 
+                              display: 'flex', 
+                              gap: 1, 
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '8px'
+                          }}>
+                              <IconButton
+                                  color="primary"
+                                  onClick={() => setEditingPlaceId(place._id)}
+                                  sx={{
+                                      backgroundColor: '#111E56',
+                                      color: 'white',
+                                      borderRadius: '50%',
+                                      border: '2px solid #111E56',
+                                      '&:hover': {
+                                          backgroundColor: 'white',
+                                          color: '#111E56',
+                                          border: '2px solid #111E56',
+                                      },
+                                  }}
+                              >
+                                  <EditIcon />
+                              </IconButton>
+                              <IconButton
+                                  color="error"
+                                  onClick={() => handleDelete(place._id)}
+                                  sx={{
+                                      backgroundColor: '#FF5A5A',
+                                      color: 'white',
+                                      borderRadius: '50%',
+                                      '&:hover': {
+                                          backgroundColor: 'white',
+                                          color: '#FF5A5A',
+                                          border: '1px solid #FF5A5A',
+                                      },
+                                  }}
+                              >
+                                  <DeleteIcon />
+                              </IconButton>
+                          </Box>
+                      </Card>
                     ))}
                 </Box>
             ) : (

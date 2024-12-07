@@ -145,78 +145,80 @@ const ViewMyItineraries = () => {
                 >
                     {itineraries.map((itinerary) => (
                         <Card
-                            key={itinerary._id}
-                            sx={{
-                                width: '300px',
-                                boxShadow: 3,
-                                padding: 2,
-                                textAlign: 'center',
-                                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                                '&:hover': {
-                                    transform: 'scale(1.03)',
-                                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                                },
-                            }}
-                        >
-                            <CardContent>
-                                <Typography
-                                    variant="h6"
-                                    sx={{
-                                        color: '#111E56',
-                                        fontWeight: 'bold',
-                                        marginBottom: '10px',
-                                    }}
+                        key={itinerary._id}
+                        sx={{
+                            width: '300px',
+                            boxShadow: 3,
+                            padding: 2,
+                            textAlign: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                            '&:hover': {
+                                transform: 'scale(1.03)',
+                                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                            },
+                        }}
+                    >
+                        <CardContent sx={{ flexGrow: 1 }}>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: '#111E56',
+                                    fontWeight: 'bold',
+                                    marginBottom: '10px',
+                                }}
+                            >
+                                {itinerary.name}
+                            </Typography>
+                            <Typography>
+                                <strong>Description:</strong> {itinerary.description || 'No description available.'}
+                            </Typography>
+                            <Typography>
+                                <strong>Available Dates:</strong> {itinerary.AvailableDates.join(', ')}
+                            </Typography>
+                            <Typography>
+                                <strong>Price:</strong> ${itinerary.totalPrice}
+                            </Typography>
+                            <Typography>
+                                <strong>Language:</strong> {itinerary.LanguageOfTour.join(', ')}
+                            </Typography>
+                            <Typography>
+                                <strong>Pickup Location:</strong> {itinerary.PickUpLocation}
+                            </Typography>
+                            <Typography>
+                                <strong>Dropoff Location:</strong> {itinerary.DropOffLocation}
+                            </Typography>
+                        </CardContent>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
+                            <Tooltip title="Edit">
+                                <IconButton color="primary">
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={itinerary.isActivated ? "Deactivate" : "Activate"}>
+                                <IconButton
+                                    color={itinerary.isActivated ? "error" : "success"}
+                                    onClick={() =>
+                                        itinerary.isActivated
+                                            ? handleDeactivateItinerary(itinerary._id)
+                                            : handleActivateItinerary(itinerary._id)
+                                    }
                                 >
-                                    {itinerary.name}
-                                </Typography>
-                                <Typography>
-                                    <strong>Description:</strong> {itinerary.description || 'No description available.'}
-                                </Typography>
-                                <Typography>
-                                    <strong>Available Dates:</strong> {itinerary.AvailableDates.join(', ')}
-                                </Typography>
-                                <Typography>
-                                    <strong>Price:</strong> ${itinerary.totalPrice}
-                                </Typography>
-                                <Typography>
-                                    <strong>Language:</strong> {itinerary.LanguageOfTour.join(', ')}
-                                </Typography>
-                                <Typography>
-                                    <strong>Pickup Location:</strong> {itinerary.PickUpLocation}
-                                </Typography>
-                                <Typography>
-                                    <strong>Dropoff Location:</strong> {itinerary.DropOffLocation}
-                                </Typography>
-
-                                <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
-                                    <Tooltip title="Edit">
-                                        <IconButton color="primary">
-                                            <EditIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title={itinerary.isActivated ? "Deactivate" : "Activate"}>
-                                        <IconButton
-                                            color={itinerary.isActivated ? "error" : "success"}
-                                            onClick={() =>
-                                                itinerary.isActivated
-                                                    ? handleDeactivateItinerary(itinerary._id)
-                                                    : handleActivateItinerary(itinerary._id)
-                                            }
-                                        >
-                                            {itinerary.isActivated ? <CancelIcon /> : <CheckCircleIcon />}
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Delete">
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDeleteItinerary(itinerary._id)}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
-                            </CardContent>
-                        </Card>
+                                    {itinerary.isActivated ? <CancelIcon /> : <CheckCircleIcon />}
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                                <IconButton
+                                    color="error"
+                                    onClick={() => handleDeleteItinerary(itinerary._id)}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    </Card>
                     ))}
                 </Box>
             ) : (
