@@ -440,6 +440,86 @@ const TouristGovernorDashboard = () => {
     overflow: 'hidden', // Prevent overflow when collapsed
   }}
 >
+
+<Box >
+  {isSidebarOpen ? (
+    <Box sx={{marginLeft:'10px'}}>
+    <Avatar
+      {...stringAvatar(profile.username || 'User')}
+      sx={{
+        width: 60,
+        height: 60,
+        marginRight: '15px',
+        backgroundColor: 'white',
+        color: '#111E56',
+        fontSize: '20px',
+        fontWeight: 'bold',
+        marginLeft:'70px'
+      }}
+    />
+    <Typography
+  variant="h6"
+  sx={{
+    fontWeight: 'bold',
+    color: 'white',
+    marginRight: '20px',
+    marginTop: '10px',
+    cursor: 'pointer',  // Adds a pointer cursor to indicate it's clickable
+    transition: 'transform 0.3s ease',  // Smooth transition for scaling
+    '&:hover': {
+      transform: 'scale(1.1)',  // Scales up the text on hover
+    }, // Adds a pointer cursor to indicate it's clickable
+  }}
+  onClick={() => handleSectionChange('profile')}
+>
+  View Profile
+</Typography>
+
+    <Divider sx={{backgroundColor:'white'}}/>
+    </Box>
+    
+  ) : (
+    <Tooltip
+    title={!isSidebarOpen ? 'profile' : ''} // Tooltip for collapsed sidebar
+    arrow
+    placement="right"
+    key={'profile'}
+  >
+    <Button
+      sx={{
+        color: 'white',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        width: '100%',
+        padding: isSidebarOpen ? '10px 20px' : '10px 0 10px 10px',
+        marginTop: '10px',
+        display: 'flex',
+        gap: isSidebarOpen ? 2 : 0,
+        textAlign: 'left',
+        backgroundColor: activeComponent === 'profile' ? '#7BAFD0' : 'transparent',
+        borderLeft: activeComponent === 'profile' ? '6px solid #FFFFFF' : '6px solid transparent',
+        transition: 'background-color 0.3s ease, border 0.3s ease',
+        '&:hover': {
+          backgroundColor: '#7BAFD0',
+        },
+      }}
+      onClick={() => handleSectionChange('profile')}
+    >
+      <AccountCircle />
+    </Button>
+  </Tooltip>
+    // <IconButton
+    // onClick={() => handleSectionChange('profile')} 
+    //   sx={{
+    //     color: 'white',
+    //     '&:hover': { color: '#111E60' },
+    //   }}
+    // >
+    //   <AccountCircle />
+    // </IconButton>
+  )}
+</Box>
+
   {/* Menu Items */}
   {guestMenuItems.map((item, index) => (
     <Tooltip

@@ -17,7 +17,7 @@ import ReviewGuides from './ReviewGuides';
 import PurchasedProduct from './PurchasedProduct';
 import MyPoints from './MyPoints';
 import Products from './BuyProduct';
-import { Box, Typography, Drawer, List, ListItem, ListItemText, IconButton , Button ,Avatar } from '@mui/material';
+import { Box, Typography, Drawer, List, ListItem, ListItemText, IconButton , Button ,Avatar, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Wishlist from './Wishlist';
 import Checkout from './Checkout';
@@ -29,7 +29,7 @@ import Tooltip from '@mui/material/Tooltip';
 import TouristHomePage from './TouristHomePage';
 import HistoricalPlace from './HistoricalPlaces';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
-
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';
 
@@ -236,6 +236,7 @@ const TouristDashboard = () => {
                             width: '100%',
                           }}
                         >
+                          <Box>
                                     <Avatar
                                         {...stringAvatar(profile.username || 'User')}
                                         sx={{
@@ -248,6 +249,7 @@ const TouristDashboard = () => {
                                             fontWeight: 'bold',
                                         }}
                                     />
+                                    </Box>
                                     <Box sx={{ flexGrow: 1, textAlign: 'left' }}>
                             <Typography
                               variant="h6"
@@ -429,6 +431,85 @@ const TouristDashboard = () => {
   }}
 >
   <nav>
+  <Box >
+  {isSidebarOpen ? (
+    <Box sx={{marginLeft:'10px'}}>
+    <Avatar
+      {...stringAvatar(profile.username || 'User')}
+      sx={{
+        width: 60,
+        height: 60,
+        marginRight: '15px',
+        backgroundColor: 'white',
+        color: '#111E56',
+        fontSize: '20px',
+        fontWeight: 'bold',
+        marginLeft:'70px'
+      }}
+    />
+    <Typography
+  variant="h6"
+  sx={{
+    fontWeight: 'bold',
+    color: 'white',
+    marginRight: '20px',
+    marginTop: '10px',
+    cursor: 'pointer',  // Adds a pointer cursor to indicate it's clickable
+    transition: 'transform 0.3s ease',  // Smooth transition for scaling
+    '&:hover': {
+      transform: 'scale(1.1)',  // Scales up the text on hover
+    }, // Adds a pointer cursor to indicate it's clickable
+  }}
+  onClick={() => handleSectionChange('profile')}
+>
+  View Profile
+</Typography>
+
+    <Divider sx={{backgroundColor:'white'}}/>
+    </Box>
+    
+  ) : (
+    <Tooltip
+    title={!isSidebarOpen ? 'profile' : ''} // Tooltip for collapsed sidebar
+    arrow
+    placement="right"
+    key={'profile'}
+  >
+    <Button
+      sx={{
+        color: 'white',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        width: '100%',
+        padding: isSidebarOpen ? '10px 20px' : '10px 0 10px 10px',
+        marginTop: '10px',
+        display: 'flex',
+        gap: isSidebarOpen ? 2 : 0,
+        textAlign: 'left',
+        backgroundColor: activeComponent === 'profile' ? '#7BAFD0' : 'transparent',
+        borderLeft: activeComponent === 'profile' ? '6px solid #FFFFFF' : '6px solid transparent',
+        transition: 'background-color 0.3s ease, border 0.3s ease',
+        '&:hover': {
+          backgroundColor: '#7BAFD0',
+        },
+      }}
+      onClick={() => handleSectionChange('profile')}
+    >
+      <AccountCircle />
+    </Button>
+  </Tooltip>
+    // <IconButton
+    // onClick={() => handleSectionChange('profile')} 
+    //   sx={{
+    //     color: 'white',
+    //     '&:hover': { color: '#111E60' },
+    //   }}
+    // >
+    //   <AccountCircle />
+    // </IconButton>
+  )}
+</Box>
+
     {touristMenuItems.map((item) => (
       <Tooltip
         title={!isSidebarOpen ? item.label : ''} // Tooltip for collapsed sidebar
@@ -467,12 +548,13 @@ const TouristDashboard = () => {
     {/* Settings Button */}
     <Tooltip title="Settings" arrow placement="right">
       <Button
-        startIcon={<SettingsIcon />} // Settings icon
+        startIcon={<SettingsIcon sx={{marginLeft:'10px',}} />} // Settings icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',
           alignItems: 'center',
           width: '100%',
+          
           padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
           textAlign: 'left',
           '&:hover': { backgroundColor: '#7BAFD0' },
@@ -486,12 +568,13 @@ const TouristDashboard = () => {
     {/* Logout Button */}
     <Tooltip title="Logout" arrow placement="right">
       <Button
-        startIcon={<LogoutIcon />} // Logout icon
+        startIcon={<LogoutIcon sx={{marginLeft:'10px',}} />} // Logout icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',
           alignItems: 'center',
           width: '100%',
+          
           padding: isSidebarOpen ? '10px 20px 10px 15px' : '10px 0 10px 10px',
           textAlign: 'left',
           '&:hover': { backgroundColor: '#7BAFD0' },

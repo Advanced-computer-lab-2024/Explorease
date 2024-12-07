@@ -223,10 +223,12 @@ const ViewBookings = () => {
                 {/* Main Content Section (Details + Rating/Comment Side by Side) */}
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1 }}>
                     {/* Left Section: Details */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1  }}>
                         <Typography variant="h5" noWrap style={{fontWeight:'bold' , color:'#111E56'}}>
                             {booking.Activity?.name || 'Activity has been removed by the Advertiser.'}
+
                         </Typography>
+                        <Box sx={{mt:2}}>
                         {booking.Activity?.date && (
                             <Typography variant="body2">
                                 <strong style={{fontWeight:'bold' , color:'#111E56'}}>Date:</strong>{' '}
@@ -240,6 +242,7 @@ const ViewBookings = () => {
                             <strong style={{fontWeight:'bold' , color:'#111E56'}}> Cancellation Deadline:</strong>{' '}
                             {new Date(booking.CancellationDeadline).toLocaleDateString()}
                         </Typography>
+                        </Box>
                     </Box>
     
                     {/* Right Section: Rating and Comment */}
@@ -335,7 +338,7 @@ const ViewBookings = () => {
                                     variant="outlined"
                                     color="error"
                                     onClick={() => handleCancelActivityBooking(booking._id)}
-                                    sx={{ mt: 2, mb: 2 }}
+                                    sx={{ mt: 10, }}
                                     disabled={booking.Status === 'Cancelled'}
                                 >
                                     {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}
@@ -389,25 +392,27 @@ const ViewBookings = () => {
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1 }}>
                     {/* Left Section: Details */}
                     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                        <Typography variant="h5" noWrap>
+                        <Typography variant="h5" noWrap sx={{fontWeight:'bold' , color:'#111E56'}}>
                             {booking.Itinerary?.name || 'Itinerary has been removed by the Advertiser.'}
                         </Typography>
+                        <Box sx={{mt:2}}>
                         {booking.Itinerary?.AvailableDates && (
                             <Typography variant="body2">
-                                <strong>Date:</strong>{' '}
+                                <strong style={{fontWeight:'bold' , color:'#111E56'}}>Date:</strong>{' '}
                                 {new Date(booking.Itinerary?.AvailableDates[0]).toLocaleDateString()}
                             </Typography>
                         )}
                         <Typography variant="body2">
-                            <strong>Status:</strong> {booking.Status}
+                            <strong style={{fontWeight:'bold' , color:'#111E56'}}>Status:</strong> {booking.Status}
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}
+                            <strong style={{fontWeight:'bold' , color:'#111E56'}}>Booked At:</strong> {new Date(booking.BookedAt).toLocaleDateString()}
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Cancellation Deadline:</strong>{' '}
+                            <strong style={{fontWeight:'bold' , color:'#111E56'}}>Cancellation Deadline:</strong>{' '}
                             {new Date(booking.CancellationDeadline).toLocaleDateString()}
                         </Typography>
+                        </Box>
                     </Box>
     
                     {/* Right Section: Rating and Comment */}
@@ -503,7 +508,7 @@ const ViewBookings = () => {
                                     variant="outlined"
                                     color="error"
                                     onClick={() => handleCancelItineraryBooking(booking._id)}
-                                    sx={{ mt: 2, mb: 2 }}
+                                    sx={{ mt: 10, }}
                                     disabled={booking.Status === 'Cancelled'}
                                 >
                                     {booking.Status === 'Cancelled' ? 'Booking Canceled' : 'Cancel Booking'}

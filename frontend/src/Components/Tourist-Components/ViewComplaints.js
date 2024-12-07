@@ -135,7 +135,7 @@ const ViewComplaints = () => {
 
     return (
         <div style={containerStyle}>
-            <h2>Complaints</h2>
+            <Typography variant= 'h5' sx={{fontWeight:'bold' , color:'#111E56'}}>Complaints</Typography>
             {errorMessage && <p style={errorMessageStyle}>{errorMessage}</p>}
             
             {loading ? (
@@ -144,7 +144,7 @@ const ViewComplaints = () => {
     <div style={listStyle}>
         {filteredComplaints.map((complaint) => (
             <div key={complaint._id} style={cardStyle}>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Box display="flex" justifyContent="space-between" alignItems="center" >
                     <Typography variant="h6" style={{ marginBottom: '8px' }}>
                         {complaint.title}
                     </Typography>

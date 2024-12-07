@@ -246,7 +246,11 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
                     </Box>
                 </Box>
 
-                {/* Currency Selector */}
+                
+
+                {/* Icons */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        {/* Currency Selector */}
                 <FormControl sx={{ backgroundColor: 'white', borderRadius: '10px' }}>
                     <InputLabel></InputLabel>
                     <Select
@@ -266,19 +270,6 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
                     </Select>
                 </FormControl>
 
-                {/* Icons */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    {/* User Profile Icon */}
-<Tooltip title="Profile" arrow>
-    <IconButton
-        sx={{
-            color: 'white',
-        }}
-        onClick={() => handleSectionChange('profile')} // Navigate or trigger profile component
-    >
-        <AccountCircle />
-    </IconButton>
-</Tooltip>
 
                     
                     <Tooltip title="Wallet" arrow>
@@ -323,12 +314,16 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
             fontWeight: 'bold',
             position: 'relative',
             display: 'inline-block',
+            color: '#111E56',
+            marginBottom: '20px',
             '&::after': {
             content: '""',
             position: 'absolute',
             width: '100%',
             height: '2px',
             backgroundColor: '#111E56',
+
+            
             bottom: '-2px',
             left: '0',
             transform: 'scaleX(0)',

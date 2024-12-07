@@ -107,7 +107,7 @@ const ReviewGuides = () => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>Review Your Guides</Typography>
+            <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>Review Your Guides</Typography>
 
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}
 
@@ -120,7 +120,13 @@ const ReviewGuides = () => {
                     const hasReviews = guideReviews.length === 0 ? false : true;
                     const currentReview = guideReviews;
                     return (
-                        <Card key={guide._id} sx={{ mb: 2 }}>
+                        <Card key={guide._id} sx={{ mb: 2 ,
+                            transition: "transform 0.3s, box-shadow 0.3s", 
+                            boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
+                            "&:hover": {
+                              transform: "scale(1.05)",
+                              boxShadow: "0 10px 15px rgba(0, 0, 0, 0.2)"
+                            }}}>
                             <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Avatar
                                     alt={guide.username}
@@ -128,7 +134,7 @@ const ReviewGuides = () => {
                                     sx={{ width: 56, height: 56, mr: 2 }}
                                 />
                                 <Box>
-                                    <Typography variant="h6">{guide.username}</Typography>
+                                    <Typography variant="h6" sx={{fontWeight:'bold', color:'#111E56'}}>{guide.username}</Typography>
 
                                     {hasReviews ? (
                                         <Box sx={{ mt: 2, p: 2, border: '1px solid #ddd', borderRadius: '4px' }}>
