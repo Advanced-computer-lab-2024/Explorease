@@ -160,6 +160,7 @@ const TouristDashboard = () => {
         return { children: initials.toUpperCase() };
     };
 
+
     const handleDeleteAccountRequest = async () => {
         if (
             window.confirm(
@@ -193,190 +194,161 @@ const TouristDashboard = () => {
                 return <TouristHomePage profile={profile}/>;
             case 'profile':
                 return (
-                    <>
-                        {message && (
-                            <Typography
-                                color="error"
-                                sx={{
-                                    marginBottom: '10px',
-                                    fontWeight: 'bold',
-                                    textAlign: 'left',
-                                    paddingLeft: '20px',
-                                }}
-                            >
-                                {message}
-                            </Typography>
-                        )}
-                        {profile && profile.username ? (
-                          <Box
-                          sx={{
-                              display: 'flex',
-                              alignItems: 'center', // Flex layout for Profile + Update form
-                              flexDirection: 'column', // Align profile and update form horizontally
-                              gap: '10px', // Space between profile card and update form
-                              width: '100%',
-                              position : 'relative' // Ensure they take up the full width
-                          }}
+                    <Box
+                    sx={{
+                      marginTop: '50px',
+                      width: '450px',
+                      borderRadius: '16px',
+                      backgroundColor: 'white',
+                      margin: '30px auto',
+                      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                      padding: '20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
+                      },
+                    }}
+                  >
+                    {message && (
+                      <Typography
+                        color="error"
+                        sx={{
+                          marginBottom: '10px',
+                          fontWeight: 'bold',
+                          width: '100%',
+                          textAlign: 'center',
+                        }}
                       >
-                            {/* Profile Details Card */}
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        flexDirection: 'column',
-                                        backgroundColor: 'white',
-                                        borderRadius: '16px',
-                                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
-                                        padding: '20px',
-                                        marginBottom: '20px',
-                                        width: '400px',
-                                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                                        '&:hover': {
-                                            transform: 'scale(1.05)', // Hover effect: scaling
-                                            boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)', // Slightly more pronounced shadow
-                                        },
-                                    }}
-                                >
-                                    {/* Avatar and Basic Info */}
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            marginBottom: '20px',
-                                        }}
-                                    >
-                                        <Avatar
-                                            {...stringAvatar(profile.username || 'User')}
-                                            sx={{
-                                                width: 60,
-                                                height: 60,
-                                                marginRight: '15px',
-                                                backgroundColor: '#111E56',
-                                                color: '#fff',
-                                                fontSize: '20px',
-                                                fontWeight: 'bold',
-                                            }}
-                                        />
-                                        <Box>
-                                            <Typography
-                                                variant="h6"
-                                                sx={{
-                                                    fontWeight: 'bold',
-                                                    color: '#111E56',
-                                                }}
-                                            >
-                                                {profile.username || 'Your Name'}
-                                            </Typography>
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    color: '#888',
-                                                }}
-                                            >
-                                                {profile.email || 'yourname@gmail.com'}
-                                            </Typography>
-                                        </Box>
-                                        <Box sx={{ marginLeft: '100px'}} >
-                                        <Tooltip title="Edit Profile" arrow>
-                                <IconButton
-                                    onClick={() => setUpdateProfileVisible(!updateProfileVisible)}
-                                    sx={{
-                                        color: '#111E56',
-                                        '&:hover': { color: '#111E60' },
-                                    }}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                            </Tooltip>
-                            </Box>
-                                    </Box>
-            
-                                    {/* Profile Details */}
-                                    <Box
-                                        component="div"
-                                        sx={{
-                                            fontSize: '16px',
-                                            lineHeight: '2.5',
-                                            width: '120%',
-                                            '& strong': {
-                                                color: '#111E56',
-                                                fontWeight: 'bold',
-                                            },
-                                            alignItems : 'left'
-                                        }}
-                                    >
-                                        <p>
-                                            <strong>Date of Birth</strong>{' '}
-                                            {new Date(profile.dob).toLocaleDateString()}
-                                        </p>
-                                        <p>
-                                            <strong>Nationality</strong> {profile.nationality}
-                                        </p>
-                                        <p>
-                                            <strong>Mobile Number </strong> {profile.mobileNumber}
-                                        </p>
-                                        <p>
-                                            <strong>Wallet Balance</strong> {convertPrice(profile.wallet)} {selectedCurrency}
-                                        </p>
-                                    </Box>
-            
-                                    {/* Delete Account Button */}
-                                    <Button
-                                        onClick={handleDeleteAccountRequest}
-                                        sx={{
-                                            marginTop: '20px',
-                                            backgroundColor: '#f44336',
-                                            color: 'white',
-                                            border: '2px solid #f44336',
-                                            padding: '10px 20px',
-                                            fontWeight: 'bold',
-                                            fontSize: '14px',
-                                            textTransform: 'uppercase',
-                                            borderRadius: '8px',
-                                            transition: 'all 0.3s ease',
-                                            '&:hover': {
-                                                backgroundColor: 'white',
-                                                color: '#f44336',
-                                                border: '2px solid #f44336',
-                                            },
-                                        }}
-                                    >
-                                        Delete Account
-                                    </Button>
-                                </Box>
-            
-                             
-                          
-                    {/* Render Update Profile Form */}
-                    {updateProfileVisible && (
-                     <Box
-                     sx={{
-                         flex: 1,
-                         flexDirection: 'column',
-                         padding: '20px',
-                         borderRadius: '16px',
-                         backgroundColor: 'white',
-                     }}
-                 >
-                            <UpdateProfile profile={profile} setProfile={setProfile} />
-                        </Box>
+                        {message}
+                      </Typography>
                     )}
-                </Box>
-                        ) : (
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    height: '100px',
-                                    paddingLeft: '20px',
-                                }}
+                    {profile.username ? (
+                      <>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginBottom: '20px',
+                            width: '100%',
+                          }}
+                        >
+                                    <Avatar
+                                        {...stringAvatar(profile.username || 'User')}
+                                        sx={{
+                                            width: 60,
+                                            height: 60,
+                                            marginRight: '15px',
+                                            backgroundColor: '#111E56',
+                                            color: '#fff',
+                                            fontSize: '20px',
+                                            fontWeight: 'bold',
+                                        }}
+                                    />
+                                    <Box sx={{ flexGrow: 1, textAlign: 'left' }}>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontWeight: 'bold',
+                                color: '#111E56',
+                              }}
                             >
-                                <CircularProgress size={50} sx={{ color: '#111E56' }} />
-                                
-                            </Box>
-                        )}
-                    </>
+                              {profile.username || 'Your Name'}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: '#888',
+                              }}
+                            >
+                              {profile.email || 'yourname@gmail.com'}
+                            </Typography>
+                          </Box>
+                          <Tooltip title="Edit Profile" arrow>
+                            <IconButton
+                              onClick={() => setUpdateProfileVisible(!updateProfileVisible)}
+                              sx={{
+                                color: '#111E56',
+                                '&:hover': { color: '#111E60' },
+                              }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                        <Box
+                          component="div"
+                          sx={{
+                            fontSize: '16px',
+                            lineHeight: '1.8',
+                            width: '100%',
+                            textAlign: 'center',
+                            '& strong': {
+                              color: '#111E56',
+                              fontWeight: 'bold',
+                            },
+                          }}
+                        >
+
+                                    <p>
+                                        <strong>Date of Birth</strong>{' '}
+                                        {new Date(profile.dob).toLocaleDateString()}
+                                    </p>
+                                    <p>
+                                        <strong>Nationality</strong> {profile.nationality}
+                                    </p>
+                                    <p>
+                                        <strong>Mobile Number </strong> {profile.mobileNumber}
+                                    </p>
+                                    <p>
+                                        <strong>Wallet Balance</strong> {convertPrice(profile.wallet)} {selectedCurrency}
+                                    </p>
+                                </Box>
+        
+                            
+                                <Button
+                          onClick={handleDeleteAccountRequest}
+                          sx={{
+                            marginTop: '20px',
+                            backgroundColor: '#f44336',
+                            color: 'white',
+                            border: '2px solid #f44336',
+                            padding: '10px 20px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            borderRadius: '8px',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              backgroundColor: 'white',
+                              color: '#f44336',
+                              border: '2px solid #f44336',
+                            },
+                          }}
+                        >
+                                    Delete Account
+                                </Button>
+
+                {updateProfileVisible && (
+                 <Box
+                 sx={{
+                    marginTop: '20px',
+                    width: '100%',
+                    padding: '20px',
+                    borderRadius: '8px',
+
+                 }}
+             >
+                        <UpdateProfile profile={profile} setProfile={setProfile} />
+                    </Box>
+                )}
+                              </>
+                    ) : (
+                      <CircularProgress sx={{ color: '#111E56' }} />
+                    )}
+                  </Box>
                 );
             
 

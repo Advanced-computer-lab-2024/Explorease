@@ -91,6 +91,7 @@ const UpdateProfile = ({ profile, setProfile }) => {
 
     return (
         <Box
+        
             sx={{
                 marginTop: '20px',
                 width: '100%',
@@ -98,12 +99,25 @@ const UpdateProfile = ({ profile, setProfile }) => {
                 borderRadius: '16px',
                 backgroundColor: 'white',
                 margin: '20px auto',
-                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+               // boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
                 textAlign: 'center',
                 fontFamily: 'Poppins, sans-serif',
                 padding: '30px',
             }}
+            
         >
+            <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}
+                >
+                    Update Profile
+                </Typography>
+
             {updateMessage && (
                 <Typography
                     color={success ? 'green' : 'red'}

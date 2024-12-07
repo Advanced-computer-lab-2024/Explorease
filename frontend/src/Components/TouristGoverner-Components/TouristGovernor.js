@@ -136,6 +136,7 @@ const TouristGovernorDashboard = () => {
     const renderProfile = () => (
      
 <Box
+
                     sx={{
                       marginTop: '50px',
                       width: '450px',
@@ -161,6 +162,7 @@ const TouristGovernorDashboard = () => {
                         {message}
                       </Alert>
                     )}
+
               
                     {profile && profile.username ? (
                       <>
@@ -196,6 +198,7 @@ const TouristGovernorDashboard = () => {
                               }}
                             />
                           )}
+                          
                           <Box sx={{ flexGrow: 1, textAlign: 'left' }}>
                             <Typography
                               variant="h6"

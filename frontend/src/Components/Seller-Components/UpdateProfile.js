@@ -76,7 +76,17 @@ const UpdateProfile = ({ profile, setProfile, role = "seller" }) => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>Update Profile</Typography>
+             <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}
+                >
+                    Update Profile
+                </Typography>
 
             {updateMessage && (
                 <Typography color={success ? 'green' : 'red'} sx={{ mb: 2 }}>
@@ -141,7 +151,17 @@ const UpdateProfile = ({ profile, setProfile, role = "seller" }) => {
 
             {/* Password Update Section */}
             <Box sx={{ mt: 4 }}>
-                <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>Update Password</Typography>
+            <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}
+                >
+                    Update Password
+                </Typography>
                 
                 {passwordMessage && (
                     <Typography color={redirecting ? 'primary' : 'error'} sx={{ mb: 2 }}>
