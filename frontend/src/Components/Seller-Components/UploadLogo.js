@@ -46,7 +46,7 @@ const UploadLogo = ({ setProfile }) => {
     };
 
     return (
-        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2 }}>
+        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 4, borderRadius: 2 }}>
             <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' , color:'#111E56' }}>
                 Upload Logo
             </Typography>

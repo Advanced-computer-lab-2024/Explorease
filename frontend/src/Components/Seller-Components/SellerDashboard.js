@@ -354,33 +354,44 @@ const SellerDashboard = () => {
                           Delete Account
                         </Button>
                         {updateProfileVisible && (
-                          <Box
-                            sx={{
-                              marginTop: '20px',
-                              width: '100%',
-                              padding: '20px',
-                              borderRadius: '8px',
-                        
-                            }}
-                          >
-                            <UpdateProfile profile={profile} setProfile={setProfile} />
-                          </Box>
-                        )}
-                      </>
-                    ) : (
-                      <CircularProgress sx={{ color: '#111E56' }} />
-                    )}
-                  </Box>
+            <Box
+              sx={{
+                marginTop: '20px',
+                width: '100%',
+                padding: '20px',
+                borderRadius: '8px',
+              }}
+            >
+              <UpdateProfile profile={profile} setProfile={setProfile} />
+              <Box sx={{ marginTop: '20px', width: '100%' }}>
+                <UploadLogo setProfile={setProfile} />
+                
+              </Box>
+            </Box>
+          )}
+        
+        </>
+      ) : (
+        <CircularProgress sx={{ color: '#111E56' }} />
+      )}
+    </Box>
+  );
 
-                );
+
+
+
+
+
+
+                
             case 'viewProducts':
                 return <Products />;
             // case 'updateProfile':
             //     return <UpdateProfile profile={profile} setProfile={setProfile} />;
             case 'myProducts':
                 return <MyProducts />;
-            case 'addLogo':
-                return <UploadLogo setProfile={setProfile} />;
+            // case 'addLogo':
+            //     return <UploadLogo setProfile={setProfile} />;
             case 'salesReport':
                 return <SalesReport />;
 
@@ -401,7 +412,7 @@ const SellerDashboard = () => {
         { label: 'All Products', component: 'viewProducts', icon: <ViewModuleIcon /> },
       //  { label: 'Update Profile', component: 'updateProfile', icon: <EditIcon /> },
         { label: 'My Products', component: 'myProducts', icon: <AddBoxIcon /> },
-        { label: 'Upload Logo', component: 'addLogo', icon: <UploadIcon /> },
+      //  { label: 'Upload Logo', component: 'addLogo', icon: <UploadIcon /> },
         { label: 'Sales Report', component: 'salesReport', icon: <InsertChartIcon /> },
       ];
 
