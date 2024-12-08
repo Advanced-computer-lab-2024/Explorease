@@ -17,7 +17,6 @@ const UserApproval = () => {
     [token]
   );
   
-
   useEffect(() => {
     const fetchPendingUsers = async () => {
       try {
@@ -74,7 +73,7 @@ const UserApproval = () => {
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2 }}>
-      <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>
+      <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' , color: '#111E56' }}>
         User Approval
       </Typography>
       {message && (
@@ -104,7 +103,7 @@ const UserApproval = () => {
             }}
           >
             <CardContent>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
                 {user.name || user.username}
               </Typography>
               <Typography variant="body2" gutterBottom>
@@ -149,9 +148,10 @@ const UserApproval = () => {
       '&:hover': {
         backgroundColor: 'white', // White background on hover
         color: '#4caf50', // Green text on hover
-        border: '1px solid #4caf50', // Green border on hover
+        
       },
       mr: 1,
+      border: '2px solid #4caf50', // Green border on hover
     }}
     onClick={() => handleAccept(user._id, user.userType)}
   >
@@ -164,11 +164,11 @@ const UserApproval = () => {
       color: 'white', // White text
       padding: '6px 16px', // Ensures consistent padding
       boxSizing: 'border-box', // Ensures size consistency
-      border: '1px solid #f44336', // Red border
+      border: '2px solid #f44336', // Red border
       '&:hover': {
         backgroundColor: 'white', // White background on hover
         color: '#f44336', // Red text on hover
-        border: '1px solid #f44336', // Red border
+        border: '2px solid #f44336', // Red border
       },
     }}
     onClick={() => handleReject(user._id, user.userType)}

@@ -128,7 +128,7 @@ const PromoCodes = () => {
                     },
                 }}
             >
-                <Typography variant="h5" sx={{ mb: 2 }}>
+                <Typography variant="h5" sx={{ mb: 2 , fontWeight:'bold' , color:'#111E56' }}>
                     Create Promo Code
                 </Typography>
                 <TextField
@@ -176,7 +176,7 @@ const PromoCodes = () => {
             <Divider sx={{ my: 4 }} />
 
             {/* Manage Promo Codes Section */}
-            <Typography variant="h5" sx={{ mb: 3 }}>
+            <Typography variant="h5" sx={{ mb: 3 , fontWeight:'bold' , color:'#111E56' }}>
                 Manage Promo Codes
             </Typography>
             {loading ? ( // Show loading indicator while fetching promo codes
@@ -284,7 +284,7 @@ const PromoCodes = () => {
                                         </>
                                     ) : (
                                         <>
-                                            <Typography variant="h6" sx={{ mb: 1 }}>
+                                            <Typography variant="h6" sx={{ mb: 1 , fontWeight:'bold' , color:'#111E56' }}>
                                                 {promo.name}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">

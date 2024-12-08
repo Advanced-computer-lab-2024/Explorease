@@ -283,9 +283,9 @@ const Cart = ({ handleSectionChange}) => {
                                             </IconButton>
                                         </Box>
                     {/* Wishlist Button */}
-                    
+                    <Tooltip title="Remove from Cart" arrow>
                     <IconButton
-                      onClick={() => removeFromCart(product.productId_id)}
+                      onClick={() => removeFromCart(product.productId._id)}
                       sx={{
                         transition: "color 0.3s ease-in-out",
                         "&:hover": {
@@ -294,10 +294,11 @@ const Cart = ({ handleSectionChange}) => {
                         marginRight:'8px'
                       }}
                     >
-                        <Tooltip title="Remove from Cart" arrow>
+                        
     <DeleteIcon sx={{ color: '#FF0000' }} />
-  </Tooltip>
+ 
                     </IconButton>
+                    </Tooltip>
                   </Box>
                 </Card>
               </Grid>
