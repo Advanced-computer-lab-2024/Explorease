@@ -22,6 +22,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  CardMedia
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -56,7 +57,8 @@ const TouristGovernorDashboard = () => {
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [editingPlace, setEditingPlace] = useState(null);
-    
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
     // Fetch profile
     const fetchProfile = async () => {
@@ -297,11 +299,11 @@ const TouristGovernorDashboard = () => {
     );
     
 
-    const handleEdit = async (placeId) => {
-        const place = historicalPlaces.find(p => p._id === placeId);
-        setEditingPlace(place);
-        setEditMode(true);
-    };
+    const handleEdit = (place) => {
+      setEditingPlace(place); // Directly set the full object
+      setEditMode(true);
+  };
+  
 
     const handleUpdate = async (updatedPlace) => {
         const token = localStorage.getItem('token');
@@ -334,112 +336,190 @@ const TouristGovernorDashboard = () => {
       }
 
   };
-    const renderHistoricalPlaces = () => (
-        <Box>
-            <Typography variant="h5" color="primary" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
-                My Historical Places
-            </Typography>
-            {historicalPlaces.length > 0 ? (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: 2,
-                        justifyContent: 'center',
-                    }}
-                >
-                    {historicalPlaces.map((place) => (
-                      <Card
-                          key={place._id}
-                          sx={{
-                              p: 2,
-                              width: '300px',
-                              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-                              borderRadius: '12px',
-                              marginTop: '20px',
-                              display: 'flex',           // Added
-                              flexDirection: 'column',   // Added
-                              '&:hover': {
-                                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                                  transform: 'scale(1.02)',
-                                  transition: 'transform 0.2s ease-in-out',
-                              },
-                          }}
-                      >
-                          <CardContent sx={{ flex: 1 }}>  {/* Added flex: 1 */}
-                              <Typography variant="h6">{place.Name}</Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                  {place.Description}
-                              </Typography>
-                          </CardContent>
+  const renderHistoricalPlaces = () => (
+    <Box>
+        <Typography
+            variant="h5"
+            color="primary"
+            gutterBottom
+            sx={{ fontWeight: 'bold', color: '#111E56' }}
+        >
+            My Historical Places
+        </Typography>
+        {loading ? (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '200px',
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        ) : historicalPlaces.length > 0 ? (
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 2,
+                    justifyContent: 'center',
+                }}
+            >
+                {historicalPlaces.map((place) => (
+                    <Card
+                        key={place._id}
+                        sx={{
+                            display: 'flex',
+                            width: '85%',
+                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+                            borderRadius: '12px',
+                            marginBottom: '20px',
+                            '&:hover': {
+                                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                                transform: 'scale(1.02)',
+                                transition: 'transform 0.2s ease-in-out',
+                            },
+                        }}
+                    >
+                        <CardMedia
+                            component="img"
+                            image={place.imageUrl}
+                            alt={place.Name || 'Historical Place Image'}
+                            sx={{
+                                width: '40%',
+                                height: 'auto',
+                                objectFit: 'cover',
+                                borderTopLeftRadius: '12px',
+                                borderBottomLeftRadius: '12px',
+                            }}
+                        />
+
+                        <Box sx={{ flex: 1, padding: '16px' }}>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontWeight: 'bold',
+                                    color: '#111E56',
+                                    marginBottom: '10px',
+                                }}
+                            >
+                                {place.Name || 'Untitled'}
+                            </Typography>
+
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                <strong>Description:</strong> {place.Description}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                <strong>Location:</strong> {place.Location}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                <strong>Period:</strong> {place.Period}
+                            </Typography>
+                            {place.tags && (
+                                <Typography variant="body2" color="text.secondary" gutterBottom>
+                                    <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(', ')}
+                                </Typography>
+                            )}
                           
-                          <Box sx={{ 
-                              display: 'flex', 
-                              gap: 1, 
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              padding: '8px'
-                          }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    gap: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginTop: '10px',
+                                }}
+                            >
                                 <Tooltip title="Edit">
-                                        <IconButton 
-                                            color="primary"
-                                            onClick={() => handleEdit(place._id)}
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Delete">
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDeletePlace(place._id)}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                          </Box>
-                      </Card>
-                    ))}
-                </Box>
-            ) : (
-                <Typography>No historical places found</Typography>
-            )}
-            
-            {editMode && editingPlace && (
-                <Dialog open={editMode} onClose={() => setEditMode(false)}>
-                    <DialogTitle>Edit Historical Place</DialogTitle>
-                    <DialogContent>
-                        <Box component="form" sx={{ mt: 2 }}>
-                            <TextField
-                                fullWidth
-                                label="Name"
-                                value={editingPlace.Name}
-                                onChange={(e) => setEditingPlace({
-                                    ...editingPlace,
-                                    Name: e.target.value
-                                })}
-                                sx={{ mb: 2 }}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Description"
-                                multiline
-                                rows={4}
-                                value={editingPlace.Description}
-                                onChange={(e) => setEditingPlace({
-                                    ...editingPlace,
-                                    Description: e.target.value
-                                })}
-                            />
+                                    <IconButton
+                                        color="primary"
+                                        onClick={() => handleEdit(place)}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Delete">
+                                    <IconButton
+                                        color="error"
+                                        onClick={() => handleDeletePlace(place._id)}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </Box>
                         </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setEditMode(false)}>Cancel</Button>
-                        <Button onClick={() => handleUpdate(editingPlace)}>Save</Button>
-                    </DialogActions>
-                </Dialog>
-            )}
-        </Box>
-    );
+                    </Card>
+                ))}
+            </Box>
+        ) : (
+            <Typography>No historical places found</Typography>
+        )}
+
+        {editMode && editingPlace && (
+            <Dialog open={editMode} onClose={() => setEditMode(false)}>
+                <DialogTitle>Edit Historical Place</DialogTitle>
+                <DialogContent>
+                    <Box component="form" sx={{ mt: 2 }}>
+                        <TextField
+                            fullWidth
+                            label="Name"
+                            value={editingPlace.Name}
+                            onChange={(e) =>
+                                setEditingPlace({ ...editingPlace, Name: e.target.value })
+                            }
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Description"
+                            multiline
+                            rows={4}
+                            value={editingPlace.Description}
+                            onChange={(e) =>
+                                setEditingPlace({ ...editingPlace, Description: e.target.value })
+                            }
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Location"
+                            value={editingPlace.Location}
+                            onChange={(e) =>
+                                setEditingPlace({ ...editingPlace, Location: e.target.value })
+                            }
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Period"
+                            value={editingPlace.Period}
+                            onChange={(e) =>
+                                setEditingPlace({ ...editingPlace, Period: e.target.value })
+                            }
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Tags"
+                            value={editingPlace.tags?.map((tag) => tag.name).join(', ') || ''}
+                            onChange={(e) => {
+                                const tags = e.target.value.split(',').map((tag) => ({ name: tag.trim() }));
+                                setEditingPlace({ ...editingPlace, tags });
+                            }}
+                            sx={{ mb: 2 }}
+                        />
+                       
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setEditMode(false)}>Cancel</Button>
+                    <Button onClick={() => handleUpdate(editingPlace)}>Save</Button>
+                </DialogActions>
+            </Dialog>
+        )}
+    </Box>
+);
 
     const renderContent = () => {
         switch (activeComponent) {

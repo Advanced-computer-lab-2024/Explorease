@@ -10,8 +10,10 @@ import {
   Grid,
   Tooltip,
   IconButton,
-  CircularProgress, CardMedia
+  CircularProgress, CardMedia, Container, Stack
 } from '@mui/material';
+import { Link } from 'react-router-dom';
+import logo2 from '../../Misc/image.png';
 
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
@@ -283,6 +285,46 @@ const HistoricalPlaces = () => {
           </Box>
         )}
       </Box>
+      <footer style={{ backgroundColor: '#111E56', color: 'white', padding: '30px 0' }}>
+                <Container>
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ textAlign: { xs: 'center', sm: 'left' } }}
+                    >
+                        <img
+                            src={logo2}
+                            alt="Explorease"
+                            style={{ height: '3em', marginLeft: '5px' }}
+                        />
+                        <Typography variant="body2">© 2024. All rights reserved.</Typography>
+                        <Stack direction="row" spacing={3}>
+                            <Link
+                                to="/admin/login"
+                                style={{
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    fontSize: '16px',
+                                }}
+                            >
+                                Admin Login
+                            </Link>
+                            <Link
+                                to="/uploadDocuments"
+                                style={{
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    fontSize: '16px',
+                                }}
+                            >
+                                Upload Documents
+                            </Link>
+                        </Stack>
+                    </Stack>
+                </Container>
+            </footer>
     </Box>
   );
 };

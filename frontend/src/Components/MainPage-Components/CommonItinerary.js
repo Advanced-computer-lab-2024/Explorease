@@ -46,7 +46,7 @@ const Itineraries = () => {
     setLoading(true); // Start loading indicator
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('tourists/itineraries', {
+      const response = await axios.get('/tourists/itineraries', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -7,7 +7,7 @@ import {
   Button,
   TextField,
   Grid,
-  CircularProgress, CardMedia
+  CircularProgress, CardMedia, Tooltip, IconButton
 } from '@mui/material';
 
 import EmailIcon from '@mui/icons-material/Email';
@@ -222,43 +222,49 @@ const HistoricalPlaces = () => {
                   )}
               
                   {/* Action buttons */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingTop: '12px' }}>
-                    <Button
-                      onClick={() => handleCopyLink(place._id)}
-                      variant="outlined"
-                      startIcon={<LinkIcon />}
-                      sx={{
-                        backgroundColor: 'white',
-                        color: '#5A8CFF',
-                        border: '1px solid #5A8CFF',
-                        '&:hover': {
-                          backgroundColor: '#5A8CFF',
-                          color: 'white',
-                        },
-                        textTransform: 'none',
-                      }}
-                    >
-                      Copy Link
-                    </Button>
-              
-                    <Button
-                      onClick={() => handleShareEmail(place)}
-                      variant="outlined"
-                      startIcon={<EmailIcon />}
-                      sx={{
-                        backgroundColor: 'white',
-                        color: '#5A8CFF',
-                        border: '1px solid #5A8CFF',
-                        '&:hover': {
-                          backgroundColor: '#5A8CFF',
-                          color: 'white',
-                        },
-                        textTransform: 'none',
-                      }}
-                    >
-                      Share via Email
-                    </Button>
-                  </Box>
+                  <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-around',
+        padding: 1,
+        marginTop: 0,
+        marginBottom: 1,
+      }}
+    >
+      <Tooltip title="Copy Link">
+        <IconButton
+          onClick={() => handleCopyLink(place._id)}
+          sx={{
+            backgroundColor: 'white',
+            color: '#5A8CFF',
+            border: '1px solid #5A8CFF',
+            '&:hover': {
+              backgroundColor: '#5A8CFF',
+              color: 'white',
+            },
+          }}
+        >
+          <LinkIcon />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip title="Share via Email">
+        <IconButton
+          onClick={() => handleShareEmail(place)}
+          sx={{
+            backgroundColor: 'white',
+            color: '#5A8CFF',
+            border: '1px solid #5A8CFF',
+            '&:hover': {
+              backgroundColor: '#5A8CFF',
+              color: 'white',
+            },
+          }}
+        >
+          <EmailIcon />
+        </IconButton>
+      </Tooltip>
+    </Box>
                 </Box>
               </Card>
               
