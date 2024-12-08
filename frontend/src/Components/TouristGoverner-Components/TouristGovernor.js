@@ -1,39 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import {
-    Box,
-    Typography,
-    Button,
-    Divider,
-    Card,
-    CardContent,
-    IconButton, 
-    Alert,
-    Avatar,
-    CircularProgress,
-    Tooltip,
-
-} from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import EditIcon from '@mui/icons-material/Edit';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  Link,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import logo2 from '../../Misc/logo.png';
 import GuestNavbar from '../MainPage-Components/GuestNavbar';
 import CreateHistoricalPlace from './CreateHistoricalPlace';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
-import logo2 from '../../Misc/logo.png';
-import { Container, Stack , Link} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 
-import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import heroBackground from '../../Misc/heroBackground.jpg';
 
 import {
-    LocationOn,        // For View Historical Places
-    AddLocation,       // For Create Historical Places            
-  } from '@mui/icons-material';
+  AddLocation,
+  LocationOn, // For View Historical Places
+} from '@mui/icons-material';
 
 import GovernorActivity from '../MainPage-Components/CommonActivity';
 import GovernorHistoricalPlaces from '../MainPage-Components/CommonHistoricalPlaces';
@@ -48,6 +54,8 @@ const TouristGovernorDashboard = () => {
     const [editingPlaceId, setEditingPlaceId] = useState(null);
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [editingPlace, setEditingPlace] = useState(null);
     
     const navigate = useNavigate();
     // Fetch profile
@@ -289,6 +297,26 @@ const TouristGovernorDashboard = () => {
     );
     
 
+    const handleEdit = async (placeId) => {
+        const place = historicalPlaces.find(p => p._id === placeId);
+        setEditingPlace(place);
+        setEditMode(true);
+    };
+
+    const handleUpdate = async (updatedPlace) => {
+        const token = localStorage.getItem('token');
+        try {
+            await axios.put(`/governor/updateHistoricalPlace/${updatedPlace._id}`, updatedPlace, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setEditMode(false);
+            setEditingPlace(null);
+            fetchHistoricalPlaces(); // Refresh the list
+        } catch (error) {
+            setMessage('Error updating historical place');
+        }
+    };
+
     const renderHistoricalPlaces = () => (
         <Box>
             <Typography variant="h5" color="primary" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
@@ -338,7 +366,7 @@ const TouristGovernorDashboard = () => {
                                 <Tooltip title="Edit">
                                         <IconButton 
                                             color="primary"
-                                            onClick={() => setEditingPlaceId(place._id)}
+                                            onClick={() => handleEdit(place._id)}
                                         >
                                             <EditIcon />
                                         </IconButton>
@@ -357,6 +385,41 @@ const TouristGovernorDashboard = () => {
                 </Box>
             ) : (
                 <Typography>No historical places found</Typography>
+            )}
+            
+            {editMode && editingPlace && (
+                <Dialog open={editMode} onClose={() => setEditMode(false)}>
+                    <DialogTitle>Edit Historical Place</DialogTitle>
+                    <DialogContent>
+                        <Box component="form" sx={{ mt: 2 }}>
+                            <TextField
+                                fullWidth
+                                label="Name"
+                                value={editingPlace.Name}
+                                onChange={(e) => setEditingPlace({
+                                    ...editingPlace,
+                                    Name: e.target.value
+                                })}
+                                sx={{ mb: 2 }}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Description"
+                                multiline
+                                rows={4}
+                                value={editingPlace.Description}
+                                onChange={(e) => setEditingPlace({
+                                    ...editingPlace,
+                                    Description: e.target.value
+                                })}
+                            />
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setEditMode(false)}>Cancel</Button>
+                        <Button onClick={() => handleUpdate(editingPlace)}>Save</Button>
+                    </DialogActions>
+                </Dialog>
             )}
         </Box>
     );
