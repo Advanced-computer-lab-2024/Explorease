@@ -203,7 +203,7 @@ const HistoricalPlaces = () => {
                     {place.Name || 'Untitled'}
                   </Typography>
               
-                  Description, Location, and other details
+                  {/* Description, Location, and other details */}
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     <strong>Description:</strong> {place.Description}
                   </Typography>
