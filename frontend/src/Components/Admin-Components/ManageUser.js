@@ -76,6 +76,7 @@ const ManageUsers = () => {
     }
   };
 
+  
   const deleteUser = async (id, userType) => {
     const token = localStorage.getItem('token');
     try {

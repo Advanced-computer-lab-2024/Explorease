@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo , useCallback} from 'react';
 import axios from 'axios';
 import { Button, Typography, Box, Card, CardContent, Stack } from '@mui/material';
+
 
 export default function DeleteRequests() {
   const [deleteRequests, setDeleteRequests] = useState([]);
@@ -13,15 +14,7 @@ export default function DeleteRequests() {
     },
   }), [token]);
 
-  useEffect(() => {
-    if (token) {
-      fetchDeleteRequests();
-    } else {
-      setMessage('Authentication token is missing. Please log in.');
-    }
-  }, [token]);
-
-  const fetchDeleteRequests = async () => {
+  const fetchDeleteRequests = useCallback(async () => {
     try {
       const response = await axios.get('/admins/getRequesteddeleteUsers', axiosConfig);
       const allUsers = [
@@ -35,7 +28,40 @@ export default function DeleteRequests() {
       console.error('Error fetching delete requests:', error);
       setMessage(error.response?.data?.message || 'Failed to fetch delete requests');
     }
-  };
+  }, [axiosConfig]);  // Use axiosConfig as a dependency
+  
+  useEffect(() => {
+    if (token) {
+      fetchDeleteRequests();
+    } else {
+      setMessage('Authentication token is missing. Please log in.');
+    }
+  }, [token, fetchDeleteRequests]);  // Now safe to add fetchDeleteRequests
+  
+
+  // useEffect(() => {
+  //   if (token) {
+  //     fetchDeleteRequests();
+  //   } else {
+  //     setMessage('Authentication token is missing. Please log in.');
+  //   }
+  // }, [token]);
+
+  // const fetchDeleteRequests = async () => {
+  //   try {
+  //     const response = await axios.get('/admins/getRequesteddeleteUsers', axiosConfig);
+  //     const allUsers = [
+  //       ...response.data.sellers.map(user => ({ ...user, userType: 'seller' })),
+  //       ...response.data.advertisers.map(user => ({ ...user, userType: 'advertiser' })),
+  //       ...response.data.tourGuides.map(user => ({ ...user, userType: 'tourGuide' })),
+  //       ...response.data.tourists.map(user => ({ ...user, userType: 'tourist' }))
+  //     ];
+  //     setDeleteRequests(allUsers);
+  //   } catch (error) {
+  //     console.error('Error fetching delete requests:', error);
+  //     setMessage(error.response?.data?.message || 'Failed to fetch delete requests');
+  //   }
+  // };
 
   const handleDeleteRequest = async (userId, userType) => {
     try {
@@ -75,7 +101,7 @@ export default function DeleteRequests() {
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2 }}>
-      <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>
+      <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' , color:'#111E56' }}>
         User Delete Requests
       </Typography>
       {message && (
@@ -109,7 +135,7 @@ export default function DeleteRequests() {
               }}
             >
               <CardContent>
-                <Typography variant="h6" gutterBottom>{request.username}</Typography>
+                <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>{request.username}</Typography>
                 <Typography variant="body2" gutterBottom>{request.email}</Typography>
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   User Type: {request.userType.charAt(0).toUpperCase() + request.userType.slice(1)}
@@ -120,11 +146,11 @@ export default function DeleteRequests() {
                     sx={{
                       backgroundColor: '#f44336',
                                 color: 'white',
-                                border: '1px solid #f44336',
+                                border: '2px solid #f44336',
                                 '&:hover': {
                                     backgroundColor: 'white',
                                     color: '#f44336',
-                                    border: '1px solid #f44336',
+                                    border: '2px solid #f44336',
                                 },
                     }}
                     onClick={() => handleDeleteRequest(request._id, request.userType)}

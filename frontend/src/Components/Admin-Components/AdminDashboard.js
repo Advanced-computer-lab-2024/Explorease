@@ -18,8 +18,8 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import SalesReport from './SalesReport';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
+// import IconButton from '@mui/material/IconButton';
+// import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
 import Tooltip from '@mui/material/Tooltip'; // Import Tooltip
 import logo2 from '../../Misc/logo.png';
@@ -27,7 +27,6 @@ import { Container, Stack , Link} from '@mui/material';
 
 
 import {
-    Home,
     Delete,
     Tag,
     Category,
@@ -41,8 +40,8 @@ import {
     BarChart,
   } from '@mui/icons-material'; // Import Material-UI icons
 
-import SettingsIcon from '@mui/icons-material/Settings';
-import LogoutIcon from '@mui/icons-material/Logout';
+// import SettingsIcon from '@mui/icons-material/Settings';
+// import LogoutIcon from '@mui/icons-material/Logout';
 
 const AdminDashboard = () => {
     const [message, setMessage] = useState('');
@@ -875,8 +874,9 @@ const handleTagChange = (id, newName) => {
                     border: '2px solid #111E56',
                     '&:hover': {
                         backgroundColor: 'white',
+                        
                         color: '#111E56',
-                        border: '1px solid #111E56',
+
                         border: '2px solid #111E56',
                     },
                 }}

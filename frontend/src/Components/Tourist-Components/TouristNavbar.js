@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AppBar, Toolbar, Box, IconButton, Typography, Popover, MenuItem, Badge, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select} from '@mui/material';
+import { AppBar, Toolbar, Box, IconButton, Typography,  MenuItem, Badge, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select} from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+// import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import StoreIcon from '@mui/icons-material/Store';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import logo from '../../Misc/logo.png';
@@ -10,11 +10,14 @@ import { Link } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import axios from 'axios';
-import CloseIcon from '@mui/icons-material/Close';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-import { CurrencyContext } from './CurrencyContext'; // Import the Currency Context
-import { useNavigate } from 'react-router-dom'; // Ensure useNavigate is imported
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import { CurrencyContext } from './CurrencyContext'; 
+import CloseIcon from '@mui/icons-material/Close';
+
+// Import the Currency Context
+// import { useNavigate } from 'react-router-dom'; // Ensure useNavigate is imported
+import HomeIcon from '@mui/icons-material/Home';
+
 
 
 
@@ -24,7 +27,7 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
     const [isNotificationDrawerOpen, setNotificationDrawerOpen] = useState(false); // Manage drawer state
     const { selectedCurrency, setSelectedCurrency, availableCurrencies } = useContext(CurrencyContext);
 
-    const navigate = useNavigate(); // Hook for navigation
+    // const navigate = useNavigate(); // Hook for navigation
 
 
     const handleCurrencyChange = (e) => {
@@ -271,12 +274,21 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
                 </FormControl>
 
 
-                    
-                    <Tooltip title="Wallet" arrow>
+                <Tooltip title="Go to Home" arrow>
+    <IconButton
+        sx={{
+            color: 'white',
+        }}
+        onClick={() => handleSectionChange('welcomePage')} // Navigate or trigger profile component
+    >
+        <HomeIcon />
+    </IconButton>
+</Tooltip>
+                    {/* <Tooltip title="Wallet" arrow>
                         <IconButton sx={{ color: 'white' }} onClick={() => handleSectionChange('wallet')}>
                             <AccountBalanceWalletIcon />
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip> */}
                     <Tooltip title="Marketplace" arrow>
                         <IconButton sx={{ color: 'white' }} onClick={() => handleSectionChange('viewProducts')}>
                             <StoreIcon />
@@ -310,6 +322,7 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
             {/* Notification Drawer */}
             <Drawer anchor="right" open={isNotificationDrawerOpen} onClose={() => toggleNotificationDrawer(false)}>
                 <Box sx={{ width: 350, padding: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                     <Typography variant="h6" sx={{
             fontWeight: 'bold',
             position: 'relative',
@@ -336,6 +349,10 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
     }}>
                         Notifications
                     </Typography>
+                    <IconButton onClick={() => toggleNotificationDrawer(false)} sx={{ color: '#111E56' }}>
+                    <CloseIcon />
+                </IconButton>
+                </Box>
                     {notifications.length === 0 ? (
                         <Typography>No notifications available</Typography>
                     ) : (

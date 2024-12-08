@@ -12,6 +12,7 @@ const UploadLogo = ({ setProfile }) => {
         setFile(e.target.files[0]);
     };
 
+
     const handleUpload = async () => {
         if (!file) {
             setMessage('Please select a photo to upload.');
@@ -46,7 +47,7 @@ const UploadLogo = ({ setProfile }) => {
     };
 
     return (
-        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2 ,boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 6, p: 4,  borderRadius: 2 ,boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             transition: 'transform 0.3s ease, box-shadow 0.3s ease',
             '&:hover': {
                 transform: 'scale(1.03)', // Adds a scaling effect

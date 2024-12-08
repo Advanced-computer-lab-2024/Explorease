@@ -20,6 +20,7 @@ import {
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
 
+
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true); // For loading state
@@ -43,7 +44,7 @@ const Itineraries = () => {
   const fetchItineraries = async () => {
     setLoading(true); // Start loading indicator
     try {
-      const token = localStorage.getItem('token');
+      // const token = localStorage.getItem('token');
       const response = await axios.get('/tourists/itineraries', {
       });
       setItineraries(response.data);

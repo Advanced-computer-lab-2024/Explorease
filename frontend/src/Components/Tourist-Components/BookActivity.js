@@ -34,7 +34,7 @@ const BookActivitiesPage = () => {
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
 
 
-    const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
+    // const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
     const fetchBookmarkedActivities = async () => {
         try {
@@ -69,7 +69,6 @@ const BookActivitiesPage = () => {
             setTimeout(() => setErrorMessage(''), 3000);
         }
     };
-    
     
     useEffect(() => {
         fetchActivities();
@@ -463,11 +462,12 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
         {/* Left Section: Image */}
         <Box 
                 sx={{ 
-                    flex: '1 1 30%', 
+                    flex: '1 1 35%', 
                     marginRight: 2, 
                     display: 'flex', 
                     alignItems: 'stretch' ,
-                    height:'100%'
+                    height:'100%',
+                    
                 }}
             >
             {activity.imageUrl && (
@@ -488,7 +488,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
         {/* Center Section: Details and Action Buttons */}
         <Box 
                 sx={{ 
-                    flex: '1 1 40%', 
+                    flex: '1 1 30%', 
                     display: 'flex', 
                     flexDirection: 'column', 
                     justifyContent: 'space-between' 
@@ -584,7 +584,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
         {/* Right Section: Map */}
          <Box 
                 sx={{ 
-                    flex: '1 1 30%', 
+                    flex: '1 1 35%', 
                     marginLeft: 2, 
                     display: 'flex', 
                     alignItems: 'stretch', 
@@ -594,6 +594,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                 }}
             >
                 <iframe
+                    title='activity-location'
                     width="100%"
                     height="100%"
                     frameBorder="0"

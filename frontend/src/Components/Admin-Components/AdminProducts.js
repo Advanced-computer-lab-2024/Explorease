@@ -4,7 +4,6 @@ import {
     TextField,
     Button,
     Card,
-    CardContent,
     Typography,
     IconButton,
     Tooltip,
@@ -16,7 +15,7 @@ import {
     Grid,
     CardMedia,
 } from '@mui/material';
-import { Edit, Delete, Archive, Unarchive, Save, Cancel, Visibility } from '@mui/icons-material';
+import { Edit, Delete, Archive, Unarchive, Visibility } from '@mui/icons-material';
 import axios from 'axios';
 
 const AdminProducts = () => {
@@ -388,9 +387,6 @@ const AdminProducts = () => {
         );
     };
     
-    
-
-
     return (
         <Box  sx={{ p: 4 }}>
             <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>

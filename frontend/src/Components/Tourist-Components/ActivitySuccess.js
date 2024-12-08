@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useCallback} from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Typography, CircularProgress, Alert, Button } from '@mui/material';
@@ -8,6 +8,35 @@ const ActivitySuccess = () => {
     const sessionId = searchParams.get('session_id');
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
+    
+ // Memoize the verifyStripePayment function to avoid unnecessary re-renders
+ const verifyStripePayment = useCallback(async () => {
+    try {
+        const token = localStorage.getItem('token');
+        if (!sessionId) {
+            throw new Error('Session ID is missing from the URL.');
+        }
+
+        const response = await axios.post(
+            '/tourists/activities/stripe-success',
+            { sessionId },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.status === 200) {
+            setMessage('Payment successful! Your booking has been completed.');
+        } else {
+            setMessage('Unexpected response from the server. Please contact support.');
+        }
+    } catch (error) {
+        console.error('Error verifying Stripe payment:', error);
+
+        const errorMsg = error.response?.data?.message || 'Failed to verify payment. Please contact support.';
+        setMessage(errorMsg);
+    } finally {
+        setLoading(false);
+    }
+}, [sessionId]); // Only include sessionId in the dependency array
 
     useEffect(() => {
         if (sessionId) {
@@ -16,35 +45,35 @@ const ActivitySuccess = () => {
             setMessage('Invalid session. Please try again.');
             setLoading(false);
         }
-    }, [sessionId]);
+    }, [sessionId, verifyStripePayment]); // Include verifyStripePayment in the dependency array
 
-    const verifyStripePayment = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!sessionId) {
-                throw new Error('Session ID is missing from the URL.');
-            }
+    // const verifyStripePayment = async () => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         if (!sessionId) {
+    //             throw new Error('Session ID is missing from the URL.');
+    //         }
     
-            const response = await axios.post(
-                '/tourists/activities/stripe-success',
-                { sessionId },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+    //         const response = await axios.post(
+    //             '/tourists/activities/stripe-success',
+    //             { sessionId },
+    //             { headers: { Authorization: `Bearer ${token}` } }
+    //         );
     
-            if (response.status === 200) {
-                setMessage('Payment successful! Your booking has been completed.');
-            } else {
-                setMessage('Unexpected response from the server. Please contact support.');
-            }
-        } catch (error) {
-            console.error('Error verifying Stripe payment:', error);
+    //         if (response.status === 200) {
+    //             setMessage('Payment successful! Your booking has been completed.');
+    //         } else {
+    //             setMessage('Unexpected response from the server. Please contact support.');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error verifying Stripe payment:', error);
     
-            const errorMsg = error.response?.data?.message || 'Failed to verify payment. Please contact support.';
-            setMessage(errorMsg);
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         const errorMsg = error.response?.data?.message || 'Failed to verify payment. Please contact support.';
+    //         setMessage(errorMsg);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     
 
     return (

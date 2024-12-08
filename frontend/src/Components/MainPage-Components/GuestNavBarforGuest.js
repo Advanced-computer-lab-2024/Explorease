@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { AppBar, Toolbar, Box } from '@mui/material';
 import logo from '../../Misc/logo.png'; // Replace with the actual path to your logo file
 
+
 const NavbarGuest = () => {
     const linkContainerStyle = {
         display: 'flex',

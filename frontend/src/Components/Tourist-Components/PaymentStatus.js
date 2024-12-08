@@ -13,6 +13,7 @@ const PaymentStatus = () => {
         return () => clearTimeout(timer);
     }, [navigate]);
 
+    
     return (
         <Box
             sx={{

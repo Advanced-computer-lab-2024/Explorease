@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback  } from 'react';
 import axios from 'axios';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import { Box, Typography, Button, Card, CardContent, Divider, CircularProgress } from '@mui/material';
@@ -16,7 +16,9 @@ const TransitRoute = () => {
     libraries: ['places'],
   });
 
-  const fetchRoute = async () => {
+  const fetchRoute = useCallback(async () => {
+    if (!origin || !destination) return;
+
     setLoading(true);
     setError(null);
 
@@ -33,13 +35,14 @@ const TransitRoute = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [origin, destination]); // The function is recreated only when origin or destination changes
 
+  // Use useEffect to trigger fetchRoute when origin or destination change
   useEffect(() => {
     if (origin && destination) {
       fetchRoute();
     }
-  }, [origin, destination]);
+  }, [origin, destination, fetchRoute]); // fetchRoute is stable now
 
   const handleMapClick = (event) => {
     const clickedLocation = {

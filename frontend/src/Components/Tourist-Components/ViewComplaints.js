@@ -1,7 +1,7 @@
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const ViewComplaints = () => {
     const [complaints, setComplaints] = useState([]);
@@ -139,7 +139,7 @@ const ViewComplaints = () => {
             {errorMessage && <p style={errorMessageStyle}>{errorMessage}</p>}
             
             {loading ? (
-    <CircularProgress />
+    <CircularProgress sx={{color:'#111E56' , marginTop:'20px'}}/>
 ) : filteredComplaints.length > 0 ? (
     <div style={listStyle}>
         {filteredComplaints.map((complaint) => (
@@ -156,6 +156,14 @@ const ViewComplaints = () => {
                             variant="contained" 
                             size="small" 
                             onClick={() => handleComplaintClick(complaint)} 
+                            sx={{backgroundColor: '#111E56', 
+                                color: 'white',
+                                border: '2px solid #111E56', 
+                                '&:hover': { 
+                                    backgroundColor: 'white', 
+                                    color: '#111E56',
+                                    border: '2px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                                },}}
                         >
                             View Details
                         </Button>

@@ -8,11 +8,10 @@ import UploadLogo from './UploadLogo';
 import SalesReport from './AdvertiserSalesReport';
 import ActivitySummary from './ActivitySummary';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
-import MenuIcon from '@mui/icons-material/Menu';
-import { Edit, Event, Dashboard, Upload, BarChart, Report   } from '@mui/icons-material';
+import {  Event, Dashboard, Upload, BarChart, Report   } from '@mui/icons-material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Divider } from '@mui/material';
-import { Box, Typography, Drawer, IconButton , Button ,Avatar,Tooltip, CircularProgress } from '@mui/material';
+import { Box, Typography, IconButton , Button ,Avatar,Tooltip, CircularProgress } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';
@@ -38,7 +37,7 @@ const AdvertiserDashboard = () => {
     const navigate = useNavigate();
 
     const toggleSidebar = () => {
-        setIsSidebarOpen((prev) => !prev);
+      setIsSidebarOpen((prev) => !prev);
     };
 
     useEffect(() => {
@@ -114,37 +113,108 @@ const AdvertiserDashboard = () => {
     const renderContent = () => {
         switch (activeComponent) {
           case 'home':
-            return (<Box
-              sx={{
-                height: '90vh', // Full viewport height
-                objectFit: 'cover',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
-                padding: 2,
-                boxSizing: 'border-box',
-                borderRadius: '8px', // Optional: rounded corners for the container
-                
-              }}
-            >
-              <Typography
-                variant="h2"
-                sx={{
-                  color: 'white', // Text color
-                  fontWeight: 'bold',
-                  letterSpacing: '2px',
-                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, // Responsive font size
-                  textTransform: 'uppercase', // Uppercase text for emphasis
-                  lineHeight: '1.2',
-                  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Subtle text shadow for contrast
-                  padding: '10px 20px',
-                }}
-              >
-                Welcome, {profile.username || 'User'}!
-              </Typography>
-              
-            </Box>
+            return (
+<Box
+  sx={{
+    height: '90vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    padding: 2,
+    boxSizing: 'border-box',
+    borderRadius: '8px',
+    overflow: 'hidden', // Prevent content overflow during animation
+    flexDirection: 'column', // Stack the text vertically
+  }}
+>
+  {/* Welcome Text */}
+  <Typography
+    variant="h2"
+    sx={{
+      fontWeight: 'bold',
+      fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+      textTransform: 'uppercase',
+      lineHeight: '1.2',
+      padding: '10px 20px',
+      position: 'relative',
+      animation: 'gradientShift 12s ease infinite, slideInFromLeft 1.5s ease-out',
+      background: 'linear-gradient(90deg, white, #111E56)',
+      backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+      WebkitBackgroundClip: 'text',
+      color: 'transparent',
+      textShadow: `
+        
+        3px 3px 6px rgba(0, 0, 0, 0.3)
+      `, // Subtle shadow effect outside of the text
+    }}
+  >
+    Welcome to your dashboard
+  </Typography>
+
+  {/* Advertiser Name */}
+  <Typography
+    variant="h2"
+    sx={{
+      fontWeight: 'bold',
+      fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+      textTransform: 'uppercase',
+      lineHeight: '1.2',
+      padding: '10px 20px',
+      position: 'relative',
+      animation: 'gradientShift 12s ease infinite, slideInFromRight 1.5s ease-out',
+      background: 'linear-gradient(90deg, white, #111E56)',
+      backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+      WebkitBackgroundClip: 'text',
+      color: 'transparent',
+      textShadow: `
+        
+        3px 3px 6px rgba(0, 0, 0, 0.3)
+      `, // Subtle shadow effect outside of the text
+    }}
+  >
+    {profile.username || 'User'}
+  </Typography>
+
+  {/* Keyframe Animations */}
+  <style>
+    {`
+      @keyframes slideInFromLeft {
+        0% {
+          transform: translateX(-100%);
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideInFromRight {
+        0% {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    `}
+  </style>
+</Box>
+                        
+            
           );
             case 'profile':
                 return (
@@ -447,7 +517,7 @@ const AdvertiserDashboard = () => {
       }}
       onClick={() => handleSectionChange('profile')}
     >
-      <AccountCircle />
+      <AccountCircle sx={{marginLeft:'-5px'}}/>
     </Button>
   </Tooltip>
     // <IconButton
@@ -499,7 +569,7 @@ const AdvertiserDashboard = () => {
     {/* Settings Button */}
     <Tooltip title="Settings" arrow placement="right">
       <Button
-        startIcon={<SettingsIcon />} // Settings icon
+        startIcon={<SettingsIcon sx={{marginLeft:'8px'}}/>} // Settings icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',
@@ -518,7 +588,7 @@ const AdvertiserDashboard = () => {
     {/* Logout Button */}
     <Tooltip title="Logout" arrow placement="right">
       <Button
-        startIcon={<LogoutIcon />} // Logout icon
+        startIcon={<LogoutIcon sx={{marginLeft:'8px'}} />} // Logout icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',

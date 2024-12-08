@@ -4,28 +4,23 @@ import {
     Box,
     Typography,
     Button,
-    List,
-    ListItem,
-    ListItemText,
     Divider,
     Card,
     CardContent,
-    CardMedia, 
-    IconButton,
-    ListItemButton, 
+    IconButton, 
     Alert,
     Avatar,
     CircularProgress,
     Tooltip,
+
 } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MenuIcon from '@mui/icons-material/Menu';
 import GuestNavbar from '../MainPage-Components/GuestNavbar';
 import CreateHistoricalPlace from './CreateHistoricalPlace';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
-import updateProfile from './UpdateTouristGovernor';
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -36,10 +31,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import heroBackground from '../../Misc/heroBackground.jpg';
 
 import {
-    AccountCircle,     // For Profile
     LocationOn,        // For View Historical Places
-    AddLocation,       // For Create Historical Places
-    Edit,              // For Update Profile // For Back Navigation
+    AddLocation,       // For Create Historical Places            
   } from '@mui/icons-material';
 
 import GovernorActivity from '../MainPage-Components/CommonActivity';
@@ -311,66 +304,72 @@ const TouristGovernorDashboard = () => {
                     }}
                 >
                     {historicalPlaces.map((place) => (
-                        <Card
-                            key={place._id}
-                            sx={{
-                                p: 2,
-                                width: '300px',
-                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-                                borderRadius: '12px',
-                                marginTop: '20px',
-                                '&:hover': {
-                                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                                    transform: 'scale(1.02)',
-                                    transition: 'transform 0.2s ease-in-out',
-                                },
-                            }}
-                        >
-                            <CardContent>
-                                <Typography variant="h6">{place.Name}</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {place.Description}
-                                </Typography>
-                                
-                                    <Box sx={{ display: 'flex', gap: 1 , alignItems:'center',marginTop:'15px' , marginBottom:'-15px'}}>
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => setEditingPlaceId(place._id)}
-                                            sx={{
-                                                backgroundColor: '#111E56',
-                                                color: 'white',
-                                                borderRadius: '50%',
-                                                marginLeft: '90px',
-                                                border: '2px solid #111E56',
-                                                '&:hover': {
-                                                    backgroundColor: 'white',
-                                                    color: '#111E56',
-                                                    border: '2px solid #111E56',
-                                                },
-                                            }}
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(place._id)}
-                                            sx={{
-                                                backgroundColor: '#FF5A5A',
-                                                color: 'white',
-                                                borderRadius: '50%',
-                                                '&:hover': {
-                                                    backgroundColor: 'white',
-                                                    color: '#FF5A5A',
-                                                    border: '1px solid #FF5A5A',
-                                                },
-                                            }}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Box>
-                                
-                            </CardContent>
-                        </Card>
+                      <Card
+                          key={place._id}
+                          sx={{
+                              p: 2,
+                              width: '300px',
+                              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+                              borderRadius: '12px',
+                              marginTop: '20px',
+                              display: 'flex',           // Added
+                              flexDirection: 'column',   // Added
+                              '&:hover': {
+                                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                                  transform: 'scale(1.02)',
+                                  transition: 'transform 0.2s ease-in-out',
+                              },
+                          }}
+                      >
+                          <CardContent sx={{ flex: 1 }}>  {/* Added flex: 1 */}
+                              <Typography variant="h6">{place.Name}</Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                  {place.Description}
+                              </Typography>
+                          </CardContent>
+                          
+                          <Box sx={{ 
+                              display: 'flex', 
+                              gap: 1, 
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '8px'
+                          }}>
+                              <IconButton
+                                  color="primary"
+                                  onClick={() => setEditingPlaceId(place._id)}
+                                  sx={{
+                                      backgroundColor: '#111E56',
+                                      color: 'white',
+                                      borderRadius: '50%',
+                                      border: '2px solid #111E56',
+                                      '&:hover': {
+                                          backgroundColor: 'white',
+                                          color: '#111E56',
+                                          border: '2px solid #111E56',
+                                      },
+                                  }}
+                              >
+                                  <EditIcon />
+                              </IconButton>
+                              <IconButton
+                                  color="error"
+                                  onClick={() => handleDelete(place._id)}
+                                  sx={{
+                                      backgroundColor: '#FF5A5A',
+                                      color: 'white',
+                                      borderRadius: '50%',
+                                      '&:hover': {
+                                          backgroundColor: 'white',
+                                          color: '#FF5A5A',
+                                          border: '1px solid #FF5A5A',
+                                      },
+                                  }}
+                              >
+                                  <DeleteIcon />
+                              </IconButton>
+                          </Box>
+                      </Card>
                     ))}
                 </Box>
             ) : (
@@ -382,37 +381,108 @@ const TouristGovernorDashboard = () => {
     const renderContent = () => {
         switch (activeComponent) {
           case 'home':
-            return (<Box
+            return (
+              <Box
               sx={{
-                height: '90vh', // Full viewport height
-                objectFit: 'cover',
+                height: '90vh',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 textAlign: 'center',
                 padding: 2,
                 boxSizing: 'border-box',
-                borderRadius: '8px', // Optional: rounded corners for the container
-               
+                borderRadius: '8px',
+                overflow: 'hidden', // Prevent content overflow during animation
+                flexDirection: 'column', // Stack the text vertically
               }}
             >
+              {/* Welcome Text */}
               <Typography
                 variant="h2"
                 sx={{
-                  color: 'white', // Text color
                   fontWeight: 'bold',
-                  letterSpacing: '2px',
-                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, // Responsive font size
-                  textTransform: 'uppercase', // Uppercase text for emphasis
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                  textTransform: 'uppercase',
                   lineHeight: '1.2',
-                  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Subtle text shadow for contrast
                   padding: '10px 20px',
+                  position: 'relative',
+                  animation: 'gradientShift 12s ease infinite, slideInFromLeft 1.5s ease-out',
+                  background: 'linear-gradient(90deg, white, #111E56)',
+                  backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  textShadow: `
+                    
+                    3px 3px 6px rgba(0, 0, 0, 0.3)
+                  `, // Subtle shadow effect outside of the text
                 }}
               >
-                Welcome, {profile.username || 'User'}!
+                Welcome to your dashboard
               </Typography>
-              
+            
+              {/* Advertiser Name */}
+              <Typography
+                variant="h2"
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                  textTransform: 'uppercase',
+                  lineHeight: '1.2',
+                  padding: '10px 20px',
+                  position: 'relative',
+                  animation: 'gradientShift 12s ease infinite, slideInFromRight 1.5s ease-out',
+                  background: 'linear-gradient(90deg, white, #111E56)',
+                  backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  textShadow: `
+                    
+                    3px 3px 6px rgba(0, 0, 0, 0.3)
+                  `, // Subtle shadow effect outside of the text
+                }}
+              >
+                {profile.username || 'User'}
+              </Typography>
+            
+              {/* Keyframe Animations */}
+              <style>
+                {`
+                  @keyframes slideInFromLeft {
+                    0% {
+                      transform: translateX(-100%);
+                      opacity: 0;
+                    }
+                    100% {
+                      transform: translateX(0);
+                      opacity: 1;
+                    }
+                  }
+                  @keyframes slideInFromRight {
+                    0% {
+                      transform: translateX(100%);
+                      opacity: 0;
+                    }
+                    100% {
+                      transform: translateX(0);
+                      opacity: 1;
+                    }
+                  }
+                  @keyframes gradientShift {
+                    0% {
+                      background-position: 0% 50%;
+                    }
+                    50% {
+                      background-position: 100% 50%;
+                    }
+                    100% {
+                      background-position: 0% 50%;
+                    }
+                  }
+                `}
+              </style>
             </Box>
+                                    
+            
           );
             case 'viewHistoricalPlaces':
                 return renderHistoricalPlaces();
@@ -558,7 +628,7 @@ const TouristGovernorDashboard = () => {
       }}
       onClick={() => handleSectionChange('profile')}
     >
-      <AccountCircle />
+      <AccountCircle sx={{marginLeft:'-5px'}} />
     </Button>
   </Tooltip>
     // <IconButton
@@ -612,7 +682,7 @@ const TouristGovernorDashboard = () => {
     {/* Settings Button */}
     <Tooltip title="Settings" arrow placement="right">
       <Button
-        startIcon={<SettingsIcon />} // Settings icon
+        startIcon={<SettingsIcon sx={{marginLeft:'5px'}} />} // Settings icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',
@@ -631,7 +701,7 @@ const TouristGovernorDashboard = () => {
     {/* Logout Button */}
     <Tooltip title="Logout" arrow placement="right">
       <Button
-        startIcon={<LogoutIcon />} // Logout icon
+        startIcon={<LogoutIcon sx={{marginLeft:'5px'}} />} // Logout icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',

@@ -13,7 +13,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import LogoutIcon from '@mui/icons-material/Logout';
+// import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CloseIcon from '@mui/icons-material/Close';
 import EditNoteIcon from '@mui/icons-material/EditNote'; // New icon
@@ -27,10 +27,10 @@ const AdminNavBar = ({ toggleSidebar , handleSectionChange }) => {
     const [isNotificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
-    };
+    // const handleLogout = () => {
+    //     localStorage.removeItem('token');
+    //     navigate('/');
+    // };
 
     const fetchNotifications = async () => {
         const token = localStorage.getItem('token');

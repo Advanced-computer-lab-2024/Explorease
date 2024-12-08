@@ -5,8 +5,6 @@ import {
     TextField,
     Typography,
     Button,
-    InputLabel,
-    FormControl,
     Alert,
 } from '@mui/material';
 
@@ -208,7 +206,14 @@ const CreateHistoricalPlace = () => {
             <Button
                 variant="contained"
                 component="label"
-                sx={{ mt: 2, mr : 3 }}
+                sx={{ mt: 2, mr : 3 ,backgroundColor: '#111E56', 
+                    color: 'white',
+                    border: '2px solid #111E56', 
+                    '&:hover': { 
+                        backgroundColor: 'white', 
+                        color: '#111E56',
+                        border: '2px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                    }, }}
             >
                 Upload Image
                 <input
@@ -222,7 +227,14 @@ const CreateHistoricalPlace = () => {
                 type="submit"
                 variant="contained"
                 color="primary"
-                sx={{ mt: 2 }}
+                sx={{ mt: 2,backgroundColor: '#111E56', 
+                    color: 'white',
+                    border: '2px solid #111E56', 
+                    '&:hover': { 
+                        backgroundColor: 'white', 
+                        color: '#111E56',
+                        border: '2px solid #111E56' // Optional: adds a border to match the dark blue on hover
+                    }, }}
             >
                 Create Historical Place
             </Button>

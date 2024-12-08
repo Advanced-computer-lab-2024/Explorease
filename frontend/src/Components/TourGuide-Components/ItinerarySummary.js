@@ -24,6 +24,7 @@ const ItinerarySummary = () => {
         fetchItinerarySummary();
     }, []);
 
+    
     const fetchItinerarySummary = async () => {
         try {
             const token = localStorage.getItem('token'); // Get the token for authentication

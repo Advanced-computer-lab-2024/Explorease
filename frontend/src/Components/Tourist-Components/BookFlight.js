@@ -5,10 +5,6 @@ import {
     Button,
     Typography,
     Box,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     CircularProgress,
     Grid,
     Paper,
@@ -213,6 +209,7 @@ const handleBookNow = async (flight) => {
                                     backgroundColor: 'white', // Slightly lighter background for hover
                                 },}}
                         >
+
                             <Typography>
                                 <strong>Departure:</strong> {flight.itineraries[0].segments[0].departure.at.split('T')[0]} at{' '}
                                 {flight.itineraries[0].segments[0].departure.at.split('T')[1]}

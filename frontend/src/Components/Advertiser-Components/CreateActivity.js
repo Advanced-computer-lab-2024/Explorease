@@ -264,7 +264,7 @@ const CreateActivity = () => {
                     sx={{ marginBottom: '10px' }}
                 />
                 <FormControl fullWidth sx={{ marginBottom: '20px' }}>
-    <FormLabel>Booking Open</FormLabel>
+    <FormLabel sx={{color:'#111E56' , fontWeight:'bold'}}>Booking Open</FormLabel>
     <Checkbox
         name="bookingOpen"
         checked={formData.bookingOpen}
@@ -278,9 +278,9 @@ const CreateActivity = () => {
     />
    
     {/* Add Image Upload */}
-    <Box sx={{ marginBottom: '20px' }}>
-        <Typography>Upload Image:</Typography>
-        <input type="file" name="image" accept="image/*" onChange={handleFileChange} />
+    <Box sx={{ marginBottom: '20px' , marginTop:'10px'  ,}}>
+        <Typography sx={{color:'#111E56' , fontWeight:'bold'}}>Upload Image:</Typography>
+        <input type="file" name="image" style={{marginLeft:'60px' , marginTop:'15px'}} accept="image/*" onChange={handleFileChange} />
     </Box>
    
 </FormControl>

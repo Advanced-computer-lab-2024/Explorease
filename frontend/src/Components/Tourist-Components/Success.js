@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+// import axios from 'axios';
 import { Box, Typography, CircularProgress, Alert, Button } from '@mui/material';
 
 const Success = () => {
@@ -20,7 +20,7 @@ const Success = () => {
 
     const verifyStripePayment = async () => {
         try {
-            const token = localStorage.getItem('token');
+            // const token = localStorage.getItem('token');
             
             setMessage('Payment successful! Your purchase has been completed.');
         } catch (error) {

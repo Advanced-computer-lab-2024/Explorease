@@ -327,7 +327,6 @@ const Checkout = () => {
                 
             </Box>
 
-            
 
             {/* Checkout Button */}
             <Button

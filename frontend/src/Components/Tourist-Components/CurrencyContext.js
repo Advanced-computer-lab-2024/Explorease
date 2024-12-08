@@ -23,6 +23,7 @@ export const CurrencyProvider = ({ children }) => {
         }
     };
 
+    
     useEffect(() => {
         updateExchangeRates(); // Fetch data when the provider is mounted
     }, []);
