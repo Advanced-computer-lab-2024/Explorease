@@ -43,7 +43,6 @@ const Itineraries = () => {
   const fetchItineraries = async () => {
     setLoading(true); // Start loading indicator
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.get('/tourists/itineraries', {
       });
       setItineraries(response.data);

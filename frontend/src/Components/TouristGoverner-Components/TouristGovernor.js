@@ -4,15 +4,9 @@ import {
     Box,
     Typography,
     Button,
-    List,
-    ListItem,
-    ListItemText,
-    Divider,
     Card,
-    CardContent,
-    CardMedia, 
+    CardContent, 
     IconButton,
-    ListItemButton, 
     Alert,
     Avatar,
     CircularProgress,
@@ -20,12 +14,10 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MenuIcon from '@mui/icons-material/Menu';
 import GuestNavbar from '../MainPage-Components/GuestNavbar';
 import CreateHistoricalPlace from './CreateHistoricalPlace';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
-import updateProfile from './UpdateTouristGovernor';
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -35,10 +27,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 
 import {
-    AccountCircle,     // For Profile
     LocationOn,        // For View Historical Places
     AddLocation,       // For Create Historical Places
-    Edit,              // For Update Profile // For Back Navigation
   } from '@mui/icons-material';
 
 import GovernorActivity from '../MainPage-Components/CommonActivity';

@@ -8,10 +8,9 @@ import UploadLogo from './UploadLogo';
 import SalesReport from './AdvertiserSalesReport';
 import ActivitySummary from './ActivitySummary';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
-import MenuIcon from '@mui/icons-material/Menu';
-import { Edit, Event, Dashboard, Upload, BarChart, Report   } from '@mui/icons-material';
+import {  Event, Dashboard, Upload, BarChart, Report   } from '@mui/icons-material';
 
-import { Box, Typography, Drawer, IconButton , Button ,Avatar,Tooltip, CircularProgress } from '@mui/material';
+import { Box, Typography,  IconButton , Button ,Avatar,Tooltip, CircularProgress } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';

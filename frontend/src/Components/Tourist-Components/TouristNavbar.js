@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AppBar, Toolbar, Box, IconButton, Typography, Popover, MenuItem, Badge, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select} from '@mui/material';
+import { AppBar, Toolbar, Box, IconButton, Typography, MenuItem, Badge, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select} from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
@@ -10,7 +10,6 @@ import { Link } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import axios from 'axios';
-import CloseIcon from '@mui/icons-material/Close';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import { CurrencyContext } from './CurrencyContext'; // Import the Currency Context
 import { useNavigate } from 'react-router-dom'; // Ensure useNavigate is imported

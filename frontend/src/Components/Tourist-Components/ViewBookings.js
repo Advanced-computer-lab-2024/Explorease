@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, Divider, Button, TextField, Rating } from '@mui/material';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Box, Typography, Card, CardContent, Button, TextField, Rating } from '@mui/material';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';

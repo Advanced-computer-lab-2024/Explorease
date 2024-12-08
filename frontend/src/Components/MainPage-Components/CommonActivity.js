@@ -104,7 +104,6 @@ const handleSearch = async (e) => {
     window.location.href = mailtoLink;
   };
 
-  const sharedWidth = { xs: '100%', sm: 'calc(100% - 200px)' };
 
   return (
     <Box>

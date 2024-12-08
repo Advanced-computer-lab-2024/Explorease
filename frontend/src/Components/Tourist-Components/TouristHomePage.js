@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, CardMedia, CircularProgress, Chip, Tooltip, IconButton, Dialog,Grid , Button, Link , Stack, Container} from '@mui/material';
+import { Box, Typography, Card, CardContent, CardMedia, CircularProgress, IconButton, Dialog, Button} from '@mui/material';
 import Carousel from 'react-multi-carousel'; // Carousel library
 import 'react-multi-carousel/lib/styles.css'; // Carousel styles
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
 import CloseIcon from '@mui/icons-material/Close';
 import Divider from '@mui/material/Divider';
-import CssBaseline from '@mui/material/CssBaseline';
-import logo2 from '../../Misc/image.png';
 import '../../index.css';
 
 const TouristHomePage = ({profile}) => {
