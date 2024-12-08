@@ -73,6 +73,7 @@ We are actively working to address these issues in future updates.
 ## API Refrences:
 The Base address for the API is : http://localhost:3000  
 The provided list is of all the API routes:
+
 ADMIN API Routes:
 -  POST /admin/createMainAdmin
 -  POST /admin/add
@@ -150,6 +151,21 @@ ADVERTISER API Routes:
 - GET /advertiser/salesReport/filter
 - GET /advertiser/activity-summary
 
+GOVERNOR API Routes
+- POST /governor/createHistoricalPlace
+- PUT /governor/updateHistoricalPlace/:id
+- GET /governor/getMyHistoricalPlaces
+- GET /governor/getAllHistoricalPlaces
+- DELETE /governor/deleteHistoricalPlace/:id
+- POST /governor/createTag
+- GET /governor/myProfile
+- PUT /governor/updateProfile
+- DELETE /governor/deleteProfile
+- PUT /governor/editPassword
+- POST /governor/notifications
+- GET /governor/notifications
+- PUT /governor/notifications/:id
+- DELETE /governor/notifications/:id
 
 ## Tests:
 -in Postman
