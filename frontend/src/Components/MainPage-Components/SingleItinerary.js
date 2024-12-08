@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Card, CardContent, Typography} from '@mui/material';
-import Navbar from './GuestNavbar';
+import { Card, CardContent, Typography, Box} from '@mui/material';
+import Navbar from './GuestNavBarforGuest';
 
 const SingleItinerary = () => {
   const { id } = useParams();
@@ -37,41 +37,67 @@ const SingleItinerary = () => {
     <div>
       <Navbar />
       <div className="tw-flex tw-justify-center tw-mt-10">
-        <Card
-          sx={{
-            width: '100%',
-            maxWidth: 500,
-            boxShadow: 3,
-            borderRadius: 3,
-            padding: 3,
-            backgroundColor: 'white',
-          }}
-          className="tw-shadow-lg tw-rounded-lg"
-        >
-          <CardContent>
-            <Typography variant="h4" className="tw-text-2xl tw-font-bold tw-text-gray-800">
+      <Card
+        key={itinerary._id}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: 'calc(33.33% - 20px)', // Adjust card width to 1/3rd of the container width
+          boxShadow: 3,
+          marginBottom: '20px',
+          borderRadius: '12px',
+          transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.03)',
+            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+          },
+        }}
+      >
+        {/* Image */}
+        {itinerary.imageUrl && (
+          <img
+            src={itinerary.imageUrl}
+            alt={itinerary.name}
+            style={{
+              width: '100%',
+              height: '60%',
+              objectFit: 'cover',
+              marginBottom: '10px',
+              borderTopLeftRadius: '12px',
+              borderTopRightRadius: '12px',
+            }}
+          />
+        )}
+
+        {/* Top Section: Image and Details */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <CardContent sx={{ padding: 0 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                color: '#111E56',
+                fontWeight: 'bold',
+                marginBottom: '10px',
+                textAlign: 'center',
+              }}
+            >
               {itinerary.name}
             </Typography>
-            <Typography className="tw-text-lg tw-text-gray-700 tw-mt-2">
-              <strong>Price:</strong> ${itinerary.totalPrice}
+            <Typography>
+              <strong style={{ fontWeight: 'bold', color: '#111E56' }}>Total Price:</strong> ${itinerary.totalPrice}
             </Typography>
-            <Typography className="tw-text-lg tw-text-gray-700 tw-mt-2">
-              <strong>Languages:</strong>{' '}
-              {Array.isArray(itinerary.LanguageOfTour)
-                ? itinerary.LanguageOfTour.join(', ')
-                : 'N/A'}
+            <Typography>
+              <strong style={{ fontWeight: 'bold', color: '#111E56' }}>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}
             </Typography>
-            <Typography className="tw-text-lg tw-text-gray-700 tw-mt-2">
-              <strong>Available Dates:</strong>{' '}
-              {Array.isArray(itinerary.AvailableDates)
-                ? itinerary.AvailableDates.join(', ')
-                : 'N/A'}
-            </Typography>
-            <Typography className="tw-text-gray-600 tw-mt-4">
-              {itinerary.description || 'No description available.'}
+            <Typography>
+              <strong style={{ fontWeight: 'bold', color: '#111E56' }}>Date :</strong> {new Date(itinerary.AvailableDates[0]).toLocaleDateString()}
             </Typography>
           </CardContent>
-        </Card>
+        </Box>
+
+        
+      
+      </Card>
       </div>
     </div>
   ) : (
