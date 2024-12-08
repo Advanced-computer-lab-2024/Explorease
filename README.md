@@ -109,9 +109,6 @@ MAILGUN_SENDER=postmaster@sandboxb1e282bce15c48b6a0eba45b8ef55bf2.mailgun.org
 5. Register to make an account on the website, and naviagte easily after.
 
 
-## Contribute:
--
--
 ## **Contribute**
 
 We welcome contributions to **Explorease**! If you have ideas, suggestions, or fixes (other than the ones mentioned in the build status) that can improve this project, feel free to contribute. Here's how you can get involved:
@@ -168,7 +165,7 @@ If you have any questions or need help with your contributions, feel free to ope
 Thank you for considering contributing to **Explorease**! 
 
 
-## Credts:
+## Credits:
 https://www.youtube.com/watch?v=98BzS5Oz5E4&list=PL4cUxeGkcC9iJ_KkrkBZWZRHVwnzLIoUE
 https://www.youtube.com/playlist?list=PLZlA0Gpn_vH8EtggFGERCwMY5u5hOjf-h
 https://youtube.com/playlist?list=PLZlA0Gpn_vH_NT5zPVp18nGe_W9LqBDQK&si=rKWWZ_L0XKAY2gB4
