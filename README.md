@@ -109,9 +109,7 @@ MAILGUN_SENDER=postmaster@sandboxb1e282bce15c48b6a0eba45b8ef55bf2.mailgun.org
 5. Register to make an account on the website, and naviagte easily after.
 
 
-## Contribute:
--
--
+
 ## **Contribute**
 
 We welcome contributions to **Explorease**! If you have ideas, suggestions, or fixes (other than the ones mentioned in the build status) that can improve this project, feel free to contribute. Here's how you can get involved:
