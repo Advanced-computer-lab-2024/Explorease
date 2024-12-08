@@ -317,6 +317,23 @@ const TouristGovernorDashboard = () => {
         }
     };
 
+    const handleDeletePlace = async (placeId) => {
+      if (!window.confirm('Are you sure you want to delete this historical place?')) {
+          return;
+      }
+
+      const token = localStorage.getItem('token');
+      try {
+          await axios.delete(`/governor/deleteHistoricalPlace/${placeId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+          });
+          fetchHistoricalPlaces();
+          setMessage('Historical place deleted successfully');
+      } catch (error) {
+          setMessage('Error deleting historical place');
+      }
+
+  };
     const renderHistoricalPlaces = () => (
         <Box>
             <Typography variant="h5" color="primary" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
@@ -374,7 +391,7 @@ const TouristGovernorDashboard = () => {
                                     <Tooltip title="Delete">
                                         <IconButton
                                             color="error"
-                                            onClick={() => handleDelete(place._id)}
+                                            onClick={() => handleDeletePlace(place._id)}
                                         >
                                             <DeleteIcon />
                                         </IconButton>
