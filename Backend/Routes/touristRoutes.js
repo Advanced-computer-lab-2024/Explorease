@@ -171,5 +171,5 @@ router.post('/hotels/stripe-session', roleAuth(['tourist']), hotelController.cre
 router.get('/activities/booked/booked-activities', roleAuth(['tourist']), activityControllers.getBookedActivities);
 router.get('/itineraries/booked/booked-itineraries', roleAuth(['tourist']), itineraryControllers.getBookedItineraries);
 router.get('/products/getreviews/:productId', productControllers.getProductReviewsAndRatings);
-
+router.get('/activities/getreviews/:activityId', activityControllers.getActivityReviewsAndRatings);
 module.exports = router;

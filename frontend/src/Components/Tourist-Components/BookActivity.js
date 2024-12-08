@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { Box, Card, CardContent, Button, TextField,IconButton, Tooltip,Typography, MenuItem, Select, InputLabel, FormControl, Alert } from '@mui/material';
+import { Box, Card, CardContent, Button, TextField,IconButton,Dialog, DialogTitle, DialogContent, DialogActions, Tooltip,Typography, MenuItem, Select, InputLabel, FormControl, Alert } from '@mui/material';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import BookIcon from '@mui/icons-material/Book';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { CurrencyContext } from './CurrencyContext'; // Import CurrencyContext
 import HistoryIcon from '@mui/icons-material/History';
-
+import StarIcon from '@mui/icons-material/Star'
 import FilterListIcon from '@mui/icons-material/FilterList'; // Filter Icon
 import UpcomingIcon from '@mui/icons-material/Upcoming';
 
@@ -38,8 +38,11 @@ const BookActivitiesPage = () => {
     const [bookedActivities, setBookedActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false); // State to toggle filters
-
-
+    const [reviews, setReviews] = useState([]);
+    const [ratings, setRatings] = useState([]);
+    const [openReviewModal, setOpenReviewModal] = useState(false);  // State to control modal visibility
+    const [ActivityId, setActivityId] = useState(null);  // State to store the current activityId
+    
 
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
 
@@ -113,6 +116,76 @@ const BookActivitiesPage = () => {
     const convertToUSD = (price) => {
         return (price / (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
+
+    const handleOpenReviewModal = (activityId) => {
+        setActivityId(activityId);  // Set the activityId for the modal
+        setOpenReviewModal(true);  // Open the modal
+        fetchReviews(activityId);
+      };
+
+      const fetchReviews = async (activityId) => {
+        try {
+          const response = await axios.get(`/tourists/activities/getreviews/${activityId}`);
+          if (response.data) {
+            const { reviews, ratings } = response.data;
+            console.log(response.data);
+            setReviews(reviews || []);
+            setRatings(ratings || []);
+          }
+        } catch (error) {
+          console.error("Error fetching reviews:", error);
+        }
+      };
+
+      const renderReviewModal = () => {
+        // Create a combined list of reviews and ratings based on the username
+        const combinedData = reviews.map(review => {
+          const rating = ratings.find(r => r.username === review.username); // Find the matching rating for the review by username
+          return {
+            username: review.username,
+            rating: rating ? rating.rating : null, // If no rating found, use null
+            review: review.review,
+          };
+        });
+      
+        return (
+            <Dialog open={openReviewModal} onClose={() => setOpenReviewModal(false)}>
+                <DialogTitle>Activity Reviews and Ratings</DialogTitle>
+                <DialogContent>
+                    {combinedData.length === 0 ? (
+                        <Typography>No reviews or ratings available for this activity.</Typography>
+                    ) : (
+                        combinedData.map((data, index) => (
+                            <Box key={index} sx={{ marginBottom: 2, border: '1px solid #ccc', padding: 2, borderRadius: 2 }}>
+                                <Typography variant="h6"><strong>{data.username}</strong></Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    {data.rating ? (
+                                        <Box sx={{ marginRight: 1 }}>
+                                            {/* Render the rating in stars */}
+                                            {[...Array(5)].map((_, i) => (
+                                                <StarIcon key={i} sx={{ color: i < data.rating ? 'gold' : 'gray' }} />
+                                            ))}
+                                        </Box>
+                                    ) : (
+                                        <Typography variant="body2" sx={{ color: 'gray' }}>No rating given</Typography>
+                                    )}
+                                </Box>
+                                <Typography variant="body2" sx={{ marginTop: 1 }}>
+                                    <strong>Review:</strong> {data.review || 'No review provided'}
+                                </Typography>
+                            </Box>
+                        ))
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenReviewModal(false)} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+      };
+      
 
     const handleBookmarkActivity = async (activity) => {
         const isBookmarked = bookmarkedActivities.includes(activity._id);
@@ -602,6 +675,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                         borderBottomLeftRadius:'8px',
                         borderTopLeftRadius:'8px',
                     }}
+                    onClick={() => handleOpenReviewModal(activity._id)}
                 />
             )}
         </Box>
@@ -734,7 +808,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
         <Typography>No activities available</Typography>
     )}
 </Box>
-
+    {renderReviewModal()}
     </Box>
     );
 };
