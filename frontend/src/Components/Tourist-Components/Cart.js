@@ -262,7 +262,7 @@ const Cart = ({ handleSectionChange}) => {
                       borderTop: "1px solid #E5E7EB",
                     }}
                   >
-                                                            <Box display="flex" alignItems="center" gap={2}>
+                                        <Box display="flex" alignItems="center" gap={2} sx={{marginLeft:'25px'}}>
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => updateQuantity(product.productId._id, product.quantity - 1)}
@@ -291,6 +291,7 @@ const Cart = ({ handleSectionChange}) => {
                         "&:hover": {
                           color: "#ff4081",
                         },
+                        marginRight:'8px'
                       }}
                     >
                         <Tooltip title="Remove from Cart" arrow>
