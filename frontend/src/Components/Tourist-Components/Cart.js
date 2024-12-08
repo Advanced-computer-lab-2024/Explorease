@@ -5,7 +5,6 @@ import {
     Typography,
     Button,
     Card,
-    CardContent,
     CardMedia,
     IconButton,
     Alert,
