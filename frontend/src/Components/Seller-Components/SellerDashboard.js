@@ -34,18 +34,21 @@ import { Container, Stack , Link} from '@mui/material';
 
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Divider from '@mui/material/Divider';
 
 import SellerActivity from '../MainPage-Components/CommonActivity';
 import SellerItinerary from '../MainPage-Components/CommonItinerary';
 import SellerHistoricalPlaces from '../MainPage-Components/CommonHistoricalPlaces';
 
+import heroBackground from '../../Misc/heroBackground.jpg';
 
 const SellerDashboard = () => {
     const [profile, setProfile] = useState({});
     const [message, setMessage] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar visibility state
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
-    const [activeComponent, setActiveComponent] = useState('profile');
+    const [activeComponent, setActiveComponent] = useState('home');
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
 
     const navigate = useNavigate();
@@ -118,6 +121,110 @@ const SellerDashboard = () => {
 
     const renderContent = () => {
         switch (activeComponent) {
+          case 'home':
+            return (
+              <Box
+              sx={{
+                height: '90vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+                padding: 2,
+                boxSizing: 'border-box',
+                borderRadius: '8px',
+                overflow: 'hidden', // Prevent content overflow during animation
+                flexDirection: 'column', // Stack the text vertically
+              }}
+            >
+              {/* Welcome Text */}
+              <Typography
+                variant="h2"
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                  textTransform: 'uppercase',
+                  lineHeight: '1.2',
+                  padding: '10px 20px',
+                  position: 'relative',
+                  animation: 'gradientShift 12s ease infinite, slideInFromLeft 1.5s ease-out',
+                  background: 'linear-gradient(90deg, white, #111E56)',
+                  backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  textShadow: `
+                    
+                    3px 3px 6px rgba(0, 0, 0, 0.3)
+                  `, // Subtle shadow effect outside of the text
+                }}
+              >
+                Welcome to your dashboard
+              </Typography>
+            
+              {/* Advertiser Name */}
+              <Typography
+                variant="h2"
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                  textTransform: 'uppercase',
+                  lineHeight: '1.2',
+                  padding: '10px 20px',
+                  position: 'relative',
+                  animation: 'gradientShift 12s ease infinite, slideInFromRight 1.5s ease-out',
+                  background: 'linear-gradient(90deg, white, #111E56)',
+                  backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  textShadow: `
+                    
+                    3px 3px 6px rgba(0, 0, 0, 0.3)
+                  `, // Subtle shadow effect outside of the text
+                }}
+              >
+                {profile.username || 'User'}
+              </Typography>
+            
+              {/* Keyframe Animations */}
+              <style>
+                {`
+                  @keyframes slideInFromLeft {
+                    0% {
+                      transform: translateX(-100%);
+                      opacity: 0;
+                    }
+                    100% {
+                      transform: translateX(0);
+                      opacity: 1;
+                    }
+                  }
+                  @keyframes slideInFromRight {
+                    0% {
+                      transform: translateX(100%);
+                      opacity: 0;
+                    }
+                    100% {
+                      transform: translateX(0);
+                      opacity: 1;
+                    }
+                  }
+                  @keyframes gradientShift {
+                    0% {
+                      background-position: 0% 50%;
+                    }
+                    50% {
+                      background-position: 100% 50%;
+                    }
+                    100% {
+                      background-position: 0% 50%;
+                    }
+                  }
+                `}
+              </style>
+            </Box>
+                                    
+            
+          );
             case 'profile':
                 return (
                     <Box
@@ -299,7 +406,25 @@ const SellerDashboard = () => {
       ];
 
     return (
-        <Box>
+      <Box>
+      {/* Conditional Background */}
+      {activeComponent === 'home' && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            minHeight: '115vh',
+            background: `url(${heroBackground}) no-repeat center center`,
+            backgroundSize: 'cover',
+            filter: 'blur(2px)',
+            boxShadow: 'inset 0 0 0 1000px rgba(0, 0, 0, 0.2)',
+            zIndex: -1,
+          }}
+        />
+      )}
             <SellerNavbar toggleSidebar={toggleSidebar} setActiveComponent={setActiveComponent} />
             <Box sx={{ display: 'flex' , minHeight: '100vh', }}>
         {/* Sidebar */}
@@ -320,6 +445,84 @@ const SellerDashboard = () => {
             overflow: 'hidden', // Prevent overflow when collapsed
         }}
         >
+          <Box >
+  {isSidebarOpen ? (
+    <Box sx={{marginLeft:'10px'}}>
+    <Avatar
+      {...stringAvatar(profile.username || 'User')}
+      sx={{
+        width: 60,
+        height: 60,
+        marginRight: '15px',
+        backgroundColor: 'white',
+        color: '#111E56',
+        fontSize: '20px',
+        fontWeight: 'bold',
+        marginLeft:'70px'
+      }}
+    />
+    <Typography
+  variant="h6"
+  sx={{
+    fontWeight: 'bold',
+    color: 'white',
+    marginRight: '20px',
+    marginTop: '10px',
+    cursor: 'pointer',  // Adds a pointer cursor to indicate it's clickable
+    transition: 'transform 0.3s ease',  // Smooth transition for scaling
+    '&:hover': {
+      transform: 'scale(1.1)',  // Scales up the text on hover
+    }, // Adds a pointer cursor to indicate it's clickable
+  }}
+  onClick={() => handleSectionChange('profile')}
+>
+  View Profile
+</Typography>
+
+    <Divider sx={{backgroundColor:'white'}}/>
+    </Box>
+    
+  ) : (
+    <Tooltip
+    title={!isSidebarOpen ? 'profile' : ''} // Tooltip for collapsed sidebar
+    arrow
+    placement="right"
+    key={'profile'}
+  >
+    <Button
+      sx={{
+        color: 'white',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        width: '100%',
+        padding: isSidebarOpen ? '10px 20px' : '10px 0 10px 10px',
+        marginTop: '10px',
+        display: 'flex',
+        gap: isSidebarOpen ? 2 : 0,
+        textAlign: 'left',
+        backgroundColor: activeComponent === 'profile' ? '#7BAFD0' : 'transparent',
+        borderLeft: activeComponent === 'profile' ? '6px solid #FFFFFF' : '6px solid transparent',
+        transition: 'background-color 0.3s ease, border 0.3s ease',
+        '&:hover': {
+          backgroundColor: '#7BAFD0',
+        },
+      }}
+      onClick={() => handleSectionChange('profile')}
+    >
+      <AccountCircle />
+    </Button>
+  </Tooltip>
+    // <IconButton
+    // onClick={() => handleSectionChange('profile')} 
+    //   sx={{
+    //     color: 'white',
+    //     '&:hover': { color: '#111E60' },
+    //   }}
+    // >
+    //   <AccountCircle />
+    // </IconButton>
+  )}
+</Box>
           {menuItems.map((item) => (
             <Tooltip
             title={!isSidebarOpen ? item.label : ''} // Show tooltip only when collapsed
@@ -424,7 +627,7 @@ const SellerDashboard = () => {
             borderRadius: '35px',
             transition: 'left 0.3s ease, background-color 0.3s ease',
             '&:hover': {
-                backgroundColor: '#e0e0e0',
+              backgroundColor: 'rgba(0, 0, 0, 0.1)', // Transparent gray
                 color: '#111E56',
             },
             zIndex: 1000,

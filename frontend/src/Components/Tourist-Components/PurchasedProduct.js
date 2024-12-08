@@ -119,7 +119,7 @@ export default function PurchasedProduct() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
+        <CircularProgress sx={{color:'#111E56'}} />
       </Box>
     );
   }
@@ -219,21 +219,22 @@ export default function PurchasedProduct() {
   return (
     <Container maxWidth="lg">
       <Box my={4}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Your Purchased Products
+        <Typography variant="h4" component="h1" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
+          Past Orders
         </Typography>
 
         <Box my={4}>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
             Delivered Orders
           </Typography>
           {deliveredOrders.length > 0 ? renderOrders(deliveredOrders, true) : <Typography>No delivered orders.</Typography>}
         </Box>
 
+
         <Divider sx={{ my: 4 }} />
 
         <Box my={4}>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
             Recent Orders
           </Typography>
           {recentOrders.length > 0 ? renderOrders(recentOrders, false) : <Typography>No recent orders.</Typography>}

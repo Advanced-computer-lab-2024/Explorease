@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Typography, Box, Grid, Tooltip } from '@mui/material';
+import { Button, Typography, Box, Tooltip } from '@mui/material';
 import { EmojiNature, MonetizationOn, Stars } from '@mui/icons-material';
 
 const MyPoints = () => {

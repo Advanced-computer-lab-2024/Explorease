@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext  } from 'react';
+import React, { useEffect, useState, useContext , useCallback  } from 'react';
 import axios from 'axios';
 import { Box, Card, CardContent, Button, TextField, Typography, MenuItem, Select, InputLabel, FormControl, Alert } from '@mui/material';
 import { CurrencyContext } from './CurrencyContext';
@@ -7,6 +7,7 @@ import { IconButton } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import BookmarkIcon from '@mui/icons-material/Bookmark'
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
+
 
 const BookItinerariesPage = () => {
     const [itineraries, setItineraries] = useState([]);
@@ -30,17 +31,32 @@ const BookItinerariesPage = () => {
     const [discount, setDiscount] = useState(0); // Store discount value
     const [finalAmount, setFinalAmount] = useState(0); // Store final amount after discount
 
-    const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
+    // const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
 
     const [savedItineraries, setSavedItineraries] = useState([]);
 
+    
+    const fetchSavedItineraries = useCallback(async () => {
+        try {
+            const response = await axios.get(
+                `/tourists/saved-itineraries`, 
+                { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+            );                
+            const itineraries = response.data.itineraries || []; 
+            const bookmarkedIds = itineraries.map((itinerary) => itinerary._id);
+            setSavedItineraries(bookmarkedIds);
+        } catch (err) {
+            console.error('Error fetching saved itineraries:', err.message);
+        }
+    }, []);
+
     useEffect(() => {
         fetchItineraries();
         fetchWalletBalance();
         fetchSavedItineraries();
-    }, []);
+    }, [fetchSavedItineraries]);
 
     const handleSaveItinerary = async (itineraryId) => {
         try {
@@ -77,21 +93,22 @@ const BookItinerariesPage = () => {
         }
     };
     
-    const fetchSavedItineraries = async () => {
-        try {
-            const response = await axios.get(
-                `/tourists/saved-itineraries`, 
-                { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } } // Assuming JWT is used
-            );                
-            const itineraries = response.data.itineraries || []; // Update this based on your API's response structure
-            const bookmarkedIds = itineraries.map((itinerary) => itinerary._id); // Extract IDs if activities is an array
-            //setBookmarkedActivities(bookmarkedIds);
-            setSavedItineraries(bookmarkedIds);
-            console.log(savedItineraries);
-        } catch (err) {
-            console.error('Error fetching saved itineraries:', err.message);
-        }
-    };
+    // const fetchSavedItineraries = async () => {
+    //     try {
+    //         const response = await axios.get(
+    //             `/tourists/saved-itineraries`, 
+    //             { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } } // Assuming JWT is used
+    //         );                
+    //         const itineraries = response.data.itineraries || []; // Update this based on your API's response structure
+    //         const bookmarkedIds = itineraries.map((itinerary) => itinerary._id); // Extract IDs if activities is an array
+    //         //setBookmarkedActivities(bookmarkedIds);
+    //         setSavedItineraries(bookmarkedIds);
+    //         console.log(savedItineraries);
+    //     } catch (err) {
+    //         console.error('Error fetching saved itineraries:', err.message);
+    //     }
+    // };
+
 
     
     const handleApplyPromo = async () => {
@@ -493,8 +510,8 @@ const BookItinerariesPage = () => {
                         flexDirection: 'column',  // Change to column for horizontal division
                         width: '500px',
                         boxShadow: 3,
-                        padding: 2,
-                        borderRadius: 2,
+                        marginBottom: '20px',
+                        borderRadius: '12px',
                         transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
                         '&:hover': {
                             transform: 'scale(1.03)',
@@ -502,36 +519,42 @@ const BookItinerariesPage = () => {
                         },
                     }}
                 >
-                    {/* Top Section: Image and Details */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        {/* Image */}
-                        <Box
+                    {/* Image */}
+                    {/* <Box
                             sx={{
                                 height: '200px',
                                 width: '100%',
                                 overflow: 'hidden',
                                 borderRadius: 2,
                                 marginBottom: 2,
+                                objectFit: 'cover',
                             }}
-                        >
+                        > */}
                             {itinerary.imageUrl && (
                                 <img
                                     src={itinerary.imageUrl}
                                     alt={itinerary.name}
                                     style={{
                                         width: '100%',
-                                        height: '100%',
+                                        height: '60%',
                                         objectFit: 'cover',
-                                        borderRadius: '8px',
+                                        
+                                        marginBottom: '10px',
+                    borderTopLeftRadius: '12px',
+                    borderTopRightRadius: '12px',
+
                                     }}
                                 />
                             )}
-                        </Box>
+                        {/* </Box> */}
+                    {/* Top Section: Image and Details */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        
                 
                         {/* Details */}
                         <CardContent sx={{ padding: 0 }}>
                             <Typography
-                                variant="h6"
+                                variant="h5"
                                 sx={{
                                     color: '#111E56',
                                     fontWeight: 'bold',
@@ -541,17 +564,17 @@ const BookItinerariesPage = () => {
                             >
                                 {itinerary.name}
                             </Typography>
-                            <Typography><strong>Total Price:</strong> {convertPrice(itinerary.totalPrice)} {selectedCurrency}</Typography>
-                            <Typography><strong>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}</Typography>
-                            <Typography><strong>Date :</strong> {new Date(itinerary.AvailableDates[0]).toLocaleDateString()}</Typography>
+                            <Typography><strong style={{fontWeight:'bold' , color:'#111E56'}}>Total Price:</strong> {convertPrice(itinerary.totalPrice)} {selectedCurrency}</Typography>
+                            <Typography><strong style={{fontWeight:'bold' , color:'#111E56'}}>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}</Typography>
+                            <Typography><strong style={{fontWeight:'bold' , color:'#111E56'}}>Date :</strong> {new Date(itinerary.AvailableDates[0]).toLocaleDateString()}</Typography>
                         </CardContent>
                     </Box>
                 
                     {/* Divider */}
-                    <Box sx={{ borderTop: '1px solid #ccc', my: 2 }} />
+                    <Box sx={{ borderTop: '1px solid #ccc', }} />
                 
                     {/* Bottom Section: Action Buttons */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 1 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2 }}>
                         <Tooltip title="Book Now">
                             <IconButton
                                 onClick={() => handleBookItinerary(itinerary)}

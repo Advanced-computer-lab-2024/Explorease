@@ -33,7 +33,6 @@ const Activities = () => {
   const [endDate, setEndDate] = useState('');
 const [loading, setLoading] = useState(true); // For loading state
 
-
   useEffect(() => {
     fetchActivities();
   }, []);
@@ -104,8 +103,6 @@ const handleSearch = async (e) => {
     const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoLink;
   };
-
-  const sharedWidth = { xs: '100%', sm: 'calc(100% - 200px)' };
 
   return (
     <Box>
@@ -377,6 +374,7 @@ const handleSearch = async (e) => {
             }}
           >
             <iframe
+              title='activity-location'
               width="100%"
               height="100%"
               frameBorder="0"

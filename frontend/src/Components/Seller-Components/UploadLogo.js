@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Button, Typography, Box, TextField, CircularProgress } from '@mui/material';
 
 const UploadLogo = ({ setProfile }) => {
+    
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');

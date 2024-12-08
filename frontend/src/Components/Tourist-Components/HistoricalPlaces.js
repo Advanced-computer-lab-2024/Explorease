@@ -13,6 +13,7 @@ import {
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
 
+
 const HistoricalPlaces = () => {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true); // For loading state

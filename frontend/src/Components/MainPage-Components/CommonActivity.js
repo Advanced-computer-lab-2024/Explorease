@@ -104,7 +104,6 @@ const handleSearch = async (e) => {
     window.location.href = mailtoLink;
   };
 
-
   return (
     <Box>
       <Box sx={{ p: 4 }}>
@@ -374,6 +373,7 @@ const handleSearch = async (e) => {
             }}
           >
             <iframe
+              title='activity-location'
               width="100%"
               height="100%"
               frameBorder="0"

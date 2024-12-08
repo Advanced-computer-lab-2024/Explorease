@@ -127,6 +127,7 @@ const ActivitySummary = () => {
                             color: '#111E56',
                             border: '2px solid #111E56',
                         },
+                        
                     }}
                 >
                     Apply Filter

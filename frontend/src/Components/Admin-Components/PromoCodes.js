@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Delete, Edit, Save, Cancel } from '@mui/icons-material';
 
+
 const PromoCodes = () => {
     const [name, setName] = useState('');
     const [percentage, setPercentage] = useState('');
@@ -118,8 +119,8 @@ const PromoCodes = () => {
                     padding: 3,
                     backgroundColor: 'white',
                     borderRadius: 2,
-                    boxShadow: 3,
-                    mb: 4,boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    mb: 4,
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                     '&:hover': {
                         transform: 'scale(1.03)', // Adds a scaling effect

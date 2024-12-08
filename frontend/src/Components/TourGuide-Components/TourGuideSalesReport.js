@@ -16,6 +16,7 @@ import {
     Divider,
 } from '@mui/material';
 
+
 const TourGuideSalesReport = () => {
     const [data, setData] = useState([]);
     const [totalRevenue, setTotalRevenue] = useState(0);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useCallback} from 'react';
 import { Link } from 'react-router-dom';
 import {
     AppBar,
@@ -19,13 +19,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import axios from 'axios';
 import logo from '../../Misc/logo.png';
-import PersonIcon from '@mui/icons-material/Person'; // Import Person icon for profile
-import {useNavigate} from 'react-router-dom'
+//import PersonIcon from '@mui/icons-material/Person'; // Import Person icon for profile
+import HomeIcon from '@mui/icons-material/Home';
+//import {useNavigate} from 'react-router-dom'
 
 const Navbar = ({ toggleSidebar , setActiveComponent }) => {
     const [notifications, setNotifications] = useState([]);
     const [isNotificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
-    const navigate = useNavigate(); // Hook for navigation
+    // const navigate = useNavigate(); // Hook for navigation
 
     const linkContainerStyle = {
         display: 'flex',
@@ -34,21 +35,22 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
     };
 
 
-    const logoStyle = {
-        height: '50px',
-        marginLeft: '-10px',
-    };
+    // const logoStyle = {
+    //     height: '50px',
+    //     marginLeft: '-10px',
+    // };
 
-    const roleEndpoints = {
-        seller: '/seller/notifications',
-        advertiser: '/advertiser/notifications',
-        tourGuide: '/tourguide/notifications',
-        touristGovernor: '/governor/notifications',
-    };
+    
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('role');
+        const roleEndpoints = {
+            seller: '/seller/notifications',
+            advertiser: '/advertiser/notifications',
+            tourGuide: '/tourguide/notifications',
+            touristGovernor: '/governor/notifications',
+        };
         const endpoint = roleEndpoints[role];
 
         if (!endpoint) {
@@ -64,11 +66,12 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
         } catch (error) {
             console.error('Error fetching notifications:', error);
         }
-    };
+    }, []);  // Empty dependency array ensures the function is memoized
 
     useEffect(() => {
         fetchNotifications();
-    }, []);
+    }, [fetchNotifications]);  // Safe to include fetchNotifications as a dependency
+
 
     const toggleNotificationDrawer = (open) => {
         setNotificationDrawerOpen(open);
@@ -265,37 +268,39 @@ const Navbar = ({ toggleSidebar , setActiveComponent }) => {
 
                 {/* Notification Icon */}
                 <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: '20px' }}>
-                <Tooltip title="Profile" arrow>
+                <Tooltip title="Go to Home" arrow>
     <IconButton
         sx={{
             color: 'white',
         }}
-        onClick={() => setActiveComponent('profile')} // Navigate or trigger profile component
+        onClick={() => setActiveComponent('home')} // Navigate or trigger profile component
     >
-        <PersonIcon />
+        <HomeIcon />
     </IconButton>
-    
 </Tooltip>
 
-                    <IconButton sx={{ color: 'white' }} onClick={() => toggleNotificationDrawer(true)}>
-                        <Badge
-                            badgeContent={notifications.filter((notif) => !notif.isRead).length}
-                            color="error"
-                            sx={{
-                                '& .MuiBadge-badge': {
-                                    backgroundColor: '#FF0000',
-                                    color: 'white',
-                                    fontSize: '12px',
-                                    fontWeight: 'bold',
-                                },
-                            }}
-                        >
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
+                    <Tooltip title="Notifications" arrow>
+                        <IconButton sx={{ color: 'white' }} onClick={() => toggleNotificationDrawer(true)}>
+                            <Badge
+                                badgeContent={notifications.filter((notif) => !notif.isRead).length}
+                                color="error"
+                                sx={{
+                                    '& .MuiBadge-badge': {
+                                        backgroundColor: '#FF0000',
+                                        color: 'white',
+                                        fontSize: '12px',
+                                        fontWeight: 'bold',
+                                    },
+                                }}
+                            >
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                    </Tooltip>
                     
                 </Box>
             </Toolbar>
+            
             
 
             {/* Notification Drawer */}

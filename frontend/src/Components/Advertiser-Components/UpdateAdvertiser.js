@@ -3,6 +3,7 @@ import axios from 'axios';
 import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
+
 const UpdateAdvertiser = ({ profile, setProfile }) => {
     const [formProfile, setFormProfile] = useState({
         username: '',
@@ -74,7 +75,17 @@ const UpdateAdvertiser = ({ profile, setProfile }) => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>Edit Profile</Typography>
+             <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}
+                >
+                    Update Profile
+                </Typography>
 
             {updateMessage && (
                 <Typography color="primary" sx={{ mb: 2 }}>{updateMessage}</Typography>
@@ -144,7 +155,17 @@ const UpdateAdvertiser = ({ profile, setProfile }) => {
             </form>
 
             <Box sx={{ mt: 4 }}>
-                <Typography variant="h5" gutterBottom>Update Password</Typography>
+            <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}
+                >
+                    Update Password
+                </Typography>
 
                 {passwordMessage && (
                     <Typography color="primary" sx={{ mb: 2 }}>

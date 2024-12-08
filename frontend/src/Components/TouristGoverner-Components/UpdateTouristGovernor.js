@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Box, TextField, Button, Typography, InputAdornment, IconButton, CircularProgress } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
+
 const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
     const [formProfile, setFormProfile] = useState({
         email: '',
@@ -72,7 +73,17 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <Typography variant="h4" gutterBottom>Update Tourist Governor Profile</Typography>
+              <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}
+                >
+                    Update Profile
+                </Typography>
 
             {updateMessage && (
                 <Typography color={success ? 'green' : 'red'} sx={{ mb: 2 }}>
@@ -119,7 +130,17 @@ const UpdateTouristGovernorProfile = ({ profile, setProfile }) => {
 
             
             <Box sx={{ mt: 4 }}>
-                <Typography variant="h5" gutterBottom>Update Password</Typography>
+            <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}
+                >
+                    Update Password
+                </Typography>
 
                 {passwordMessage && (
                     <Typography color={redirecting ? 'primary' : 'error'} sx={{ mb: 2 }}>

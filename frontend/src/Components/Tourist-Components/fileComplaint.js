@@ -10,6 +10,7 @@ const FileComplaint = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -43,7 +44,7 @@ const FileComplaint = () => {
 
     return (
         <Box sx={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <h2>File a Complaint</h2>
+            <Typography variant= 'h5' sx={{fontWeight:'bold' , color:'#111E56'}}> File a Complaint</Typography>
             {successMessage && (
                 <Typography color="primary" sx={{ mb: 2 }}>
                     {successMessage}

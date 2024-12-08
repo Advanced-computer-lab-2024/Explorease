@@ -5,15 +5,12 @@ import {
     Button,
     Typography,
     Box,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     CircularProgress,
     Grid,
     Paper,
 } from '@mui/material';
 import { CurrencyContext } from './CurrencyContext';
+
 
 const BookHotel = () => {
     const [location, setLocation] = useState('');

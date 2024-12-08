@@ -16,6 +16,7 @@ const UserApproval = () => {
     }),
     [token]
   );
+  
 
   useEffect(() => {
     const fetchPendingUsers = async () => {

@@ -3,7 +3,6 @@ import axios from 'axios';
 import {
     Box,
     Card,
-    CardContent,
     CardMedia,
     Typography,
     TextField,
@@ -17,7 +16,7 @@ import {
     Alert,
     Grid,
 } from '@mui/material';
-import { Delete, Edit, Archive, Unarchive, Save, Cancel, Visibility } from '@mui/icons-material';
+import { Delete, Edit, Archive, Unarchive, Visibility } from '@mui/icons-material';
 import AddProduct from './AddProduct';
 
 const SellerProducts = () => {
@@ -29,7 +28,7 @@ const SellerProducts = () => {
     const [sortByRatings, setSortByRatings] = useState('');
     const [editingProductId, setEditingProductId] = useState(null);
     const [updatedProductData, setUpdatedProductData] = useState({});
-    const [viewSales, setViewSales] = useState(null);
+    // const [viewSales, setViewSales] = useState(null);
 
     const fetchSellerProducts = async () => {
         try {
@@ -47,9 +46,9 @@ const SellerProducts = () => {
         fetchSellerProducts();
     }, []);
 
-    const handleInputChange = (e, field) => {
-        setUpdatedProductData({ ...updatedProductData, [field]: e.target.value });
-    };
+    // const handleInputChange = (e, field) => {
+    //     setUpdatedProductData({ ...updatedProductData, [field]: e.target.value });
+    // };
 
     const handleEditProduct = (product) => {
         setEditingProductId(product._id);
@@ -99,10 +98,10 @@ const SellerProducts = () => {
         }
     };
 
-    const handleViewSales = (productId) => {
-        const product = products.find((p) => p._id === productId);
-        alert(`Total Sales: ${product.Sales || 0}`);
-    };
+    // const handleViewSales = (productId) => {
+    //     const product = products.find((p) => p._id === productId);
+    //     alert(`Total Sales: ${product.Sales || 0}`);
+    // };
 
     const fetchFilteredSellerProducts = async () => {
         try {
@@ -127,8 +126,6 @@ const SellerProducts = () => {
     };
 
     return (
-
- 
             <Box sx={{ p: 3 }}>
             <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 7 , color:'#111E56'}}>
                 My Products

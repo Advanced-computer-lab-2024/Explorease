@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, CardMedia, CircularProgress, IconButton, Dialog, Button} from '@mui/material';
+import { Box, Typography, Card, CardContent, CardMedia, CircularProgress,  IconButton, Dialog, Button,} from '@mui/material';
 import Carousel from 'react-multi-carousel'; // Carousel library
 import 'react-multi-carousel/lib/styles.css'; // Carousel styles
+// import LocationOnIcon from '@mui/icons-material/LocationOn';
+// import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,7 +20,7 @@ const TouristHomePage = ({profile}) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [selectedType, setSelectedType] = useState('');
     
-    const [formProfile, setFormProfile] = useState(profile);
+    // const [formProfile, setFormProfile] = useState(profile);
 
 
     const handleOpenPopup = (item, type) => {

@@ -7,7 +7,7 @@ const AddPhoto = ({ setProfile }) => {
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
     const [photoUrl, setPhotoUrl] = useState('');
-
+    
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };

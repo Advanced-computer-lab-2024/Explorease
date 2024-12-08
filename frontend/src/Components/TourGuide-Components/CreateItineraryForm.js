@@ -21,6 +21,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 
+
 const CreateItineraryForm = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -38,7 +39,7 @@ const CreateItineraryForm = () => {
     const [selectedImage, setSelectedImage] = useState(null); // State to store the uploaded image
     const [singleTime, setSingleTime] = useState(''); // Single input for AvailableTimes
     const [singleDate, setSingleDate] = useState(''); // Single input for AvailableDates
-    const [singleLanguage, setSingleLanguage] = useState('');
+    // const [singleLanguage, setSingleLanguage] = useState('');
     const [availableActivities, setAvailableActivities] = useState([]); // List of available activities
     const [availableTags, setAvailableTags] = useState([]); // List of available tags
     const [message, setMessage] = useState('');

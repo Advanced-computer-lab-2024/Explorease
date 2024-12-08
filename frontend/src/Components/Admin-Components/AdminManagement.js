@@ -16,6 +16,7 @@ const CreateAdminForm = () => {
         loadAdmins();
     }, []);
 
+    
     // Load all admins from the server
     const loadAdmins = async () => {
         const token = localStorage.getItem('token');

@@ -5,10 +5,6 @@ import {
     Typography,
     TextField,
     Button,
-    Alert,
-    InputLabel,
-    OutlinedInput,
-    TextareaAutosize,
 } from '@mui/material';
 
 const AddProduct = () => {

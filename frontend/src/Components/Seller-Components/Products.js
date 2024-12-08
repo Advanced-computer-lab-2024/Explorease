@@ -3,7 +3,6 @@ import axios from 'axios';
 import {
     Box,
     Card,
-    CardContent,
     CardMedia,
     Typography,
     TextField,
