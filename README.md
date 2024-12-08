@@ -166,7 +166,7 @@ If you have any questions or need help with your contributions, feel free to ope
 Thank you for considering contributing to **Explorease**! 
 
 
-## Credts:
+## Credits:
 https://www.youtube.com/watch?v=98BzS5Oz5E4&list=PL4cUxeGkcC9iJ_KkrkBZWZRHVwnzLIoUE
 https://www.youtube.com/playlist?list=PLZlA0Gpn_vH8EtggFGERCwMY5u5hOjf-h
 https://youtube.com/playlist?list=PLZlA0Gpn_vH_NT5zPVp18nGe_W9LqBDQK&si=rKWWZ_L0XKAY2gB4
