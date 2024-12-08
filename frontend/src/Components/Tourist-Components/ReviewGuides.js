@@ -1,6 +1,6 @@
 import React, { useEffect, useState , useCallback} from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, Button, TextField, Avatar } from '@mui/material';
+import { Box, Typography, Card, CardContent, Button, TextField, Avatar, CircularProgress  } from '@mui/material';
 import { Rating } from '@mui/material';
 
 
@@ -10,6 +10,7 @@ const ReviewGuides = () => {
     const [comments, setComments] = useState({});
     const [reviews, setReviews] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(true); // Add loading state
 
     const token = localStorage.getItem('token');
 
@@ -64,6 +65,8 @@ const fetchGuides = useCallback(async () => {
     } catch (error) {
         setErrorMessage(error.response?.status === 404 ? 'No Itinerary Bookings Found' : 'Error loading guides for review.');
         console.error('Error fetching guides:', error);
+    }finally {
+        setLoading(false); // Set loading to false after the fetch operation is completed
     }
 }, [token, fetchReviewsForGuide]); // Add fetchReviewsForGuide as a dependency
 
@@ -166,8 +169,12 @@ const fetchGuides = useCallback(async () => {
             <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>Review Your Guides</Typography>
 
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}
-
-            {guides.length > 0 ? (
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                    <CircularProgress sx={{color:'#111E56'}}/>
+                </Box>
+            ) : (
+            guides.length > 0 ? (
                 guides.map(guide => {
                     const guideReviews = reviews[guide._id] || [];
                     console.log(`Reviews for guide ${guide._id}:`, guideReviews); // Log to check if reviews are loaded correctly
@@ -232,6 +239,7 @@ const fetchGuides = useCallback(async () => {
                 })
             ) : (
                 !errorMessage && <Typography>No tour guides available for review.</Typography>
+            )
             )}
         </Box>
     );

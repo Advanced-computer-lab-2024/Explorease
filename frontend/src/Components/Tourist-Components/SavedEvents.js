@@ -8,6 +8,7 @@ import {
     IconButton,
     Alert,
     Tooltip,
+    CircularProgress, 
 } from '@mui/material';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 // import BookIcon from '@mui/icons-material/Book';
@@ -23,6 +24,7 @@ const SavedEvents = () => {
     const [savedItineraries, setSavedItineraries] = useState([]);
     const [walletBalance, setWalletBalance] = useState(0);
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(true);  // Add loading state
     // const { isLoaded } = useLoadScript({
     //     googleMapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // Replace with your Google Maps API key
     // });
@@ -105,16 +107,39 @@ const SavedEvents = () => {
     // };
 
     useEffect(() => {
-        fetchSavedActivities();
-        fetchSavedItineraries();
-        fetchWalletBalance();
+        setLoading(true); // Start loading
+        const fetchData = async () => {
+            try {
+                await Promise.all([
+                    fetchSavedActivities(),
+                    fetchSavedItineraries(),
+                    fetchWalletBalance(),
+                ]);
+            } catch (error) {
+                setMessage('Error fetching data');
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false); // End loading after all fetches are done
+            }
+        };
+    
+        fetchData(); // Trigger data fetching
     }, []);
+    
 
     return (
             <Box sx={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
               
         
                 {message && <Alert severity="info" sx={{ mt : 2, mb: 2 }}>{message}</Alert>}
+
+                {/* Show loading spinner if data is still loading */}
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                    <CircularProgress sx={{color:'#111E56'}} />
+                </Box>
+            ) : (
+                <>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#111E56', marginBottom: '50px' }}>
                     Saved Activities
                 </Typography>
@@ -247,6 +272,8 @@ const SavedEvents = () => {
                         <Typography>No saved itineraries available</Typography>
                     )}
                 </Box>
+                </>
+            )}
             </Box>
         );        
 };

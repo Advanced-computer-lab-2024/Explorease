@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, Button, TextField, Rating } from '@mui/material';
+import { Box, Typography, Card, CardContent, Button, TextField, Rating, CircularProgress,} from '@mui/material';
 // import { Alert, Snackbar } from '@mui/material';
 // import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -12,6 +12,7 @@ import 'react-multi-carousel/lib/styles.css'; // Carousel styles
 const ViewBookings = () => {
     const [activityBookings, setActivityBookings] = useState([]);
     const [itineraryBookings, setItineraryBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [ratings, setRatings] = useState({});
     const [comments, setComments] = useState({});
@@ -63,6 +64,9 @@ const ViewBookings = () => {
                 console.error('Error fetching guides:', error);
                 setErrorMessage('Error loading guides for review.');
             }
+        }
+        finally {
+            setLoading(false); // End loading after all fetches are done
         }
     };
 
@@ -263,7 +267,7 @@ const ViewBookings = () => {
                     </Box>
     
                     {/* Right Section: Rating and Comment */}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', ml: 2, width: '40%', alignItems: 'center', }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', ml: 2, width: '40%', alignItems: 'center'}}>
                         {isPastDate(booking.Activity?.date) ? (
                             <>
                                 {/* If there's a rating, display it */}
@@ -581,117 +585,142 @@ const ViewBookings = () => {
     // </div>
     return (
         <Box>
-            {/* Past Activity Carousel */}
-            <Typography variant="h5" sx={{ mb: 2 , mt: 5 , fontWeight:'bold' , color:'#111E56'}}>Past Activity Bookings</Typography>
-            {pastActivityBookings.length > 0 && (
-                pastActivityBookings.length === 1 ? (
-                    // Render only the single booking without carousel
-                    <div style={{height:'80%', width: '600px'}} key={pastActivityBookings[0]._id}>{renderActivityCard(pastActivityBookings[0])}</div>
-                ) : (
-                    <Carousel
-                        responsive={carouselResponsiveSettings}
-                        infinite={true}
-                        showDots={true}
-                        arrows={true}
-                        swipeable={true}
-                        draggable={true}
-                        autoPlay={true}
-                        autoPlaySpeed={3000}
-                        centerMode={true}
-                        containerClass="carousel-container"
-                    >
-                        {pastActivityBookings.map((booking) => (
-                            <div key={booking._id}>{renderActivityCard(booking)}</div>
-                        ))}
-                    </Carousel>
-                )
-            )}
-            {pastActivityBookings.length === 0 && <Typography>No past activity bookings available.</Typography>}
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                    <CircularProgress sx={{ color: '#111E56' }} />
+                </Box>
+            ) : (
+                <>
+                    {/* Past Activity Carousel */}
+                    <Typography variant="h5" sx={{ mb: 2, mt: 5, fontWeight: 'bold', color: '#111E56' }}>
+                        Past Activity Bookings
+                    </Typography>
+                    {pastActivityBookings.length > 0 ? (
+                        pastActivityBookings.length === 1 ? (
+                            // Render only the single booking without carousel
+                            <div style={{ height: '80%', width: '600px' }} key={pastActivityBookings[0]._id}>
+                                {renderActivityCard(pastActivityBookings[0])}
+                            </div>
+                        ) : (
+                            <Carousel
+                                responsive={carouselResponsiveSettings}
+                                infinite={true}
+                                showDots={true}
+                                arrows={true}
+                                swipeable={true}
+                                draggable={true}
+                                autoPlay={true}
+                                autoPlaySpeed={3000}
+                                centerMode={true}
+                                containerClass="carousel-container"
+                            >
+                                {pastActivityBookings.map((booking) => (
+                                    <div key={booking._id}>{renderActivityCard(booking)}</div>
+                                ))}
+                            </Carousel>
+                        )
+                    ) : (
+                        <Typography>No past activity bookings available.</Typography>
+                    )}
     
-            {/* Upcoming Activity Carousel */}
-            <Typography variant="h5" sx={{ mb: 2, mt: 4 ,fontWeight:'bold' , color:'#111E56'}}>Upcoming Activity Bookings</Typography>
-            {upcomingActivityBookings.length > 0 && (
-                upcomingActivityBookings.length === 1 ? (
-                    // Render only the single booking without carousel
-                    <div style={{height:'80%', width: '600px'}}key={upcomingActivityBookings[0]._id}>{renderActivityCard(upcomingActivityBookings[0])}</div>
-                ) : (
-                    <Carousel
-                        responsive={carouselResponsiveSettings}
-                        infinite={true}
-                        showDots={true}
-                        arrows={true}
-                        swipeable={true}
-                        draggable={true}
-                        autoPlay={true}
-                        autoPlaySpeed={3000}
-                        centerMode={true}
-                        containerClass="carousel-container"
-                    >
-                        {upcomingActivityBookings.map((booking) => (
-                            <div key={booking._id}>{renderActivityCard(booking)}</div>
-                        ))}
-                    </Carousel>
-                )
-            )}
-            {upcomingActivityBookings.length === 0 && <Typography>No upcoming activity bookings available.</Typography>}
+                    {/* Upcoming Activity Carousel */}
+                    <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 'bold', color: '#111E56' }}>
+                        Upcoming Activity Bookings
+                    </Typography>
+                    {upcomingActivityBookings.length > 0 ? (
+                        upcomingActivityBookings.length === 1 ? (
+                            // Render only the single booking without carousel
+                            <div style={{ height: '80%', width: '600px' }} key={upcomingActivityBookings[0]._id}>
+                                {renderActivityCard(upcomingActivityBookings[0])}
+                            </div>
+                        ) : (
+                            <Carousel
+                                responsive={carouselResponsiveSettings}
+                                infinite={true}
+                                showDots={true}
+                                arrows={true}
+                                swipeable={true}
+                                draggable={true}
+                                autoPlay={true}
+                                autoPlaySpeed={3000}
+                                centerMode={true}
+                                containerClass="carousel-container"
+                            >
+                                {upcomingActivityBookings.map((booking) => (
+                                    <div key={booking._id}>{renderActivityCard(booking)}</div>
+                                ))}
+                            </Carousel>
+                        )
+                    ) : (
+                        <Typography>No upcoming activity bookings available.</Typography>
+                    )}
     
-            {/* Past Itinerary Carousel */}
-            <Typography variant="h5" sx={{ mb: 2 ,fontWeight:'bold' , color:'#111E56'}}>Past Itinerary Bookings</Typography>
-            {pastItineraryBookings.length > 0 && (
-                pastItineraryBookings.length === 1 ? (
-                    // Render only the single booking without carousel
-                    <div style={{height:'80%', width: '600px'}} key={pastItineraryBookings[0]._id}>{renderItineraryCard(pastItineraryBookings[0])}</div>
-                ) : (
-                    <Carousel
-                        responsive={carouselResponsiveSettings}
-                        infinite={true}
-                        showDots={true}
-                        arrows={true}
-                        swipeable={true}
-                        draggable={true}
-                        autoPlay={true}
-                        autoPlaySpeed={3000}
-                        centerMode={true}
-                        containerClass="carousel-container"
-                    >
-                        {pastItineraryBookings.map((booking) => (
-                            <div key={booking._id}>{renderItineraryCard(booking)}</div>
-                        ))}
-                    </Carousel>
-                )
-            )}
-            {pastItineraryBookings.length === 0 && <Typography>No past itinerary bookings available.</Typography>}
+                    {/* Past Itinerary Carousel */}
+                    <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#111E56' }}>
+                        Past Itinerary Bookings
+                    </Typography>
+                    {pastItineraryBookings.length > 0 ? (
+                        pastItineraryBookings.length === 1 ? (
+                            // Render only the single booking without carousel
+                            <div style={{ height: '80%', width: '600px' }} key={pastItineraryBookings[0]._id}>
+                                {renderItineraryCard(pastItineraryBookings[0])}
+                            </div>
+                        ) : (
+                            <Carousel
+                                responsive={carouselResponsiveSettings}
+                                infinite={true}
+                                showDots={true}
+                                arrows={true}
+                                swipeable={true}
+                                draggable={true}
+                                autoPlay={true}
+                                autoPlaySpeed={3000}
+                                centerMode={true}
+                                containerClass="carousel-container"
+                            >
+                                {pastItineraryBookings.map((booking) => (
+                                    <div key={booking._id}>{renderItineraryCard(booking)}</div>
+                                ))}
+                            </Carousel>
+                        )
+                    ) : (
+                        <Typography>No past itinerary bookings available.</Typography>
+                    )}
     
-            {/* Upcoming Itinerary Carousel */}
-            <Typography variant="h5" sx={{ mb: 2, mt: 4 , fontWeight:'bold' , color:'#111E56'}}>Upcoming Itinerary Bookings</Typography>
-            {upcomingItineraryBookings.length > 0 && (
-                upcomingItineraryBookings.length === 1 ? (
-                    // Render only the single booking without carousel
-                    <div style={{height:'80%', width: '600px'}} key={upcomingItineraryBookings[0]._id}>{renderItineraryCard(upcomingItineraryBookings[0])}</div>
-                ) : (
-                    <Carousel
-                        responsive={carouselResponsiveSettings}
-                        infinite={true}
-                        showDots={true}
-                        arrows={true}
-                        swipeable={true}
-                        draggable={true}
-                        autoPlay={true}
-                        autoPlaySpeed={3000}
-                        centerMode={true}
-                        containerClass="carousel-container"
-                    >
-                        {upcomingItineraryBookings.map((booking) => (
-                            <div key={booking._id}>{renderItineraryCard(booking)}</div>
-                        ))}
-                    </Carousel>
-                )
+                    {/* Upcoming Itinerary Carousel */}
+                    <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 'bold', color: '#111E56' }}>
+                        Upcoming Itinerary Bookings
+                    </Typography>
+                    {upcomingItineraryBookings.length > 0 ? (
+                        upcomingItineraryBookings.length === 1 ? (
+                            // Render only the single booking without carousel
+                            <div style={{ height: '80%', width: '600px' }} key={upcomingItineraryBookings[0]._id}>
+                                {renderItineraryCard(upcomingItineraryBookings[0])}
+                            </div>
+                        ) : (
+                            <Carousel
+                                responsive={carouselResponsiveSettings}
+                                infinite={true}
+                                showDots={true}
+                                arrows={true}
+                                swipeable={true}
+                                draggable={true}
+                                autoPlay={true}
+                                autoPlaySpeed={3000}
+                                centerMode={true}
+                                containerClass="carousel-container"
+                            >
+                                {upcomingItineraryBookings.map((booking) => (
+                                    <div key={booking._id}>{renderItineraryCard(booking)}</div>
+                                ))}
+                            </Carousel>
+                        )
+                    ) : (
+                        <Typography>No upcoming itinerary bookings available.</Typography>
+                    )}
+                </>
             )}
-            {upcomingItineraryBookings.length === 0 && <Typography>No upcoming itinerary bookings available.</Typography>}
         </Box>
     );
-    
-    
-};
-
+};    
 export default ViewBookings;
