@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useCallback } from 'react';
 import axios from 'axios';
 import {
     Box,
@@ -30,11 +30,15 @@ const Complaints = () => {
     const [alertOpen, setAlertOpen] = useState(false);
     const [loading, setLoading] = useState(false); // Added loading state
 
-    useEffect(() => {
-        fetchComplaints();
-    }, [ fetchComplaints]);
-
-    const fetchComplaints = async () => {
+    // Memoize showAlert to prevent it from being re-created on every render
+    const showAlert = useCallback((message, severity) => {
+        setAlertMessage(message);
+        setAlertSeverity(severity);
+        setAlertOpen(true);
+    }, []); // No dependencies, so it won't change on subsequent renders
+    
+    // Memoize fetchComplaints
+    const fetchComplaints = useCallback(async () => {
         setLoading(true); // Set loading to true when fetching starts
         const token = localStorage.getItem('token');
         try {
@@ -45,17 +49,16 @@ const Complaints = () => {
             });
             setComplaints(response.data);
         } catch (error) {
-            showAlert('Error fetching complaints.', 'error');
+            showAlert('Error fetching complaints.', 'error'); // Uses the memoized showAlert
         } finally {
             setLoading(false); // Set loading to false when fetching ends
         }
-    };
-
-    const showAlert = (message, severity) => {
-        setAlertMessage(message);
-        setAlertSeverity(severity);
-        setAlertOpen(true);
-    };
+    }, [showAlert]); // showAlert is now stable, so this dependency is safe
+    
+    useEffect(() => {
+        fetchComplaints();
+    }, [fetchComplaints]); // fetchComplaints is stable due to useCallback
+    
 
     const handleComplaintClick = (complaint) => {
         setSelectedComplaint(complaint);
@@ -102,7 +105,7 @@ const Complaints = () => {
 
     return (
         <Box sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
                 Complaints
             </Typography>
 
@@ -179,7 +182,7 @@ const Complaints = () => {
                             }}
                         >
                             <CardContent>
-                                <Typography variant="h6">{complaint.title}</Typography>
+                                <Typography variant="h6" sx={{fontWeight:'bold' , color:'#111E56'}}>{complaint.title}</Typography>
                                 <Button
                                     variant="contained"
                                     color={complaint.status === 'Pending' ? 'primary' : 'success'}

@@ -392,7 +392,7 @@ const TouristDashboard = () => {
             case 'MyPoints':
                 return <MyPoints />;
             case 'wishlist':
-                return <Wishlist />
+                return <Wishlist incrementCartCount={incrementCartCount}  updateWishlistCount={updateWishlistCount}/>
             case 'SavedEvents':
                 return <SavedEvents />
             default:

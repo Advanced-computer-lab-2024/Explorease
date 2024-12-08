@@ -119,7 +119,7 @@ export default function PurchasedProduct() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
+        <CircularProgress sx={{color:'#111E56'}} />
       </Box>
     );
   }

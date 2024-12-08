@@ -13,6 +13,7 @@ import {
     InputLabel,
     IconButton,
     Grid,
+    CircularProgress
 } from '@mui/material';
 import { CurrencyContext } from './CurrencyContext';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -29,6 +30,7 @@ const Products = ( { updateWishlistCount , incrementCartCount}) => {
     const [wishlistItems, setWishlistItems] = useState([]);
     const [wishlistMessage, setWishlistMessage] = useState('');
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
+    const [loading, setLoading] = useState(true);
 
     const fetchAllProducts = async () => {
         try {
@@ -42,7 +44,9 @@ const Products = ( { updateWishlistCount , incrementCartCount}) => {
         } catch (error) {
             setProductMessage('Error fetching products');
             console.error('Error fetching products:', error);
-        }
+        }finally {
+          setLoading(false); // End loading after all fetches are done
+      }
     };
 
  // Memoize the fetchWishlist function
@@ -458,9 +462,17 @@ useEffect(() => {
                 {productMessage && <Typography color="error">{productMessage}</Typography>}
             </form>
 
+            {/* Display CircularProgress when loading */}
+        {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                <CircularProgress sx={{ color: '#111E56' }} />
+            </Box>
+        ) : (
+
             <Box display="flex" flexWrap="wrap" justifyContent="center" sx={{ gap: 3 }}>
                 {renderProductCards()}
             </Box>
+        )}
         </Box>
     );
 };

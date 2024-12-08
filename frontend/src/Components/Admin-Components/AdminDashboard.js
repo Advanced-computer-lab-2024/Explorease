@@ -492,7 +492,7 @@ const handleTagChange = (id, newName) => {
         borderRadius: '35px',
         transition: 'left 0.3s ease, background-color 0.3s ease',
         '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.1)', // Transparent gray
+            backgroundColor: '#e0e0e0',
             color: '#111E56',
         },
         zIndex: 1000,
@@ -939,6 +939,7 @@ const handleTagChange = (id, newName) => {
                     border: '2px solid #111E56',
                     '&:hover': {
                         backgroundColor: 'white',
+                        
                         color: '#111E56',
 
                         border: '2px solid #111E56',

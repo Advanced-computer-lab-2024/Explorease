@@ -12,7 +12,9 @@ import {
     Avatar,
     CircularProgress,
     Tooltip,
+
 } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GuestNavbar from '../MainPage-Components/GuestNavbar';
@@ -29,7 +31,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import heroBackground from '../../Misc/heroBackground.jpg';
 
 import {
-    AccountCircle,     // For Profile
     LocationOn,        // For View Historical Places
     AddLocation,       // For Create Historical Places            
   } from '@mui/icons-material';
@@ -334,39 +335,22 @@ const TouristGovernorDashboard = () => {
                               justifyContent: 'center',
                               padding: '8px'
                           }}>
-                              <IconButton
-                                  color="primary"
-                                  onClick={() => setEditingPlaceId(place._id)}
-                                  sx={{
-                                      backgroundColor: '#111E56',
-                                      color: 'white',
-                                      borderRadius: '50%',
-                                      border: '2px solid #111E56',
-                                      '&:hover': {
-                                          backgroundColor: 'white',
-                                          color: '#111E56',
-                                          border: '2px solid #111E56',
-                                      },
-                                  }}
-                              >
-                                  <EditIcon />
-                              </IconButton>
-                              <IconButton
-                                  color="error"
-                                  onClick={() => handleDelete(place._id)}
-                                  sx={{
-                                      backgroundColor: '#FF5A5A',
-                                      color: 'white',
-                                      borderRadius: '50%',
-                                      '&:hover': {
-                                          backgroundColor: 'white',
-                                          color: '#FF5A5A',
-                                          border: '1px solid #FF5A5A',
-                                      },
-                                  }}
-                              >
-                                  <DeleteIcon />
-                              </IconButton>
+                                <Tooltip title="Edit">
+                                        <IconButton 
+                                            color="primary"
+                                            onClick={() => setEditingPlaceId(place._id)}
+                                        >
+                                            <EditIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Delete">
+                                        <IconButton
+                                            color="error"
+                                            onClick={() => handleDelete(place._id)}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Tooltip>
                           </Box>
                       </Card>
                     ))}

@@ -101,7 +101,7 @@ export default function DeleteRequests() {
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', mt: 6, p: 4, boxShadow: 3, borderRadius: 2 }}>
-      <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>
+      <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold' , color:'#111E56' }}>
         User Delete Requests
       </Typography>
       {message && (
@@ -135,7 +135,7 @@ export default function DeleteRequests() {
               }}
             >
               <CardContent>
-                <Typography variant="h6" gutterBottom>{request.username}</Typography>
+                <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>{request.username}</Typography>
                 <Typography variant="body2" gutterBottom>{request.email}</Typography>
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   User Type: {request.userType.charAt(0).toUpperCase() + request.userType.slice(1)}
@@ -146,11 +146,11 @@ export default function DeleteRequests() {
                     sx={{
                       backgroundColor: '#f44336',
                                 color: 'white',
-                                border: '1px solid #f44336',
+                                border: '2px solid #f44336',
                                 '&:hover': {
                                     backgroundColor: 'white',
                                     color: '#f44336',
-                                    border: '1px solid #f44336',
+                                    border: '2px solid #f44336',
                                 },
                     }}
                     onClick={() => handleDeleteRequest(request._id, request.userType)}
