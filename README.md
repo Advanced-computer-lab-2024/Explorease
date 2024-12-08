@@ -75,12 +75,12 @@ The Base address for the API is : http://localhost:3000
  The provided list is of all the API routes:
 -  POST /admin/createMainAdmin
 -  POST /admin/add
-- ** POST /admin/login 
-- ** GET /admin/all
-- ** POST /admin/addGovernor
-- ** DELETE /admin/delete/:id
-- ** POST /admin/createTags
-- ** PUT /admin/updateTag/:id
+-  POST /admin/login 
+-  GET /admin/all
+-  POST /admin/addGovernor
+-  DELETE /admin/delete/:id
+-  POST /admin/createTags
+- PUT /admin/updateTag/:id
 - ** GET /admin/getTags
 - ** DELETE /admin/deleteTag/:id
 - ** POST /admin/createPromoCode
