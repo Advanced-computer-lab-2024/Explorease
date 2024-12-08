@@ -71,8 +71,9 @@ We are actively working to address these issues in future updates.
 
 
 ## API Refrences:
-The Base address for the API is : http://localhost:3000
+The Base address for the API is : http://localhost:3000  
 The provided list is of all the API routes:
+ADMIN API Routes:
 -  POST /admin/createMainAdmin
 -  POST /admin/add
 -  POST /admin/login 
@@ -127,6 +128,27 @@ The provided list is of all the API routes:
 -  GET /admin/notifications
 -  PUT /admin/notifications/:id
 -  DELETE /admin/notifications/:id
+
+ADVERTISER API Routes:
+- GET /advertiser/myProfile
+- PUT /advertiser/updateProfile
+- DELETE /advertiser/deleteProfile
+- PUT /advertiser/editPassword
+- PUT /advertiser/deleteRequest
+- POST /advertiser/createActivity
+- GET /advertiser/getMyActivities
+- GET /advertiser/filter-sort-search
+- DELETE /advertiser/deleteActivity/:id
+- DELETE /advertiser/deleteActivity2/:id
+- PUT /advertiser/updateActivity/:id
+- POST /advertiser/upload-photo
+- POST /advertiser/notifications
+- GET /advertiser/notifications
+- PUT /advertiser/notifications/:id
+- DELETE /advertiser/notifications/:id
+- GET /advertiser/salesReport
+- GET /advertiser/salesReport/filter
+- GET /advertiser/activity-summary
 
 
 ## Tests:
