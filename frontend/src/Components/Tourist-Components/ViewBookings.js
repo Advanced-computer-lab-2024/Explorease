@@ -69,6 +69,7 @@ const ViewBookings = () => {
             setLoading(false); // End loading after all fetches are done
         }
     };
+    
 
     const handleCancelActivityBooking = async (bookingId) => {
         try {

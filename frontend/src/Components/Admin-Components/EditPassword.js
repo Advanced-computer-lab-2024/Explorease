@@ -54,8 +54,14 @@ const EditMyPassword = () => {
     };
 
     return (
-        <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4, p: 3, boxShadow: 2, borderRadius: 2 }}>
-            <Typography variant="h5" gutterBottom>
+        <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4, p: 3 }}>
+            <Typography    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}>
                 Edit My Password
             </Typography>
             {message && (

@@ -95,8 +95,14 @@ const CreateAdminForm = () => {
     };
 
     return (
-        <Box sx={{ maxWidth: 500, mx: 'auto', mt: 2, p: 3, boxShadow: 2, borderRadius: 2 }}>
-            <Typography variant="h5" gutterBottom>
+        <Box sx={{ maxWidth: 500, mx: 'auto', mt: 2, p: 3}}>
+            <Typography    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                        marginBottom: '15px',
+                    }}>
                 Create New Admin
             </Typography>
             {message && (
@@ -137,6 +143,7 @@ const CreateAdminForm = () => {
                 <Button type="submit" variant="contained" color="primary" fullWidth sx={{ backgroundColor: '#111E56', 
                             color: 'white', 
                             border: '2px solid #111E56',
+                            marginBottom:'15px',
                             '&:hover': { 
                                 backgroundColor: 'white', 
                                 color: '#111E56',
@@ -146,7 +153,14 @@ const CreateAdminForm = () => {
                 </Button>
             </form>
 
-            <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
+            <Typography    variant="h5"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: '#111E56',
+                       marginBottom: '15px',
+                        marginTop:'15px',
+                    }}>
                 Manage Admins
             </Typography>
             <Divider />
