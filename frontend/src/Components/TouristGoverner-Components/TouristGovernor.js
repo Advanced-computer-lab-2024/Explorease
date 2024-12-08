@@ -12,7 +12,9 @@ import {
     Avatar,
     CircularProgress,
     Tooltip,
+
 } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GuestNavbar from '../MainPage-Components/GuestNavbar';
@@ -29,7 +31,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import heroBackground from '../../Misc/heroBackground.jpg';
 
 import {
-    AccountCircle,     // For Profile
     LocationOn,        // For View Historical Places
     AddLocation,       // For Create Historical Places            
   } from '@mui/icons-material';
