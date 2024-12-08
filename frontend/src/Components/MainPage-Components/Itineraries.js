@@ -37,6 +37,7 @@ const Itineraries = () => {
   const [accessibility, setAccessibility] = useState('');
   const [tag, setTag] = useState('');
 
+  
   useEffect(() => {
     fetchItineraries();
   }, []);

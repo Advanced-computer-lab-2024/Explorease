@@ -20,6 +20,7 @@ import backgroundImage from '../../Misc/bg.jpg'; // Adjust the path based on you
 import GuestNavBarforGuest from '../MainPage-Components/GuestNavBarforGuest';
 import logo2 from '../../Misc/image.png';
 
+
 const MultiRoleRegister = () => {
     const [formData, setFormData] = useState({
         username: '',

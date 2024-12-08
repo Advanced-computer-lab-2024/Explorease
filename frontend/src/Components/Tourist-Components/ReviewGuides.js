@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useCallback} from 'react';
 import axios from 'axios';
 import { Box, Typography, Card, CardContent, Button, TextField, Avatar } from '@mui/material';
 import { Rating } from '@mui/material';
+
 
 const ReviewGuides = () => {
     const [guides, setGuides] = useState([]);
@@ -12,61 +13,116 @@ const ReviewGuides = () => {
 
     const token = localStorage.getItem('token');
 
+// Memoize fetchReviewsForGuide function
+const fetchReviewsForGuide = useCallback(async (guideId) => {
+    try {
+        const response = await axios.get(`/tourists/getTGRev/${guideId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        console.log(`Fetched reviews for guide ${guideId}:`, response.data); // Log to check data structure
+        setReviews(prev => ({ ...prev, [guideId]: response.data }));
+    } catch (error) {
+        console.error(`Error fetching reviews for guide ${guideId}:`, error);
+    }
+}, [token]); // Add token as a dependency
+
+// Memoize fetchGuides to ensure it does not change unnecessarily
+const fetchGuides = useCallback(async () => {
+    try {
+        const response = await axios.get('/tourists/itineraries/bookings', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const guideIds = new Set(
+            response.data
+                .filter(booking => booking.Status !== 'Cancelled' && new Date(booking.Itinerary.AvailableDates[0]) < new Date())
+                .map(booking => booking.Itinerary.createdBy)
+        );
+
+        const guideDetailsPromises = Array.from(guideIds).map(async (guideId) => {
+            try {
+                const guideResponse = await axios.get(`/tourists/get-my-guides/${guideId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                const guide = guideResponse.data.tourguide;
+                await fetchReviewsForGuide(guideId);
+                return guide;
+            } catch (error) {
+                console.error(`Error fetching guide with ID ${guideId}:`, error);
+                return null;
+            }
+        });
+
+        const guidesData = await Promise.all(guideDetailsPromises);
+        setGuides(guidesData.filter(guide => guide !== null));
+
+        if (guidesData.length === 0) {
+            setErrorMessage('No tour guides available for review.');
+        }
+    } catch (error) {
+        setErrorMessage(error.response?.status === 404 ? 'No Itinerary Bookings Found' : 'Error loading guides for review.');
+        console.error('Error fetching guides:', error);
+    }
+}, [token, fetchReviewsForGuide]); // Add fetchReviewsForGuide as a dependency
+
     useEffect(() => {
         fetchGuides();
-    }, []);
+    }, [fetchGuides]); // Use memoized fetchGuides as a dependency
 
-    const fetchGuides = async () => {
-        try {
-            const response = await axios.get('/tourists/itineraries/bookings', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
 
-            const guideIds = new Set(
-                response.data
-                    .filter(booking => booking.Status !== 'Cancelled' && new Date(booking.Itinerary.AvailableDates[0]) < new Date())
-                    .map(booking => booking.Itinerary.createdBy)
-            );
+    // const fetchGuides = async () => {
+    //     try {
+    //         const response = await axios.get('/tourists/itineraries/bookings', {
+    //             headers: { Authorization: `Bearer ${token}` }
+    //         });
 
-            const guideDetailsPromises = Array.from(guideIds).map(async (guideId) => {
-                try {
-                    const guideResponse = await axios.get(`/tourists/get-my-guides/${guideId}`, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
+    //         const guideIds = new Set(
+    //             response.data
+    //                 .filter(booking => booking.Status !== 'Cancelled' && new Date(booking.Itinerary.AvailableDates[0]) < new Date())
+    //                 .map(booking => booking.Itinerary.createdBy)
+    //         );
+
+    //         const guideDetailsPromises = Array.from(guideIds).map(async (guideId) => {
+    //             try {
+    //                 const guideResponse = await axios.get(`/tourists/get-my-guides/${guideId}`, {
+    //                     headers: { Authorization: `Bearer ${token}` }
+    //                 });
                     
-                    const guide = guideResponse.data.tourguide;
-                    await fetchReviewsForGuide(guideId);
-                    return guide;
-                } catch (error) {
-                    console.error(`Error fetching guide with ID ${guideId}:`, error);
-                    return null;
-                }
-            });
+    //                 const guide = guideResponse.data.tourguide;
+    //                 await fetchReviewsForGuide(guideId);
+    //                 return guide;
+    //             } catch (error) {
+    //                 console.error(`Error fetching guide with ID ${guideId}:`, error);
+    //                 return null;
+    //             }
+    //         });
 
-            const guidesData = await Promise.all(guideDetailsPromises);
-            setGuides(guidesData.filter(guide => guide !== null));
+    //         const guidesData = await Promise.all(guideDetailsPromises);
+    //         setGuides(guidesData.filter(guide => guide !== null));
 
-            if (guidesData.length === 0) {
-                setErrorMessage('No tour guides available for review.');
-            }
-        } catch (error) {
-            setErrorMessage(error.response?.status === 404 ? 'No Itinerary Bookings Found' : 'Error loading guides for review.');
-            console.error('Error fetching guides:', error);
-        }
-    };
+    //         if (guidesData.length === 0) {
+    //             setErrorMessage('No tour guides available for review.');
+    //         }
+    //     } catch (error) {
+    //         setErrorMessage(error.response?.status === 404 ? 'No Itinerary Bookings Found' : 'Error loading guides for review.');
+    //         console.error('Error fetching guides:', error);
+    //     }
+    // };
 
-    const fetchReviewsForGuide = async (guideId) => {
-        try {
-            const response = await axios.get(`/tourists/getTGRev/${guideId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+    // const fetchReviewsForGuide = async (guideId) => {
+    //     try {
+    //         const response = await axios.get(`/tourists/getTGRev/${guideId}`, {
+    //             headers: { Authorization: `Bearer ${token}` }
+    //         });
             
-            console.log(`Fetched reviews for guide ${guideId}:`, response.data); // Log to check data structure
-            setReviews(prev => ({ ...prev, [guideId]: response.data }));
-        } catch (error) {
-            console.error(`Error fetching reviews for guide ${guideId}:`, error);
-        }
-    };
+    //         console.log(`Fetched reviews for guide ${guideId}:`, response.data); // Log to check data structure
+    //         setReviews(prev => ({ ...prev, [guideId]: response.data }));
+    //     } catch (error) {
+    //         console.error(`Error fetching reviews for guide ${guideId}:`, error);
+    //     }
+    // };
 
     const handleRatingChange = (guideId, value) => {
         setRatings(prev => ({ ...prev, [guideId]: value }));

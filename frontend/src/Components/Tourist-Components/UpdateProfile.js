@@ -149,6 +149,7 @@ const UpdateProfile = ({ profile, setProfile }) => {
                     margin="normal"
                     required
                 />
+                
                 <TextField
                     label="Email"
                     name="email"

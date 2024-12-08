@@ -19,6 +19,7 @@ import {
     Stack,
     Container,
 } from '@mui/material';
+
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
 import GuestNavBarforGuest from './GuestNavBarforGuest'; // Replace with the actual path to your navbar file
 import backgroundImage from '../../Misc/bg.jpg'; // Adjust the path based on your project structure
@@ -112,7 +113,7 @@ const Login = () => {
         setIsSendingOtp(true);
         setForgotPasswordError('');
         try {
-            const response = await axios.post('/send-otp', { email: forgotPasswordEmail });
+            await axios.post('/send-otp', { email: forgotPasswordEmail });
             setOtpMessage('OTP sent successfully! Please check your email for the code.');
             setOpenForgotPassword(false);
             setShowVerifyOtp(true);
@@ -155,7 +156,7 @@ const Login = () => {
     const handleVerifyOtp = async () => {
         setOtpError('');
         try {
-            const response = await axios.post('/verify-otp', { email: forgotPasswordEmail, otp });
+            await axios.post('/verify-otp', { email: forgotPasswordEmail, otp });
             setShowVerifyOtp(false);
             setShowResetPassword(true);
         } catch (error) {
@@ -172,7 +173,7 @@ const Login = () => {
 
         setResetPasswordError('');
         try {
-            const response = await axios.post('/reset-password', {
+            await axios.post('/reset-password', {
                 email: forgotPasswordEmail,
                 newPassword,
                 confirmPassword,

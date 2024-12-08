@@ -9,6 +9,7 @@ const Payment = () => {
     const [price, setPrice] = useState(0);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    
 
     useEffect(() => {
         const fetchTourist = async () => {

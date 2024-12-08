@@ -20,6 +20,7 @@ const SalesReport = () => {
     const [error, setError] = useState('');
     const [filters, setFilters] = useState({ productName: '', startDate: '', endDate: '' });
 
+    
     useEffect(() => {
         const fetchSalesReport = async () => {
             try {

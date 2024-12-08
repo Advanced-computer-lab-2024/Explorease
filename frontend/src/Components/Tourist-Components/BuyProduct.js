@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext , useCallback} from 'react';
 import axios from 'axios';
 import {
     Box,
     Card,
-    CardContent,
     CardMedia,
     Typography,
     TextField,
@@ -13,8 +12,7 @@ import {
     FormControl,
     InputLabel,
     IconButton,
-    Grid
-    
+    Grid,
 } from '@mui/material';
 import { CurrencyContext } from './CurrencyContext';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -47,33 +45,31 @@ const Products = ( { updateWishlistCount , incrementCartCount}) => {
         }
     };
 
-    const fetchWishlist = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('/tourists/wishlist', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-    
-            console.log('Wishlist response:', response.data); // Debugging response
-    
-            // Assuming `response.data.wishlist.products` is an array of product objects
-            const productIds = response.data.wishlist.products.map((item) => item._id); // Extract product IDs
-            setWishlistItems(productIds); // Update the state with only IDs
-            updateWishlistCount(productIds.length); // Update the count in the parent component
-        } catch (error) {
-            setWishlistMessage('Error fetching wishlist items');
-            console.error('Error fetching wishlist items:', error);
-        }
-    };
-    
-    
-    
+ // Memoize the fetchWishlist function
+ const fetchWishlist = useCallback(async () => {
+  try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/tourists/wishlist', {
+          headers: { Authorization: `Bearer ${token}` },
+      });
 
-    useEffect(() => {
-        fetchAllProducts();
-        fetchWishlist();
+      console.log('Wishlist response:', response.data);
 
-    }, []);
+      // Extract product IDs from the wishlist
+      const productIds = response.data.wishlist.products.map((item) => item._id);
+      setWishlistItems(productIds); // Update the state with only IDs
+      updateWishlistCount(productIds.length); // Update the count in the parent component
+  } catch (error) {
+      setWishlistMessage('Error fetching wishlist items');
+      console.error('Error fetching wishlist items:', error);
+  }
+}, [updateWishlistCount]);
+
+// Fetch all products and wishlist items on component mount
+useEffect(() => {
+  fetchAllProducts();
+  fetchWishlist();
+}, [fetchWishlist]); // Add fetchWishlist to the dependency array
 
     const convertToUSD = (price) => {
         return (price / (exchangeRates[selectedCurrency] || 1)).toFixed(2);
@@ -113,7 +109,7 @@ const Products = ( { updateWishlistCount , incrementCartCount}) => {
     const addToCart = async (productId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('/tourists/cart/add', { productId, quantity: 1 }, {
+            await axios.post('/tourists/cart/add', { productId, quantity: 1 }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -127,20 +123,20 @@ const Products = ( { updateWishlistCount , incrementCartCount}) => {
         }
     };
 
-    const addToWishlist = async (productId) => {
-        try {
-            const token = localStorage.getItem('token');
-            await axios.post('/tourists/wishlist/add', { productId }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setProductMessage('Product added to wishlist!');
-        } catch (error) {
-            setProductMessage('Error adding product to wishlist');
-            console.error('Error adding product to wishlist:', error);
-        }
-    };
+    // const addToWishlist = async (productId) => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         await axios.post('/tourists/wishlist/add', { productId }, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
+    //         setProductMessage('Product added to wishlist!');
+    //     } catch (error) {
+    //         setProductMessage('Error adding product to wishlist');
+    //         console.error('Error adding product to wishlist:', error);
+    //     }
+    // };
 
     const toggleWishlist = async (productId) => {
         try {

@@ -104,8 +104,6 @@ const handleSearch = async (e) => {
     window.location.href = mailtoLink;
   };
 
-  const sharedWidth = { xs: '100%', sm: 'calc(100% - 200px)' };
-
   return (
     <Box>
       <Box sx={{ p: 4 }}>
@@ -375,6 +373,7 @@ const handleSearch = async (e) => {
             }}
           >
             <iframe
+              title='activity-location'
               width="100%"
               height="100%"
               frameBorder="0"

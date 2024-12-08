@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography} from '@mui/material';
 import Navbar from './GuestNavbar';
 
 const SingleItinerary = () => {

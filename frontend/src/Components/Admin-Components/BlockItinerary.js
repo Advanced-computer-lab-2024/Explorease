@@ -10,6 +10,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 
+
 const ManageContent = () => {
   const [itineraries, setItineraries] = useState([]);
   const [activities, setActivities] = useState([]);

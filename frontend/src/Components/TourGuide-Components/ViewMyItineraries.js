@@ -4,7 +4,6 @@ import {
     Typography,
     Card,
     CardContent,
-    Button,
     Alert,
     IconButton,
     Tooltip,
@@ -228,6 +227,7 @@ const ViewMyItineraries = () => {
             )}
         </Box>
     );
+
 };
 
 export default ViewMyItineraries;

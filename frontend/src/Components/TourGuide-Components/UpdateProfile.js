@@ -1,5 +1,5 @@
 // components/UpdateProfile.js
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import axios from 'axios';
 import { TextField, Button, Typography, Box, CircularProgress, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -117,6 +117,7 @@ const UpdateProfile = ({ profile, setProfile }) => {
                     fullWidth
                     margin="normal"
                 />
+
                 <Button
                     type="submit"
                     variant="contained"

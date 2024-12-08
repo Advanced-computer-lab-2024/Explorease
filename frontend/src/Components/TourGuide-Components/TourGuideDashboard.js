@@ -3,21 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Box, 
     Typography, 
-    Drawer, 
+
     IconButton ,
      Button ,
      Avatar,
       CircularProgress,
-      Card,
-    CardContent,  
-    CardMedia, 
     Alert,
     List, 
-    ListItem, 
-    ListItemButton, 
-    ListItemText,  } from '@mui/material';
+  } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import MenuIcon from '@mui/icons-material/Menu';
 import TouristNavbar from '../MainPage-Components/GuestNavbar';
 import UpdateProfile from './UpdateProfile';
 import AddPhoto from './AddPhoto';
@@ -35,13 +29,11 @@ import Tooltip from '@mui/material/Tooltip';
 import {
     AccountCircle,
     AddLocation,
-    Edit,
     Description,
     PictureAsPdf,
     InsertChart,
   } from '@mui/icons-material';
 
-import HomePage from './HomePageTourGuide'
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Divider from '@mui/material/Divider';
@@ -55,7 +47,6 @@ const TourGuideDashboard = () => {
     const [profilee , setProfilee] = useState({});
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('home');
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar visibility state
@@ -133,37 +124,108 @@ const TourGuideDashboard = () => {
     const renderContent = () => {
         switch (activeComponent) {
             case 'home':
-                return ( <Box
-                sx={{
-                  height: '90vh', // Full viewport height
-                  objectFit: 'cover',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                  padding: 2,
-                  boxSizing: 'border-box',
-                  borderRadius: '8px', // Optional: rounded corners for the container
-                  
-                }}
-              >
-                <Typography
-                  variant="h2"
+                return ( 
+                  <Box
                   sx={{
-                    color: 'white', // Text color
-                    fontWeight: 'bold',
-                    letterSpacing: '2px',
-                    fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, // Responsive font size
-                    textTransform: 'uppercase', // Uppercase text for emphasis
-                    lineHeight: '1.2',
-                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Subtle text shadow for contrast
-                    padding: '10px 20px',
+                    height: '90vh',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    padding: 2,
+                    boxSizing: 'border-box',
+                    borderRadius: '8px',
+                    overflow: 'hidden', // Prevent content overflow during animation
+                    flexDirection: 'column', // Stack the text vertically
                   }}
                 >
-                  Welcome, {profile.username || 'User'}!
-                </Typography>
+                  {/* Welcome Text */}
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                      textTransform: 'uppercase',
+                      lineHeight: '1.2',
+                      padding: '10px 20px',
+                      position: 'relative',
+                      animation: 'gradientShift 12s ease infinite, slideInFromLeft 1.5s ease-out',
+                      background: 'linear-gradient(90deg, white, #111E56)',
+                      backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                      WebkitBackgroundClip: 'text',
+                      color: 'transparent',
+                      textShadow: `
+                        
+                        3px 3px 6px rgba(0, 0, 0, 0.3)
+                      `, // Subtle shadow effect outside of the text
+                    }}
+                  >
+                    Welcome to your dashboard
+                  </Typography>
                 
-              </Box>
+                  {/* Advertiser Name */}
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                      textTransform: 'uppercase',
+                      lineHeight: '1.2',
+                      padding: '10px 20px',
+                      position: 'relative',
+                      animation: 'gradientShift 12s ease infinite, slideInFromRight 1.5s ease-out',
+                      background: 'linear-gradient(90deg, white, #111E56)',
+                      backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                      WebkitBackgroundClip: 'text',
+                      color: 'transparent',
+                      textShadow: `
+                        
+                        3px 3px 6px rgba(0, 0, 0, 0.3)
+                      `, // Subtle shadow effect outside of the text
+                    }}
+                  >
+                    {profile.username || 'User'}
+                  </Typography>
+                
+                  {/* Keyframe Animations */}
+                  <style>
+                    {`
+                      @keyframes slideInFromLeft {
+                        0% {
+                          transform: translateX(-100%);
+                          opacity: 0;
+                        }
+                        100% {
+                          transform: translateX(0);
+                          opacity: 1;
+                        }
+                      }
+                      @keyframes slideInFromRight {
+                        0% {
+                          transform: translateX(100%);
+                          opacity: 0;
+                        }
+                        100% {
+                          transform: translateX(0);
+                          opacity: 1;
+                        }
+                      }
+                      @keyframes gradientShift {
+                        0% {
+                          background-position: 0% 50%;
+                        }
+                        50% {
+                          background-position: 100% 50%;
+                        }
+                        100% {
+                          background-position: 0% 50%;
+                        }
+                      }
+                    `}
+                  </style>
+                </Box>
+                                        
+                
             );
             case 'profile':
                 return (

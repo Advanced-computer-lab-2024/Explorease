@@ -4,15 +4,10 @@ import {
     Box,
     Typography,
     Button,
-    List,
-    ListItem,
-    ListItemText,
     Divider,
     Card,
     CardContent,
-    CardMedia, 
-    IconButton,
-    ListItemButton, 
+    IconButton, 
     Alert,
     Avatar,
     CircularProgress,
@@ -20,12 +15,10 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MenuIcon from '@mui/icons-material/Menu';
 import GuestNavbar from '../MainPage-Components/GuestNavbar';
 import CreateHistoricalPlace from './CreateHistoricalPlace';
 import UpdateTouristGovernorProfile from './UpdateTouristGovernor';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import ArrowBackIcon
-import updateProfile from './UpdateTouristGovernor';
 import logo2 from '../../Misc/logo.png';
 import { Container, Stack , Link} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -38,8 +31,7 @@ import heroBackground from '../../Misc/heroBackground.jpg';
 import {
     AccountCircle,     // For Profile
     LocationOn,        // For View Historical Places
-    AddLocation,       // For Create Historical Places
-    Edit,              // For Update Profile // For Back Navigation
+    AddLocation,       // For Create Historical Places            
   } from '@mui/icons-material';
 
 import GovernorActivity from '../MainPage-Components/CommonActivity';
@@ -388,37 +380,108 @@ const TouristGovernorDashboard = () => {
     const renderContent = () => {
         switch (activeComponent) {
           case 'home':
-            return (<Box
+            return (
+              <Box
               sx={{
-                height: '90vh', // Full viewport height
-                objectFit: 'cover',
+                height: '90vh',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 textAlign: 'center',
                 padding: 2,
                 boxSizing: 'border-box',
-                borderRadius: '8px', // Optional: rounded corners for the container
-               
+                borderRadius: '8px',
+                overflow: 'hidden', // Prevent content overflow during animation
+                flexDirection: 'column', // Stack the text vertically
               }}
             >
+              {/* Welcome Text */}
               <Typography
                 variant="h2"
                 sx={{
-                  color: 'white', // Text color
                   fontWeight: 'bold',
-                  letterSpacing: '2px',
-                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, // Responsive font size
-                  textTransform: 'uppercase', // Uppercase text for emphasis
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                  textTransform: 'uppercase',
                   lineHeight: '1.2',
-                  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Subtle text shadow for contrast
                   padding: '10px 20px',
+                  position: 'relative',
+                  animation: 'gradientShift 12s ease infinite, slideInFromLeft 1.5s ease-out',
+                  background: 'linear-gradient(90deg, white, #111E56)',
+                  backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  textShadow: `
+                    
+                    3px 3px 6px rgba(0, 0, 0, 0.3)
+                  `, // Subtle shadow effect outside of the text
                 }}
               >
-                Welcome, {profile.username || 'User'}!
+                Welcome to your dashboard
               </Typography>
-              
+            
+              {/* Advertiser Name */}
+              <Typography
+                variant="h2"
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                  textTransform: 'uppercase',
+                  lineHeight: '1.2',
+                  padding: '10px 20px',
+                  position: 'relative',
+                  animation: 'gradientShift 12s ease infinite, slideInFromRight 1.5s ease-out',
+                  background: 'linear-gradient(90deg, white, #111E56)',
+                  backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  textShadow: `
+                    
+                    3px 3px 6px rgba(0, 0, 0, 0.3)
+                  `, // Subtle shadow effect outside of the text
+                }}
+              >
+                {profile.username || 'User'}
+              </Typography>
+            
+              {/* Keyframe Animations */}
+              <style>
+                {`
+                  @keyframes slideInFromLeft {
+                    0% {
+                      transform: translateX(-100%);
+                      opacity: 0;
+                    }
+                    100% {
+                      transform: translateX(0);
+                      opacity: 1;
+                    }
+                  }
+                  @keyframes slideInFromRight {
+                    0% {
+                      transform: translateX(100%);
+                      opacity: 0;
+                    }
+                    100% {
+                      transform: translateX(0);
+                      opacity: 1;
+                    }
+                  }
+                  @keyframes gradientShift {
+                    0% {
+                      background-position: 0% 50%;
+                    }
+                    50% {
+                      background-position: 100% 50%;
+                    }
+                    100% {
+                      background-position: 0% 50%;
+                    }
+                  }
+                `}
+              </style>
             </Box>
+                                    
+            
           );
             case 'viewHistoricalPlaces':
                 return renderHistoricalPlaces();
@@ -564,7 +627,7 @@ const TouristGovernorDashboard = () => {
       }}
       onClick={() => handleSectionChange('profile')}
     >
-      <AccountCircle />
+      <AccountCircle sx={{marginLeft:'-5px'}} />
     </Button>
   </Tooltip>
     // <IconButton
@@ -618,7 +681,7 @@ const TouristGovernorDashboard = () => {
     {/* Settings Button */}
     <Tooltip title="Settings" arrow placement="right">
       <Button
-        startIcon={<SettingsIcon />} // Settings icon
+        startIcon={<SettingsIcon sx={{marginLeft:'5px'}} />} // Settings icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',
@@ -637,7 +700,7 @@ const TouristGovernorDashboard = () => {
     {/* Logout Button */}
     <Tooltip title="Logout" arrow placement="right">
       <Button
-        startIcon={<LogoutIcon />} // Logout icon
+        startIcon={<LogoutIcon sx={{marginLeft:'5px'}} />} // Logout icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',

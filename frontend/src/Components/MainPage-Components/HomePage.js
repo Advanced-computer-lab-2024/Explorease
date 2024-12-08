@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Box, Container, TextField, Stack } from '@mui/material';
 import TouristNavbar from './GuestNavBarforGuest'; // Ensure this file exists
@@ -6,7 +6,7 @@ import { Fade } from 'react-awesome-reveal';
 import { Link } from 'react-router-dom';
 import logo from '../../Misc/logo3.png'; 
 import logo2 from '../../Misc/image.png';
-import logo3 from '../../Misc/logo2.png';
+// import logo3 from '../../Misc/logo2.png';
 import waveGif from '../../Misc/wave_main.gif';
 import ActivitiesIcon from '@mui/icons-material/DirectionsWalk';
 import FlightsIcon from '@mui/icons-material/Flight';
@@ -27,6 +27,7 @@ const HomePage = () => {
     const handleRegister = () => {
         navigate('/register');
     };
+
 
     return (
         <div>

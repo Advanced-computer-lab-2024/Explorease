@@ -70,7 +70,7 @@ const AdminLogin = () => {
         setIsSendingOtp(true);
         setForgotPasswordError('');
         try {
-            const response = await axios.post('/admins/send-otp', { email: forgotPasswordEmail });
+            await axios.post('/admins/send-otp', { email: forgotPasswordEmail });
             setOtpMessage('OTP sent successfully! Please check your email for the code.');
             setOpenForgotPassword(false);
             setShowVerifyOtp(true);
@@ -88,7 +88,7 @@ const AdminLogin = () => {
     const handleVerifyOtp = async () => {
         setOtpError('');
         try {
-            const response = await axios.post('/admins/verify-otp', { email: forgotPasswordEmail, otp });
+            await axios.post('/admins/verify-otp', { email: forgotPasswordEmail, otp });
             setShowVerifyOtp(false);
             setShowResetPassword(true);
         } catch (error) {
@@ -105,7 +105,7 @@ const AdminLogin = () => {
 
         setResetPasswordError('');
         try {
-            const response = await axios.post('/admins/reset-password', {
+            await axios.post('/admins/reset-password', {
                 email: forgotPasswordEmail,
                 newPassword,
                 confirmPassword,

@@ -52,6 +52,7 @@ const UpdateProfile = ({ profile, setProfile, role = "seller" }) => {
         }
     };
 
+    
     const handlePasswordUpdate = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');

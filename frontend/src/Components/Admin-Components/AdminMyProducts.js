@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useCallback } from 'react';
 import axios from 'axios';
 import {
     Box,
     TextField,
     Button,
     Card,
-    CardContent,
     Typography,
     Select,
     MenuItem,
@@ -17,7 +16,7 @@ import {
     Grid,
 } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-import { Delete, Edit, Archive, Unarchive, Save, Cancel, Visibility } from '@mui/icons-material';
+import { Delete, Edit, Archive, Unarchive, Visibility } from '@mui/icons-material';
 
 const AdminMyProducts = () => {
     const [products, setProducts] = useState([]);
@@ -29,7 +28,7 @@ const AdminMyProducts = () => {
     const [editingProductId, setEditingProductId] = useState(null);
     const [updatedProductData, setUpdatedProductData] = useState({});
 
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get('/admins/adminproducts', {
@@ -40,20 +39,20 @@ const AdminMyProducts = () => {
         } catch (error) {
             if (products.length === 0) {
                 setProductMessage('No available products for this admin.');
-            }else{
+            } else {
                 setProductMessage('Error fetching products');
             }
-            
         }
-    };
+    }, [products.length]);  // Add 'products.length' as a dependency to handle the condition properly
 
     useEffect(() => {
         fetchProducts();
-    }, []);
+    }, [fetchProducts]);
 
-    const handleInputChange = (e, field) => {
-        setUpdatedProductData({ ...updatedProductData, [field]: e.target.value });
-    };
+
+    // const handleInputChange = (e, field) => {
+    //     setUpdatedProductData({ ...updatedProductData, [field]: e.target.value });
+    // };
 
     const handleEditProduct = (product) => {
         setEditingProductId(product._id);
@@ -104,9 +103,9 @@ const AdminMyProducts = () => {
         }
     };
 
-    const handleViewSales = (product) => {
-        setProductMessage(`Total Sales for ${product.Name}: ${product.Sales || 0}`);
-    };
+    // const handleViewSales = (product) => {
+    //     setProductMessage(`Total Sales for ${product.Name}: ${product.Sales || 0}`);
+    // };
 
     const handleSearch = async () => {
         const token = localStorage.getItem('token');

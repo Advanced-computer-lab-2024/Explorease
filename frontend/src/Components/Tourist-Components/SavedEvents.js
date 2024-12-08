@@ -10,22 +10,22 @@ import {
     Tooltip,
 } from '@mui/material';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
-import BookIcon from '@mui/icons-material/Book';
-import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+// import BookIcon from '@mui/icons-material/Book';
+// import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 
-const mapContainerStyle = {
-    width: '100%',
-    height: '150px',
-};
+// const mapContainerStyle = {
+//     width: '100%',
+//     height: '150px',
+// };
 
-const SavedEvents = ({handleSectionChange, }) => {
+const SavedEvents = () => {
     const [savedActivities, setSavedActivities] = useState([]);
     const [savedItineraries, setSavedItineraries] = useState([]);
     const [walletBalance, setWalletBalance] = useState(0);
     const [message, setMessage] = useState('');
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // Replace with your Google Maps API key
-    });
+    // const { isLoaded } = useLoadScript({
+    //     googleMapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // Replace with your Google Maps API key
+    // });
 
     const fetchSavedActivities = async () => {
         try {
@@ -86,23 +86,23 @@ const SavedEvents = ({handleSectionChange, }) => {
         }
     };
 
-    const handleBookActivity = async (activity) => {
-        if (walletBalance < activity.price) {
-            setMessage('Insufficient wallet balance!');
-            return;
-        }
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post(`/tourists/activities/book/${activity._id}`, {}, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setWalletBalance(response.data.walletBalance);
-            setMessage('Activity booked successfully!');
-        } catch (error) {
-            setMessage('Error booking activity');
-            console.error('Error booking activity:', error);
-        }
-    };
+    // const handleBookActivity = async (activity) => {
+    //     if (walletBalance < activity.price) {
+    //         setMessage('Insufficient wallet balance!');
+    //         return;
+    //     }
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         const response = await axios.post(`/tourists/activities/book/${activity._id}`, {}, {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //         });
+    //         setWalletBalance(response.data.walletBalance);
+    //         setMessage('Activity booked successfully!');
+    //     } catch (error) {
+    //         setMessage('Error booking activity');
+    //         console.error('Error booking activity:', error);
+    //     }
+    // };
 
     useEffect(() => {
         fetchSavedActivities();
@@ -140,6 +140,7 @@ const SavedEvents = ({handleSectionChange, }) => {
                                     <Typography
                                         variant="h6"
                                         sx={{
+
                                             color: '#111E56',
                                             fontWeight: 'bold',
                                             marginBottom: '10px',

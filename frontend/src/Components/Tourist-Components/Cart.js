@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext , useCallback } from 'react';
 import axios from 'axios';
 import {
     Box,
@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { CurrencyContext } from './CurrencyContext';
 
 const Cart = ({ handleSectionChange}) => {
@@ -22,21 +22,10 @@ const Cart = ({ handleSectionChange}) => {
     const [totalCost, setTotalCost] = useState(0);
     const [checkoutMessage, setCheckoutMessage] = useState('');
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchCartItems();
-        fetchWalletBalance();
-    }, []);
-
-    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
-
-
-    const convertPrice = (price) => {
-        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
-    };
-
-    const fetchCartItems = async () => {
+    // Memoize the fetchCartItems function using useCallback
+    const fetchCartItems = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get('/tourists/cart', {
@@ -48,7 +37,35 @@ const Cart = ({ handleSectionChange}) => {
             setCheckoutMessage('Error fetching cart items');
             console.error('Error fetching cart items:', error);
         }
+    }, []);
+
+    useEffect(() => {
+        fetchCartItems();
+        fetchWalletBalance();
+    }, [fetchCartItems]);
+
+    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
+
+
+    const convertPrice = (price) => {
+        return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
+
+       // No dependencies for fetchCartItems itself
+
+    // const fetchCartItems = async () => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         const response = await axios.get('/tourists/cart', {
+    //             headers: { Authorization: `Bearer ${token}` },
+    //         });
+    //         setCartItems(response.data.items || []);
+    //         calculateTotalCost(response.data.items || []);
+    //     } catch (error) {
+    //         setCheckoutMessage('Error fetching cart items');
+    //         console.error('Error fetching cart items:', error);
+    //     }
+    // };
 
     const fetchWalletBalance = async () => {
         try {

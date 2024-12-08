@@ -230,6 +230,7 @@ export default function PurchasedProduct() {
           {deliveredOrders.length > 0 ? renderOrders(deliveredOrders, true) : <Typography>No delivered orders.</Typography>}
         </Box>
 
+
         <Divider sx={{ my: 4 }} />
 
         <Box my={4}>

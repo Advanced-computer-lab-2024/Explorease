@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, Divider, Button, TextField, Rating } from '@mui/material';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Box, Typography, Card, CardContent, Button, TextField, Rating } from '@mui/material';
+// import { Alert, Snackbar } from '@mui/material';
+// import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -14,10 +15,27 @@ const ViewBookings = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [ratings, setRatings] = useState({});
     const [comments, setComments] = useState({});
+    // const [openSnackbar, setOpenSnackbar] = useState(false);
 
     useEffect(() => {
         fetchBookings();
     }, []); 
+
+//     // Simulate an error happening
+//   const triggerError = () => {
+//     try {
+//       // Simulating an error
+//       throw new Error('Something went wrong!');
+//     } catch (error) {
+//       setErrorMessage(error.message);  // Set the error message
+//       setOpenSnackbar(true);           // Open the snackbar with error message
+//     }
+//   };
+
+//   // Close the snackbar after showing the message
+//   const handleCloseSnackbar = () => {
+//     setOpenSnackbar(false);
+//   };
 
     const fetchBookings = async () => {
         try {
@@ -40,7 +58,7 @@ const ViewBookings = () => {
 
         } catch (error) {
             if (error.response && error.response.status === 404) {
-                //setErrorMessage('No Bookings Found');
+                setErrorMessage('No Bookings Found');
             } else {
                 console.error('Error fetching guides:', error);
                 setErrorMessage('Error loading guides for review.');
@@ -118,7 +136,6 @@ const ViewBookings = () => {
     
             console.log('Sending rating:', ratingValue);
             console.log('Endpoint:', endpoint);
-    
             const response = await axios.post(endpoint, { rating: ratingValue }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -543,6 +560,25 @@ const ViewBookings = () => {
             items: 1
         }
     };
+    //this code to test the snackbar functionality
+    // <div>
+    //   <button onClick={triggerError}>Trigger Error</button>
+
+    //   {/* Snackbar with Alert component */}
+    //   <Snackbar
+    //     open={openSnackbar}
+    //     autoHideDuration={6000}  // Automatically hide after 6 seconds
+    //     onClose={handleCloseSnackbar}
+    //   >
+    //     <Alert
+    //       onClose={handleCloseSnackbar}
+    //       severity="error"  // Use "error" severity for error messages
+    //       sx={{ width: '100%' }}
+    //     >
+    //       {errorMessage}
+    //     </Alert>
+    //   </Snackbar>
+    // </div>
     return (
         <Box>
             {/* Past Activity Carousel */}

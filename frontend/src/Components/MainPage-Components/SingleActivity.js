@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import Navbar from './GuestNavbar';
 
+
 const SingleActivity = () => {
   const { id } = useParams();
   const [activity, setActivity] = useState(null);

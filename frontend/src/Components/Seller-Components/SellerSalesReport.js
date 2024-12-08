@@ -27,6 +27,7 @@ const SellerSalesReport = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    
     useEffect(() => {
         // Fetch initial data (all sales report)
         const fetchInitialData = async () => {

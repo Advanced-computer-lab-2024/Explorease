@@ -32,7 +32,7 @@ const Complaints = () => {
 
     useEffect(() => {
         fetchComplaints();
-    }, []);
+    }, [ fetchComplaints]);
 
     const fetchComplaints = async () => {
         setLoading(true); // Set loading to true when fetching starts

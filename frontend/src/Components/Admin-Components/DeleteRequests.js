@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo , useCallback} from 'react';
 import axios from 'axios';
 import { Button, Typography, Box, Card, CardContent, Stack } from '@mui/material';
+
 
 export default function DeleteRequests() {
   const [deleteRequests, setDeleteRequests] = useState([]);
@@ -13,15 +14,7 @@ export default function DeleteRequests() {
     },
   }), [token]);
 
-  useEffect(() => {
-    if (token) {
-      fetchDeleteRequests();
-    } else {
-      setMessage('Authentication token is missing. Please log in.');
-    }
-  }, [token]);
-
-  const fetchDeleteRequests = async () => {
+  const fetchDeleteRequests = useCallback(async () => {
     try {
       const response = await axios.get('/admins/getRequesteddeleteUsers', axiosConfig);
       const allUsers = [
@@ -35,7 +28,40 @@ export default function DeleteRequests() {
       console.error('Error fetching delete requests:', error);
       setMessage(error.response?.data?.message || 'Failed to fetch delete requests');
     }
-  };
+  }, [axiosConfig]);  // Use axiosConfig as a dependency
+  
+  useEffect(() => {
+    if (token) {
+      fetchDeleteRequests();
+    } else {
+      setMessage('Authentication token is missing. Please log in.');
+    }
+  }, [token, fetchDeleteRequests]);  // Now safe to add fetchDeleteRequests
+  
+
+  // useEffect(() => {
+  //   if (token) {
+  //     fetchDeleteRequests();
+  //   } else {
+  //     setMessage('Authentication token is missing. Please log in.');
+  //   }
+  // }, [token]);
+
+  // const fetchDeleteRequests = async () => {
+  //   try {
+  //     const response = await axios.get('/admins/getRequesteddeleteUsers', axiosConfig);
+  //     const allUsers = [
+  //       ...response.data.sellers.map(user => ({ ...user, userType: 'seller' })),
+  //       ...response.data.advertisers.map(user => ({ ...user, userType: 'advertiser' })),
+  //       ...response.data.tourGuides.map(user => ({ ...user, userType: 'tourGuide' })),
+  //       ...response.data.tourists.map(user => ({ ...user, userType: 'tourist' }))
+  //     ];
+  //     setDeleteRequests(allUsers);
+  //   } catch (error) {
+  //     console.error('Error fetching delete requests:', error);
+  //     setMessage(error.response?.data?.message || 'Failed to fetch delete requests');
+  //   }
+  // };
 
   const handleDeleteRequest = async (userId, userType) => {
     try {

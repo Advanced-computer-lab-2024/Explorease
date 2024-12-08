@@ -122,37 +122,108 @@ const SellerDashboard = () => {
     const renderContent = () => {
         switch (activeComponent) {
           case 'home':
-            return (<Box
+            return (
+              <Box
               sx={{
-                height: '90vh', // Full viewport height
-                objectFit: 'cover',
+                height: '90vh',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 textAlign: 'center',
                 padding: 2,
                 boxSizing: 'border-box',
-                borderRadius: '8px', // Optional: rounded corners for the container
-               
+                borderRadius: '8px',
+                overflow: 'hidden', // Prevent content overflow during animation
+                flexDirection: 'column', // Stack the text vertically
               }}
             >
+              {/* Welcome Text */}
               <Typography
                 variant="h2"
                 sx={{
-                  color: 'white', // Text color
                   fontWeight: 'bold',
-                  letterSpacing: '2px',
-                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, // Responsive font size
-                  textTransform: 'uppercase', // Uppercase text for emphasis
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                  textTransform: 'uppercase',
                   lineHeight: '1.2',
-                  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Subtle text shadow for contrast
                   padding: '10px 20px',
+                  position: 'relative',
+                  animation: 'gradientShift 12s ease infinite, slideInFromLeft 1.5s ease-out',
+                  background: 'linear-gradient(90deg, white, #111E56)',
+                  backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  textShadow: `
+                    
+                    3px 3px 6px rgba(0, 0, 0, 0.3)
+                  `, // Subtle shadow effect outside of the text
                 }}
               >
-                Welcome, {profile.username || 'User'}!
+                Welcome to your dashboard
               </Typography>
-              
+            
+              {/* Advertiser Name */}
+              <Typography
+                variant="h2"
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+                  textTransform: 'uppercase',
+                  lineHeight: '1.2',
+                  padding: '10px 20px',
+                  position: 'relative',
+                  animation: 'gradientShift 12s ease infinite, slideInFromRight 1.5s ease-out',
+                  background: 'linear-gradient(90deg, white, #111E56)',
+                  backgroundSize: '400% 400%', // Makes the gradient larger for the animation effect
+                  WebkitBackgroundClip: 'text',
+                  color: 'transparent',
+                  textShadow: `
+                    
+                    3px 3px 6px rgba(0, 0, 0, 0.3)
+                  `, // Subtle shadow effect outside of the text
+                }}
+              >
+                {profile.username || 'User'}
+              </Typography>
+            
+              {/* Keyframe Animations */}
+              <style>
+                {`
+                  @keyframes slideInFromLeft {
+                    0% {
+                      transform: translateX(-100%);
+                      opacity: 0;
+                    }
+                    100% {
+                      transform: translateX(0);
+                      opacity: 1;
+                    }
+                  }
+                  @keyframes slideInFromRight {
+                    0% {
+                      transform: translateX(100%);
+                      opacity: 0;
+                    }
+                    100% {
+                      transform: translateX(0);
+                      opacity: 1;
+                    }
+                  }
+                  @keyframes gradientShift {
+                    0% {
+                      background-position: 0% 50%;
+                    }
+                    50% {
+                      background-position: 100% 50%;
+                    }
+                    100% {
+                      background-position: 0% 50%;
+                    }
+                  }
+                `}
+              </style>
             </Box>
+                                    
+            
           );
             case 'profile':
                 return (
