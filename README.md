@@ -71,6 +71,8 @@ We are actively working to address these issues in future updates.
 
 
 ## API Refrences:
+The Base address for the API is : http://localhost:3000
+The provided list is of all the API routes:
 -
 -
 -
