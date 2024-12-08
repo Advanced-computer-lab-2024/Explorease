@@ -5,7 +5,10 @@ import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import BookIcon from '@mui/icons-material/Book';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { CurrencyContext } from './CurrencyContext'; // Import CurrencyContext
+import HistoryIcon from '@mui/icons-material/History';
 
+import FilterListIcon from '@mui/icons-material/FilterList'; // Filter Icon
+import UpcomingIcon from '@mui/icons-material/Upcoming';
 
 const BookActivitiesPage = () => {
     const [activities, setActivities] = useState([]);
@@ -30,7 +33,14 @@ const BookActivitiesPage = () => {
     const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
     const [promoCode, setPromoCode] = useState('');
     const [discountedAmount, setDiscountedAmount] = useState(0);
-    
+    const [showPastActivities, setShowPastActivities] = useState(false);
+    const [originalActivities, setOriginalActivities] = useState([]);
+    const [bookedActivities, setBookedActivities] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showFilters, setShowFilters] = useState(false); // State to toggle filters
+
+
+
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
 
 
@@ -50,7 +60,30 @@ const BookActivitiesPage = () => {
             console.error('Error fetching bookmarked activities:', error);
         }
     };
-    
+
+    useEffect(() => {
+        // Fetch the booked activities for the user
+        const fetchBookedActivities = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get('/tourists/activities/booked/booked-activities', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                console.log(response);
+                if (response.data.success) {
+                    setBookedActivities(response.data.activityIds); // Save activity IDs
+                }
+            } catch (error) {
+                console.error('Error fetching booked activities:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBookedActivities();
+    }, []);
+
+
     const applyPromoCode = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -75,7 +108,7 @@ const BookActivitiesPage = () => {
         fetchWalletBalance();
         //fetchExchangeRates();
         fetchBookmarkedActivities(); // Fetch bookmarked activities on mount
-    }, []);
+    }, [showPastActivities]);
 
     const convertToUSD = (price) => {
         return (price / (exchangeRates[selectedCurrency] || 1)).toFixed(2);
@@ -114,7 +147,23 @@ const BookActivitiesPage = () => {
             const response = await axios.get('/tourists/activities', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setActivities(response.data);
+            //setActivities(response.data);
+            // const now = new Date();
+            // const filteredActivities = showPastActivities 
+            //     ? response.data 
+            //     : response.data.filter(activity => new Date(activity.date) >= now);
+            
+            // setActivities(filteredActivities);
+            setOriginalActivities(response.data);
+            const now = new Date();
+            const filteredActivities = showPastActivities 
+                ? response.data 
+                : response.data.filter(activity => new Date(activity.date) >= now);
+            
+            setActivities(filteredActivities);
+
+
+
         } catch (error) {
             setMessage('Error fetching activities');
             console.error('Error fetching activities:', error);
@@ -143,6 +192,23 @@ const BookActivitiesPage = () => {
         }
     };
     
+    const togglePastActivities = () => {
+        const now = new Date();
+        
+        if (showPastActivities) {
+            // Switch to upcoming activities
+            const upcomingActivities = originalActivities.filter(activity => new Date(activity.date) >= now);
+            setActivities(upcomingActivities);
+        } else {
+            // Switch to past activities
+           // const pastActivities = originalActivities.filter(activity => new Date(activity.date) < now);
+            setActivities(originalActivities);
+        }
+        
+        // Toggle the state
+        setShowPastActivities(!showPastActivities);
+    };
+
     const convertPrice = (price) => {
         return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
@@ -165,7 +231,16 @@ const BookActivitiesPage = () => {
             const response = await axios.get(`/tourists/activities/filter-sort-search?${queryString}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setActivities(response.data);
+            setOriginalActivities(response.data);
+            const now = new Date();
+            const filteredActivities = showPastActivities 
+                ? response.data 
+                : response.data.filter(activity => new Date(activity.date) >= now);
+            
+
+            
+
+            setActivities(filteredActivities);
         } catch (error) {
             console.error('Error fetching activities:', error);
             setMessage('Error fetching activities');
@@ -191,6 +266,11 @@ const BookActivitiesPage = () => {
     
 
     const handleBookActivity = (activity) => {
+        if(bookedActivities.includes(activity._id)){
+            setTimeout(() => setMessage("Activity already booked."), 2000);
+            return;
+        }
+
         if (walletBalance === null || isNaN(walletBalance)) {
             setErrorMessage('Error: Wallet balance is not available.');
             return;
@@ -333,110 +413,151 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
     return (
         <Box sx={{ padding: '20px', maxWidth: '2000px', margin: '0 auto' }}>
         <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>Book an Activity</Typography>
-        <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-            <TextField
-                label="Search by Name"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                variant="outlined"
-                sx={{ flex: '1 1 200px' }}
-            />
-            <TextField
-                label="Category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                variant="outlined"
-                sx={{ flex: '1 1 200px' }}
-            />
-            <TextField
-                label="Tag"
-                value={tag}
-                onChange={(e) => setTag(e.target.value)}
-                variant="outlined"
-                sx={{ flex: '1 1 200px' }}
-            />
-            <TextField
-                label="Min Price"
-                type="number"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                variant="outlined"
-                sx={{ flex: '1 1 100px' }}
-            />
-            <TextField
-                label="Max Price"
-                type="number"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                variant="outlined"
-                sx={{ flex: '1 1 100px' }}
-            />
-            <TextField
-                label="Min Rating"
-                type="number"
-                value={minRating}
-                onChange={(e) => setMinRating(e.target.value)}
-                variant="outlined"
-                sx={{ flex: '1 1 100px' }}
-            />
-            <TextField
-                label="Start Date"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                sx={{ flex: '1 1 150px' }}
-            />
-            <TextField
-                label="End Date"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                sx={{ flex: '1 1 150px' }}
-            />
-            <FormControl sx={{ flex: '1 1 150px' }}>
-                <InputLabel>Sort By</InputLabel>
-                <Select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    label="Sort By"
-                >
-                    <MenuItem value="">Select</MenuItem>
-                    <MenuItem value="price">Price</MenuItem>
-                    <MenuItem value="ratings">Rating</MenuItem>
-                </Select>
-            </FormControl>
-            <FormControl sx={{ flex: '1 1 150px' }}>
-                <InputLabel>Order</InputLabel>
-                <Select
-                    value={order}
-                    onChange={(e) => setOrder(e.target.value)}
-                    label="Order"
-                >
-                    <MenuItem value="asc">Ascending</MenuItem>
-                    <MenuItem value="desc">Descending</MenuItem>
-                </Select>
-            </FormControl>
+        <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+                {/* Search Fields */}
+                <TextField
+                    label="Name"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    variant="outlined"
+                    sx={{ flex: '1 1 200px' }}
+                />
+                <TextField
+                    label="Category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    variant="outlined"
+                    sx={{ flex: '1 1 200px' }}
+                />
+                <TextField
+                    label="Tag"
+                    value={tag}
+                    onChange={(e) => setTag(e.target.value)}
+                    variant="outlined"
+                    sx={{ flex: '1 1 200px' }}
+                />
 
-            <Button type="submit" variant="contained" color="primary" sx={{ 
-                        backgroundColor: '#111E56', 
-                        color: 'white', 
+                {/* Filter Icon Button */}
+                <IconButton
+                    onClick={() => setShowFilters(!showFilters)} // Toggle filter visibility
+                    sx={{ backgroundColor: '#111E56', color: 'white', borderRadius: 1 , height:'2.2em'}}
+                >
+                    <FilterListIcon />
+                </IconButton>
+            </div>
+
+            {/* Filter Fields - Conditionally Rendered */}
+            {showFilters && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    <TextField
+                        label="Min Price"
+                        type="number"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Max Price"
+                        type="number"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Min Rating"
+                        type="number"
+                        value={minRating}
+                        onChange={(e) => setMinRating(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Start Date"
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flex: '1 1 150px' }}
+                    />
+                    <TextField
+                        label="End Date"
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flex: '1 1 150px' }}
+                    />
+                    <FormControl sx={{ flex: '1 1 150px' }}>
+                        <InputLabel>Sort By</InputLabel>
+                        <Select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            label="Sort By"
+                        >
+                            <MenuItem value="">Select</MenuItem>
+                            <MenuItem value="price">Price</MenuItem>
+                            <MenuItem value="ratings">Rating</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{ flex: '1 1 150px' }}>
+                        <InputLabel>Order</InputLabel>
+                        <Select
+                            value={order}
+                            onChange={(e) => setOrder(e.target.value)}
+                            label="Order"
+                        >
+                            <MenuItem value="asc">Ascending</MenuItem>
+                            <MenuItem value="desc">Descending</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
+            )}
+
+            {/* Submit Button */}
+            <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                sx={{
+                    backgroundColor: '#111E56',
+                    color: 'white',
+                    border: '2px solid #111E56',
+                    '&:hover': {
+                        backgroundColor: 'white',
+                        color: '#111E56',
                         border: '2px solid #111E56',
-                        '&:hover': { 
-                            backgroundColor: 'white', 
-                            color: '#111E56',
-                            border: '2px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                        }, 
-                        mx: 1, 
-                        px: 4 
-                    }}>
+                    },
+                    mx: 1,
+                    ml : -1,
+                    px: 4,
+                    width: '101%'
+                }}
+            >
                 Search & Filter
             </Button>
         </form>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+        <Button
+                    variant="contained"
+                    onClick={togglePastActivities}
+                    sx={{
+                        backgroundColor: showPastActivities ? '#111E56' : '#FF5733',
+                        color: 'white',
+                        '&:hover': {
+                            backgroundColor: showPastActivities ? '#0D1442' : '#FF7961',
+                        },
+                        mb : 2
+                    }}
+                    startIcon={showPastActivities ? <UpcomingIcon /> : <HistoryIcon />}
+                >
+                                   {showPastActivities ? "Upcoming Activities" : "All Activities"}
 
+                </Button></div>
         {message && <Typography color="error">{message}</Typography>}
                     
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
@@ -528,23 +649,24 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                 }}
             >
                 {activity.bookingOpen ? (
-                    <Tooltip title="Book Now">
-                        <IconButton
-                            onClick={() => handleBookActivity(activity)}
-                            sx={{
-                                backgroundColor: '#111E56',
-                                color: 'white',
+                    <Tooltip title={bookedActivities.includes(activity._id) ? "Already booked" : "Book Now"}>
+                    <IconButton
+                        onClick={() => bookedActivities.includes(activity._id) ? setMessage("Activity has already been booked.") : handleBookActivity(activity)}
+                        sx={{
+                            backgroundColor: '#111E56',
+                            color: 'white',
+                            border: '2px solid #111E56',
+                            '&:hover': {
+                                backgroundColor: 'white',
+                                color: '#111E56',
                                 border: '2px solid #111E56',
-                                '&:hover': {
-                                    backgroundColor: 'white',
-                                    color: '#111E56',
-                                    border: '2px solid #111E56',
-                                },
-                            }}
-                        >
-                            <BookIcon />
-                        </IconButton>
-                    </Tooltip>
+                            },
+                        }}
+                        //disabled={bookedActivities.includes(activity._id) || loading} // Disable if booked or loading
+                    >
+                        <BookIcon />
+                    </IconButton>
+                </Tooltip>
                 ) : (
                     <Tooltip title="Notify When Available">
                         <IconButton

@@ -563,6 +563,36 @@ const getActivityById = async (req, res) => {
     }
 };
 
+const getBookedActivities = async (req, res) => {
+    try {
+        // Get the user's ID from the request object
+        const userId = req.user.id;
+        console.log(userId);
+
+        // Query the database to find all bookings for the user, and select only the Activity field
+        const bookings = await Booking.find({ Tourist: userId })
+            .select('Activity') // Select only the Activity field
+            .exec();
+
+        // Map the bookings to return only the activity IDs
+        const activityIds = bookings.map(booking => booking.Activity); // Correctly extract Activity IDs
+
+        // Return the activity IDs in the response
+        res.status(200).json({
+            success: true,
+            activityIds: activityIds,
+        });
+    } catch (error) {
+        console.error('Error fetching user bookings:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching user bookings',
+            error: error.message,
+        });
+    }
+};
+
+
 module.exports = {
     getActivityById,
     bookActivity,
@@ -577,6 +607,6 @@ module.exports = {
     flagActivity,
     unflagActivity,
     subscribeToActivity,
-    getAllActivityTourist
-    
+    getAllActivityTourist,
+    getBookedActivities
 };

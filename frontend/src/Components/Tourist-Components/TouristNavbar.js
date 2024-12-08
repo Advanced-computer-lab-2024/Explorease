@@ -29,7 +29,7 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
 
     // const navigate = useNavigate(); // Hook for navigation
 
-
+    
     const handleCurrencyChange = (e) => {
         setSelectedCurrency(e.target.value);
     };
@@ -70,6 +70,7 @@ const TouristNavbar = ({ handleSectionChange, toggleSidebar, cartCount, wishlist
         };
 
         fetchNotifications();
+    
     }, []);
 
     const toggleNotificationDrawer = (open) => {

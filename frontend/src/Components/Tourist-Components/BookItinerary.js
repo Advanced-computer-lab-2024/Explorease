@@ -7,10 +7,13 @@ import { IconButton } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import BookmarkIcon from '@mui/icons-material/Bookmark'
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
-
+import HistoryIcon from '@mui/icons-material/History'
+import UpcomingIcon from '@mui/icons-material/Upcoming';
+import FilterListIcon from '@mui/icons-material/FilterList'; // Filter Icon
 
 const BookItinerariesPage = () => {
     const [itineraries, setItineraries] = useState([]);
+    const [displayItineraries, setDisplayItineraries] = useState([]);
     const [message, setMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [minPrice, setMinPrice] = useState('');
@@ -30,6 +33,9 @@ const BookItinerariesPage = () => {
     const [promoMessage, setPromoMessage] = useState('');
     const [discount, setDiscount] = useState(0); // Store discount value
     const [finalAmount, setFinalAmount] = useState(0); // Store final amount after discount
+    const [itineraryView, setItineraryView] = useState('upcoming'); // New state for view toggle
+    const [bookedItineraries, setBookedItineraries] = useState([]);
+    const [showFilters, setShowFilters] = useState(false); // State to toggle filters
 
     // const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
@@ -37,7 +43,37 @@ const BookItinerariesPage = () => {
 
     const [savedItineraries, setSavedItineraries] = useState([]);
 
-    
+    useEffect(() => {
+        fetchBookedItineraries();
+    }, []);
+
+    useEffect(() => {
+        // Filter itineraries based on upcoming/past view
+        const now = new Date();
+        const filtered = itineraries.filter(itinerary => {
+            // Check if any date in AvailableDates is in the future (upcoming) or past
+            const hasFutureDate = itinerary.AvailableDates.some(date => new Date(date) > now);
+            return itineraryView === 'upcoming' ? hasFutureDate : itineraries;
+        });
+        setDisplayItineraries(filtered);
+    }, [itineraries, itineraryView]);
+
+    const fetchBookedItineraries = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/tourists/itineraries/booked/booked-itineraries', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log(response);
+            setBookedItineraries(response.data.itineraryIds);
+
+      
+        } catch (error) {
+            console.error('Error fetching booked activities:', error);
+        }
+    };
+
+
     const fetchSavedItineraries = useCallback(async () => {
         try {
             const response = await axios.get(
@@ -142,10 +178,11 @@ const BookItinerariesPage = () => {
             });
             setItineraries(response.data);
         } catch (error) {
-            setMessage('Error fetching itineraries');
+            setMessage('Failed to initially fetch.');
             console.error('Error fetching itineraries:', error);
         }
     };
+
 
     const fetchWalletBalance = async () => {
         try {
@@ -183,8 +220,9 @@ const BookItinerariesPage = () => {
             });
             setItineraries(response.data);
         } catch (error) {
-            console.error('Error fetching itineraries:', error);
-            setMessage('Error fetching itineraries');
+            //console.error('No itineraries available.');
+            setItineraries([]);
+            //setMessage('No itineraries available.');
         }
     };
 
@@ -414,95 +452,142 @@ const BookItinerariesPage = () => {
     return (
         <Box sx={{ padding: '20px', maxWidth: '1600px', margin: '0 auto' }}>
             <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>Book an Itinerary</Typography>
-            <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+            <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+                {/* Search Fields */}
                 <TextField
-                    label="Search by Name"
+                    label="Name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     variant="outlined"
                     sx={{ flex: '1 1 200px' }}
                 />
-                <TextField
-                    label="Min Price"
-                    type="number"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    variant="outlined"
-                    sx={{ flex: '1 1 100px' }}
-                />
-                <TextField
-                    label="Max Price"
-                    type="number"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    variant="outlined"
-                    sx={{ flex: '1 1 100px' }}
-                />
-                <TextField
-                    label="Language"
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    variant="outlined"
-                    sx={{ flex: '1 1 150px' }}
-                />
-                <TextField
-                    label="Start Date"
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    variant="outlined"
-                    InputLabelProps={{ shrink: true }}
-                    sx={{ flex: '1 1 150px' }}
-                />
-                <TextField
-                    label="End Date"
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    variant="outlined"
-                    InputLabelProps={{ shrink: true }}
-                    sx={{ flex: '1 1 150px' }}
-                />
-                <FormControl sx={{ flex: '1 1 150px' }}>
-                    <InputLabel>Sort By</InputLabel>
-                    <Select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                        label="Sort By"
-                    >
-                        <MenuItem value="">Select</MenuItem>
-                        <MenuItem value="price">Price</MenuItem>
-                        <MenuItem value="ratings">Rating</MenuItem>
-                    </Select>
-                </FormControl>
-                <FormControl sx={{ flex: '1 1 150px' }}>
-                    <InputLabel>Order</InputLabel>
-                    <Select
-                        value={order}
-                        onChange={(e) => setOrder(e.target.value)}
-                        label="Order"
-                    >
-                        <MenuItem value="asc">Ascending</MenuItem>
-                        <MenuItem value="desc">Descending</MenuItem>
-                    </Select>
-                </FormControl>
+               
 
-                <Button type="submit" variant="contained" color="primary" sx={{ height: '56px', alignSelf: 'center' ,backgroundColor: '#111E56', 
-                            color: 'white', 
-                            border: '2px solid #111E56', // Optional: adds a border to match the dark blue on hover
-                            '&:hover': { 
-                                backgroundColor: 'white', 
-                                color: '#111E56',
-                                border: '2px solid #111E56' // Optional: adds a border to match the dark blue on hover
-                            }, }}>
-                    Search & Filter
-                </Button>
-            </form>
+                {/* Filter Icon Button */}
+                <IconButton
+                    onClick={() => setShowFilters(!showFilters)} // Toggle filter visibility
+                    sx={{ backgroundColor: '#111E56', color: 'white', borderRadius: 1 , height:'2.2em'}}
+                >
+                    <FilterListIcon />
+                </IconButton>
+            </div>
 
+            {/* Filter Fields - Conditionally Rendered */}
+            {showFilters && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    <TextField
+                        label="Min Price"
+                        type="number"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Max Price"
+                        type="number"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Min Rating"
+                        type="number"
+                        value={minRating}
+                        onChange={(e) => setMinRating(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Start Date"
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flex: '1 1 150px' }}
+                    />
+                    <TextField
+                        label="End Date"
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flex: '1 1 150px' }}
+                    />
+                    <FormControl sx={{ flex: '1 1 150px' }}>
+                        <InputLabel>Sort By</InputLabel>
+                        <Select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            label="Sort By"
+                        >
+                            <MenuItem value="">Select</MenuItem>
+                            <MenuItem value="price">Price</MenuItem>
+                            <MenuItem value="ratings">Rating</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{ flex: '1 1 150px' }}>
+                        <InputLabel>Order</InputLabel>
+                        <Select
+                            value={order}
+                            onChange={(e) => setOrder(e.target.value)}
+                            label="Order"
+                        >
+                            <MenuItem value="asc">Ascending</MenuItem>
+                            <MenuItem value="desc">Descending</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
+            )}
+
+            {/* Submit Button */}
+            <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                sx={{
+                    backgroundColor: '#111E56',
+                    color: 'white',
+                    border: '2px solid #111E56',
+                    '&:hover': {
+                        backgroundColor: 'white',
+                        color: '#111E56',
+                        border: '2px solid #111E56',
+                    },
+                    mx: 1,
+                    ml : -1,
+                    px: 4,
+                    width: '101%'
+                }}
+            >
+                Search & Filter
+            </Button>
+        </form>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+            <Button
+                variant="contained"
+                onClick={() => setItineraryView(prev => prev === 'upcoming' ? 'past' : 'upcoming')}
+                sx={{
+                    backgroundColor: itineraryView === 'upcoming' ? '#111E56' : '#FF5733',
+                    color: 'white',
+                    '&:hover': {
+                        backgroundColor: itineraryView === 'upcoming' ? '#0D1442' : '#FF7961',
+                    },
+                    mb: 2
+                }}
+                startIcon={itineraryView === 'upcoming' ? <UpcomingIcon /> : <HistoryIcon />}
+            >
+                {itineraryView === 'upcoming' ? 'All Itineraries' : 'Upcoming Itineraries'}
+            </Button>
+        </div>
             {message && <Typography color="error">{message}</Typography>}
 
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
-                {itineraries.length > 0 ? itineraries.map((itinerary) => (
+                {displayItineraries.length > 0 ? displayItineraries.map((itinerary) => (
                     <Card
                     key={itinerary._id}
                     sx={{
@@ -575,23 +660,24 @@ const BookItinerariesPage = () => {
                 
                     {/* Bottom Section: Action Buttons */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2 }}>
-                        <Tooltip title="Book Now">
-                            <IconButton
-                                onClick={() => handleBookItinerary(itinerary)}
-                                sx={{
-                                    backgroundColor: '#111E56',
-                                    color: 'white',
-                                    border: '2px solid #111E56',
-                                    '&:hover': {
-                                        backgroundColor: 'white',
-                                        color: '#111E56',
-                                        border: '2px solid #111E56',
-                                    },
-                                }}
-                            >
-                                <BookIcon />
-                            </IconButton>
-                        </Tooltip>
+                    <Tooltip title={bookedItineraries.includes(itinerary._id) ? "Already booked" : "Book Now"}>
+                    <IconButton
+                        onClick={() => bookedItineraries.includes(itinerary._id) ? setMessage("Itinerary has already been booked.") : handleBookItinerary(itinerary)}
+                        sx={{
+                            backgroundColor: '#111E56',
+                            color: 'white',
+                            border: '2px solid #111E56',
+                            '&:hover': {
+                                backgroundColor: 'white',
+                                color: '#111E56',
+                                border: '2px solid #111E56',
+                            },
+                        }}
+                        //disabled={bookedActivities.includes(activity._id) || loading} // Disable if booked or loading
+                    >
+                        <BookIcon />
+                    </IconButton>
+                </Tooltip>
                 
                         
                     <Tooltip title={savedItineraries.includes(itinerary._id)? 'Unbookmark' : 'Bookmark'}>

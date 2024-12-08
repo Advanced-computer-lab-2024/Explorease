@@ -696,6 +696,35 @@ const stripeSuccess = async (req, res) => {
   };
   
 
+  const getBookedItineraries = async (req, res) => {
+    try {
+        // Get the user's ID from the request object
+        const userId = req.user.id;
+        console.log('User ID:', userId);
+
+        // Query the database to find all bookings for the user, and select only the Itinerary field
+        const bookings = await BookingItinerary.find({ Tourist: userId })
+            .select('Itinerary') // Select only the Itinerary field
+            .exec();
+
+        // Map the bookings to return only the itinerary IDs
+        const itineraryIds = bookings.map(booking => booking.Itinerary); // Extract the Itinerary IDs
+
+        console.log(itineraryIds);
+        // Return the itinerary IDs in the response
+        res.status(200).json({
+            success: true,
+            itineraryIds: itineraryIds,
+        });
+    } catch (error) {
+        console.error('Error fetching user bookings:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching user bookings',
+            error: error.message,
+        });
+    }
+};
 
 
 module.exports = {
@@ -716,4 +745,5 @@ module.exports = {
     createStripeSession,
     stripeSuccess,
     stripeWebhook,
+    getBookedItineraries,    
 };

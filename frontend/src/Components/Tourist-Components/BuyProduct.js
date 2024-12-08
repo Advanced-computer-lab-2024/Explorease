@@ -340,27 +340,29 @@ useEffect(() => {
                       borderTop: "1px solid #E5E7EB",
                     }}
                   >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{
-                        backgroundColor: "#111E56",
-                        color: "white",
-                        textTransform: "none",
-                        borderRadius: 2,
-                        fontWeight: "medium",
-                        "&:hover": {
-                          backgroundColor: "white",
-                          color: "#111E56",
-                          border: "2px solid #111E56",
-                        },
-                        flex: 1,
-                        marginRight: 1,
-                      }}
-                      onClick={() => addToCart(product._id)}
-                    >
-                      Add to Cart
-                    </Button>
+                 <Button
+  variant="contained"
+  color="primary"
+  sx={{
+    backgroundColor: "#111E56",
+    color: "white",
+    textTransform: "none",
+    borderRadius: 2,
+    fontWeight: "medium",
+    "&:hover": {
+      backgroundColor: "white",
+      color: "#111E56",
+      border: "2px solid #111E56",
+    },
+    flex: 1,
+    marginRight: 1,
+  }}
+  onClick={() => product.AvailableQuantity > 0 && addToCart(product._id)} // Only allow adding to cart if quantity > 0
+  disabled={product.AvailableQuantity === 0} // Disable button if productQuantity is 0
+>
+  {product.AvailableQuantity === 0 ? "Out of stock" : "Add to Cart"} {/* Change text if quantity is 0 */}
+</Button>
+
                     {/* Wishlist Button */}
                     <IconButton
                       onClick={() => toggleWishlist(product._id)}

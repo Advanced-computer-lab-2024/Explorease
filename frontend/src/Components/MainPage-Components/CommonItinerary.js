@@ -8,7 +8,7 @@ import {
   Button,
   TextField,
   Grid,
-  CircularProgress,
+  CircularProgress, IconButton, Tooltip
 } from '@mui/material';
 import {
     Select,
@@ -19,7 +19,7 @@ import {
   
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
-
+import FilterListIcon from '@mui/icons-material/FilterList'; // Filter Icon
 
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -36,7 +36,8 @@ const Itineraries = () => {
   const [language, setLanguage] = useState('');
   const [accessibility, setAccessibility] = useState('');
   const [tag, setTag] = useState('');
-
+  const [showFilters, setShowFilters] = useState(false);
+  
   useEffect(() => {
     fetchItineraries();
   }, []);
@@ -44,8 +45,11 @@ const Itineraries = () => {
   const fetchItineraries = async () => {
     setLoading(true); // Start loading indicator
     try {
-      // const token = localStorage.getItem('token');
-      const response = await axios.get('/tourists/itineraries', {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('tourists/itineraries', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       setItineraries(response.data);
       setLoading(false); // Stop loading indicator
@@ -74,7 +78,7 @@ const Itineraries = () => {
     setLoading(true); // Start loading while searching
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`/tourists/itineraries/filter-sort-search?${queryString}`, {
+      const response = await axios.get(`tourists/itineraries/filter-sort-search?${queryString}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -109,159 +113,121 @@ const Itineraries = () => {
         </Typography>
 
         {/* Search Form */}
-        <Box
-          component="form"
-          onSubmit={handleSearch}
-          sx={{
-            maxWidth: 'calc(100% - 200px)',
-            mx: 'auto',
-            mb: 4,
-          }}
-        >
-          <Grid container spacing={2}>
-            {/* Search by Name */}
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Search by Name"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                fullWidth
-              />
-            </Grid>
+        <form onSubmit={handleSearch} style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+                {/* Search Fields */}
+                <TextField
+                    label="Name"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    variant="outlined"
+                    sx={{ flex: '1 1 200px' }}
+                />
+               
 
-            {/* Start Date */}
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Start Date"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-              />
-            </Grid>
+                {/* Filter Icon Button */}
+                <IconButton
+                    onClick={() => setShowFilters(!showFilters)} // Toggle filter visibility
+                    sx={{ backgroundColor: '#111E56', color: 'white', borderRadius: 1 , height:'2.2em'}}
+                >
+                    <FilterListIcon />
+                </IconButton>
+            </div>
 
-            {/* End Date */}
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="End Date"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-              />
-            </Grid>
+            {/* Filter Fields - Conditionally Rendered */}
+            {showFilters && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    <TextField
+                        label="Min Price"
+                        type="number"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Max Price"
+                        type="number"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Min Rating"
+                        type="number"
+                        value={minRating}
+                        onChange={(e) => setMinRating(e.target.value)}
+                        variant="outlined"
+                        sx={{ flex: '1 1 100px' }}
+                    />
+                    <TextField
+                        label="Start Date"
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flex: '1 1 150px' }}
+                    />
+                    <TextField
+                        label="End Date"
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ flex: '1 1 150px' }}
+                    />
+                    <FormControl sx={{ flex: '1 1 150px' }}>
+                        <InputLabel>Sort By</InputLabel>
+                        <Select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            label="Sort By"
+                        >
+                            <MenuItem value="">Select</MenuItem>
+                            <MenuItem value="price">Price</MenuItem>
+                            <MenuItem value="ratings">Rating</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{ flex: '1 1 150px' }}>
+                        <InputLabel>Order</InputLabel>
+                        <Select
+                            value={order}
+                            onChange={(e) => setOrder(e.target.value)}
+                            label="Order"
+                        >
+                            <MenuItem value="asc">Ascending</MenuItem>
+                            <MenuItem value="desc">Descending</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
+            )}
 
-            {/* Language */}
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Language"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-
-            {/* Min Price */}
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Min Price"
-                type="number"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-
-            {/* Max Price */}
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Max Price"
-                type="number"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-
-            {/* Accessibility */}
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Accessibility"
-                value={accessibility}
-                onChange={(e) => setAccessibility(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-
-            {/* Tag */}
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Tag"
-                value={tag}
-                onChange={(e) => setTag(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-
-            {/* Sort By */}
-<Grid item xs={12} sm={6} md={3}>
-  <FormControl fullWidth>
-    <InputLabel>Sort By</InputLabel>
-    <Select
-      value={sortBy}
-      onChange={(e) => setSortBy(e.target.value)}
-      label="Sort By"
-    >
-      <MenuItem value="">Select</MenuItem>
-      <MenuItem value="price">Price</MenuItem>
-      <MenuItem value="ratings">Ratings</MenuItem>
-      <MenuItem value="date">Date</MenuItem>
-    </Select>
-  </FormControl>
-</Grid>
-
-{/* Order */}
-<Grid item xs={12} sm={6} md={3}>
-  <FormControl fullWidth>
-    <InputLabel>Order</InputLabel>
-    <Select
-      value={order}
-      onChange={(e) => setOrder(e.target.value)}
-      label="Order"
-    >
-      <MenuItem value="asc">Ascending</MenuItem>
-      <MenuItem value="desc">Descending</MenuItem>
-    </Select>
-  </FormControl>
-</Grid>
-
-
-            {/* Search Button */}
-            <Grid item xs={12} sm={6} md={1}>
-              <Button
+            {/* Submit Button */}
+            <Button
                 type="submit"
                 variant="contained"
-                fullWidth
+                color="primary"
                 sx={{
-                  backgroundColor: '#111E56',
-                  color: 'white',
-                  height: '54px',
-                  width: '100px',
-                  border: '2px solid #111E56',
-                  '&:hover': {
-                    backgroundColor: 'white',
-                    color: '#111E56',
+                    backgroundColor: '#111E56',
+                    color: 'white',
                     border: '2px solid #111E56',
-                  },
+                    '&:hover': {
+                        backgroundColor: 'white',
+                        color: '#111E56',
+                        border: '2px solid #111E56',
+                    },
+                    mx: 1,
+                    ml : -1,
+                    px: 4,
+                    width: '101%'
                 }}
-              >
-                Search
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+            >
+                Search & Filter
+            </Button>
+        </form>
 
         {/* Loading Indicator */}
         {loading ? (
@@ -276,121 +242,115 @@ const Itineraries = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 3,
+<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+  {itineraries.length > 0 ? (
+    itineraries.map((itinerary) => (
+      <Card
+        key={itinerary._id}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: 'calc(33.33% - 20px)', // Adjust card width to 1/3rd of the container width
+          boxShadow: 3,
+          marginBottom: '20px',
+          borderRadius: '12px',
+          transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.03)',
+            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+          },
+        }}
+      >
+        {/* Image */}
+        {itinerary.imageUrl && (
+          <img
+            src={itinerary.imageUrl}
+            alt={itinerary.name}
+            style={{
+              width: '100%',
+              height: '60%',
+              objectFit: 'cover',
+              marginBottom: '10px',
+              borderTopLeftRadius: '12px',
+              borderTopRightRadius: '12px',
             }}
-          >
-            {itineraries.length > 0 ? (
-              itineraries.map((itinerary) => (
-                <Card
-                  key={itinerary._id}
-                  sx={{
-                    width: '85%',
-                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-                    borderRadius: 2,
-                    height: '280px',
-                    '&:hover': {
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                      transform: 'scale(1.02)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
-                  }}
-                >
-                  <CardContent
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                    }}
-                  >
-                    {/* Left Section */}
-                    <Box sx={{ flex: 2, paddingRight: 2 }}>
-                      <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
-                        {itinerary.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Total Price:</strong> ${itinerary.totalPrice}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Pick-Up Location:</strong> {itinerary.PickUpLocation}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Drop-Off Location:</strong> {itinerary.DropOffLocation}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Accessibility:</strong> {itinerary.accessibility}
-                      </Typography>
-                      {itinerary.tags && (
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          <strong>Tags:</strong> {itinerary.tags.map((tag) => tag.name).join(', ')}
-                        </Typography>
-                      )}
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Available Dates:</strong> {itinerary.AvailableDates.map((date) => new Date(date).toLocaleDateString()).join(', ')}
-                      </Typography>
-                      {/* Centered Buttons */}
-                    <Box
-                      sx={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 1,
-                      }}
-                    >
-                      <Button
-                        onClick={() => handleCopyLink(itinerary._id)}
-                        variant="outlined"
-                        startIcon={<LinkIcon />}
-                        sx={{
-                          backgroundColor: 'white',
-                          color: '#5A8CFF',
-                          border: '1px solid #5A8CFF',
-                          '&:hover': {
-                            backgroundColor: '#5A8CFF',
-                            color: 'white',
-                          },
-                          textTransform: 'none',
-                        }}
-                      >
-                        Copy Link
-                      </Button>
-                      <Button
-                        onClick={() => handleShareEmail(itinerary)}
-                        variant="outlined"
-                        startIcon={<EmailIcon />}
-                        sx={{
-                          backgroundColor: 'white',
-                          color: '#5A8CFF',
-                          border: '1px solid #5A8CFF',
-                          '&:hover': {
-                            backgroundColor: '#5A8CFF',
-                            color: 'white',
-                          },
-                          textTransform: 'none',
-                        }}
-                      >
-                        Share via Email
-                      </Button>
-                    </Box>
-                    </Box>
+          />
+        )}
 
-                    
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <Typography>No itineraries available</Typography>
-            )}
-          </Box>
+        {/* Top Section: Image and Details */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <CardContent sx={{ padding: 0 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                color: '#111E56',
+                fontWeight: 'bold',
+                marginBottom: '10px',
+                textAlign: 'center',
+              }}
+            >
+              {itinerary.name}
+            </Typography>
+            <Typography>
+              <strong style={{ fontWeight: 'bold', color: '#111E56' }}>Total Price:</strong> ${itinerary.totalPrice}
+            </Typography>
+            <Typography>
+              <strong style={{ fontWeight: 'bold', color: '#111E56' }}>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}
+            </Typography>
+            <Typography>
+              <strong style={{ fontWeight: 'bold', color: '#111E56' }}>Date :</strong> {new Date(itinerary.AvailableDates[0]).toLocaleDateString()}
+            </Typography>
+          </CardContent>
+        </Box>
+
+        {/* Divider */}
+        <Box sx={{ borderTop: '1px solid #ccc' }} />
+
+        {/* Bottom Section: Action Buttons */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2 }}>
+          {/* Copy Link Button */}
+          <Tooltip title="Copy Link">
+            <IconButton
+              onClick={() => handleCopyLink(itinerary._id)}
+              sx={{
+                backgroundColor: 'white',
+                color: '#5A8CFF',
+                border: '1px solid #5A8CFF',
+                '&:hover': {
+                  backgroundColor: '#5A8CFF',
+                  color: 'white',
+                },
+              }}
+            >
+              <LinkIcon />
+            </IconButton>
+          </Tooltip>
+
+          {/* Share via Email Button */}
+          <Tooltip title="Share via Email">
+            <IconButton
+              onClick={() => handleShareEmail(itinerary)}
+              sx={{
+                backgroundColor: 'white',
+                color: '#5A8CFF',
+                border: '1px solid #5A8CFF',
+                '&:hover': {
+                  backgroundColor: '#5A8CFF',
+                  color: 'white',
+                },
+              }}
+            >
+              <EmailIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Card>
+    ))
+  ) : (
+    <Typography>No itineraries available</Typography>
+  )}
+</Box>
+
         )}
       </Box>
     </Box>

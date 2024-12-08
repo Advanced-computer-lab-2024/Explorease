@@ -168,5 +168,6 @@ router.post('/itineraries/stripe-success', roleAuth(['tourist']), itineraryBooki
 router.post('/flights/stripe-session', roleAuth(['tourist']), flightController.createStripeSession);
 router.post('/hotels/stripe-session', roleAuth(['tourist']), hotelController.createStripeSession);
 
-
+router.get('/activities/booked/booked-activities', roleAuth(['tourist']), activityControllers.getBookedActivities);
+router.get('/itineraries/booked/booked-itineraries', roleAuth(['tourist']), itineraryControllers.getBookedItineraries);
 module.exports = router;

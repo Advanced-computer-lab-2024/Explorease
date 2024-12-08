@@ -98,7 +98,10 @@ const Cart = ({ handleSectionChange}) => {
 
     const updateQuantity = async (productId, newQuantity) => {
         try {
-            if (newQuantity <= 0) return;
+            if (newQuantity <= 0){
+                 removeFromCart(productId) 
+                return;
+            };
             const token = localStorage.getItem('token');
             await axios.put(
                 '/tourists/cart/update',
@@ -107,8 +110,11 @@ const Cart = ({ handleSectionChange}) => {
             );
             fetchCartItems(); // Refresh cart after updating
         } catch (error) {
-            setCheckoutMessage('Error updating quantity');
+            setCheckoutMessage('No stock is remaining. Sorry for the inconvenience.');
             console.error('Error updating quantity:', error);
+            setTimeout(() => {
+                setCheckoutMessage('');
+            }, 10000); // 10 seconds = 10000 milliseconds
         }
     };
 

@@ -8,7 +8,7 @@ import {
   Button,
   TextField,
   Grid,
-  CircularProgress,
+  CircularProgress, CardMedia
 } from '@mui/material';
 
 import EmailIcon from '@mui/icons-material/Email';
@@ -169,92 +169,105 @@ const HistoricalPlaces = () => {
             {places.length > 0 ? (
               places.map((place) => (
                 <Card
-                  key={place._id}
+                key={place._id}
+                sx={{
+                  display: 'flex', // Use Flexbox for horizontal layout
+                  width: '85%',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+                  borderRadius: '12px',
+                  height: 'auto', // Let the height adjust to content
+                  '&:hover': {
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                    transform: 'scale(1.02)',
+                    transition: 'transform 0.2s ease-in-out',
+                  },
+                  marginBottom: '20px', // Space between cards
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={place.imageUrl} 
+                  alt={place.Name || 'Historical Place Image'}
                   sx={{
-                    width: '85%',
-                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-                    borderRadius: 2,
-                    height: '270px',
-                    '&:hover': {
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                      transform: 'scale(1.02)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
+                    width: '40%',
+                    height: 'auto',
+                    objectFit: 'cover',
+                    borderTopLeftRadius: '12px',
+                    borderBottomLeftRadius: '12px'
                   }}
-                >
-                  <CardContent
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                    }}
-                  >
-                    {/* Left Section */}
-                    <Box sx={{ flex: 2, paddingRight: 2 }}>
-                      <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
-                        {place.Name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Description:</strong> {place.Description}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Location:</strong> {place.Location}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        <strong>Period:</strong> {place.Period}
-                      </Typography>
-                      {place.tags && (
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(', ')}
-                        </Typography>
-                      )}
-                      {place.managedBy && (
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          <strong>Managed By:</strong> {place.managedBy.username}
-                        </Typography>
-                      )}
+                />
+              
+                {/* Right Section: Content */}
+                <Box sx={{ flex: 1, padding: '16px' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#111E56', marginBottom: '10px' }}>
+                    {place.Name || 'Untitled'}
+                  </Typography>
+              
+                  Description, Location, and other details
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <strong>Description:</strong> {place.Description}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <strong>Location:</strong> {place.Location}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <strong>Period:</strong> {place.Period}
+                  </Typography>
+                  {place.tags && (
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(', ')}
+                    </Typography>
+                  )}
+                  {place.managedBy && (
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <strong>Managed By:</strong> {place.managedBy.username}
+                    </Typography>
+                  )}
+              
+                  {/* Action buttons */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingTop: '12px' }}>
+                    <Button
+                      onClick={() => handleCopyLink(place._id)}
+                      variant="outlined"
+                      startIcon={<LinkIcon />}
+                      sx={{
+                        backgroundColor: 'white',
+                        color: '#5A8CFF',
+                        border: '1px solid #5A8CFF',
+                        '&:hover': {
+                          backgroundColor: '#5A8CFF',
+                          color: 'white',
+                        },
+                        textTransform: 'none',
+                      }}
+                    >
+                      Copy Link
+                    </Button>
+              
+                    <Button
+                      onClick={() => handleShareEmail(place)}
+                      variant="outlined"
+                      startIcon={<EmailIcon />}
+                      sx={{
+                        backgroundColor: 'white',
+                        color: '#5A8CFF',
+                        border: '1px solid #5A8CFF',
+                        '&:hover': {
+                          backgroundColor: '#5A8CFF',
+                          color: 'white',
+                        },
+                        textTransform: 'none',
+                      }}
+                    >
+                      Share via Email
+                    </Button>
+                  </Box>
+                </Box>
+              </Card>
+              
 
-<Button
-                        onClick={() => handleCopyLink(place._id)}
-                        variant="outlined"
-                        startIcon={<LinkIcon />}
-                        sx={{
-                          backgroundColor: 'white',
-                          
-                          color: '#5A8CFF',
-                          border: '1px solid #5A8CFF',
-                          '&:hover': {
-                            backgroundColor: '#5A8CFF',
-                            color: 'white',
-                          },
-                          textTransform: 'none',
-                        }}
-                      >
-                        Copy Link
-                      </Button>
-                      <Button
-                        onClick={() => handleShareEmail(place)}
-                        variant="outlined"
-                        startIcon={<EmailIcon />}
-                        sx={{
-                          backgroundColor: 'white',
-                          margin: '10px 0',
-                          marginLeft: '10px ',
-                          color: '#5A8CFF',
-                          border: '1px solid #5A8CFF',
-                          '&:hover': {
-                            backgroundColor: '#5A8CFF',
-                            color: 'white',
-                          },
-                          textTransform: 'none',
-                        }}
-                      >
-                        Share via Email
-                      </Button>
-                    
-                    </Box>
-                  </CardContent>
-                </Card>
+
+              
               ))
             ) : (
               <Typography>No historical places available</Typography>
