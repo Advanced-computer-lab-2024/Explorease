@@ -11,7 +11,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import axios from 'axios';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-import { CurrencyContext } from './CurrencyContext'; // Import the Currency Context
+import { CurrencyContext } from './CurrencyContext'; 
+import CloseIcon from '@mui/icons-material/Close';
+
+// Import the Currency Context
 // import { useNavigate } from 'react-router-dom'; // Ensure useNavigate is imported
 import HomeIcon from '@mui/icons-material/Home';
 

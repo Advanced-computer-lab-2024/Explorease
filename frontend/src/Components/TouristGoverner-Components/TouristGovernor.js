@@ -4,21 +4,17 @@ import {
     Box,
     Typography,
     Button,
-<<<<<<< HEAD
-    Card,
-    CardContent, 
-    IconButton,
-=======
     Divider,
     Card,
     CardContent,
     IconButton, 
->>>>>>> ca5d55a51a9895883fe64982f54041a1860df5e6
     Alert,
     Avatar,
     CircularProgress,
     Tooltip,
+
 } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GuestNavbar from '../MainPage-Components/GuestNavbar';

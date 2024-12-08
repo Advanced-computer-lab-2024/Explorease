@@ -38,6 +38,7 @@ const Cart = ({ handleSectionChange}) => {
             const response = await axios.get('/tourists/cart', {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            console.log(response.data.items);
             setCartItems(response.data.items || []);
             calculateTotalCost(response.data.items || []);
         } catch (error) {
@@ -118,6 +119,8 @@ const Cart = ({ handleSectionChange}) => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setCheckoutMessage('Product removed from cart');
+
+            
             fetchCartItems();
         } catch (error) {
             setCheckoutMessage('Error removing product from cart');
@@ -285,7 +288,7 @@ const Cart = ({ handleSectionChange}) => {
                     {/* Wishlist Button */}
                     
                     <IconButton
-                      onClick={() => removeFromCart(product.productId_id)}
+                      onClick={() => removeFromCart(product._id)}
                       sx={{
                         transition: "color 0.3s ease-in-out",
                         "&:hover": {
