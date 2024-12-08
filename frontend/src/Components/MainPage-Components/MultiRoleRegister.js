@@ -10,7 +10,6 @@ import {
     Select,
     FormControl,
     InputLabel,
-    Link,
     Stack,
     Container,
 
@@ -19,6 +18,7 @@ import {
 import backgroundImage from '../../Misc/bg.jpg'; // Adjust the path based on your project structure
 import GuestNavBarforGuest from '../MainPage-Components/GuestNavBarforGuest';
 import logo2 from '../../Misc/image.png';
+import { Link } from 'react-router-dom';
 
 
 const MultiRoleRegister = () => {
@@ -217,6 +217,23 @@ const MultiRoleRegister = () => {
                     >
                         Register
                     </Button>
+                    <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+    <Typography variant="body2" sx={{ display: 'inline' }}>
+        Already a user?{' '}
+    </Typography>
+    <Link
+        to="/login"
+        style={{
+            textDecoration: 'none',
+            color: '#111E56',
+            fontWeight: 'bold',
+            cursor: 'pointer', // Correct property for making it clickable
+        }}
+    >
+        Login here
+    </Link>
+</Box>
+
                 </form>
             </Box>
 

@@ -233,7 +233,28 @@ const Itineraries = () => {
                 Search & Filter
             </Button>
         </form>
-
+        <Box
+    sx={{
+        display: 'flex',
+        justifyContent: 'flex-end', // Align to the right
+        padding: '8px',
+        marginRight: '1em'            // Add padding around the box
+    }}
+>
+    <Typography variant="body1" sx={{ marginRight: '8px' }}>
+        Interested in booking?
+    </Typography>
+    <Link
+        to="/register"
+        style={{
+            textDecoration: 'none', 
+            color: '#111E56', 
+            fontWeight: 'bold',
+        }}
+    >
+        Sign-Up Now
+    </Link>
+</Box>    
         {/* Loading Indicator */}
         {loading ? (
           <Box

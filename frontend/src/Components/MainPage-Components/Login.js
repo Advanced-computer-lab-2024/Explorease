@@ -15,11 +15,10 @@ import {
     DialogContent,
     DialogActions,
     CircularProgress,
-    Link,
     Stack,
     Container,
 } from '@mui/material';
-
+import { Link } from 'react-router-dom';
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
 import GuestNavBarforGuest from './GuestNavBarforGuest'; // Replace with the actual path to your navbar file
 import backgroundImage from '../../Misc/bg.jpg'; // Adjust the path based on your project structure
@@ -317,6 +316,23 @@ const Login = () => {
                     >
                         Forgot Password?
                     </Typography>
+                    <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+    <Typography variant="body2" sx={{ display: 'inline' }}>
+        Don't have an account?{' '}
+    </Typography>
+    <Link
+        to="/register"
+        style={{
+            textDecoration: 'none',
+            color: '#111E56',
+            fontWeight: 'bold',
+            cursor: 'pointer', // Ensures the link is clickable
+        }}
+    >
+        Signup now
+    </Link>
+</Box>
+
                 </CardContent>
             </Card>
 
