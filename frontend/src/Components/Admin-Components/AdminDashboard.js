@@ -77,6 +77,7 @@ const [isGovernorAdded, setIsGovernorAdded] = useState(false);
 const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
 
+
     const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState('home');
 
@@ -329,7 +330,8 @@ const handleTagChange = (id, newName) => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (!token) {
+        const email = localStorage.getItem('userEmail');
+        if (!token ) {
             navigate('/admin/login');
         } else {
             fetchCategories();
@@ -510,12 +512,75 @@ const handleTagChange = (id, newName) => {
     
                 {/* Conditionally render sections */}
                 {activeSection === 'home' && (
-                    <div className="section" style={{fontWeight:'bold',color:'#111E56',fontSize:'32px'}}>
-                        <h1>Welcome to your Dashboard</h1>
-                        <CreateAdminForm />
-                        <EditMyPassword />
-                    </div>
-                )}
+  <>
+    <h1
+      style={{
+        fontSize: '40px',
+        fontWeight: 'bold',
+        color: '#111E56',
+        textAlign: 'center',
+        marginBottom: '20px',
+        marginTop:'20px',
+      }}
+    >
+      Welcome to your Dashboard
+    </h1>
+    <Box
+      sx={{
+        marginTop: '50px',
+        width: '450px',
+        borderRadius: '16px',
+        backgroundColor: 'white',
+        margin: '30px auto',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+        padding: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        '&:hover': {
+          transform: 'scale(1.05)',
+          boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
+        },
+      }}
+    >
+      <Box
+        sx={{
+          margin: 0,
+          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontWeight: 700,
+          fontSize: '16px',
+          lineHeight: 1.334,
+          letterSpacing: '0em',
+          color: '#111E56',
+          marginBottom: '10px',
+          marginTop: '10px',
+        }}
+      >
+        <CreateAdminForm />
+      </Box>
+
+      <Box
+        sx={{
+          margin: 0,
+          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontWeight: 700,
+          fontSize: '16px',
+          lineHeight: 1.334,
+          letterSpacing: '0em',
+          color: '#111E56',
+          marginBottom: '15px',
+          width: '100%',
+        }}
+      >
+        <EditMyPassword />
+      </Box>
+    </Box>
+  </>
+)}
+
+
+       
+             
                 {activeSection === 'deleteAccounts' && <ManageUsers />}
                 {activeSection === 'ReviewUsers' && <UserApproval />}
                 {activeSection === 'Block event' && <BlockItinerary />}
