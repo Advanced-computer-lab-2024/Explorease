@@ -85,30 +85,15 @@ const BookHotel = () => {
 
     return (
         <Box
-            sx={{
-                px: 3,
-                py: 4,
-                maxWidth: 800,
-                mx: 'auto',
-                backgroundColor: 'white',
-                borderRadius: 2,
-                boxShadow: 2,
-                marginTop: '35px',
-            }}
+        sx={{ padding: '20px', maxWidth: '2000px', margin: '0 auto' }}
         >
             <Typography
-                variant="h4"
-                sx={{
-                    fontWeight: 'bold',
-                    color: '#111E56',
-                    textAlign: 'center',
-                    mb: 4,
-                }}
+                variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}
             >
                 Book a Hotel
             </Typography>
             <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid item xs={12}  sm={4}>
                     <TextField
                         label="Location"
                         value={location}
@@ -118,7 +103,7 @@ const BookHotel = () => {
                         margin="normal"
                     />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}  sm={4}>
                     <TextField
                         label="Check-in Date"
                         type="date"
@@ -130,7 +115,7 @@ const BookHotel = () => {
                         InputLabelProps={{ shrink: true }}
                     />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}  sm={4}>
                     <TextField
                         label="Check-out Date"
                         type="date"

@@ -591,7 +591,50 @@ const getBookedActivities = async (req, res) => {
         });
     }
 };
-
+const getActivityReviewsAndRatings = async (req, res) => {
+    try {
+      const { activityId } = req.params;  // Get activityId from request parameters
+  
+      // Fetch all bookings for the given activity with associated tourist details
+      const bookings = await Booking.find({ Activity: activityId })
+        .populate('Tourist', 'username')  // Populate tourist details (e.g., username)
+        .select('Tourist rating comment');  // Select relevant fields for reviews and ratings
+  
+      // Check if there are any bookings for the activity
+      if (bookings.length === 0) {
+        return res.status(404).json({ message: 'No reviews or ratings found for this activity' });
+      }
+  
+      // Group reviews and ratings for the activity
+      const activityReviews = bookings.reduce((acc, booking) => {
+        if (booking.rating) {
+          acc.ratings.push({
+            rating: booking.rating,
+            username: booking.Tourist.username,
+          });
+        }
+        if (booking.comment) {
+          acc.reviews.push({
+            review: booking.comment,
+            username: booking.Tourist.username,
+          });
+        }
+        return acc;
+      }, { reviews: [], ratings: [] });
+  
+      // Prepare response data
+      const result = {
+        activityId,
+        reviews: activityReviews.reviews,
+        ratings: activityReviews.ratings,
+      };
+  
+      res.status(200).json(result);  // Send the reviews and ratings back to the frontend
+    } catch (error) {
+      console.error('Error fetching activity reviews and ratings:', error);
+      res.status(500).json({ message: 'Internal Server Error', error });
+    }
+};
 
 module.exports = {
     getActivityById,
@@ -608,5 +651,6 @@ module.exports = {
     unflagActivity,
     subscribeToActivity,
     getAllActivityTourist,
-    getBookedActivities
+    getBookedActivities,
+    getActivityReviewsAndRatings
 };

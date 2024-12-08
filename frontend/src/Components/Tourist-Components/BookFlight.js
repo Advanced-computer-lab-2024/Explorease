@@ -110,45 +110,45 @@ const handleBookNow = async (flight) => {
 
 
     return (
-        <Box sx={{ px: 3, py: 4, maxWidth: 800, mx: 'auto', backgroundColor: 'white', borderRadius: 2, boxShadow: 2, marginTop:'35px' }}>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#111E56', textAlign: 'center', mb: 4 }}>
+        <Box  sx={{ padding: '20px', maxWidth: '2000px', margin: '0 auto' }}>
+            <Typography variant="h4" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
                 Book a Flight
             </Typography>
             <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        label="Origin City"
-                        value={origin}
-                        onChange={(e) => setOrigin(e.target.value)}
-                        fullWidth
-                        variant="outlined"
-                        margin="normal"
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        label="Destination City"
-                        value={destination}
-                        onChange={(e) => setDestination(e.target.value)}
-                        fullWidth
-                        variant="outlined"
-                        margin="normal"
-                    />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <TextField
-                        label="Departure Date"
-                        type="date"
-                        value={departureDate}
-                        onChange={(e) => setDepartureDate(e.target.value)}
-                        fullWidth
-                        variant="outlined"
-                        margin="normal"
-                        InputLabelProps={{ shrink: true }}
-                    />
-                </Grid>
-               
-            </Grid>
+    <Grid item xs={12} sm={4}>
+        <TextField
+            label="Origin City"
+            value={origin}
+            onChange={(e) => setOrigin(e.target.value)}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+        />
+    </Grid>
+    <Grid item xs={12} sm={4}>
+        <TextField
+            label="Destination City"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+        />
+    </Grid>
+    <Grid item xs={12} sm={4}>
+        <TextField
+            label="Departure Date"
+            type="date"
+            value={departureDate}
+            onChange={(e) => setDepartureDate(e.target.value)}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+        />
+    </Grid>
+</Grid>
+
             <Button
                 variant="contained"
                 color="primary"

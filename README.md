@@ -71,10 +71,230 @@ We are actively working to address these issues in future updates.
 
 
 ## API Refrences:
--
--
--
+The Base address for the API is : http://localhost:3000  
+The provided list is of all the API routes:
 
+ADMIN API Routes:
+-  POST /admin/createMainAdmin
+-  POST /admin/add
+-  POST /admin/login 
+-  GET /admin/all
+-  POST /admin/addGovernor
+-  DELETE /admin/delete/:id
+-  POST /admin/createTags
+-  PUT /admin/updateTag/:id
+-  GET /admin/getTags
+-  DELETE /admin/deleteTag/:id
+-  POST /admin/createPromoCode
+-  PUT /admin/updatePromoCode/:id
+-  GET /admin/getPromoCodes
+-  DELETE /admin/deletePromoCode/:id
+-  POST /admin/createCategory
+-  PUT /admin/updateCategory/:id
+-  GET /admin/getCategories
+-  DELETE /admin/deleteCategory/:id
+-  GET /admin/products
+-  GET /admin/adminproducts
+-  POST /admin/addProduct
+-  PUT /admin/archiveProduct/:id
+-  PUT /admin/updateProduct/:id
+-  DELETE /admin/deleteProduct/:id
+-  GET /admin/myproducts/filter-sort-search
+-  GET /admin/itineraries
+-  PUT /admin/flagItineraries/:id
+-  PUT /admin/unflagItineraries/:id
+-  GET /admin/activities
+-  PUT /admin/flagActivity/:id
+-  PUT /admin/unflagActivity/:id
+-  GET /admin/tourists
+-  GET /admin/sellers
+-  GET /admin/tourismGovernors
+-  GET /admin/addGoverner
+-  GET /admin/tourGuides
+-  GET /admin/advertisers
+-  DELETE /admin/deleteUser/:id/:userType
+-  PUT /admin/editMyPassword
+-  GET /admin/pending-users
+-  POST /admin/accept-user
+-  POST /admin/reject-user
+-  GET /admin/sales-report
+-  GET /admin/sales-report/filter
+-  GET /admin/getAllComplaints
+-  GET /admin/getComplaintsByStatus
+-  GET /admin/getComplaintsByDate
+-  GET /admin/adminRespondToComplaint/:complaintId
+-  DELETEPUT /admin/deleteComplaint
+-  GET /admin/getRequesteddeleteUsers
+-  POST /admin/notifications
+-  GET /admin/notifications
+-  PUT /admin/notifications/:id
+-  DELETE /admin/notifications/:id
+
+ADVERTISER API Routes:
+- GET /advertiser/myProfile
+- PUT /advertiser/updateProfile
+- DELETE /advertiser/deleteProfile
+- PUT /advertiser/editPassword
+- PUT /advertiser/deleteRequest
+- POST /advertiser/createActivity
+- GET /advertiser/getMyActivities
+- GET /advertiser/filter-sort-search
+- DELETE /advertiser/deleteActivity/:id
+- DELETE /advertiser/deleteActivity2/:id
+- PUT /advertiser/updateActivity/:id
+- POST /advertiser/upload-photo
+- POST /advertiser/notifications
+- GET /advertiser/notifications
+- PUT /advertiser/notifications/:id
+- DELETE /advertiser/notifications/:id
+- GET /advertiser/salesReport
+- GET /advertiser/salesReport/filter
+- GET /advertiser/activity-summary
+
+GOVERNOR API Routes
+- POST /governor/createHistoricalPlace
+- PUT /governor/updateHistoricalPlace/:id
+- GET /governor/getMyHistoricalPlaces
+- GET /governor/getAllHistoricalPlaces
+- DELETE /governor/deleteHistoricalPlace/:id
+- POST /governor/createTag
+- GET /governor/myProfile
+- PUT /governor/updateProfile
+- DELETE /governor/deleteProfile
+- PUT /governor/editPassword
+- POST /governor/notifications
+- GET /governor/notifications
+- PUT /governor/notifications/:id
+- DELETE /governor/notifications/:id
+
+SELLER API Routes
+- GET /seller/myProfile
+- PUT /seller/myProfile
+- POST /seller/createProduct
+- GET /seller/myproducts
+- GET /seller/products
+- GET /seller/myproducts/filter-sort-search
+- DELETE /seller/productsBySeller/:id
+- PUT /seller/updateProduct/:id
+- DELETE /seller/deleteProduct/:id
+- PUT /seller/archiveProduct/:id
+- PUT /seller/editPassword
+- GET /seller/getall
+- PUT /seller/deleteSellerRequest
+- POST /seller/upload-photo
+- POST /seller/notifications
+- GET /seller/notifications
+- PUT /seller/notifications/:id
+- DELETE /seller/notifications/:id
+- GET /seller/salesReport
+- GET /seller/salesReport/filter
+
+TOURGUIDE API Routes
+- GET /tourguide/allActivities
+- GET /tourguide/allTags
+- GET /tourguide/myItineraries
+- GET /tourguide/allItineraries
+- PUT /tourguide/updateItinerary/:id
+- PUT /tourguide/activateItinerary/:id
+- PUT /tourguide/deactivateItinerary/:id
+- DELETE /tourguide/deleteItinerary/:id
+- DELETE /tourguide/deleteItinerary2/:id
+- GET /tourguide/myProfile
+- PUT /tourguide/updateProfile
+- POST /tourguide/upload-photo
+- POST /tourguide/createItinerary
+- PUT /tourguide/editPassword
+- GET /tourguide/getall
+- PUT /tourguide/deletetourGuideRequest
+- POST /tourguide/notifications
+- GET /tourguide/notifications
+- PUT /tourguide/notifications/:id
+- DELETE /tourguide/notifications/:id
+- GET /tourguide/salesReport
+- GET /tourguide/salesReport/filter
+- GET /tourguide/itinerary-summary
+
+TOURIST API Routes
+- GET /tourist/myProfile
+- PUT /tourist/myProfile
+- GET /tourist/products
+- GET /tourist/products/filter-sort-search
+- GET /tourist/promocode/:name
+- POST /tourist/promocode
+- POST /tourist/product/purchase
+- PUT /tourist/purchase/:purchaseId/review
+- GET /tourist/purchases/my-purchases
+- DELETE /tourist/purchases/:purchaseId/cancel
+- POST /tourist/cart/add
+- GET /tourist/cart
+- DELETE /tourist/cart/:productId
+- DELETE /tourist/cart
+- POST /tourist/cart/checkout
+- PUT /tourist/cart/update
+- POST /tourist/cart/apply-promo
+- GET /tourist/activities
+- GET /tourist/itineraries
+- GET /tourist/historical-places
+- GET /tourist/activities/filter-sort-search
+- GET /tourist/itineraries/filter-sort-search
+- GET /tourist/historical-places/filter-sort-search
+- PUT /tourist/editPassword
+- POST /tourist/addComplaint
+- GET /tourist/getComplaintsByTouristAndStatus
+- GET /tourist/getComplaintsByTourist
+- DELETE /tourist/deleteComplaint
+- POST /tourist/activities/book/:activityId
+- POST /tourist/itineraries/book/:itineraryId
+- GET /tourist/itineraries/bookings
+- GET /tourist/activities/bookings
+- GET /tourist/activities/:id
+- POST /tourist/bookings/cancelBooking/:bookingId
+- POST /tourist/bookings/cancelBookingItinerary/:bookingId
+- POST /tourist/activity-bookings/add-rating/:bookingId
+- POST /tourist/activity-bookings/add-comment/:bookingId
+- POST /tourist/itinerary-bookings/add-rating/:bookingId
+- POST /tourist/itinerary-bookings/add-comment/:bookingId
+- GET /tourist/itineraries/:id
+- GET /tourist/get-my-guides/:id
+- GET /tourist/myPoints
+- POST /tourist/addpoints
+- POST /tourist/convertPointsToRedeemableAmount
+- GET /tourist/myBadge
+- PUT /tourist/deleteTouristRequest
+- POST /tourist/subscribeToActivity/:activityId
+- POST /tourist/tourguideRev/add
+- GET /tourist/getTGRevAll/:tourGuideId
+- GET /tourist/getTGRev/:tourGuideId
+- POST /tourist/wishlist/add
+- GET /tourist/wishlist
+- DELETE /tourist/wishlist/:productId
+- POST /tourist/delivery-address
+- GET /tourist/delivery-address
+- DELETE /tourist/delivery-address/:addressId
+- GET /tourist/notifications
+- POST /tourist/cart/stripe-session
+- POST /tourist/cart/stripe-success
+- POST /tourist/saved-activity/:activityId
+- GET /tourist/saved-activity
+- DELETE /tourist/saved-activity/:activityId
+- POST /tourist/save/:itineraryId
+- GET /tourist/saved-itineraries
+- DELETE /tourist/saved-itineraries/:itineraryId
+- POST /tourist/activities/stripe-session
+- POST /tourist/activities/stripe-success
+- POST /tourist/itineraries/stripe-session
+- POST /tourist/itineraries/stripe-success
+- POST /tourist/flights/stripe-session
+- POST /tourist/hotels/stripe-session
+- GET /tourist/activities/booked/booked-activities
+- GET /tourist/itineraries/booked/booked-itineraries
+
+HOTELS API Routes
+- GET /hotel/search
+
+FLIGHTS API Routes
+- Get /flights/iata-code
+- Get /flights/search
 
 ## Tests:
 -in Postman
@@ -109,9 +329,7 @@ MAILGUN_SENDER=postmaster@sandboxb1e282bce15c48b6a0eba45b8ef55bf2.mailgun.org
 5. Register to make an account on the website, and naviagte easily after.
 
 
-## Contribute:
--
--
+
 ## **Contribute**
 
 We welcome contributions to **Explorease**! If you have ideas, suggestions, or fixes (other than the ones mentioned in the build status) that can improve this project, feel free to contribute. Here's how you can get involved:
@@ -168,7 +386,7 @@ If you have any questions or need help with your contributions, feel free to ope
 Thank you for considering contributing to **Explorease**! 
 
 
-## Credts:
+## Credits:
 https://www.youtube.com/watch?v=98BzS5Oz5E4&list=PL4cUxeGkcC9iJ_KkrkBZWZRHVwnzLIoUE
 https://www.youtube.com/playlist?list=PLZlA0Gpn_vH8EtggFGERCwMY5u5hOjf-h
 https://youtube.com/playlist?list=PLZlA0Gpn_vH_NT5zPVp18nGe_W9LqBDQK&si=rKWWZ_L0XKAY2gB4
