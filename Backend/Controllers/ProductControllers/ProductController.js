@@ -2,6 +2,8 @@ const productModel = require('../../Models/ProductModels/Product.js');
 const { default: mongoose } = require('mongoose');
 const cloudinary = require('cloudinary').v2;
 require('dotenv').config();
+const Purchase = require('../../Models/ProductModels/Purchase.js');
+const Tourist = require('../../Models/UserModels/Tourist.js');
 
 // Cloudinary configuration
 cloudinary.config({
@@ -371,6 +373,88 @@ const getProductsBySellerId = async (req, res) => {
     }
 };
 
+// Controller to fetch reviews, ratings, and usernames by product
+const getProductReviewsAndRatings = async (req, res) => {
+    try {
+        const { productId } = req.params;  // Get productId from request parameters
+
+        // Fetch all purchases for the given product with associated buyer details
+        const purchases = await Purchase.find({ productId })
+            .populate('productId', 'name') // Populate product details (e.g., name)
+            .populate('buyerId', 'username') // Populate buyer (tourist) details (e.g., username)
+            .select('productId review rating buyerId'); // Select relevant fields from purchases
+
+        // Check if there are any purchases for the product
+        if (purchases.length === 0) {
+            return res.status(404).json({ message: 'No reviews or ratings found for this product' });
+        }
+
+        // Create a map of reviews and ratings by userId to ensure one entry per user
+        const productReviews = purchases.reduce((acc, purchase) => {
+            const userId = purchase.buyerId._id.toString();
+
+            // If the user hasn't already left a review and rating for this product, add them
+            if (!acc[userId]) {
+                acc[userId] = {
+                    review: purchase.review || null,  // If review exists, use it
+                    rating: purchase.rating || null,  // If rating exists, use it
+                    username: purchase.buyerId.username,
+                };
+            } else {
+                // If the user has left a review or rating, we update the existing entry
+                if (purchase.review) {
+                    acc[userId].review = purchase.review;
+                }
+                if (purchase.rating) {
+                    acc[userId].rating = purchase.rating;
+                }
+            }
+
+            return acc;
+        }, {});
+
+        // Prepare the reviews and ratings data for response
+        const reviews = [];
+        const ratings = [];
+
+        // Populate reviews and ratings arrays
+        for (const userId in productReviews) {
+            const userReview = productReviews[userId];
+            if (userReview.review) {
+                reviews.push({
+                    review: userReview.review,
+                    username: userReview.username,
+                });
+            }
+            if (userReview.rating) {
+                ratings.push({
+                    rating: userReview.rating,
+                    username: userReview.username,
+                });
+            }
+        }
+
+        // Prepare the final result
+        const result = {
+            productId,
+            productName: purchases[0].productId.name, // All reviews will be for the same product, so we can get the name from the first item
+            reviews,
+            ratings,
+        };
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error fetching product reviews and ratings:', error);
+        res.status(500).json({ message: 'Internal Server Error', error });
+    }
+};
+
+
+
+module.exports = {
+    getProductReviewsAndRatings,
+};
+
 
 
 module.exports = {
@@ -387,5 +471,6 @@ module.exports = {
     getAllProductsAdmin,
     getMyAdminProducts,
     createProductAdmin,
-    getProductsBySellerId
+    getProductsBySellerId,
+    getProductReviewsAndRatings
 };

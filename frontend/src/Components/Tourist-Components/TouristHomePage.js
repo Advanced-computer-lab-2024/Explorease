@@ -34,7 +34,7 @@ const TouristHomePage = ({profile}) => {
     };
     
     
-  const handleCopyLink = (activityId) => {
+  const handleCopyLinkActivity = (activityId) => {
     const link = `${window.location.origin}/activity/${activityId}`;
     navigator.clipboard.writeText(link)
       .then(() => {
@@ -45,6 +45,16 @@ const TouristHomePage = ({profile}) => {
       });
   };
 
+  const handleCopyLinkItinerary = (activityId) => {
+    const link = `${window.location.origin}/itinerary/${activityId}`;
+    navigator.clipboard.writeText(link)
+      .then(() => {
+        alert('Link copied to clipboard!');
+      })
+      .catch((err) => {
+        console.error('Error copying link:', err);
+      });
+  };
   const handleShareEmail = (activity) => {
     const subject = `Check out this activity: ${activity.name}`;
     const body = `Here is an activity you might be interested in:\n\nName: ${activity.name}\nDate: ${new Date(activity.date).toLocaleDateString()}\nLocation: ${activity.location}\nPrice: $${activity.price}\n\nCheck it out here: ${window.location.origin}/activity/${activity._id}`;
@@ -394,7 +404,7 @@ const TouristHomePage = ({profile}) => {
                             }}
                         >
                             <Button
-                                onClick={() => handleCopyLink(selectedItem._id)}
+                                onClick={() => selectedType === 'itinerary' ? handleCopyLinkItinerary(selectedItem._id) : handleCopyLinkActivity(selectedItem._id)}
                                 variant="outlined"
                                 startIcon={<LinkIcon />}
                                 sx={{

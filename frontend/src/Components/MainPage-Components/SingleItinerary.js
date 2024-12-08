@@ -13,11 +13,8 @@ const SingleItinerary = () => {
   useEffect(() => {
     const fetchItinerary = async () => {
       try {
-        const token = localStorage.getItem('token');
         const response = await axios.get(`/tourists/itineraries/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        
         });
         setItinerary(response.data);
       } catch (err) {
