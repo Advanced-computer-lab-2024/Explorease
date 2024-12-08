@@ -72,7 +72,7 @@ We are actively working to address these issues in future updates.
 
 ## API Refrences:
 The Base address for the API is : http://localhost:3000
- The provided list is of all the API routes:
+The provided list is of all the API routes:
 -  POST /admin/createMainAdmin
 -  POST /admin/add
 -  POST /admin/login 
@@ -80,53 +80,53 @@ The Base address for the API is : http://localhost:3000
 -  POST /admin/addGovernor
 -  DELETE /admin/delete/:id
 -  POST /admin/createTags
-- PUT /admin/updateTag/:id
-- ** GET /admin/getTags
-- ** DELETE /admin/deleteTag/:id
-- ** POST /admin/createPromoCode
-- ** PUT /admin/updatePromoCode/:id
-- ** GET /admin/getPromoCodes
-- ** DELETE /admin/deletePromoCode/:id
-- ** POST /admin/createCategory
-- ** PUT /admin/updateCategory/:id
-- ** GET /admin/getCategories
-- ** DELETE /admin/deleteCategory/:id
-- ** GET /admin/products
-- ** GET /admin/adminproducts
-- ** POST /admin/addProduct
-- ** PUT /admin/archiveProduct/:id
-- ** PUT /admin/updateProduct/:id
-- ** DELETE /admin/deleteProduct/:id
-- ** GET /admin/myproducts/filter-sort-search
-- ** GET /admin/itineraries
-- ** PUT /admin/flagItineraries/:id
-- ** PUT /admin/unflagItineraries/:id
-- ** GET /admin/activities
-- ** PUT /admin/flagActivity/:id
-- ** PUT /admin/unflagActivity/:id
-- ** GET /admin/tourists
-- ** GET /admin/sellers
-- ** GET /admin/tourismGovernors
-- ** GET /admin/addGoverner
-- ** GET /admin/tourGuides
-- ** GET /admin/advertisers
-- ** DELETE /admin/deleteUser/:id/:userType
-- ** PUT /admin/editMyPassword
-- ** GET /admin/pending-users
-- ** POST /admin/accept-user
-- ** POST /admin/reject-user
-- ** GET /admin/sales-report
-- ** GET /admin/sales-report/filter
-- ** GET /admin/getAllComplaints
-- ** GET /admin/getComplaintsByStatus
-- ** GET /admin/getComplaintsByDate
-- ** GET /admin/adminRespondToComplaint/:complaintId
-- ** DELETEPUT /admin/deleteComplaint
-- ** GET /admin/getRequesteddeleteUsers
-- ** POST /admin/notifications
-- ** GET /admin/notifications
-- ** PUT /admin/notifications/:id
-- ** DELETE /admin/notifications/:id
+-  PUT /admin/updateTag/:id
+-  GET /admin/getTags
+-  DELETE /admin/deleteTag/:id
+-  POST /admin/createPromoCode
+-  PUT /admin/updatePromoCode/:id
+-  GET /admin/getPromoCodes
+-  DELETE /admin/deletePromoCode/:id
+-  POST /admin/createCategory
+-  PUT /admin/updateCategory/:id
+-  GET /admin/getCategories
+-  DELETE /admin/deleteCategory/:id
+-  GET /admin/products
+-  GET /admin/adminproducts
+-  POST /admin/addProduct
+-  PUT /admin/archiveProduct/:id
+-  PUT /admin/updateProduct/:id
+-  DELETE /admin/deleteProduct/:id
+-  GET /admin/myproducts/filter-sort-search
+-  GET /admin/itineraries
+-  PUT /admin/flagItineraries/:id
+-  PUT /admin/unflagItineraries/:id
+-  GET /admin/activities
+-  PUT /admin/flagActivity/:id
+-  PUT /admin/unflagActivity/:id
+-  GET /admin/tourists
+-  GET /admin/sellers
+-  GET /admin/tourismGovernors
+-  GET /admin/addGoverner
+-  GET /admin/tourGuides
+-  GET /admin/advertisers
+-  DELETE /admin/deleteUser/:id/:userType
+-  PUT /admin/editMyPassword
+-  GET /admin/pending-users
+-  POST /admin/accept-user
+-  POST /admin/reject-user
+-  GET /admin/sales-report
+-  GET /admin/sales-report/filter
+-  GET /admin/getAllComplaints
+-  GET /admin/getComplaintsByStatus
+-  GET /admin/getComplaintsByDate
+-  GET /admin/adminRespondToComplaint/:complaintId
+-  DELETEPUT /admin/deleteComplaint
+-  GET /admin/getRequesteddeleteUsers
+-  POST /admin/notifications
+-  GET /admin/notifications
+-  PUT /admin/notifications/:id
+-  DELETE /admin/notifications/:id
 
 
 ## Tests:
