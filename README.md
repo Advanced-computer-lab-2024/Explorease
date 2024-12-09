@@ -496,7 +496,9 @@ const getFilteredSortedProducts = async (req, res) => {
 The Base address for the API is : http://localhost:5000  
 The provided list is of all the API routes:
 
-ADMIN API Routes:
+<details>
+<summary> ADMIN API Routes </summary>
+  
 -  POST /admin/createMainAdmin
 -  POST /admin/add
 -  POST /admin/login 
@@ -551,8 +553,12 @@ ADMIN API Routes:
 -  GET /admin/notifications
 -  PUT /admin/notifications/:id
 -  DELETE /admin/notifications/:id
+  
+</details>
+  
 <details>
-<summary>ADVERTISER API Routes:</summary>
+<summary> ADVERTISER API Routes </summary>
+
 - GET /advertiser/myProfile
 - PUT /advertiser/updateProfile
 - DELETE /advertiser/deleteProfile
@@ -572,8 +578,12 @@ ADMIN API Routes:
 - GET /advertiser/salesReport
 - GET /advertiser/salesReport/filter
 - GET /advertiser/activity-summary
+
 </details>
-GOVERNOR API Routes
+
+<details>
+<summary> GOVERNOR API Routes </summary>
+  
 - POST /governor/createHistoricalPlace
 - PUT /governor/updateHistoricalPlace/:id
 - GET /governor/getMyHistoricalPlaces
@@ -589,7 +599,11 @@ GOVERNOR API Routes
 - PUT /governor/notifications/:id
 - DELETE /governor/notifications/:id
 
-SELLER API Routes
+</details>
+
+<details>
+<summary> SELLER API Routes </summary>
+  
 - GET /seller/myProfile
 - PUT /seller/myProfile
 - POST /seller/createProduct
@@ -611,7 +625,11 @@ SELLER API Routes
 - GET /seller/salesReport
 - GET /seller/salesReport/filter
 
-TOURGUIDE API Routes
+</details>
+
+<details>
+<summary> TOURGUIDE API Routes </summary>
+
 - GET /tourguide/allActivities
 - GET /tourguide/allTags
 - GET /tourguide/myItineraries
@@ -636,7 +654,11 @@ TOURGUIDE API Routes
 - GET /tourguide/salesReport/filter
 - GET /tourguide/itinerary-summary
 
-TOURIST API Routes
+</details>
+
+<details>
+<summary> TOURIST API Routes </summary>
+  
 - GET /tourist/myProfile
 - PUT /tourist/myProfile
 - GET /tourist/products
@@ -711,12 +733,22 @@ TOURIST API Routes
 - GET /tourist/activities/booked/booked-activities
 - GET /tourist/itineraries/booked/booked-itineraries
 
-HOTELS API Routes
+</details>
+
+<details>
+<summary> HOTELS API Routes </summary>
+  
 - GET /hotel/search
 
-FLIGHTS API Routes
+</details>
+
+<details>
+<summary> FLIGHTS API Routes </summary>
+  
 - Get /flights/iata-code
 - Get /flights/search
+
+</details>
 
 ## Tests:
 -in Postman
