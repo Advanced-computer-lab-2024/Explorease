@@ -605,7 +605,6 @@ const BookItinerariesPage = () => {
                                 boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
                             },
                         }}
-                        disabled={pastItineraries.includes(itinerary._id)}
                         //disabled={bookedActivities.includes(activity._id) || loading} // Disable if booked or loading
                     >
                         {itinerary.imageUrl && (
@@ -655,6 +654,8 @@ const BookItinerariesPage = () => {
                                             border: '2px solid #111E56',
                                         },
                                     }}
+                                    disabled={pastItineraries.includes(itinerary._id)}
+
                                 >
                                     <BookIcon />
                                 </IconButton>
