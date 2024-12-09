@@ -63,7 +63,7 @@ const fetchGuides = useCallback(async () => {
             setErrorMessage('No tour guides available for review.');
         }
     } catch (error) {
-        setErrorMessage(error.response?.status === 404 ? 'No Itinerary Bookings Found' : 'Error loading guides for review.');
+        setErrorMessage(error.response?.status === 404 ? `You haven't booked any itineraries yet ` : 'Error loading guides for review.');
         console.error('Error fetching guides:', error);
     }finally {
         setLoading(false); // Set loading to false after the fetch operation is completed
