@@ -24,6 +24,10 @@ We are actively working to address these issues in future updates.
 
 ## Screenshots:
 ![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Screenshot%202024-12-08%20212657.png)  
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/tourist homepage.png)  
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/past activity bookings.png)  
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/book itinerary.png)  
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/purchased products.png)  
 [![Watch the video](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Explorease.mp4)]
 
 *(Add more images as needed or a video showcasing the app's features)*
