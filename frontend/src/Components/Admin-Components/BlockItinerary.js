@@ -144,34 +144,34 @@ const ManageContent = () => {
         }}
       >
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
             {item.name}
           </Typography>
           {isItinerary ? (
             <>
               <Typography>
-                <strong>Total Price:</strong> ${item.totalPrice}
+                <strong style={{color:'#111E56' , fontWeight:'bold'}}>Total Price:</strong> ${item.totalPrice}
               </Typography>
               <Typography>
-                <strong>Available Dates:</strong> {item.AvailableDates.join(', ')}
+                <strong style={{color:'#111E56' , fontWeight:'bold'}}>Available Dates:</strong> {item.AvailableDates.join(', ')}
               </Typography>
               <Typography>
-                <strong>Pick Up Location:</strong> {item.PickUpLocation}
+                <strong style={{color:'#111E56' , fontWeight:'bold'}}>Pick Up Location:</strong> {item.PickUpLocation}
               </Typography>
               <Typography>
-                <strong>Drop Off Location:</strong> {item.DropOffLocation}
+                <strong style={{color:'#111E56' , fontWeight:'bold'}}>Drop Off Location:</strong> {item.DropOffLocation}
               </Typography>
             </>
           ) : (
             <>
               <Typography>
-                <strong>Date:</strong> {new Date(item.date).toLocaleDateString()}
+                <strong style={{color:'#111E56' , fontWeight:'bold'}}>Date:</strong> {new Date(item.date).toLocaleDateString()}
               </Typography>
               <Typography>
-                <strong>Location:</strong> {item.location}
+                <strong style={{color:'#111E56' , fontWeight:'bold'}}>Location:</strong> {item.location}
               </Typography>
               <Typography>
-                <strong>Price:</strong> ${item.price}
+                <strong style={{color:'#111E56' , fontWeight:'bold'}}>Price:</strong> ${item.price}
               </Typography>
             </>
           )}
@@ -214,6 +214,7 @@ const ManageContent = () => {
           color: '#111E56',
           position: 'relative',
           display: 'inline-block',
+          fontWeight: 'bold', // Make the text bold
           '&::after': {
             content: '""',
             position: 'absolute',

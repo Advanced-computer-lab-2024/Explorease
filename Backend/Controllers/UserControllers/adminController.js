@@ -119,10 +119,6 @@ const addAdmin = async(req, res) => {
 // Fetch all admins
 const getAllAdmins = async (req, res) => {
     // Ensure only main admin or authorized admins can access this endpoint
-    if (!req.admin.isMainAdmin) {
-        return res.status(403).json({ message: 'Only the main admin can view all admins' });
-    }
-
     try {
         // Fetch all admins from the Admin collection
         const admins = await Admin.find();  // Optionally, you can add a filter if needed
