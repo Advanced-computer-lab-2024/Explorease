@@ -103,8 +103,9 @@ const TouristHomePage = ({profile}) => {
                 key={activity._id}
                 onClick={() => handleOpenPopup(activity, 'Activity')} // Open popup
                 sx={{
-                    margin: '10px',
+                    marginTop:'20px',
                     marginBottom : '30px',
+                    marginLeft: '-20px',
                     borderRadius: '10px',
                     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -143,8 +144,9 @@ const TouristHomePage = ({profile}) => {
                 key={itinerary._id}
                 onClick={() => handleOpenPopup(itinerary, 'Itinerary')} // Open popup
                 sx={{
-                    margin: '10px',
+                    marginTop:'20px',
                     marginBottom : '30px',
+                    marginLeft: '-20px',
                     borderRadius: '10px',
                     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -180,8 +182,9 @@ const TouristHomePage = ({profile}) => {
                 key={place._id}
                 onClick={() => handleOpenPopup(place, 'Historical Place')} // Open popup
                 sx={{
-                    margin: '10px',
-                    marginBottom : '30px',
+                    marginTop:'20px',
+                    marginBottom : '30px',   
+                    padding: '-20px',
                     borderRadius: '10px',
                     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -189,7 +192,7 @@ const TouristHomePage = ({profile}) => {
                         transform: 'scale(1.05)',
                         boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3)',
                     },
-                    width: 350, // Fixed width
+                    width: 390, // Fixed width
                     height: 300, // Fixed height
                 }}
             >
@@ -210,8 +213,7 @@ const TouristHomePage = ({profile}) => {
                     </Typography>
                 </CardContent>
             </Card>
-        );
-        
+        );  
 
         const renderDetailsPopup = () => (
             <Dialog
@@ -528,7 +530,8 @@ const TouristHomePage = ({profile}) => {
                 autoPlaySpeed={3000}
                 centerMode={true}
                 infinite={true}
-                showDots={true}>
+                showDots={true}
+                >
                     {activities.map(renderActivityCard)}
                 </Carousel>
             </Box>

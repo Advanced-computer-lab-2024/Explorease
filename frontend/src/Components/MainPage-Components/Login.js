@@ -16,7 +16,7 @@ import {
     DialogActions,
     CircularProgress,
     Stack,
-    Container,
+    Container, List, ListItem, Divider
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { Visibility, VisibilityOff, Close } from '@mui/icons-material';
@@ -50,7 +50,19 @@ const Login = () => {
     const [showTerms, setShowTerms] = useState(false);
 
     const navigate = useNavigate();
-
+    const dummyTerms = [
+        '1. Term 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        '2. Term 2: Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.',
+        '3. Term 3: Sed nisi. Nulla quis sem at nibh elementum imperdiet.',
+        '4. Term 4: Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.',
+        '5. Term 5: Mauris massa. Vestibulum lacinia arcu eget nulla.',
+        '6. Term 6: Class aptent taciti sociosqu ad litora torquent per conubia nostra.',
+        '7. Term 7: Inceptos himenaeos. Curabitur ullamcorper ultricies nisi.',
+        '8. Term 8: Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus.',
+        '9. Term 9: Fusce feugiat malesuada odio. Morbi nunc odio, gravida at cursus nec, luctus a lorem.',
+        '10. Term 10: Maecenas fermentum consequat mi. Donec fermentum. Pellentesque volutpat lacus.',
+        // Add more dummy terms if needed
+      ];
     const handleLogin = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -235,6 +247,19 @@ const Login = () => {
                             <Typography variant="body1" sx={{ mb: 2 }}>
                                 Please read and accept the terms and conditions to proceed.
                             </Typography>
+                            <Box sx={{ maxHeight: '300px', overflowY: 'auto', padding: 2 }}>
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        Terms and Conditions
+      </Typography>
+      <List>
+        {dummyTerms.map((term, index) => (
+          <div key={index}>
+            <ListItem>{term}</ListItem>
+            {index < dummyTerms.length - 1 && <Divider />}
+          </div>
+        ))}
+      </List>
+    </Box>
                             <Box>
                                 <Button
                                     variant="contained"

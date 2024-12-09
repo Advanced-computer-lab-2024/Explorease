@@ -86,7 +86,7 @@ const createStripeSession = async (req, res) => {
                 buyerId,
                 amount: totalCost,
             },
-            success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.FRONTEND_URL}/payment-status?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/tourist`,
         });
         const userId = req.user.id;

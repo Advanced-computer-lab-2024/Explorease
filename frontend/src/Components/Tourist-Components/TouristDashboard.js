@@ -394,7 +394,7 @@ const TouristDashboard = () => {
             case 'wishlist':
                 return <Wishlist incrementCartCount={incrementCartCount}  updateWishlistCount={updateWishlistCount}/>
             case 'SavedEvents':
-                return <SavedEvents />
+                return <SavedEvents setActiveComponent={setActiveComponent}/>
             default:
                 return <Typography variant="h4" align="center">Welcome to the Dashboard</Typography>;
         }
@@ -544,11 +544,11 @@ const TouristDashboard = () => {
     ))}
   </nav>
                 {/* Bottom Buttons */}
-                <Box sx={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 2  , marginLeft:'5px'}}>
     {/* Settings Button */}
     <Tooltip title="Settings" arrow placement="right">
       <Button
-        startIcon={<SettingsIcon sx={{marginLeft:'10px',}} />} // Settings icon
+        startIcon={<SettingsIcon sx={{marginLeft:'9px',}} />} // Settings icon
         sx={{
           color: 'white',
           justifyContent: 'flex-start',

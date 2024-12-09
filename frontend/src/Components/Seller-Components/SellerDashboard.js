@@ -50,7 +50,7 @@ const SellerDashboard = () => {
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
     const [activeComponent, setActiveComponent] = useState('home');
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
-
+    const [logoUrl, setLogoUrl] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,6 +68,7 @@ const SellerDashboard = () => {
 
                 if (response.data && response.data.seller) {
                     setProfile(response.data.seller);
+                    setLogoUrl(response.data.seller.imageUrl);
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
@@ -269,8 +270,8 @@ const SellerDashboard = () => {
                             width: '100%',
                           }}
                         >
-                          <Avatar
-                            {...stringAvatar(profile.name || 'User')}
+                          <Avatar src={logoUrl || undefined}
+          {...(!logoUrl && stringAvatar(profile.username || 'User'))}
                             sx={{
                               width: 60,
                               height: 60,
@@ -354,33 +355,44 @@ const SellerDashboard = () => {
                           Delete Account
                         </Button>
                         {updateProfileVisible && (
-                          <Box
-                            sx={{
-                              marginTop: '20px',
-                              width: '100%',
-                              padding: '20px',
-                              borderRadius: '8px',
-                        
-                            }}
-                          >
-                            <UpdateProfile profile={profile} setProfile={setProfile} />
-                          </Box>
-                        )}
-                      </>
-                    ) : (
-                      <CircularProgress sx={{ color: '#111E56' }} />
-                    )}
-                  </Box>
+            <Box
+              sx={{
+                marginTop: '20px',
+                width: '100%',
+                padding: '20px',
+                borderRadius: '8px',
+              }}
+            >
+              <UpdateProfile profile={profile} setProfile={setProfile} />
+              <Box sx={{ marginTop: '20px', width: '100%' }}>
+                <UploadLogo setProfile={setProfile} />
+                
+              </Box>
+            </Box>
+          )}
+        
+        </>
+      ) : (
+        <CircularProgress sx={{ color: '#111E56' }} />
+      )}
+    </Box>
+  );
 
-                );
+
+
+
+
+
+
+                
             case 'viewProducts':
                 return <Products />;
             // case 'updateProfile':
             //     return <UpdateProfile profile={profile} setProfile={setProfile} />;
             case 'myProducts':
                 return <MyProducts />;
-            case 'addLogo':
-                return <UploadLogo setProfile={setProfile} />;
+            // case 'addLogo':
+            //     return <UploadLogo setProfile={setProfile} />;
             case 'salesReport':
                 return <SalesReport />;
 
@@ -401,7 +413,7 @@ const SellerDashboard = () => {
         { label: 'All Products', component: 'viewProducts', icon: <ViewModuleIcon /> },
       //  { label: 'Update Profile', component: 'updateProfile', icon: <EditIcon /> },
         { label: 'My Products', component: 'myProducts', icon: <AddBoxIcon /> },
-        { label: 'Upload Logo', component: 'addLogo', icon: <UploadIcon /> },
+      //  { label: 'Upload Logo', component: 'addLogo', icon: <UploadIcon /> },
         { label: 'Sales Report', component: 'salesReport', icon: <InsertChartIcon /> },
       ];
 
@@ -448,9 +460,9 @@ const SellerDashboard = () => {
           <Box >
   {isSidebarOpen ? (
     <Box sx={{marginLeft:'10px'}}>
-    <Avatar
-      {...stringAvatar(profile.username || 'User')}
-      sx={{
+    <Avatar  src={logoUrl || undefined}
+          {...(!logoUrl && stringAvatar(profile.username || 'User'))}
+                             sx={{
         width: 60,
         height: 60,
         marginRight: '15px',
