@@ -6,6 +6,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Notification = require('../../Models/UserModels/Notification');
 const { sendEmail } = require('../../utils/emailService.js'); // Assuming you have an email service
 const { sendActivityReceiptEmail } = require('../../utils/receiptService'); // Import the email function
+const Loyalty = require('../../Models/UserModels/Loyalty.js');
 
 const sendBookingReminders = async () => {
     try {
@@ -329,6 +330,35 @@ const stripeSuccessActivity = async (req, res) => {
         // Validate the tourist and activity
         const tourist = await Tourist.findById(touristId);
         const activity = await Activity.findById(activityId);
+
+        const { loyaltyId } = tourist;
+
+        const loyalty = await Loyalty.findById(loyaltyId);
+        if (!loyalty) {
+            console.error(`Loyalty model with ID ${loyaltyId} not found`);
+            return res.status(404).json({ message: 'Loyalty not found' });
+        }
+
+        // Calculate points based on loyalty level
+        let pointsEarned = 0;
+        switch (loyalty.level) {
+            case 1:
+                pointsEarned = amountPaid * 0.5;
+                break;
+            case 2:
+                pointsEarned = amountPaid * 1;
+                break;
+            case 3:
+                pointsEarned = amountPaid * 1.5;
+                break;
+            default:
+                pointsEarned = 0; // In case of an unknown loyalty level, no points are given
+                break;
+        }
+
+        // Add the points earned to the tourist’s loyalty points
+        loyalty.points += pointsEarned;
+        await loyalty.save();
 
         if (!tourist || !activity) {
             return res.status(404).json({ message: 'Tourist or Activity not found.' });

@@ -9,6 +9,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Notification = require('../../Models/UserModels/Notification'); // Import Notification model
 const TourGuide = require('../../Models/UserModels/TourGuide'); // Import the TourGuide model
 const { sendEmail } = require('../../utils/emailService'); // Import email service
+const Loyalty = require('../../Models/UserModels/Loyalty');
 
 const flagItinerary = async (req, res) => {
     const { id } = req.params;
@@ -506,6 +507,34 @@ const bookItinerary = async (req, res) => {
         tourist.wallet -= amountPaid;
         await tourist.save();
 
+        const { loyaltyId } = tourist;
+
+        const loyalty = await Loyalty.findById(loyaltyId);
+        if (!loyalty) {
+            console.error(`Loyalty model with ID ${loyaltyId} not found`);
+            return res.status(404).json({ message: 'Loyalty not found' });
+        }
+
+        // Calculate points based on loyalty level
+        let pointsEarned = 0;
+        switch (loyalty.level) {
+            case 1:
+                pointsEarned = amountPaid * 0.5;
+                break;
+            case 2:
+                pointsEarned = amountPaid * 1;
+                break;
+            case 3:
+                pointsEarned = amountPaid * 1.5;
+                break;
+            default:
+                pointsEarned = 0; // In case of an unknown loyalty level, no points are given
+                break;
+        }
+
+        // Add the points earned to the tourist’s loyalty points
+        loyalty.points += pointsEarned;
+        await loyalty.save();
         // Set cancellation deadline to 48 hours before the itinerary start date
         const itineraryStartDate = itinerary.AvailableDates[0];
         const cancellationDeadline = new Date(itineraryStartDate.getTime() - 48 * 60 * 60 * 1000); // 48 hours before

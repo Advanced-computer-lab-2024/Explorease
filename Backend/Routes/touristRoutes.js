@@ -37,7 +37,7 @@ router.post('/promocode', roleAuth(['tourist']), promoCodeController.applyPromoC
 
 
 //product review
-router.post('product/purchase', roleAuth(['tourist']), PurchaseController.createPurchase);
+router.post('/product/purchase', roleAuth(['tourist']), PurchaseController.createPurchase);
 router.put('/purchase/:purchaseId/review', roleAuth(['tourist']), PurchaseController.addReviewAndRating);
 router.get('/purchases/my-purchases', roleAuth(['tourist']), PurchaseController.getPurchasesByUser);
 router.delete('/purchases/:purchaseId/cancel',roleAuth(['tourist']) , PurchaseController.cancelPurchase);
