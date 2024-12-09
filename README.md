@@ -24,16 +24,17 @@ We are actively working to address these issues in future updates.
 
 ## Screenshots:
 ![App Screenshot](link_to_screenshot.png)  
+
 *(Add more images as needed or a video showcasing the app's features)*
 
 
 ## Tech/Framework Used:
-- **Frontend**: React.js
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB
-- **Authentication**: JWT (JSON Web Tokens)
-- **Third-party Services**: Stripe (for payments), Google Maps API, Twilio (for real-time notifications)
-- **Testing**: Postman for API testing
+- *Frontend*: React.js
+- *Backend*: Node.js, Express.js
+- *Database*: MongoDB
+- *Authentication*: JWT (JSON Web Tokens), and bcrypt (for hashing passwords)
+- *Third-party Services*: Stripe (for payments), Google Maps API, ExchangeRates, Cloudinary, Amadeus, and Mailgun.
+- *Testing*: Postman for API testing
 
 
 ## Features:
@@ -805,4 +806,8 @@ https://youtu.be/CLG0ha_a0q8?si=8MRpffz2zzH7RmoU
 ## License:
 - MIT License
 - Apache-2.0 License
+- ISC License
+- BSD 3-Clause License
+- SSPL (for MongoDB)
+- Custom Terms: Google Maps API, ExchangeRates, Amadeus, and Mailgun
 
