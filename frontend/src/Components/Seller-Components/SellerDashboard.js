@@ -50,7 +50,7 @@ const SellerDashboard = () => {
     const [navigationStack, setNavigationStack] = useState([]); // Stack to keep track of navigation history
     const [activeComponent, setActiveComponent] = useState('home');
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
-
+    const [logoUrl, setLogoUrl] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,6 +68,7 @@ const SellerDashboard = () => {
 
                 if (response.data && response.data.seller) {
                     setProfile(response.data.seller);
+                    setLogoUrl(response.data.seller.imageUrl);
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
@@ -269,8 +270,8 @@ const SellerDashboard = () => {
                             width: '100%',
                           }}
                         >
-                          <Avatar
-                            {...stringAvatar(profile.name || 'User')}
+                          <Avatar src={logoUrl || undefined}
+          {...(!logoUrl && stringAvatar(profile.username || 'User'))}
                             sx={{
                               width: 60,
                               height: 60,
@@ -459,9 +460,9 @@ const SellerDashboard = () => {
           <Box >
   {isSidebarOpen ? (
     <Box sx={{marginLeft:'10px'}}>
-    <Avatar
-      {...stringAvatar(profile.username || 'User')}
-      sx={{
+    <Avatar  src={logoUrl || undefined}
+          {...(!logoUrl && stringAvatar(profile.username || 'User'))}
+                             sx={{
         width: 60,
         height: 60,
         marginRight: '15px',

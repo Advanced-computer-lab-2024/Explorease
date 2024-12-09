@@ -33,7 +33,11 @@ We are actively working to address these issues in future updates.
 
 ![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/book%20itinerary.png)  
 
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/map.png)
+
 ![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/purchased%20products.png)  
+
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/cart.png)  
 
 [![Watch the video](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Explorease.mp4)]
 
@@ -750,9 +754,8 @@ The provided list is of all the API routes:
 </details>
 
 ## Tests:
--in Postman
--
--
+
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/adminlogin.jpg)  
 
 
 ## How to use:

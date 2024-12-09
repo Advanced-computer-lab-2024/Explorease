@@ -51,7 +51,7 @@ const TourGuideDashboard = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar visibility state
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
-
+    const [photoUrl, setPhotoUrl] = useState('')
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -69,6 +69,7 @@ const TourGuideDashboard = () => {
                 if (response.data && response.data.tourguide) {
                     setProfile(response.data.tourguide);
                     setProfilee(response.data.tourguide);
+                    setPhotoUrl(response.data.tourguide.imageUrl);
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
@@ -277,9 +278,9 @@ const TourGuideDashboard = () => {
                               }}
                             />
                           ) : (
-                            <Avatar
-                              {...stringAvatar(profile.username || 'User')}
-                              sx={{
+                            <Avatar src={photoUrl || undefined}
+                            {...(!photoUrl && stringAvatar(profile.username || 'User'))}
+                                             sx={{
                                 width: 60,
                                 height: 60,
                                 marginRight: '15px',
@@ -487,9 +488,9 @@ const TourGuideDashboard = () => {
         <Box >
   {isSidebarOpen ? (
     <Box sx={{marginLeft:'10px'}}>
-    <Avatar
-      {...stringAvatar(profile.username || 'User')}
-      sx={{
+    <Avatar src={photoUrl || undefined}
+                            {...(!photoUrl && stringAvatar(profile.username || 'User'))}
+                                                sx={{
         width: 60,
         height: 60,
         marginRight: '15px',
