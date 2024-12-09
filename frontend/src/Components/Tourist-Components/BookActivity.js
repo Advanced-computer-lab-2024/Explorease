@@ -44,7 +44,7 @@ const BookActivitiesPage = () => {
     const [ratings, setRatings] = useState([]);
     const [openReviewModal, setOpenReviewModal] = useState(false);
     const [activityId, setActivityId] = useState(null);
-
+    const [pastActivities, setPastActivities] = useState([]);
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext);
 
     useEffect(() => {
@@ -54,6 +54,19 @@ const BookActivitiesPage = () => {
         fetchBookmarkedActivities();
 
     }, [showPastActivities]);
+
+    useEffect(() => {
+        const now = new Date();
+
+    // Filter for past activities
+    const past = originalActivities.filter(activity => new Date(activity.date) < now);
+
+        // Extract the activity IDs for past activities
+    const pastActivityIds = past.map(activity => activity._id);
+
+    setPastActivities(pastActivityIds);
+
+    }, [originalActivities]);
 
     const fetchActivities = async () => {
         try {
@@ -686,7 +699,7 @@ const BookActivitiesPage = () => {
                                 sx={{
                                     display: 'flex',
                                     justifyContent: 'space-around',
-                                    padding: 1,
+                                    padding: 0,
                                     marginTop: 0,
                                     marginBottom: 1,
                                 }}
@@ -705,7 +718,8 @@ const BookActivitiesPage = () => {
                                                     border: '2px solid #111E56',
                                                 },
                                             }}
-                                        >
+                                            disabled={pastActivities.includes(activity._id)}
+                                    >
                                             <BookIcon />
                                         </IconButton>
                                     </Tooltip>
