@@ -166,9 +166,9 @@ const addPoints = async (req, res) => {
       }
 
       // Update loyalty level based on TotalPointsEarned
-      if (loyalty.TotalPointsEarned > 100000 && loyalty.TotalPointsEarned <= 500000) {
+      if (loyalty.TotalPointsEarned > 1000 && loyalty.TotalPointsEarned <= 5000) {
           loyalty.level = 2;
-      } else if (loyalty.TotalPointsEarned > 500000) {
+      } else if (loyalty.TotalPointsEarned > 5000) {
           loyalty.level = 3;
       }
 

@@ -9,7 +9,7 @@ const Seller = require('../../Models/UserModels/Seller');
 const Admin = require('../../Models/UserModels/Admin');
 const { sendEmail } = require('../../utils/emailService');
 const axios = require('axios');
-
+const Loyalty = require('../../Models/UserModels/Loyalty');
 
 const fetchExchangeRates = async (baseCurrency = 'USD') => {
     const YOUR_API_KEY = "6a52872f2fdad94794ee0bca";
@@ -255,7 +255,35 @@ const checkoutCart = async (req, res) => {
             tourist.wallet -= finalCost;
             await tourist.save();
         }
+        
+        const { loyaltyId } = tourist;
 
+        const loyalty = await Loyalty.findById(loyaltyId);
+        if (!loyalty) {
+            console.error(`Loyalty model with ID ${loyaltyId} not found`);
+            return res.status(404).json({ message: 'Loyalty not found' });
+        }
+
+        // Calculate points based on loyalty level
+        let pointsEarned = 0;
+        switch (loyalty.level) {
+            case 1:
+                pointsEarned = amountPaid * 0.5;
+                break;
+            case 2:
+                pointsEarned = amountPaid * 1;
+                break;
+            case 3:
+                pointsEarned = amountPaid * 1.5;
+                break;
+            default:
+                pointsEarned = 0; // In case of an unknown loyalty level, no points are given
+                break;
+        }
+
+        // Add the points earned to the tourist’s loyalty points
+        loyalty.points += pointsEarned;
+        await loyalty.save();
         // Check stock availability and create purchase records
         const purchases = await Promise.all(
             cart.items.map(async (item) => {
@@ -528,8 +556,41 @@ const stripeSuccess = async (req, res) => {
 
             await purchase.save();
             purchases.push(purchase);
+
+            const { loyaltyId } = tourist;
+
+            const loyalty = await Loyalty.findById(loyaltyId);
+            if (!loyalty) {
+                console.error(`Loyalty model with ID ${loyaltyId} not found`);
+                return res.status(404).json({ message: 'Loyalty not found' });
+            }
+            let pointsEarned = 0;
+            let amountPaid = product.Price * item.quantity;
+            switch (loyalty.level) {
+                case 1:
+                    pointsEarned = amountPaid * 0.5;
+                    break;
+                case 2:
+                    pointsEarned = amountPaid * 1;
+                    break;
+                case 3:
+                    pointsEarned = amountPaid * 1.5;
+                    break;
+                default:
+                    pointsEarned = 0; // In case of an unknown loyalty level, no points are given
+                    break;
+            }
+    
+            // Add the points earned to the tourist’s loyalty points
+            loyalty.points += pointsEarned;
+            await loyalty.save();
         }
 
+        
+     
+
+        // Calculate points based on loyalty level
+    
         // Clear the cart
         await Cart.updateOne(
             { _id: cart._id },

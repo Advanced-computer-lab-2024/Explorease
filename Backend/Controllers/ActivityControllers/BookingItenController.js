@@ -5,6 +5,9 @@ const Tourist = require('../../Models/UserModels/Tourist.js');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { sendItineraryReceiptEmail } = require('../../utils/receiptService'); // Import the email function
 // Create a new booking for an itinerary
+
+const Loyalty = require('../../Models/UserModels/Loyalty.js');
+
 const createBookingItinerary = async (req, res) => {
     const { Tourist, Itinerary, amountPaid } = req.body;
 
@@ -215,6 +218,36 @@ const stripeSuccessItinerary = async (req, res) => {
         // Validate the tourist and itinerary
         const tourist = await Tourist.findById(touristId);
         const itinerary = await Itinerary.findById(itineraryId);
+
+        const { loyaltyId } = tourist;
+
+        const loyalty = await Loyalty.findById(loyaltyId);
+        if (!loyalty) {
+            console.error(`Loyalty model with ID ${loyaltyId} not found`);
+            return res.status(404).json({ message: 'Loyalty not found' });
+        }
+
+        // Calculate points based on loyalty level
+        let pointsEarned = 0;
+        switch (loyalty.level) {
+            case 1:
+                pointsEarned = amountPaid * 0.5;
+                break;
+            case 2:
+                pointsEarned = amountPaid * 1;
+                break;
+            case 3:
+                pointsEarned = amountPaid * 1.5;
+                break;
+            default:
+                pointsEarned = 0; // In case of an unknown loyalty level, no points are given
+                break;
+        }
+
+        // Add the points earned to the tourist’s loyalty points
+        loyalty.points += pointsEarned;
+        await loyalty.save();
+
 
         if (!tourist || !itinerary) {
             return res.status(404).json({ message: 'Tourist or Itinerary not found.' });
