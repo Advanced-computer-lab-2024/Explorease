@@ -60,7 +60,7 @@ const ViewComplaints = () => {
         borderRadius: '8px',
         padding: '20px',
         width: '100%',
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#white',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         textAlign: 'left',
         cursor: 'pointer',
