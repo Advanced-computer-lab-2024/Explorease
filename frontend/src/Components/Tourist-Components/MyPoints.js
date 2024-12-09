@@ -101,7 +101,7 @@ const MyPoints = () => {
     </Tooltip>
 )}
 
-
+<Box>
             <Typography variant="h4" gutterBottom  sx={{fontWeight:'bold', color:'#111E56'}}>
                 My Points
             </Typography>
@@ -110,10 +110,9 @@ const MyPoints = () => {
     sx={{
         position: 'center',
         display: 'flex',
-        marginLeft: '500px',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        
+        margin: 'auto',
         width: '200px',
         height: '200px',
         borderRadius: '50%',
@@ -133,7 +132,7 @@ const MyPoints = () => {
     </Typography>
 </Box>
 
-
+</Box>
             <Box mt={2} display="flex" justifyContent="center" gap={2} sx={{marginTop:'30px'}}>
                 {buttonOptions.map((option) => (
                     <Button

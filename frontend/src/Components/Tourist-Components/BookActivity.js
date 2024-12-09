@@ -721,9 +721,9 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                 <Typography sx={{marginBottom: '5px',}}><strong style={{fontWeight:'bold' , color:'#111E56'}}>Time:</strong> {activity.time}</Typography>
                 <Typography sx={{marginBottom: '5px',}}><strong style={{fontWeight:'bold' , color:'#111E56'}}>Price:</strong> {convertPrice(activity.price)} {selectedCurrency}</Typography>
                 <Typography sx={{marginBottom: '5px',}}><strong style={{fontWeight:'bold' , color:'#111E56'}}>Category:</strong> {activity.category?.name}</Typography>
-                {activity.tags && (
+                {/* {activity.tags && (
                     <Typography sx={{marginBottom: '5px',}}><strong style={{fontWeight:'bold' , color:'#111E56'}}>Tags:</strong> {activity.tags.map(tag => tag.name).join(', ')}</Typography>
-                )}
+                )} */}
                 <Typography sx={{marginBottom: '5px',}}><strong style={{fontWeight:'bold' , color:'#111E56'}}>Special Discounts:</strong> {activity.specialDiscounts}</Typography>
             </CardContent>
     
@@ -734,7 +734,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                     justifyContent: 'space-around',
                     padding: 1,
                     marginTop: 0,
-                    marginBottom: 1,
+                    marginBottom: 2,
                 }}
             >
                 {activity.bookingOpen ? (

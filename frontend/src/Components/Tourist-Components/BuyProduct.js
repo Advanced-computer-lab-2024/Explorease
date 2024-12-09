@@ -131,7 +131,6 @@ useEffect(() => {
         fetchFilteredProducts();
     };
 
-
     const convertPrice = (price) => {
         return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
     };
@@ -185,8 +184,6 @@ useEffect(() => {
         }
     };
     
-    
-
     const renderProductCards = () => {
         if (!Array.isArray(products) || products.length === 0) {
             return <Typography>No products available</Typography>;
@@ -223,46 +220,46 @@ useEffect(() => {
                   
                 >
                   {/* Image Section */}
-<Box
-    sx={{
-        position: "relative",
-        height: 250, // Increased height for the image container
-        overflow: "hidden", // Ensure the image does not exceed this container
-        borderRadius: "12px 12px 0 0", // Rounded top corners
-        display: "flex", // Flexbox for centering the image
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f5f5f5", // Optional placeholder background
-    }}
->
-    <CardMedia
-        component="img"
-        image={product.imageUrl}
-        alt={product.Name}
-        sx={{
-            objectFit: "cover", // Ensures the image covers the full container width
-            width: "100%", // Full width of the card
-            height: "100%", // Full height to ensure proper coverage
-        }}
-        onClick={() => handleProductClick(product._id)}
-    />
-    {/* Price Badge */}
-    <Typography
-        sx={{
-            position: "absolute",
-            top: 10,
-            left: 10,
-            backgroundColor: "#4F46E5",
-            color: "white",
-            fontSize: "0.875rem",
-            fontWeight: "bold",
-            borderRadius: 2,
-            padding: "2px 8px",
-        }}
-    >
-        ${convertPrice(product.Price)} {selectedCurrency}
-    </Typography>
-</Box>
+                <Box
+                    sx={{
+                        position: "relative",
+                        height: 250, // Increased height for the image container
+                        overflow: "hidden", // Ensure the image does not exceed this container
+                        borderRadius: "12px 12px 0 0", // Rounded top corners
+                        display: "flex", // Flexbox for centering the image
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "#f5f5f5", // Optional placeholder background
+                    }}
+                >
+                      <CardMedia
+                          component="img"
+                          image={product.imageUrl}
+                          alt={product.Name}
+                          sx={{
+                              objectFit: "cover", // Ensures the image covers the full container width
+                              width: "100%", // Full width of the card
+                              height: "100%", // Full height to ensure proper coverage
+                          }}
+                          onClick={() => handleProductClick(product._id)}
+                      />
+                      {/* Price Badge */}
+                      <Typography
+                          sx={{
+                              position: "absolute",
+                              top: 10,
+                              left: 10,
+                              backgroundColor: "#4F46E5",
+                              color: "white",
+                              fontSize: "0.875rem",
+                              fontWeight: "bold",
+                              borderRadius: 2,
+                              padding: "2px 8px",
+                          }}
+                      >
+                          ${convertPrice(product.Price)} {selectedCurrency}
+                      </Typography>
+                  </Box>
 
       
                   {/* Content Section */}
@@ -307,18 +304,18 @@ useEffect(() => {
                       }}
                     >
                       <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 2, // Limit to 2 lines instead of 3
-            }}
-        >
-            {product.Description}
-        </Typography>
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              display: "-webkit-box",
+                              WebkitBoxOrient: "vertical",
+                              WebkitLineClamp: 2, // Limit to 2 lines instead of 3
+                          }}
+                      >
+                        {product.Description}
+                      </Typography>
                     </Box>
       
                     {/* Ratings */}
@@ -354,27 +351,27 @@ useEffect(() => {
                     }}
                   >
                  <Button
-  variant="contained"
-  color="primary"
-  sx={{
-    backgroundColor: "#111E56",
-    color: "white",
-    textTransform: "none",
-    borderRadius: 2,
-    fontWeight: "medium",
-    "&:hover": {
-      backgroundColor: "white",
-      color: "#111E56",
-      border: "2px solid #111E56",
-    },
-    flex: 1,
-    marginRight: 1,
-  }}
-  onClick={() => product.AvailableQuantity > 0 && addToCart(product._id)} // Only allow adding to cart if quantity > 0
-  disabled={product.AvailableQuantity === 0} // Disable button if productQuantity is 0
->
-  {product.AvailableQuantity === 0 ? "Out of stock" : "Add to Cart"} {/* Change text if quantity is 0 */}
-</Button>
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                      backgroundColor: "#111E56",
+                      color: "white",
+                      textTransform: "none",
+                      borderRadius: 2,
+                      fontWeight: "medium",
+                      "&:hover": {
+                        backgroundColor: "white",
+                        color: "#111E56",
+                        border: "2px solid #111E56",
+                      },
+                      flex: 1,
+                      marginRight: 1,
+                    }}
+                    onClick={() => product.AvailableQuantity > 0 && addToCart(product._id)} // Only allow adding to cart if quantity > 0
+                    disabled={product.AvailableQuantity === 0} // Disable button if productQuantity is 0
+                  >
+                    {product.AvailableQuantity === 0 ? "Out of stock" : "Add to Cart"} {/* Change text if quantity is 0 */}
+                  </Button>
 
                     {/* Wishlist Button */}
                     <IconButton
@@ -413,14 +410,14 @@ useEffect(() => {
 
   return (
       <Dialog open={openReviewModal} onClose={() => setOpenReviewModal(false)}>
-          <DialogTitle>Product Reviews</DialogTitle>
+          <DialogTitle sx={{color:'#111E56' , fontWeight:'bold'}}>Product Reviews</DialogTitle>
           <DialogContent>
               {combinedData.length === 0 ? (
                   <Typography>No reviews or ratings available for this product.</Typography>
               ) : (
                   combinedData.map((data, index) => (
-                      <Box key={index} sx={{ marginBottom: 2, border: '1px solid #ccc', padding: 2, borderRadius: 2 }}>
-                          <Typography variant="h6"><strong>{data.username}</strong></Typography>
+                      <Box key={index} sx={{ marginBottom: 2, border: '1px solid #ccc', padding: 2, borderRadius: 2 ,  }}>
+                          <Typography variant="h6" sx={{color:'#111E56',fontWeight:'bold'}}><strong>{data.username}</strong></Typography>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               {data.rating ? (
                                   <Box sx={{ marginRight: 1 }}>
@@ -434,14 +431,14 @@ useEffect(() => {
                               )}
                           </Box>
                           <Typography variant="body2" sx={{ marginTop: 1 }}>
-                              <strong>Review:</strong> {data.review || 'No review provided'}
+                              <strong style={{color:'#111E56' , fontWeight:'bold'}} >Review:</strong> {data.review || 'No review provided'}
                           </Typography>
                       </Box>
                   ))
               )}
           </DialogContent>
           <DialogActions>
-              <Button onClick={() => setOpenReviewModal(false)} color="primary">
+              <Button onClick={() => setOpenReviewModal(false)} color="#111E56">
                   Close
               </Button>
           </DialogActions>
@@ -449,10 +446,7 @@ useEffect(() => {
   );
 };
 
-
-
     return (
-
         <Box sx={{ p: 3 }}>
             <Typography variant="h4" sx={{ mb: 3 , fontWeight:'bold' , color:'#111E56' }}>
               Products

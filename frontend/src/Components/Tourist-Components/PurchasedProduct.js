@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState  , useContext} from 'react';
 import axios from 'axios';
 import {
   Button,
@@ -18,6 +18,7 @@ import {
   TextField,
   Divider,
 } from '@mui/material';
+import { CurrencyContext } from './CurrencyContext';
 
 export default function PurchasedProduct() {
   const [purchases, setPurchases] = useState([]);
@@ -28,7 +29,7 @@ export default function PurchasedProduct() {
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewDetails, setReviewDetails] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
+  const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -94,6 +95,11 @@ export default function PurchasedProduct() {
       setSubmitting(false);
     }
   };
+
+  const convertPrice = (price) => {
+    return (price * (exchangeRates[selectedCurrency] || 1)).toFixed(2);
+  };
+
   const handleCancelOrder = async (purchaseId) => {
     if (!window.confirm('Are you sure you want to cancel this order?')) {
         return;
@@ -115,7 +121,8 @@ export default function PurchasedProduct() {
         console.error('Error canceling order:', error);
         alert('Failed to cancel the order. Please try again.');
     }
-};
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -139,48 +146,166 @@ export default function PurchasedProduct() {
   const recentOrders = purchases.filter((purchase) => new Date(purchase.purchaseDate) > twoDaysAgo);
 
   const renderOrders = (orders, isDelivered) => (
-    <Grid container spacing={4}>
+    
+
+
+    // line
+    <Grid
+            container
+            spacing={3} // Spacing between grid items
+            sx={{ padding: 2 }}
+          >
         {orders.map((purchase) => (
-            <Grid item xs={12} sm={6} md={4} key={purchase._id}>
-                <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Grid
+                item
+                key={purchase._id}
+                xs={12} // For small screens (mobile): full width
+                sm={6} // For medium screens: 2 cards per row
+                md={4} // For large screens: 4 cards per row
+              >
+                <Card
+                  sx={{
+                    width: "100%", // Full width of the grid item
+                    height: 450, // Fixed height for all cards
+                    borderRadius: 4,
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)", // Subtle shadow
+                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out", // Hover effects
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0 6px 20px rgba(0, 0, 0, 0.3)",
+                    },
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                  
+                >
                     {purchase.productId?.Name ? (
                         <>
-                            <CardMedia
-                                component="img"
-                                height="200"
-                                image={purchase.productId.imageUrl || 'https://via.placeholder.com/150'}
-                                alt={purchase.productId.Name}
-                            />
+                            <Box
+                                    sx={{
+                                        position: "relative",
+                                        height: 250, // Increased height for the image container
+                                        overflow: "hidden", // Ensure the image does not exceed this container
+                                        borderRadius: "12px 12px 0 0", // Rounded top corners
+                                        display: "flex", // Flexbox for centering the image
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        backgroundColor: "#f5f5f5", // Optional placeholder background
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={purchase.productId.imageUrl || 'https://via.placeholder.com/150'}
+                                        alt={purchase.productId.Name}
+                                        sx={{
+                                            objectFit: "cover", // Ensures the image covers the full container width
+                                            width: "100%", // Full width of the card
+                                            height: "100%", // Full height to ensure proper coverage
+                                        }}
+                                        // onClick={() => handleProductClick(product._id)}
+                                    />
+                                    {/* Price Badge */}
+                                    <Typography
+                                        sx={{
+                                            position: "absolute",
+                                            top: 10,
+                                            left: 10,
+                                            backgroundColor: "#4F46E5",
+                                            color: "white",
+                                            fontSize: "0.875rem",
+                                            fontWeight: "bold",
+                                            borderRadius: 2,
+                                            padding: "2px 8px",
+                                        }}
+                                    >
+                                        { convertPrice(purchase.productId.Price)}{selectedCurrency}
+                                    </Typography>
+                                </Box>
                             <CardContent>
-                                <Typography variant="h6">{purchase.productId.Name}</Typography>
-                                <Typography variant="body2" color="textSecondary">
+                            <Box
+                              sx={{
+                                flex: 1,
+                                padding: "16px",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                                <Box
+                                  sx={{
+                                    height: 35,
+                                    overflow: "hidden",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <Typography variant="h6" sx={{fontWeight:'bold' , color:'#111E56'}}>{purchase.productId.Name}</Typography>
+                                </Box>
+                                {/* <Typography variant="body2" color="textSecondary">
                                     Price: ${purchase.productId.Price || 'N/A'}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary" gutterBottom>
-                                    Description: {purchase.productId.Description || 'No description available'}
-                                </Typography>
+                                </Typography> */}
+
+                                  <Box
+                                    sx={{
+                                      height: 50,
+                                      overflow: "hidden",
+                                      marginTop: 1,
+                                      textAlign: "left",
+                                    }}
+                                  >
+                                    <Typography variant="body2" color="textSecondary" gutterBottom>
+                                        Description: {purchase.productId.Description || 'No description available'}
+                                    </Typography>
+                                  </Box>
+                                </Box>
                                 {isDelivered ? (
                                     <>
+                                    {/* Action Buttons */}
+                  
                                         <Typography variant="body2" color="primary" gutterBottom>
                                             Status: Delivered
                                         </Typography>
                                         {purchase.review || purchase.rating ? (
-                                            <Box mt={1}>
-                                                <Typography variant="body2" color="textSecondary">
-                                                    Your Review:
-                                                </Typography>
-                                                <Rating value={purchase.rating} readOnly size="small" />
-                                                <Typography variant="body2">{purchase.review}</Typography>
+                                          <Box
+                                          sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            padding: "16px",
+                                            
+                                          }}
+                                        >
+                                              <Box mt={1 } sx={{height:'30%' , display:'flex' , justifyContent:'flex-start'}} >
+                                                <Box mt={1} sx={{marginLeft:'40px' }}>
+                                                    <Typography variant="body2" color="textSecondary">
+                                                        Your Review:
+                                                    </Typography>
+                                                    <Rating value={purchase.rating} readOnly size="small" />
+                                                </Box>
+                                                <Box mt={1} sx={{marginLeft:'30px' , marginTop:'15px'}}>
+                                                    <Typography variant="body2">{purchase.review}</Typography>
+                                                    </Box>
+                                                </Box>
                                             </Box>
+
                                         ) : (
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "space-between",
+                                              padding: "16px",
+
+                                            }}
+                                          >
                                             <Button
                                                 size="small"
                                                 color="primary"
                                                 onClick={() => handleReviewOpen(purchase)}
-                                                sx={{ mt: 1 }}
+                                                sx={{ mt: 1 , ml:11}}
                                             >
                                                 Write a Review
                                             </Button>
+                                        </Box>
                                         )}
                                     </>
                                 ) : (
@@ -191,14 +316,24 @@ export default function PurchasedProduct() {
                                         <Typography variant="body2" color="textSecondary">
                                             Payment Method: {purchase.paymentMethod ? purchase.paymentMethod.charAt(0).toUpperCase() + purchase.paymentMethod.slice(1) : 'Unknown'}
                                         </Typography>
+                                        <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "16px",
+                      
+                    }}
+                  >
                                         <Button
                                             size="small"
                                             color="error"
                                             onClick={() => handleCancelOrder(purchase._id)}
-                                            sx={{ mt: 1 }}
+                                            sx={{ mt: 1 , ml:12 }}
                                         >
                                             Cancel Order
                                         </Button>
+                                    </Box>
                                     </>
                                 )}
                             </CardContent>
