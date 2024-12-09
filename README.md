@@ -23,11 +23,18 @@ We are actively working to address these issues in future updates.
 
 
 ## Screenshots:
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/landing%20page.png)  
+
 ![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Screenshot%202024-12-08%20212657.png)  
+
 ![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/tourist%20homepage.png)  
+
 ![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/past%20activity%20bookings.png)  
+
 ![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/book%20itinerary.png)  
+
 ![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/purchased%20products.png)  
+
 [![Watch the video](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Explorease.mp4)]
 
 *(Add more images as needed or a video showcasing the app's features)*
@@ -544,8 +551,8 @@ ADMIN API Routes:
 -  GET /admin/notifications
 -  PUT /admin/notifications/:id
 -  DELETE /admin/notifications/:id
-
-ADVERTISER API Routes:
+<details>
+<summary>ADVERTISER API Routes:</summary>
 - GET /advertiser/myProfile
 - PUT /advertiser/updateProfile
 - DELETE /advertiser/deleteProfile
@@ -565,7 +572,7 @@ ADVERTISER API Routes:
 - GET /advertiser/salesReport
 - GET /advertiser/salesReport/filter
 - GET /advertiser/activity-summary
-
+</details>
 GOVERNOR API Routes
 - POST /governor/createHistoricalPlace
 - PUT /governor/updateHistoricalPlace/:id
