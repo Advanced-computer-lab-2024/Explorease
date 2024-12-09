@@ -1,6 +1,7 @@
 const Tourist = require('../Models/UserModels/Tourist');
 const { createBirthdayPromoCode } = require('../Controllers/ProductControllers/PromoCodeController');
 const { sendEmail } = require('./emailService');
+const Notification = require('../Models/UserModels/Notification');
 
 const generateBirthdayPromoCodes = async () => {
     try {
@@ -30,6 +31,17 @@ const generateBirthdayPromoCodes = async () => {
             `;
 
             await sendEmail(tourist.email, subject, message);
+
+
+            await Notification.create({
+                user: tourist._id,
+                role: 'Tourist',
+                type: 'birthday_gift',
+                message: `Happy birthday, ${tourist.username}! Here's a special gift from us.`,
+                data: { promoCode: promoCode.name },
+            });
+
+
         }
         console.log('Birthday promo codes generated and emails sent successfully!');
     } catch (error) {

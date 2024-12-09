@@ -20,6 +20,8 @@ const createBirthdayPromoCode = async (touristId) => {
             isActive: true,
             percentage: 20, // Example: 20% discount
             activeUntil: new Date(new Date().setDate(new Date().getDate() + 30)), // 30 days validity
+            forUser: [tourist._id], // Assign the promo code to the tourist
+            isForAll: false, // Set to false to restrict to specific users
         });
 
         // Add the promo code to the tourist's promos array
@@ -46,6 +48,7 @@ const createPromoCode = async (req, res) => {
             isActive,
             percentage,
             activeUntil,
+            isForAll: true, // Default to true
         });
 
         await promoCode.save();
@@ -118,6 +121,7 @@ const getPromoCodeByName = async (req,res) => {
 }
 const applyPromoCode = async (req, res) => {
     const { promoCode, cartTotal } = req.body;
+    const touristId = req.user.id;
 
     try {
         // Check if promo code exists
@@ -131,8 +135,22 @@ const applyPromoCode = async (req, res) => {
             return res.status(400).json({ message: 'Promo code is not valid or has expired.' });
         }
 
+        // Check if the promo code has been used by the tourist
+        if (promo.touristsUsed.includes(touristId)) {
+            return res.status(400).json({ message: 'You have already used this promo code.' });
+        }
+
+        // Check if the promo code is restricted to specific users
+        if (!promo.isForAll && !promo.forUser.includes(touristId)) {
+            return res.status(403).json({ message: 'Promo code is not valid for this user.' });
+        }
+
         // Calculate the discount
         const discount = (promo.percentage / 100) * cartTotal;
+
+        // Add tourist to the touristsUsed array
+        promo.touristsUsed.push(touristId);
+        await promo.save();
 
         // Respond with the discount value
         res.status(200).json({ discount, message: 'Promo code applied successfully!' });
@@ -140,6 +158,7 @@ const applyPromoCode = async (req, res) => {
         res.status(500).json({ message: 'Error applying promo code', error: error.message });
     }
 };
+
 
 
 // Export all functions at the end

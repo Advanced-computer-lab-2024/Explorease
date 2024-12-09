@@ -35,6 +35,16 @@ const promoCodeSchema = new Schema({
             ref: 'Tourist', // Reference to the Tourist model
         },
     ],
+    forUser: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Tourist', // Reference to specific users
+        },
+    ],
+    isForAll: {
+        type: Boolean,
+        default: false, // False means restricted to specific users
+    },
 });
 
 const PromoCode = mongoose.model('PromoCode', promoCodeSchema);

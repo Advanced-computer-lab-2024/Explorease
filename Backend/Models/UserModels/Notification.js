@@ -26,6 +26,7 @@ const NotificationSchema = new mongoose.Schema({
             'wishlist_product',
             'event_reminder',
             'product_reminder',
+            'birthday_gift',
         ],
         required: true,
     },

@@ -140,6 +140,8 @@ app.get('/transit-route', async (req, res) => {
 // Schedule the birthday promo code task to run every 24 hours
 schedule.scheduleJob('0 0 * * *', generateBirthdayPromoCodes);
 
+// schedule.scheduleJob('*/1 * * * *', generateBirthdayPromoCodes);
+
 // Schedule the reminder function to run every day at 9:00 AM using node-schedule
 schedule.scheduleJob('0 9 * * *', async () => {
     //console.log('Running daily booking reminder task...');
