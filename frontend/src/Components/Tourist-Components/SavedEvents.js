@@ -313,24 +313,7 @@ const SavedEvents = ({setActiveComponent}) => {
     <BookmarkRemoveIcon />
 </IconButton>
 </Tooltip>
-<Tooltip title={bookedActivities.includes(activity._id) ? "Already booked" : "Book Now"}>
-                    <IconButton
-                        onClick={() =>handleBookActivity(activity)}
-                        sx={{
-                            backgroundColor: '#111E56',
-                            color: 'white',
-                            border: '2px solid #111E56',
-                            '&:hover': {
-                                backgroundColor: 'white',
-                                color: '#111E56',
-                                border: '2px solid #111E56',
-                            },
-                        }}
-                        //disabled={bookedActivities.includes(activity._id) || loading} // Disable if booked or loading
-                    >
-                        <BookIcon />
-                    </IconButton>
-                </Tooltip>
+
             </Box>
         </Box>
     
@@ -476,24 +459,7 @@ const SavedEvents = ({setActiveComponent}) => {
                                     {/* <Divider orientation="horizontal" flexItem />
                                     <Divider orientation="horizontal" flexItem /> */}
                                     {/* <Divider orientation="vertical" flexItem /> */}
-                                    <Tooltip title={bookedItineraries.includes(itinerary._id) ? "Already booked" : "Book Now"}>
-                                        <IconButton
-                                            onClick={() => handleBookItinerary(itinerary)}
-                                            sx={{
-                                                backgroundColor: '#111E56',
-                                                color: 'white',
-                                                border: '2px solid #111E56',
-                                                '&:hover': {
-                                                    backgroundColor: 'white',
-                                                    color: '#111E56',
-                                                    border: '2px solid #111E56',
-                                                },
-                                            }}
-                                            //disabled={bookedActivities.includes(activity._id) || loading} // Disable if booked or loading
-                                        >
-                                            <BookIcon />
-                                        </IconButton>
-                                    </Tooltip>
+                                  
 
                                 </Box>
                             </Card>

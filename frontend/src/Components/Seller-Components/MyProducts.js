@@ -14,10 +14,11 @@ import {
     IconButton,
     Tooltip,
     Alert,
-    Grid,
+    Grid, Dialog, DialogActions, DialogContent, DialogTitle
 } from '@mui/material';
 import { Delete, Edit, Archive, Unarchive, Visibility } from '@mui/icons-material';
 import AddProduct from './AddProduct';
+import StarIcon from '@mui/icons-material/Star';
 
 const SellerProducts = () => {
     const [products, setProducts] = useState([]);
@@ -29,6 +30,11 @@ const SellerProducts = () => {
     const [editingProductId, setEditingProductId] = useState(null);
     const [updatedProductData, setUpdatedProductData] = useState({});
     // const [viewSales, setViewSales] = useState(null);
+    const [openReviewModal, setOpenReviewModal] = useState(false); // Control the modal visibility
+    const [selectedProduct, setSelectedProduct] = useState(null); // Store the selected product
+    const [ratings, setRatings] = useState([]);
+    const [reviews, setReviews] = useState([]);
+
 
     const fetchSellerProducts = async () => {
         try {
@@ -36,9 +42,10 @@ const SellerProducts = () => {
             const response = await axios.get('/seller/myproducts', {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            console.log(response);
             setProducts(response.data || []);
         } catch (error) {
-            setProductMessage('Error fetching products');
+            setProductMessage(`You haven't added any products yet.`);
         }
     };
 
@@ -46,9 +53,79 @@ const SellerProducts = () => {
         fetchSellerProducts();
     }, []);
 
+
+    const handleProductClick = (productId) => {
+        setSelectedProduct(productId); // Set the clicked product ID
+        fetchReviews(productId); // Fetch reviews for the clicked product
+        setOpenReviewModal(true); // Open the modal
+    };
     // const handleInputChange = (e, field) => {
     //     setUpdatedProductData({ ...updatedProductData, [field]: e.target.value });
     // };
+
+    const renderReviewModal = () => {
+        // Create a combined list of reviews and ratings based on the username
+        const combinedData = reviews.map(review => {
+          const rating = ratings.find(r => r.username === review.username); // Find the matching rating for the review by username
+          return {
+            username: review.username,
+            rating: rating ? rating.rating : null, // If no rating found, use null
+            review: review.review,
+          };
+        });
+      
+        return (
+            <Dialog open={openReviewModal} onClose={() => setOpenReviewModal(false)}>
+                <DialogTitle sx={{color:'#111E56' , fontWeight:'bold'}}>Product Reviews</DialogTitle>
+                <DialogContent>
+                    {combinedData.length === 0 ? (
+                        <Typography>No reviews or ratings available for this product.</Typography>
+                    ) : (
+                        combinedData.map((data, index) => (
+                            <Box key={index} sx={{ marginBottom: 2, border: '1px solid #ccc', padding: 2, borderRadius: 2 ,  }}>
+                                <Typography variant="h6" sx={{color:'#111E56',fontWeight:'bold'}}><strong>{data.username}</strong></Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    {data.rating ? (
+                                        <Box sx={{ marginRight: 1 }}>
+                                            {/* Render the rating in stars */}
+                                            {[...Array(5)].map((_, i) => (
+                                                <StarIcon key={i} sx={{ color: i < data.rating ? 'gold' : 'gray' }} />
+                                            ))}
+                                        </Box>
+                                    ) : (
+                                        <Typography variant="body2" sx={{ color: 'gray' }}>No rating given</Typography>
+                                    )}
+                                </Box>
+                                <Typography variant="body2" sx={{ marginTop: 1 }}>
+                                    <strong style={{color:'#111E56' , fontWeight:'bold'}} >Review:</strong> {data.review || 'No review provided'}
+                                </Typography>
+                            </Box>
+                        ))
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenReviewModal(false)} color="#111E56">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+      };
+
+    const fetchReviews = async (productId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`/tourists/products/getreviews/${productId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setRatings(response.data.ratings)
+            setReviews(response.data.reviews || []);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        }
+    };
 
     const handleEditProduct = (product) => {
         setEditingProductId(product._id);
@@ -354,6 +431,7 @@ const SellerProducts = () => {
                                             width: '100%', // Full width
                                             height: '100%', // Full height
                                         }}
+                                        onClick={() => handleProductClick(product._id)}
                                     />
                                     {/* Price Badge */}
                                     <Typography
@@ -467,6 +545,8 @@ const SellerProducts = () => {
             </Grid>
 
             <AddProduct  />
+            {renderReviewModal()}
+
         </Box>
     );
 };

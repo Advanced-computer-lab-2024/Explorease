@@ -11,7 +11,8 @@ const ProductSchema = new Schema({
     AvailableQuantity: { type: Number, required: true },
     Archived: { type: Boolean, default: false },
     Sales: { type: Number, default: 0 },
-    imageUrl : {type : String, required: true}
+    imageUrl : {type : String, required: true},
+    Ratings : {type : Number, max : 5}
 });
 const Product = mongoose.model('Product', ProductSchema);
 module.exports = Product;
