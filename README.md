@@ -754,7 +754,8 @@ The provided list is of all the API routes:
 </details>
 
 ## Tests:
--![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/adminlogin.png)  
+
+![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/adminlogin.png)  
 
 
 ## How to use:
