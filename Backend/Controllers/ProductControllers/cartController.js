@@ -389,22 +389,22 @@ const createStripeSession = async (req, res) => {
     }
 };
 
-const stripeWebhook = async (req, res) => {
-    const sig = req.headers['stripe-signature'];
+// const stripeWebhook = async (req, res) => {
+//     const sig = req.headers['stripe-signature'];
 
-    try {
-        const event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+//     try {
+//         const event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
 
-        if (event.type === 'checkout.session.completed') {
+//         if (event.type === 'checkout.session.completed') {
   
-        } else {
-            res.status(400).json({ message: 'Unhandled event type' });
-        }
-    } catch (error) {
-        console.error('Stripe webhook error:', error);
-        res.status(400).send(`Webhook error: ${error.message}`);
-    }
-};
+//         } else {
+//             res.status(400).json({ message: 'Unhandled event type' });
+//         }
+//     } catch (error) {
+//         console.error('Stripe webhook error:', error);
+//         res.status(400).send(`Webhook error: ${error.message}`);
+//     }
+// };
 
 const updateCartQuantity = async (req, res) => {
     const touristId = req.user.id; // Tourist's ID from authentication
@@ -454,7 +454,7 @@ const updateCartQuantity = async (req, res) => {
     }
 };
 const stripeSuccess = async (req, res) => {
-    const { sessionId } = req.body; // Stripe session ID from the frontend
+    const { sessionId } = req.body;
 
     try {
         // Fetch the Stripe session
@@ -465,6 +465,7 @@ const stripeSuccess = async (req, res) => {
 
         // Retrieve tourist's cart
         let cart = await Cart.findOne({ touristId: buyerId }).populate('items.productId');
+
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ message: 'Cart is empty or already processed.' });
         }
@@ -476,43 +477,58 @@ const stripeSuccess = async (req, res) => {
         }
 
         // Create purchases and update stock
-        const purchases = await Promise.all(
-            cart.items.map(async (item) => {
-                const product = item.productId;
+        const purchases = [];
 
-                // Check if sufficient stock exists
-                if (product.AvailableQuantity < item.quantity) {
-                    throw new Error(`Insufficient stock for product: ${product.Name}`);
-                }
+        for (const item of cart.items) {
+            const product = item.productId;
 
-                // Decrement stock
-                await Product.findByIdAndUpdate(
-                    product._id,
-                    {
-                        $inc: {
-                            AvailableQuantity: -item.quantity,
-                            Sales: item.quantity,
-                        },
+            // Check if sufficient stock exists
+            if (product.AvailableQuantity < item.quantity) {
+                throw new Error(`Insufficient stock for product: ${product.Name}`);
+            }
+
+            // Check for duplicate purchase within the last 30 seconds using sessionId
+            const now = new Date();
+            const thirtySecondsAgo = new Date(now.getTime() - 30 * 1000);
+            const duplicatePurchase = await Purchase.findOne({
+             
+                sessionId: sessionId, // Check against sessionId
+                
+            });
+
+            if (duplicatePurchase) {
+                console.log(`Duplicate purchase detected for product: ${product.Name} with sessionId: ${sessionId}`);
+                continue; // Skip creating a duplicate purchase
+            }
+
+            // Decrement stock
+            await Product.findByIdAndUpdate(
+                product._id,
+                {
+                    $inc: {
+                        AvailableQuantity: -item.quantity,
+                        Sales: item.quantity,
                     },
-                    { new: true }
-                );
+                },
+                { new: true }
+            );
 
-                // Create purchase record
-                const purchase = new Purchase({
-                    productId: product._id,
-                    buyerId,
-                    quantity: item.quantity,
-                    totalPrice: product.Price * item.quantity,
-                    address: session.metadata.address, // Use metadata for address
-                    paymentMethod: 'stripe',
-                    status: 'Paid', // Mark as paid for Stripe
-                    delivered: false, // Set delivered to false initially
-                });
+            // Create purchase record with sessionId
+            const purchase = new Purchase({
+                productId: product._id,
+                buyerId,
+                quantity: item.quantity,
+                totalPrice: product.Price * item.quantity,
+                address: session.metadata.address,
+                paymentMethod: 'stripe',
+                status: 'Paid',
+                delivered: false,
+                sessionId,  // Add sessionId to the purchase document
+            });
 
-                await purchase.save();
-                return purchase;
-            })
-        );
+            await purchase.save();
+            purchases.push(purchase);
+        }
 
         // Clear the cart
         await Cart.updateOne(
@@ -529,6 +545,7 @@ const stripeSuccess = async (req, res) => {
 };
 
 
+
 module.exports = {
     addToCart,
     viewCart,
@@ -537,7 +554,6 @@ module.exports = {
     checkoutCart,
     updateCartQuantity,
     createStripeSession,
-    stripeWebhook,
     stripeSuccess,
     applyPromoCode,
 };
