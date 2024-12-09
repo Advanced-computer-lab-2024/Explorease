@@ -540,6 +540,7 @@ const stripeSuccess = async (req, res) => {
                 },
                 { new: true }
             );
+            await product.save();
             
             await checkAndNotifyOutOfStock(product);
             // Create purchase record with sessionId
