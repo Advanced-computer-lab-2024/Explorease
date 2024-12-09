@@ -36,7 +36,7 @@ const BookItinerariesPage = () => {
     const [itineraryView, setItineraryView] = useState('upcoming'); // New state for view toggle
     const [bookedItineraries, setBookedItineraries] = useState([]);
     const [showFilters, setShowFilters] = useState(false); // State to toggle filters
-
+    const [pastItineraries, setPastItineraries] = useState([]);
     // const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
@@ -46,6 +46,24 @@ const BookItinerariesPage = () => {
     useEffect(() => {
         fetchBookedItineraries();
     }, []);
+
+
+    useEffect(() => {
+        const now = new Date();
+        
+        // Filter out past activities
+        const filtered = itineraries.filter(itinerary => {
+            // Check if all dates in AvailableDates are in the past
+            return itinerary.AvailableDates.every(date => new Date(date) < now);
+        });
+        
+        // Extract the activity IDs for past activities
+        const pastActivityIds = filtered.map(itinerary => itinerary._id);
+        
+        // Set the past itineraries with the activity IDs
+        setPastItineraries(pastActivityIds);
+        
+    }, [itineraries]);
 
     useEffect(() => {
         // Filter itineraries based on upcoming/past view
@@ -673,6 +691,7 @@ const BookItinerariesPage = () => {
                                 border: '2px solid #111E56',
                             },
                         }}
+                        disabled={pastItineraries.includes(itinerary._id)}
                         //disabled={bookedActivities.includes(activity._id) || loading} // Disable if booked or loading
                     >
                         <BookIcon />
