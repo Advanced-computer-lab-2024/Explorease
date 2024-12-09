@@ -26,6 +26,7 @@
     "react-multi-carousel": "^2.8.5",
     "react-router-dom": "^6.28.0",
     "react-scripts": "^5.0.1",
+    "scripts": "^0.1.0",
     "swiper": "^11.1.15",
     "web-vitals": "^2.1.4"
   },
