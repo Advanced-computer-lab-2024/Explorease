@@ -37,7 +37,6 @@ We are actively working to address these issues in future updates.
 
 [![Watch the video](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Explorease.mp4)]
 
-*(Add more images as needed or a video showcasing the app's features)*
 
 
 ## Tech/Framework Used:
