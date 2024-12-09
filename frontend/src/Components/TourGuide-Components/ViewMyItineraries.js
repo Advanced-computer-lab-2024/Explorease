@@ -22,6 +22,8 @@ const ViewMyItineraries = () => {
     const [error, setError] = useState('');
     const [editingItinerary, setEditingItinerary] = useState(null);
     const [updatedItinerary, setUpdatedItinerary] = useState({});
+    const [newDate, setNewDate] = useState('');
+    const [newLanguage, setNewLanguage] = useState('');
 
     // Fetch itineraries
     useEffect(() => {
@@ -45,6 +47,16 @@ const ViewMyItineraries = () => {
 
         fetchItineraries();
     }, []);
+
+    const handleAddLanguage = () => {
+        if (newLanguage.trim()) {
+          setUpdatedItinerary((prevState) => ({
+            ...prevState,
+            LanguageOfTour: [...prevState.LanguageOfTour, newLanguage.trim()],
+          }));
+          setNewLanguage(''); // Clear the input field after adding
+        }
+      };
 
     // Delete itinerary
     const handleDeleteItinerary = async (itineraryId) => {
@@ -102,6 +114,16 @@ const ViewMyItineraries = () => {
             setError('Failed to deactivate itinerary. Please try again.');
         }
     };
+    const handleAddDate = () => {
+        if (newDate.trim()) {
+          setUpdatedItinerary((prevState) => ({
+            ...prevState,
+            AvailableDates: [...prevState.AvailableDates, newDate.trim()],
+          }));
+          setNewDate(''); // Clear the input field after adding
+        }
+      };
+
 
     // Handle start editing itinerary
     const handleEditItinerary = (itinerary) => {
@@ -161,93 +183,131 @@ const ViewMyItineraries = () => {
 
             {itineraries.length > 0 ? (
                 <Box
+    sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '20px',
+        justifyContent: 'center',
+    }}
+>
+    {itineraries.map((itinerary) => (
+    
+        <Card
+            key={itinerary._id}
+            sx={{
+                display: 'flex',
+                flexDirection: editingItinerary === itinerary._id ? 'row' : 'column',
+                width: editingItinerary === itinerary._id ? '100%' : 'calc(33.33% - 20px)', // Full row for editing, 1/3 for view
+                boxShadow: 3,
+                borderRadius: '12px',
+                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                '&:hover': {
+                    transform: editingItinerary !== itinerary._id ? 'scale(1.03)' : 'none',
+                    boxShadow: editingItinerary !== itinerary._id ? '0 6px 20px rgba(0, 0, 0, 0.2)' : 'none',
+                },
+            }}
+        >
+            {/* Image Section */}
+            {itinerary.imageUrl && (
+                <Box
                     sx={{
+                        width: editingItinerary === itinerary._id ? '40%' : '100%',
+                        height: editingItinerary === itinerary._id ? 'auto' : '200px',
                         display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '20px',
                         justifyContent: 'center',
+                        alignItems: 'center',
                     }}
                 >
-                    {itineraries.map((itinerary) => (
-                        <Card
-                            key={itinerary._id}
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                width: 'calc(33.33% - 20px)', // Adjust card width to 1/3rd of the container width
-                                boxShadow: 3,
-                                marginBottom: '20px',
-                                borderRadius: '12px',
-                                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                                '&:hover': {
-                                    transform: 'scale(1.03)',
-                                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                                },
-                               
-                            }}
-                        >
-                            {/* Image */}
-                            {itinerary.imageUrl && (
-                                <img
-                                    src={itinerary.imageUrl}
-                                    alt={itinerary.name}
-                                    style={{
-                                        width: '100%',
-                                        height: '60%',
-                                        objectFit: 'cover',
-                                        marginBottom: '10px',
-                                        borderTopLeftRadius: '12px',
-                                        borderTopRightRadius: '12px',
-                                    }}
-                                />
-                            )}
+                    <img
+                        src={itinerary.imageUrl}
+                        alt={itinerary.name}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            borderTopLeftRadius: editingItinerary === itinerary._id ? '12px' : '0',
+                            borderTopRightRadius: editingItinerary === itinerary._id ? '0' : '12px',
+                        }}
+                    />
+                </Box>
+            )}
 
-                            {/* Top Section: Image and Details */}
-                            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                <CardContent sx={{ padding: 0 }}>
-                                    {editingItinerary === itinerary._id ? (
-                                        <>
-                                            <TextField
-                                                label="Name"
-                                                value={updatedItinerary.name}
-                                                name="name"
-                                                fullWidth
-                                                onChange={handleInputChange}
-                                                sx={{ marginBottom: '10px', padding: '5px' }} // Added padding
-                                            />
-                                            <TextField
-                                                label="Description"
-                                                value={updatedItinerary.description}
-                                                name="description"
-                                                fullWidth
-                                                onChange={handleInputChange}
-                                                sx={{ marginBottom: '10px', padding: '5px' }} // Added padding
-                                            />
-                                            <TextField
+            {/* Content Section */}
+            <Box
+                sx={{
+                    flex: 1,
+                    padding: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                }}
+            >
+                <CardContent>
+                    {editingItinerary === itinerary._id ? (
+                        <>
+        
+                            <TextField
+                                label="Name"
+                                value={updatedItinerary.name}
+                                name="name"
+                                fullWidth
+                                onChange={handleInputChange}
+                                sx={{ marginBottom: '10px' }}
+                            />
+                            <TextField
+                                label="Description"
+                                value={updatedItinerary.description}
+                                name="description"
+                                fullWidth
+                                onChange={handleInputChange}
+                                sx={{ marginBottom: '10px' }}
+                            />
+                               <TextField
                                                 label="Available Dates"
                                                 value={updatedItinerary.AvailableDates.join(', ')}
                                                 name="AvailableDates"
                                                 fullWidth
                                                 onChange={handleInputChange}
-                                                sx={{ marginBottom: '10px', padding: '5px' }} // Added padding
+                                                sx={{ marginBottom: '10px', padding: '5px' }}
+                                                disabled // Added padding
                                             />
-                                            <TextField
-                                                label="Price"
-                                                value={updatedItinerary.totalPrice}
-                                                name="totalPrice"
-                                                fullWidth
-                                                onChange={handleInputChange}
-                                                sx={{ marginBottom: '10px', padding: '5px' }} // Added padding
-                                            />
-                                            <TextField
-                                                label="Language"
-                                                value={updatedItinerary.LanguageOfTour.join(', ')}
-                                                name="LanguageOfTour"
-                                                fullWidth
-                                                onChange={handleInputChange}
-                                                sx={{ marginBottom: '10px', padding: '5px' }} // Added padding
-                                            />
-                                            <TextField
+                            <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' , marginBottom: '10px' }}>
+                                <TextField
+                                    label="Add New Date"
+                                    value={newDate}
+                                    onChange={(e) => setNewDate(e.target.value)}
+                                    fullWidth
+                                />
+                                <Button variant="contained" onClick={handleAddDate}>
+                                    Add Date
+                                </Button>
+                            </Box>
+                            <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' , marginBottom: '10px' }}>
+      <TextField
+        label="Languages"
+        value={updatedItinerary.LanguageOfTour.join(', ')}
+        name="LanguageOfTour"
+        fullWidth
+        disabled // Display the array, but disable editing directly
+        sx={{ marginBottom: '10px', padding: '5px' }}
+      />
+      <TextField
+        label="Add New Language"
+        value={newLanguage}
+        onChange={(e) => setNewLanguage(e.target.value)}
+        sx={{ marginBottom: '10px', padding: '5px' }}
+        fullWidth
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAddLanguage}
+        sx={{ height: '4em' }}
+      >
+        Add
+      </Button>
+    </Box>
+    <TextField
                                                 label="Pickup Location"
                                                 value={updatedItinerary.PickUpLocation}
                                                 name="PickUpLocation"
@@ -263,88 +323,70 @@ const ViewMyItineraries = () => {
                                                 onChange={handleInputChange}
                                                 sx={{ marginBottom: '10px', padding: '5px' }} // Added padding
                                             />
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Typography
-                                                variant="h5"
-                                                sx={{
-                                                    color: '#111E56',
-                                                    fontWeight: 'bold',
-                                                    marginBottom: '10px',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                {itinerary.name}
-                                            </Typography>
-                                            <Typography>
-                                                <strong>Description:</strong> {itinerary.description || 'No description available.'}
-                                            </Typography>
-                                            <Typography>
-                                                <strong>Available Dates:</strong> {itinerary.AvailableDates.join(', ')}
-                                            </Typography>
-                                            <Typography>
-                                                <strong>Price:</strong> ${itinerary.totalPrice}
-                                            </Typography>
-                                            <Typography>
-                                                <strong>Language:</strong> {itinerary.LanguageOfTour.join(', ')}
-                                            </Typography>
-                                            <Typography>
-                                                <strong>Pickup Location:</strong> {itinerary.PickUpLocation}
-                                            </Typography>
-                                            <Typography>
-                                                <strong>Dropoff Location:</strong> {itinerary.DropOffLocation}
-                                            </Typography>
-                                        </>
-                                    )}
-                                </CardContent>
-                            </Box>
+                            
+                        </>
+                    ) : (
+                        <>
+                            <Typography
+                                variant="h5"
+                                sx={{ color: '#111E56', fontWeight: 'bold', marginBottom: '10px' }}
+                            >
+                                {itinerary.name}
+                            </Typography>
+                            <Typography>
+                                <strong>Description:</strong> {itinerary.description || 'No description available.'}
+                            </Typography>
+                            <Typography>
+                                <strong>Available Dates:</strong> {itinerary.AvailableDates.join(', ')}
+                            </Typography>
+                            <Typography>
+                                <strong>Price:</strong> ${itinerary.totalPrice}
+                            </Typography>
+                            <Typography>
+                                <strong>Languages:</strong> {itinerary.LanguageOfTour.join(', ')}
+                            </Typography>
+                        </>
+                    )}
+                </CardContent>
 
-                            {/* Bottom Section: Action Buttons */}
-                            <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
-                                {editingItinerary === itinerary._id ? (
-                                    <Tooltip title="Save">
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleUpdateItinerary(itinerary._id)}
-                                        >
-                                            <CheckCircleIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                ) : (
-                                    <Tooltip title="Edit">
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleEditItinerary(itinerary)}
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                )}
-                                <Tooltip title={itinerary.isActivated ? "Deactivate" : "Activate"}>
-                                    <IconButton
-                                        color={itinerary.isActivated ? "error" : "success"}
-                                        onClick={() =>
-                                            itinerary.isActivated
-                                                ? handleDeactivateItinerary(itinerary._id)
-                                                : handleActivateItinerary(itinerary._id)
-                                        }
-                                    >
-                                        {itinerary.isActivated ? <CancelIcon /> : <CheckCircleIcon />}
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Delete">
-                                    <IconButton
-                                        color="error"
-                                        onClick={() => handleDeleteItinerary(itinerary._id)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            </Box>
-                        </Card>
-                    ))}
+                {/* Action Buttons */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                    {editingItinerary === itinerary._id ? (
+                        <Tooltip title="Save">
+                            <IconButton color="primary" onClick={() => handleUpdateItinerary(itinerary._id)}>
+                                <CheckCircleIcon />
+                            </IconButton>
+                        </Tooltip>
+                    ) : (
+                        <Tooltip title="Edit">
+                            <IconButton color="primary" onClick={() => handleEditItinerary(itinerary)}>
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    <Tooltip title={itinerary.isActivated ? 'Deactivate' : 'Activate'}>
+                        <IconButton
+                            color={itinerary.isActivated ? 'error' : 'success'}
+                            onClick={() =>
+                                itinerary.isActivated
+                                    ? handleDeactivateItinerary(itinerary._id)
+                                    : handleActivateItinerary(itinerary._id)
+                            }
+                        >
+                            {itinerary.isActivated ? <CancelIcon /> : <CheckCircleIcon />}
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                        <IconButton color="error" onClick={() => handleDeleteItinerary(itinerary._id)}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
+            </Box>
+        </Card>
+    ))}
+</Box>
+
             ) : (
                 <Typography variant="body1" textAlign="center">
                     No itineraries found. Create one to get started!

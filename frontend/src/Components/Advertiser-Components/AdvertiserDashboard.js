@@ -28,6 +28,7 @@ import AdvertiserHistoricalPlaces from '../MainPage-Components/CommonHistoricalP
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
+    const [photoUrl, setPhotoUrl] = useState('');
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('home');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -55,6 +56,7 @@ const AdvertiserDashboard = () => {
 
                 if (response.data && response.data.advertiser) {
                     setProfile(response.data.advertiser);
+                    setPhotoUrl(response.data.advertiser.imageUrl || '');
                 } else {
                     setMessage('No profile data found');
                 }
@@ -260,8 +262,8 @@ const AdvertiserDashboard = () => {
                             width: '100%',
                           }}
                         >
-                          <Avatar
-                            {...stringAvatar(profile.username || 'User')}
+                          <Avatar          src={photoUrl || undefined}
+          {...(!photoUrl && stringAvatar(profile.username || 'User'))}
                             sx={{
                               width: 60,
                               height: 60,
@@ -359,33 +361,43 @@ const AdvertiserDashboard = () => {
                           Delete Account
                         </Button>
                         {updateProfileVisible && (
-                          <Box
-                            sx={{
-                              marginTop: '20px',
-                              width: '100%',
-                              padding: '20px',
-                              borderRadius: '8px',
-                           
-                            }}
-                          >
-                            <UpdateAdvertiser profile={profile} setProfile={setProfile} />
-                          </Box>
-                        )}
-                      </>
-                    ) : (
-                      <CircularProgress sx={{ color: '#111E56' }} />
-                    )}
-                  </Box>
+            <Box
+              sx={{
+                marginTop: '20px',
+                width: '100%',
+                padding: '20px',
+                borderRadius: '8px',
+              }}
+            >
+              <UpdateAdvertiser profile={profile} setProfile={setProfile} />
+              <Box sx={{ marginTop: '20px', width: '100%' }}>
+                <UploadLogo setProfile={setProfile} />
+                
+              </Box>
+            </Box>
+          )}
+        
+        </>
+      ) : (
+        <CircularProgress sx={{ color: '#111E56' }} />
+      )}
+    </Box>
+  );
 
-                );
+
+
+
+                  
+
+                
             case 'viewActivities':
                 return <MyActivities />;
             case 'createActivity':
                 return <CreateActivity />;
             // case 'updateProfile':
             //     return <UpdateAdvertiser profile={profile} setProfile={setProfile} />;
-            case 'uploadLogo':
-                return <UploadLogo setProfile={setProfile} />;
+            // case 'uploadLogo':
+            //     return <UploadLogo setProfile={setProfile} />;
             case 'Sales Report':
                 return <SalesReport/>;
             case 'ActivitySummary' :
@@ -406,7 +418,7 @@ const AdvertiserDashboard = () => {
      //   { label: 'Edit Profile', component: 'updateProfile', icon: <Edit /> },
         { label: 'Get My Activities', component: 'viewActivities', icon: <Event /> },
         { label: 'Create Activity', component: 'createActivity', icon: <Dashboard /> },
-        { label: 'Upload a Logo', component: 'uploadLogo', icon: <Upload /> },
+      //  { label: 'Upload a Logo', component: 'uploadLogo', icon: <Upload /> },
         { label: 'Sales Report', component: 'Sales Report', icon: <BarChart /> },
         { label: 'Activity Summary', component: 'ActivitySummary', icon: <Report /> },
     ];
@@ -456,8 +468,8 @@ const AdvertiserDashboard = () => {
     <Box >
   {isSidebarOpen ? (
     <Box sx={{marginLeft:'10px'}}>
-    <Avatar
-      {...stringAvatar(profile.username || 'User')}
+    <Avatar  src={photoUrl || undefined}
+          {...(!photoUrl && stringAvatar(profile.username || 'User'))}
       sx={{
         width: 60,
         height: 60,
