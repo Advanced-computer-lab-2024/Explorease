@@ -266,6 +266,7 @@ const checkoutCart = async (req, res) => {
 
         // Calculate points based on loyalty level
         let pointsEarned = 0;
+        let amountPaid = finalCost;
         switch (loyalty.level) {
             case 1:
                 pointsEarned = amountPaid * 0.5;
@@ -509,7 +510,6 @@ const stripeSuccess = async (req, res) => {
 
         for (const item of cart.items) {
             const product = item.productId;
-
             // Check if sufficient stock exists
             if (product.AvailableQuantity < item.quantity) {
                 throw new Error(`Insufficient stock for product: ${product.Name}`);
@@ -540,7 +540,8 @@ const stripeSuccess = async (req, res) => {
                 },
                 { new: true }
             );
-
+            
+            await checkAndNotifyOutOfStock(product);
             // Create purchase record with sessionId
             const purchase = new Purchase({
                 productId: product._id,
