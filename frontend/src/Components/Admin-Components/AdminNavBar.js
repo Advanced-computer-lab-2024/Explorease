@@ -21,16 +21,17 @@ import axios from 'axios';
 import logo from '../../Misc/logo.png';
 import { useNavigate } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const AdminNavBar = ({ toggleSidebar , handleSectionChange }) => {
     const [notifications, setNotifications] = useState([]);
     const [isNotificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
     const navigate = useNavigate();
 
-    // const handleLogout = () => {
-    //     localStorage.removeItem('token');
-    //     navigate('/');
-    // };
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/');
+    };
 
     const fetchNotifications = async () => {
         const token = localStorage.getItem('token');
@@ -200,7 +201,7 @@ const AdminNavBar = ({ toggleSidebar , handleSectionChange }) => {
                             </Badge>
                         </IconButton>
                     </Tooltip>
-                    {/* <Tooltip title="Logout">
+                    <Tooltip title="Logout">
                         <IconButton
                             onClick={handleLogout}
                             sx={{
@@ -213,7 +214,7 @@ const AdminNavBar = ({ toggleSidebar , handleSectionChange }) => {
                         >
                             <LogoutIcon />
                         </IconButton>
-                    </Tooltip> */}
+                    </Tooltip>
                 </Box>
             </Toolbar>
             <Drawer anchor="right" open={isNotificationDrawerOpen} onClose={() => toggleNotificationDrawer(false)}>

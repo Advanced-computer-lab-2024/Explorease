@@ -41,7 +41,7 @@ import {
   } from '@mui/icons-material'; // Import Material-UI icons
 
 // import SettingsIcon from '@mui/icons-material/Settings';
-// import LogoutIcon from '@mui/icons-material/Logout';
+
 
 const AdminDashboard = () => {
     const [message, setMessage] = useState('');
@@ -601,7 +601,7 @@ const handleTagChange = (id, newName) => {
             padding: '20px',
         }}
     >
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
             Manage Preference Tags
         </Typography>
 
@@ -662,7 +662,7 @@ const handleTagChange = (id, newName) => {
                 maxWidth: '600px',
             }}
         >
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
                 Existing Tags
             </Typography>
             {Array.isArray(preferenceTags) && preferenceTags.length === 0 ? (
@@ -742,7 +742,7 @@ const handleTagChange = (id, newName) => {
             padding: '20px',
         }}
     >
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
             Manage Activity Categories
         </Typography>
 
@@ -803,7 +803,7 @@ const handleTagChange = (id, newName) => {
                 maxWidth: '600px',
             }}
         >
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
                 Existing Categories
             </Typography>
             {activityCategories.length === 0 ? (
@@ -885,7 +885,7 @@ const handleTagChange = (id, newName) => {
             padding: '20px',
         }}
     >
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{color:'#111E56' , fontWeight:'bold'}}>
             Add Tourism Governor
         </Typography>
 
