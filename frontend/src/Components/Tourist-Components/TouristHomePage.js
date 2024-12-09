@@ -213,8 +213,7 @@ const TouristHomePage = ({profile}) => {
                     </Typography>
                 </CardContent>
             </Card>
-        );
-        
+        );  
 
         const renderDetailsPopup = () => (
             <Dialog
@@ -532,7 +531,6 @@ const TouristHomePage = ({profile}) => {
                 centerMode={true}
                 infinite={true}
                 showDots={true}
-                
                 >
                     {activities.map(renderActivityCard)}
                 </Carousel>
