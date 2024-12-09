@@ -8,21 +8,16 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
+  CardMedia,
   CircularProgress,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
   Link,
   Stack,
   TextField,
   Tooltip,
-  Typography,
-  CardMedia
+  Typography
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -347,25 +342,11 @@ const TouristGovernorDashboard = () => {
             My Historical Places
         </Typography>
         {loading ? (
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '200px',
-                }}
-            >
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
                 <CircularProgress />
             </Box>
         ) : historicalPlaces.length > 0 ? (
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 2,
-                    justifyContent: 'center',
-                }}
-            >
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
                 {historicalPlaces.map((place) => (
                     <Card
                         key={place._id}
@@ -394,129 +375,130 @@ const TouristGovernorDashboard = () => {
                                 borderBottomLeftRadius: '12px',
                             }}
                         />
-
                         <Box sx={{ flex: 1, padding: '16px' }}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 'bold',
-                                    color: '#111E56',
-                                    marginBottom: '10px',
-                                }}
-                            >
-                                {place.Name || 'Untitled'}
-                            </Typography>
+                            {editMode && editingPlace?._id === place._id ? (
+                                // Edit Form
+                                <>
+                                    <TextField
+                                        size="small"
+                                        label="Name"
+                                        value={editingPlace.Name}
+                                        onChange={(e) => setEditingPlace({ ...editingPlace, Name: e.target.value })}
+                                        sx={{ mb: 1, width: '100%' }}
+                                    />
+                                    <TextField
+                                        size="small"
+                                        label="Description"
+                                        multiline
+                                        rows={2}
+                                        value={editingPlace.Description}
+                                        onChange={(e) => setEditingPlace({ ...editingPlace, Description: e.target.value })}
+                                        sx={{ mb: 1, width: '100%' }}
+                                    />
+                                    <TextField
+                                        size="small"
+                                        label="Location"
+                                        value={editingPlace.Location}
+                                        onChange={(e) => setEditingPlace({ ...editingPlace, Location: e.target.value })}
+                                        sx={{ mb: 1, width: '100%' }}
+                                    />
+                                    <TextField
+                                        size="small"
+                                        label="Period"
+                                        value={editingPlace.Period}
+                                        onChange={(e) => setEditingPlace({ ...editingPlace, Period: e.target.value })}
+                                        sx={{ mb: 1, width: '100%' }}
+                                    />
+                                    <TextField
+                                        size="small"
+                                        label="Tags"
+                                        value={editingPlace.tags?.map((tag) => tag.name).join(', ') || ''}
+                                        onChange={(e) => {
+                                            const tags = e.target.value.split(',').map((tag) => ({ name: tag.trim() }));
+                                            setEditingPlace({ ...editingPlace, tags });
+                                        }}
+                                        sx={{ mb: 1, width: '100%' }}
+                                    />
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 1 }}>
+                                        <Button 
+                                            size="small" 
+                                            onClick={() => setEditMode(false)}
+                                            sx={{ color: 'gray' }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button 
+                                            size="small" 
+                                            onClick={() => handleUpdate(editingPlace)} 
+                                            variant="contained"
+                                        >
+                                            Save
+                                        </Button>
+                                    </Box>
+                                </>
+                            ) : (
+                                // Display View
+                                <>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            color: '#111E56',
+                                            marginBottom: '10px',
+                                        }}
+                                    >
+                                        {place.Name || 'Untitled'}
+                                    </Typography>
 
-                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Description:</strong> {place.Description}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Location:</strong> {place.Location}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Period:</strong> {place.Period}
-                            </Typography>
-                            {place.tags && (
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(', ')}
-                                </Typography>
+                                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                                        <strong>Description:</strong> {place.Description}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                                        <strong>Location:</strong> {place.Location}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                                        <strong>Period:</strong> {place.Period}
+                                    </Typography>
+                                    {place.tags && (
+                                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                                            <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(', ')}
+                                        </Typography>
+                                    )}
+                                    
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            gap: 1,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            marginTop: '10px',
+                                        }}
+                                    >
+                                        <Tooltip title="Edit">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleEdit(place)}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Delete">
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleDeletePlace(place._id)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
+                                </>
                             )}
-                          
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    gap: 1,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    marginTop: '10px',
-                                }}
-                            >
-                                <Tooltip title="Edit">
-                                    <IconButton
-                                        color="primary"
-                                        onClick={() => handleEdit(place)}
-                                    >
-                                        <EditIcon />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Delete">
-                                    <IconButton
-                                        color="error"
-                                        onClick={() => handleDeletePlace(place._id)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            </Box>
                         </Box>
                     </Card>
                 ))}
             </Box>
         ) : (
             <Typography>No historical places found</Typography>
-        )}
-
-        {editMode && editingPlace && (
-            <Dialog open={editMode} onClose={() => setEditMode(false)}>
-                <DialogTitle>Edit Historical Place</DialogTitle>
-                <DialogContent>
-                    <Box component="form" sx={{ mt: 2 }}>
-                        <TextField
-                            fullWidth
-                            label="Name"
-                            value={editingPlace.Name}
-                            onChange={(e) =>
-                                setEditingPlace({ ...editingPlace, Name: e.target.value })
-                            }
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Description"
-                            multiline
-                            rows={4}
-                            value={editingPlace.Description}
-                            onChange={(e) =>
-                                setEditingPlace({ ...editingPlace, Description: e.target.value })
-                            }
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Location"
-                            value={editingPlace.Location}
-                            onChange={(e) =>
-                                setEditingPlace({ ...editingPlace, Location: e.target.value })
-                            }
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Period"
-                            value={editingPlace.Period}
-                            onChange={(e) =>
-                                setEditingPlace({ ...editingPlace, Period: e.target.value })
-                            }
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Tags"
-                            value={editingPlace.tags?.map((tag) => tag.name).join(', ') || ''}
-                            onChange={(e) => {
-                                const tags = e.target.value.split(',').map((tag) => ({ name: tag.trim() }));
-                                setEditingPlace({ ...editingPlace, tags });
-                            }}
-                            sx={{ mb: 2 }}
-                        />
-                       
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setEditMode(false)}>Cancel</Button>
-                    <Button onClick={() => handleUpdate(editingPlace)}>Save</Button>
-                </DialogActions>
-            </Dialog>
         )}
     </Box>
 );
