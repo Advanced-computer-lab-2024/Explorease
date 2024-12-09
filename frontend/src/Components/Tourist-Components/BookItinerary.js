@@ -50,19 +50,17 @@ const BookItinerariesPage = () => {
     const [finalAmount, setFinalAmount] = useState(0);
     const [itineraryView, setItineraryView] = useState('upcoming');
     const [bookedItineraries, setBookedItineraries] = useState([]);
-<<<<<<< HEAD
     const [showFilters, setShowFilters] = useState(false); // State to toggle filters
     const [pastItineraries, setPastItineraries] = useState([]);
     // const YOUR_API_KEY = "1b5f2effe7b482f6a6ba499d";
 
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
 
-=======
-    const [showFilters, setShowFilters] = useState(false);
->>>>>>> 92bcf8485bb2af2d53082f890235639c7344eac7
+
+
     const [savedItineraries, setSavedItineraries] = useState([]);
 
-    const { selectedCurrency, exchangeRates } = useContext(CurrencyContext);
+   
 
     useEffect(() => {
         fetchBookedItineraries();
@@ -607,11 +605,8 @@ const BookItinerariesPage = () => {
                                 boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
                             },
                         }}
-<<<<<<< HEAD
                         disabled={pastItineraries.includes(itinerary._id)}
                         //disabled={bookedActivities.includes(activity._id) || loading} // Disable if booked or loading
-=======
->>>>>>> 92bcf8485bb2af2d53082f890235639c7344eac7
                     >
                         {itinerary.imageUrl && (
                             <img
