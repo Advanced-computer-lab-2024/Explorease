@@ -72,11 +72,31 @@ const addReviewAndRating = async (req, res) => {
             return res.status(404).json({ message: 'Purchase not found or not authorized' });
         }
 
+        // Add review and rating to the purchase
         purchase.review = review;
         purchase.rating = rating;
         await purchase.save();
 
-        res.status(200).json({ message: 'Review and rating added successfully', purchase });
+        // Find the product using the productId from the purchase
+        const product = await Product.findById(purchase.productId);
+        console.log(product.Name);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        console.log(product.Ratings);
+        // Get all ratings for the product
+        const productPurchases = await Purchase.find({ productId: product._id, rating: { $exists: true } });
+
+        // Calculate the average rating for the product
+        const averageRating = productPurchases.reduce((total, purchase) => total + purchase.rating, 0) / productPurchases.length;
+
+        // Update the product's average rating
+        product.Ratings = averageRating;
+
+        console.log(product.Ratings);
+        await product.save();
+
+        res.status(200).json({ message: 'Review and rating added successfully', purchase, averageRating });
     } catch (error) {
         res.status(500).json({ message: 'Error adding review and rating', error: error.message });
     }

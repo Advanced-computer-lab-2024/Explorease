@@ -356,7 +356,7 @@ const TouristDashboard = () => {
 
                 
             case 'viewProducts':
-                return <Products incrementCartCount={incrementCartCount} updateWishlistCount={updateWishlistCount} />
+                return <Products incrementCartCount={fetchCartItems} updateWishlistCount={updateWishlistCount} />
 
             // case 'updateProfile':
             //     return <UpdateProfile profile={profile} setProfile={setProfile} />;
@@ -392,7 +392,7 @@ const TouristDashboard = () => {
             case 'MyPoints':
                 return <MyPoints />;
             case 'wishlist':
-                return <Wishlist incrementCartCount={incrementCartCount}  updateWishlistCount={updateWishlistCount}/>
+                return <Wishlist incrementCartCount={fetchCartItems}  updateWishlistCount={updateWishlistCount}/>
             case 'SavedEvents':
                 return <SavedEvents setActiveComponent={setActiveComponent}/>
             default:
