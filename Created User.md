@@ -4,8 +4,8 @@
 [
   {
     "username": "guide_maria",
-    "email": "maria_guide@example.com",
-    "password": "MariaPassword789"
+    "email": "abdullaheldaosh@gmail.com",
+    "password": "MariaPassword6789"
   },
   {
     "username" : ahmedguide@example.com
@@ -20,7 +20,7 @@
   {
     "username": "seller_oliver",
     "email": "oliver_seller@example.com",
-    "password": "OliverPassword121",
+    "password": "OliverPassword122",
     "name": "Oliver's Outlet",
     "description": "Best souvenirs and gifts."
   },
@@ -35,7 +35,7 @@
   {
     "username": "advertiser_james",
     "email": "james_advertiser@example.com",
-    "password": "JamesPassword456",
+    "password": "JamesPassword4567",
     "name": "James' Deals",
     "description": "Special travel discounts."
   },

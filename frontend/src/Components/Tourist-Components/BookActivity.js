@@ -42,7 +42,7 @@ const BookActivitiesPage = () => {
     const [ratings, setRatings] = useState([]);
     const [openReviewModal, setOpenReviewModal] = useState(false);  // State to control modal visibility
     const [ActivityId, setActivityId] = useState(null);  // State to store the current activityId
-    
+    const [pastActivities, setPastActivities] = useState([]);
 
     const { selectedCurrency, exchangeRates } = useContext(CurrencyContext); // Use CurrencyContext
 
@@ -64,6 +64,19 @@ const BookActivitiesPage = () => {
         }
     };
 
+
+    useEffect(() => {
+        const now = new Date();
+        
+        // Filter out past activities
+        const prevActivities = originalActivities.filter(activity => new Date(activity.date) < now);
+        
+        // Extract the activity IDs for past activities
+        const pastActivityIds = prevActivities.map(activity => activity._id);
+        
+        setPastActivities(pastActivityIds); // Store the past activity IDs
+    }, [originalActivities]);
+
     useEffect(() => {
         // Fetch the booked activities for the user
         const fetchBookedActivities = async () => {
@@ -82,6 +95,8 @@ const BookActivitiesPage = () => {
                 setLoading(false);
             }
         };
+
+
 
         fetchBookedActivities();
     }, []);
@@ -264,17 +279,17 @@ const BookActivitiesPage = () => {
             console.error('Error fetching wallet balance:', error);
         }
     };
-    
+
+
     const togglePastActivities = () => {
         const now = new Date();
-        
+
         if (showPastActivities) {
             // Switch to upcoming activities
             const upcomingActivities = originalActivities.filter(activity => new Date(activity.date) >= now);
             setActivities(upcomingActivities);
         } else {
             // Switch to past activities
-           // const pastActivities = originalActivities.filter(activity => new Date(activity.date) < now);
             setActivities(originalActivities);
         }
         
@@ -736,6 +751,7 @@ if (activeComponent === 'PayForActivity' && selectedActivity) {
                                 border: '2px solid #111E56',
                             },
                         }}
+                        disabled={pastActivities.includes(activity._id)}
                         //disabled={bookedActivities.includes(activity._id) || loading} // Disable if booked or loading
                     >
                         <BookIcon />

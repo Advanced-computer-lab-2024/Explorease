@@ -45,7 +45,7 @@ const createStripeSession = async (req, res) => {
                 checkInDate,
                 checkOutDate,
             },
-            success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.FRONTEND_URL}//payment-status?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/tourist`,
         });
         sendHotelReceiptEmail(price, name, country, currency, checkInDate, checkOutDate, req.user.id);

@@ -51,7 +51,7 @@ const TourGuideDashboard = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar visibility state
     const [updateProfileVisible, setUpdateProfileVisible] = useState(false);
-
+    const [photoUrl, setPhotoUrl] = useState('')
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -69,6 +69,7 @@ const TourGuideDashboard = () => {
                 if (response.data && response.data.tourguide) {
                     setProfile(response.data.tourguide);
                     setProfilee(response.data.tourguide);
+                    setPhotoUrl(response.data.tourguide.imageUrl);
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
@@ -277,9 +278,9 @@ const TourGuideDashboard = () => {
                               }}
                             />
                           ) : (
-                            <Avatar
-                              {...stringAvatar(profile.username || 'User')}
-                              sx={{
+                            <Avatar src={photoUrl || undefined}
+                            {...(!photoUrl && stringAvatar(profile.username || 'User'))}
+                                             sx={{
                                 width: 60,
                                 height: 60,
                                 marginRight: '15px',
@@ -366,33 +367,50 @@ const TourGuideDashboard = () => {
                           Delete Account
                         </Button>
                         {updateProfileVisible && (
-                          <Box
-                            sx={{
-                              marginTop: '20px',
-                              width: '100%',
-                              padding: '20px',
-                              borderRadius: '8px',
-                      
-                            }}
-                          >
-                            <UpdateProfile profile={profile} setProfile={setProfile} />
-                          </Box>
-                        )}
-                      </>
-                    ) : (
-                      <CircularProgress sx={{ color: '#111E56' }} />
-                    )}
-                  </Box>
-              
-                );
+            <Box
+              sx={{
+                marginTop: '20px',
+                width: '100%',
+                padding: '20px',
+                borderRadius: '8px',
+              }}
+            >
+              <UpdateProfile profile={profile} setProfile={setProfile} />
+              <Box sx={{ marginTop: '20px', width: '100%' }}>
+              <AddPhoto setProfile={setProfile} />;
+                
+              </Box>
+            </Box>
+          )}
+        
+        </>
+      ) : (
+        <CircularProgress sx={{ color: '#111E56' }} />
+      )}
+    </Box>
+  );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             case 'viewActivities':
                 return <ViewMyItineraries />;
             case 'createActivity':
                 return <CreateItineraryForm />;
             // case 'updateProfile':
             //     return <UpdateProfile profile={profile} setProfile={setProfile} />;
-            case 'uploadProfilePicture':
-                return <AddPhoto setProfile={setProfile} />;
+            // case 'uploadProfilePicture':
+            //     return <AddPhoto setProfile={setProfile} />;
             case 'salesReport':
                 return <SalesReport />;
             case 'ItinerarySummary':
@@ -415,7 +433,7 @@ const TourGuideDashboard = () => {
         { label: 'View Itineraries', section: 'viewActivities', icon: <Description /> },
         { label: 'Create Itinerary', section: 'createActivity', icon: <AddLocation /> },
        // { label: 'Update Profile', section: 'updateProfile', icon: <Edit /> },
-        { label: 'Upload Profile Picture', section: 'uploadProfilePicture', icon: <AccountCircle /> },
+      //  { label: 'Upload Profile Picture', section: 'uploadProfilePicture', icon: <AccountCircle /> },
         { label: 'Sales Report', section: 'salesReport', icon: <InsertChart /> },
         { label: 'Itinerary Summary', section: 'ItinerarySummary', icon: <PictureAsPdf /> },
       ];
@@ -470,9 +488,9 @@ const TourGuideDashboard = () => {
         <Box >
   {isSidebarOpen ? (
     <Box sx={{marginLeft:'10px'}}>
-    <Avatar
-      {...stringAvatar(profile.username || 'User')}
-      sx={{
+    <Avatar src={photoUrl || undefined}
+                            {...(!photoUrl && stringAvatar(profile.username || 'User'))}
+                                                sx={{
         width: 60,
         height: 60,
         marginRight: '15px',

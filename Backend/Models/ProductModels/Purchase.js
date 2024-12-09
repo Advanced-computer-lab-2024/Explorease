@@ -45,6 +45,9 @@ const purchaseSchema = new Schema({
     },
     paymentMethod : {
         type : String, required : false,
+    },
+    sessionId : {
+        type : String, required : true,
     }
 
 });

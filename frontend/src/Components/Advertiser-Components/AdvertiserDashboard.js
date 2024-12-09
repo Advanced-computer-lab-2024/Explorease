@@ -28,6 +28,7 @@ import AdvertiserHistoricalPlaces from '../MainPage-Components/CommonHistoricalP
 
 const AdvertiserDashboard = () => {
     const [profile, setProfile] = useState({});
+    const [photoUrl, setPhotoUrl] = useState('');
     const [message, setMessage] = useState('');
     const [activeComponent, setActiveComponent] = useState('home');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -55,6 +56,7 @@ const AdvertiserDashboard = () => {
 
                 if (response.data && response.data.advertiser) {
                     setProfile(response.data.advertiser);
+                    setPhotoUrl(response.data.advertiser.imageUrl || '');
                 } else {
                     setMessage('No profile data found');
                 }
@@ -260,8 +262,8 @@ const AdvertiserDashboard = () => {
                             width: '100%',
                           }}
                         >
-                          <Avatar
-                            {...stringAvatar(profile.username || 'User')}
+                          <Avatar          src={photoUrl || undefined}
+          {...(!photoUrl && stringAvatar(profile.username || 'User'))}
                             sx={{
                               width: 60,
                               height: 60,
@@ -466,8 +468,8 @@ const AdvertiserDashboard = () => {
     <Box >
   {isSidebarOpen ? (
     <Box sx={{marginLeft:'10px'}}>
-    <Avatar
-      {...stringAvatar(profile.username || 'User')}
+    <Avatar  src={photoUrl || undefined}
+          {...(!photoUrl && stringAvatar(profile.username || 'User'))}
       sx={{
         width: 60,
         height: 60,
