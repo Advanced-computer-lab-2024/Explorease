@@ -93,7 +93,7 @@ const ManageUsers = () => {
 
   const renderUserSection = (title, users, userType) => (
     <Box sx={{ marginBottom: 4 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
         {title}
       </Typography>
       {users.length === 0 ? (
@@ -128,9 +128,10 @@ const ManageUsers = () => {
                     '&:hover': {
                       backgroundColor: 'white',
                       color: '#f44336',
-                      border: '1px solid #f44336',
+                      
                       transform: 'scale(1.1)',
                     },
+                    border: '2px solid #f44336',
                   }}
                 >
                   <Delete />
@@ -146,7 +147,7 @@ const ManageUsers = () => {
 
   return (
     <Box sx={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" gutterBottom sx={{fontWeight:'bold' , color:'#111E56'}}>
         Manage Users Accounts
       </Typography>
 
@@ -174,7 +175,7 @@ const ManageUsers = () => {
               }}
             >
               <CardContent>
-                <Typography variant="h6">Total Accounts</Typography>
+                <Typography variant="h6" sx={{fontWeight:'bold' , color:'#111E56'}}>Total Accounts</Typography>
                 <Typography variant="h4" color="primary">
                   {totalAccounts}
                 </Typography>
@@ -191,7 +192,7 @@ const ManageUsers = () => {
               }}
             >
               <CardContent>
-                <Typography variant="h6">Accounts This Month</Typography>
+                <Typography variant="h6" sx={{fontWeight:'bold' , color:'#111E56'}} >Accounts This Month</Typography>
                 <Typography variant="h4" color="secondary">
                   {monthlyAccounts}
                 </Typography>
