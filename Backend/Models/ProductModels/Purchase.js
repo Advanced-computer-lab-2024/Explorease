@@ -47,7 +47,7 @@ const purchaseSchema = new Schema({
         type : String, required : false,
     },
     sessionId : {
-        type : String, required : true,
+        type : String, required : false,
     }
 
 });
