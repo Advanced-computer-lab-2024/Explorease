@@ -862,11 +862,25 @@ https://youtube.com/playlist?list=PLZlA0Gpn_vH_NT5zPVp18nGe_W9LqBDQK&si=rKWWZ_L0
 https://youtu.be/CLG0ha_a0q8?si=8MRpffz2zzH7RmoU
 
 
-## License:
-- MIT License
-- Apache-2.0 License
-- ISC License
-- BSD 3-Clause License
-- SSPL (for MongoDB)
-- Custom Terms: Google Maps API, ExchangeRates, Amadeus, and Mailgun
+## License  
+The project is licensed under the [MIT License](LICENSE).  
+
+### Additional Licenses  
+This project includes dependencies and components licensed under the following terms:  
+
+- **Apache-2.0 License**  
+- **ISC License**  
+- **BSD 3-Clause License**  
+- **SSPL**: Applies specifically to MongoDB, which is licensed under the [Server Side Public License (SSPL)](https://www.mongodb.com/licensing/server-side-public-license).  
+
+---
+
+## Third-Party Services and Terms  
+This project integrates with third-party services, which have their own usage terms. Ensure you comply with these terms when using the project:  
+
+- **Google Maps API**: Subject to the [Google Maps Platform Terms of Service](https://cloud.google.com/maps-platform/terms).  
+- **ExchangeRates API**: Refer to their respective terms.  
+- **Amadeus API**: Subject to the [Amadeus API Terms of Service](https://developers.amadeus.com/).  
+- **Mailgun**: Subject to the [Mailgun Terms of Service](https://www.mailgun.com/terms).  
+
 
