@@ -717,4 +717,3 @@ const BookItinerariesPage = () => {
 };
 
 export default BookItinerariesPage;
-

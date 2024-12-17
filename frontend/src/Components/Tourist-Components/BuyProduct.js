@@ -257,7 +257,7 @@ useEffect(() => {
                               padding: "2px 8px",
                           }}
                       >
-                          ${convertPrice(product.Price)} {selectedCurrency}
+                          {convertPrice(product.Price)} {selectedCurrency}
                       </Typography>
                   </Box>
 

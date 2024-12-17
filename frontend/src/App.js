@@ -29,7 +29,6 @@ function App() {
   return (
     <CurrencyProvider>
     <Router>
-
       <div className="App">
         <Routes>
           <Route path='/' element ={<HomePage />} />
@@ -38,11 +37,9 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/register" element={<MultiRoleRegister />} />
           <Route path='/touristguide' element={<TouristGuide />} />
-          
           <Route path="/tourist/" element={<TouristDashboard />} />
-
           <Route path="/tourguide/" element={<TourGuideDashboard />} />
-          <Route path="/seller/" element={<SellerDashboard />} />  {/* Seller Dashboard */}
+          <Route path="/seller/" element={<SellerDashboard />} />  
           <Route path="/activities" element={<Activities />} />
           <Route path="/itineraries" element={<Itineraries />} />
           <Route path='/advertiser' element={<AdvertiserDashboard />} />
@@ -55,7 +52,6 @@ function App() {
           <Route path="/payment-status" element={<PaymentStatus />} />
           <Route path="/activity-success" element={<ActivitySuccess />} />
           <Route path='/itinerary-success' element={<ItinerarySuccess />} />
-
         </Routes>
       </div>
     </Router>

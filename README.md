@@ -1,17 +1,16 @@
 # Explorease - Virtual Trip Planner website
 
-
-
 ## Motivation:
 We created Explorease to simplify the process of planning a trip, from booking transportation, and hotels to finding local activities, and purchasing goods. It brings together all your vacation planning needs in one platform, tailored to your personal preferences.
 
 
 ## Build Status:
 **Build Completed**: The project is in **Stable Release**.
-- ✅ **Build Completed**: The project is functional and deployed.  
+- ✅ **Build Completed**: The project is functional.  
 - ⚠️ **Known Issues**:  
   - **Performance**: The site may experience some slowness.  
   - **Photo Rendering**: Images may not render consistently under certain network conditions.  
+  - **Error Messages** : Some components do not show enough valid error messages. Error messages need to be more specific.
 
 We are actively working to address these issues in future updates.
 
@@ -23,23 +22,23 @@ We are actively working to address these issues in future updates.
 
 
 ## Screenshots:
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/landing%20page.png)  
+![App Screenshot](screenshots/landing_page.png)  
 
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Screenshot%202024-12-08%20212657.png)  
+![App Screenshot](screenshots/login.png)  
 
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/tourist%20homepage.png)  
+![App Screenshot](screenshots/cart.png)  
 
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/past%20activity%20bookings.png)  
+![App Screenshot](screenshots/map.png)  
 
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/book%20itinerary.png)  
+![App Screenshot](screenshots/past_bookings.png)  
 
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/map.png)
+![App Screenshot](screenshots/tourist_homepage.png)
 
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/purchased%20products.png)  
+![App Screenshot](screenshots/purchased_products.png)  
 
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/cart.png)  
+![App Screenshot](screenshots/book_itinerary.png)  
 
-[![Watch the video](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Explorease.mp4)]
+[Watch the video](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Explorease.mp4)
 
 
 
@@ -47,9 +46,9 @@ We are actively working to address these issues in future updates.
 - *Frontend*: React.js
 - *Backend*: Node.js, Express.js
 - *Database*: MongoDB
-- *Authentication*: JWT (JSON Web Tokens), and bcrypt (for hashing passwords)
-- *Third-party Services*: Stripe (for payments), Google Maps API, ExchangeRates, Cloudinary, Amadeus, and Mailgun.
-- *Testing*: Postman for API testing
+- *Authentication*: JWT (JSON Web Tokens), and bcrypt (for hashing passwords).
+- *Third-party Services*: Stripe (for payments), Google Maps API, ExchangeRates, Cloudinary, Amadeus, Multer, NodeScheduler, NodeMailer and Mailgun.
+- *Testing*: Postman for API testing.
 
 
 ## Features:
@@ -494,144 +493,152 @@ const getFilteredSortedProducts = async (req, res) => {
 - **[Postman](https://www.postman.com/downloads/)**: Choose the version that suits your operating system.  
 - **[MongoDB (Atlas)](https://www.mongodb.com/atlas/database)**.
 
+In a terminal , make sure to change directory to either `cd frontend` or `cd Backend`, and use the command `npm i` to install all dependencies found in the `package.json` file.
 
 ## API Refrences:
-The Base address for the API is : http://localhost:5000  
+The Base address for the API is  `http://localhost:5000`
+
 The provided list is of all the API routes:
 
 <details>
-<summary> ADMIN API Routes </summary>
-  
--  POST /admin/createMainAdmin
--  POST /admin/add
--  POST /admin/login 
--  GET /admin/all
--  POST /admin/addGovernor
--  DELETE /admin/delete/:id
--  POST /admin/createTags
--  PUT /admin/updateTag/:id
--  GET /admin/getTags
--  DELETE /admin/deleteTag/:id
--  POST /admin/createPromoCode
--  PUT /admin/updatePromoCode/:id
--  GET /admin/getPromoCodes
--  DELETE /admin/deletePromoCode/:id
--  POST /admin/createCategory
--  PUT /admin/updateCategory/:id
--  GET /admin/getCategories
--  DELETE /admin/deleteCategory/:id
--  GET /admin/products
--  GET /admin/adminproducts
--  POST /admin/addProduct
--  PUT /admin/archiveProduct/:id
--  PUT /admin/updateProduct/:id
--  DELETE /admin/deleteProduct/:id
--  GET /admin/myproducts/filter-sort-search
--  GET /admin/itineraries
--  PUT /admin/flagItineraries/:id
--  PUT /admin/unflagItineraries/:id
--  GET /admin/activities
--  PUT /admin/flagActivity/:id
--  PUT /admin/unflagActivity/:id
--  GET /admin/tourists
--  GET /admin/sellers
--  GET /admin/tourismGovernors
--  GET /admin/addGoverner
--  GET /admin/tourGuides
--  GET /admin/advertisers
--  DELETE /admin/deleteUser/:id/:userType
--  PUT /admin/editMyPassword
--  GET /admin/pending-users
--  POST /admin/accept-user
--  POST /admin/reject-user
--  GET /admin/sales-report
--  GET /admin/sales-report/filter
--  GET /admin/getAllComplaints
--  GET /admin/getComplaintsByStatus
--  GET /admin/getComplaintsByDate
--  GET /admin/adminRespondToComplaint/:complaintId
--  DELETEPUT /admin/deleteComplaint
--  GET /admin/getRequesteddeleteUsers
--  POST /admin/notifications
--  GET /admin/notifications
--  PUT /admin/notifications/:id
--  DELETE /admin/notifications/:id
-  
+<summary><strong>ADMIN API Routes</strong></summary>
+
+```http
+POST   /admin/createMainAdmin
+POST   /admin/add
+POST   /admin/login
+GET    /admin/all
+POST   /admin/addGovernor
+DELETE /admin/delete/:id
+POST   /admin/createTags
+PUT    /admin/updateTag/:id
+GET    /admin/getTags
+DELETE /admin/deleteTag/:id
+POST   /admin/createPromoCode
+PUT    /admin/updatePromoCode/:id
+GET    /admin/getPromoCodes
+DELETE /admin/deletePromoCode/:id
+POST   /admin/createCategory
+PUT    /admin/updateCategory/:id
+GET    /admin/getCategories
+DELETE /admin/deleteCategory/:id
+GET    /admin/products
+GET    /admin/adminproducts
+POST   /admin/addProduct
+PUT    /admin/archiveProduct/:id
+PUT    /admin/updateProduct/:id
+DELETE /admin/deleteProduct/:id
+GET    /admin/myproducts/filter-sort-search
+GET    /admin/itineraries
+PUT    /admin/flagItineraries/:id
+PUT    /admin/unflagItineraries/:id
+GET    /admin/activities
+PUT    /admin/flagActivity/:id
+PUT    /admin/unflagActivity/:id
+GET    /admin/tourists
+GET    /admin/sellers
+GET    /admin/tourismGovernors
+GET    /admin/addGoverner
+GET    /admin/tourGuides
+GET    /admin/advertisers
+DELETE /admin/deleteUser/:id/:userType
+PUT    /admin/editMyPassword
+GET    /admin/pending-users
+POST   /admin/accept-user
+POST   /admin/reject-user
+GET    /admin/sales-report
+GET    /admin/sales-report/filter
+GET    /admin/getAllComplaints
+GET    /admin/getComplaintsByStatus
+GET    /admin/getComplaintsByDate
+GET    /admin/adminRespondToComplaint/:complaintId
+DELETE /admin/deleteComplaint
+GET    /admin/getRequesteddeleteUsers
+POST   /admin/notifications
+GET    /admin/notifications
+PUT    /admin/notifications/:id
+DELETE /admin/notifications/:id
+```
 </details>
   
-<details>
-<summary> ADVERTISER API Routes </summary>
+<details> <summary><strong>ADVERTISER API Routes</strong></summary>
 
-- GET /advertiser/myProfile
-- PUT /advertiser/updateProfile
-- DELETE /advertiser/deleteProfile
-- PUT /advertiser/editPassword
-- PUT /advertiser/deleteRequest
-- POST /advertiser/createActivity
-- GET /advertiser/getMyActivities
-- GET /advertiser/filter-sort-search
-- DELETE /advertiser/deleteActivity/:id
-- DELETE /advertiser/deleteActivity2/:id
-- PUT /advertiser/updateActivity/:id
-- POST /advertiser/upload-photo
-- POST /advertiser/notifications
-- GET /advertiser/notifications
-- PUT /advertiser/notifications/:id
-- DELETE /advertiser/notifications/:id
-- GET /advertiser/salesReport
-- GET /advertiser/salesReport/filter
-- GET /advertiser/activity-summary
-
-</details>
-
-<details>
-<summary> GOVERNOR API Routes </summary>
-  
-- POST /governor/createHistoricalPlace
-- PUT /governor/updateHistoricalPlace/:id
-- GET /governor/getMyHistoricalPlaces
-- GET /governor/getAllHistoricalPlaces
-- DELETE /governor/deleteHistoricalPlace/:id
-- POST /governor/createTag
-- GET /governor/myProfile
-- PUT /governor/updateProfile
-- DELETE /governor/deleteProfile
-- PUT /governor/editPassword
-- POST /governor/notifications
-- GET /governor/notifications
-- PUT /governor/notifications/:id
-- DELETE /governor/notifications/:id
+```http
+GET    /advertiser/myProfile
+PUT    /advertiser/updateProfile
+DELETE /advertiser/deleteProfile
+PUT    /advertiser/editPassword
+PUT    /advertiser/deleteRequest
+POST   /advertiser/createActivity
+GET    /advertiser/getMyActivities
+GET    /advertiser/filter-sort-search
+DELETE /advertiser/deleteActivity/:id
+DELETE /advertiser/deleteActivity2/:id
+PUT    /advertiser/updateActivity/:id
+POST   /advertiser/upload-photo
+POST   /advertiser/notifications
+GET    /advertiser/notifications
+PUT    /advertiser/notifications/:id
+DELETE /advertiser/notifications/:id
+GET    /advertiser/salesReport
+GET    /advertiser/salesReport/filter
+GET    /advertiser/activity-summary
+```
 
 </details>
 
 <details>
-<summary> SELLER API Routes </summary>
+<summary><strong> GOVERNOR API Routes </strong> </summary>
   
-- GET /seller/myProfile
-- PUT /seller/myProfile
-- POST /seller/createProduct
-- GET /seller/myproducts
-- GET /seller/products
-- GET /seller/myproducts/filter-sort-search
-- DELETE /seller/productsBySeller/:id
-- PUT /seller/updateProduct/:id
-- DELETE /seller/deleteProduct/:id
-- PUT /seller/archiveProduct/:id
-- PUT /seller/editPassword
-- GET /seller/getall
-- PUT /seller/deleteSellerRequest
-- POST /seller/upload-photo
-- POST /seller/notifications
-- GET /seller/notifications
-- PUT /seller/notifications/:id
-- DELETE /seller/notifications/:id
-- GET /seller/salesReport
-- GET /seller/salesReport/filter
+```http
+POST   /governor/createHistoricalPlace
+PUT    /governor/updateHistoricalPlace/:id
+GET    /governor/getMyHistoricalPlaces
+GET    /governor/getAllHistoricalPlaces
+DELETE /governor/deleteHistoricalPlace/:id
+POST   /governor/createTag
+GET    /governor/myProfile
+PUT    /governor/updateProfile
+DELETE /governor/deleteProfile
+PUT    /governor/editPassword
+POST   /governor/notifications
+GET    /governor/notifications
+PUT    /governor/notifications/:id
+DELETE /governor/notifications/:id
+```
 
 </details>
 
 <details>
-<summary> TOURGUIDE API Routes </summary>
+<summary> <strong> SELLER API Routes </strong> </summary>
+
+```http
+GET    /seller/myProfile
+PUT    /seller/myProfile
+POST   /seller/createProduct
+GET    /seller/myproducts
+GET    /seller/products
+GET    /seller/myproducts/filter-sort-search
+DELETE /seller/productsBySeller/:id
+PUT    /seller/updateProduct/:id
+DELETE /seller/deleteProduct/:id
+PUT    /seller/archiveProduct/:id
+PUT    /seller/editPassword
+GET    /seller/getall
+PUT    /seller/deleteSellerRequest
+POST   /seller/upload-photo
+POST   /seller/notifications
+GET    /seller/notifications
+PUT    /seller/notifications/:id
+DELETE /seller/notifications/:id
+GET    /seller/salesReport
+GET    /seller/salesReport/filter
+```
+
+</details>
+
+<details>
+<summary> <strong> TOURGUIDE API Routes</strong> </summary>
 
 - GET /tourguide/allActivities
 - GET /tourguide/allTags
@@ -660,127 +667,133 @@ The provided list is of all the API routes:
 </details>
 
 <details>
-<summary> TOURIST API Routes </summary>
+<summary> <strong> TOURIST API Routes</strong> </summary>
+ 
+  ```http
+ GET /tourist/myProfile
+ PUT /tourist/myProfile
+ GET /tourist/products
+ GET /tourist/products/filter-sort-search
+ GET /tourist/promocode/:name
+ POST /tourist/promocode
+ POST /tourist/product/purchase
+ PUT /tourist/purchase/:purchaseId/review
+ GET /tourist/purchases/my-purchases
+ DELETE /tourist/purchases/:purchaseId/cancel
+ POST /tourist/cart/add
+ GET /tourist/cart
+ DELETE /tourist/cart/:productId
+ DELETE /tourist/cart
+ POST /tourist/cart/checkout
+ PUT /tourist/cart/update
+ POST /tourist/cart/apply-promo
+ GET /tourist/activities
+ GET /tourist/itineraries
+ GET /tourist/historical-places
+ GET /tourist/activities/filter-sort-search
+ GET /tourist/itineraries/filter-sort-search
+ GET /tourist/historical-places/filter-sort-search
+ PUT /tourist/editPassword
+ POST /tourist/addComplaint
+ GET /tourist/getComplaintsByTouristAndStatus
+ GET /tourist/getComplaintsByTourist
+ DELETE /tourist/deleteComplaint
+ POST /tourist/activities/book/:activityId
+ POST /tourist/itineraries/book/:itineraryId
+ GET /tourist/itineraries/bookings
+ GET /tourist/activities/bookings
+ GET /tourist/activities/:id
+ POST /tourist/bookings/cancelBooking/:bookingId
+ POST /tourist/bookings/cancelBookingItinerary/:bookingId
+ POST /tourist/activity-bookings/add-rating/:bookingId
+ POST /tourist/activity-bookings/add-comment/:bookingId
+ POST /tourist/itinerary-bookings/add-rating/:bookingId
+ POST /tourist/itinerary-bookings/add-comment/:bookingId
+ GET /tourist/itineraries/:id
+ GET /tourist/get-my-guides/:id
+ GET /tourist/myPoints
+ POST /tourist/addpoints
+ POST /tourist/convertPointsToRedeemableAmount
+ GET /tourist/myBadge
+ PUT /tourist/deleteTouristRequest
+ POST /tourist/subscribeToActivity/:activityId
+ POST /tourist/tourguideRev/add
+ GET /tourist/getTGRevAll/:tourGuideId
+ GET /tourist/getTGRev/:tourGuideId
+ POST /tourist/wishlist/add
+ GET /tourist/wishlist
+ DELETE /tourist/wishlist/:productId
+ POST /tourist/delivery-address
+ GET /tourist/delivery-address
+ DELETE /tourist/delivery-address/:addressId
+ GET /tourist/notifications
+ POST /tourist/cart/stripe-session
+ POST /tourist/cart/stripe-success
+ POST /tourist/saved-activity/:activityId
+ GET /tourist/saved-activity
+ DELETE /tourist/saved-activity/:activityId
+ POST /tourist/save/:itineraryId
+ GET /tourist/saved-itineraries
+ DELETE /tourist/saved-itineraries/:itineraryId
+ POST /tourist/activities/stripe-session
+ POST /tourist/activities/stripe-success
+ POST /tourist/itineraries/stripe-session
+ POST /tourist/itineraries/stripe-success
+ POST /tourist/flights/stripe-session
+ POST /tourist/hotels/stripe-session
+ GET /tourist/activities/booked/booked-activities
+ GET /tourist/itineraries/booked/booked-itineraries
+```
+</details>
+
+<details>
+<summary> <strong> HOTELS API Routes </strong> </summary>
   
-- GET /tourist/myProfile
-- PUT /tourist/myProfile
-- GET /tourist/products
-- GET /tourist/products/filter-sort-search
-- GET /tourist/promocode/:name
-- POST /tourist/promocode
-- POST /tourist/product/purchase
-- PUT /tourist/purchase/:purchaseId/review
-- GET /tourist/purchases/my-purchases
-- DELETE /tourist/purchases/:purchaseId/cancel
-- POST /tourist/cart/add
-- GET /tourist/cart
-- DELETE /tourist/cart/:productId
-- DELETE /tourist/cart
-- POST /tourist/cart/checkout
-- PUT /tourist/cart/update
-- POST /tourist/cart/apply-promo
-- GET /tourist/activities
-- GET /tourist/itineraries
-- GET /tourist/historical-places
-- GET /tourist/activities/filter-sort-search
-- GET /tourist/itineraries/filter-sort-search
-- GET /tourist/historical-places/filter-sort-search
-- PUT /tourist/editPassword
-- POST /tourist/addComplaint
-- GET /tourist/getComplaintsByTouristAndStatus
-- GET /tourist/getComplaintsByTourist
-- DELETE /tourist/deleteComplaint
-- POST /tourist/activities/book/:activityId
-- POST /tourist/itineraries/book/:itineraryId
-- GET /tourist/itineraries/bookings
-- GET /tourist/activities/bookings
-- GET /tourist/activities/:id
-- POST /tourist/bookings/cancelBooking/:bookingId
-- POST /tourist/bookings/cancelBookingItinerary/:bookingId
-- POST /tourist/activity-bookings/add-rating/:bookingId
-- POST /tourist/activity-bookings/add-comment/:bookingId
-- POST /tourist/itinerary-bookings/add-rating/:bookingId
-- POST /tourist/itinerary-bookings/add-comment/:bookingId
-- GET /tourist/itineraries/:id
-- GET /tourist/get-my-guides/:id
-- GET /tourist/myPoints
-- POST /tourist/addpoints
-- POST /tourist/convertPointsToRedeemableAmount
-- GET /tourist/myBadge
-- PUT /tourist/deleteTouristRequest
-- POST /tourist/subscribeToActivity/:activityId
-- POST /tourist/tourguideRev/add
-- GET /tourist/getTGRevAll/:tourGuideId
-- GET /tourist/getTGRev/:tourGuideId
-- POST /tourist/wishlist/add
-- GET /tourist/wishlist
-- DELETE /tourist/wishlist/:productId
-- POST /tourist/delivery-address
-- GET /tourist/delivery-address
-- DELETE /tourist/delivery-address/:addressId
-- GET /tourist/notifications
-- POST /tourist/cart/stripe-session
-- POST /tourist/cart/stripe-success
-- POST /tourist/saved-activity/:activityId
-- GET /tourist/saved-activity
-- DELETE /tourist/saved-activity/:activityId
-- POST /tourist/save/:itineraryId
-- GET /tourist/saved-itineraries
-- DELETE /tourist/saved-itineraries/:itineraryId
-- POST /tourist/activities/stripe-session
-- POST /tourist/activities/stripe-success
-- POST /tourist/itineraries/stripe-session
-- POST /tourist/itineraries/stripe-success
-- POST /tourist/flights/stripe-session
-- POST /tourist/hotels/stripe-session
-- GET /tourist/activities/booked/booked-activities
-- GET /tourist/itineraries/booked/booked-itineraries
+
+  ```http
+ GET /hotel/search
+```
 
 </details>
 
 <details>
-<summary> HOTELS API Routes </summary>
-  
-- GET /hotel/search
+<summary> <strong> FLIGHTS API Routes </strong> </summary>
 
-</details>
-
-<details>
-<summary> FLIGHTS API Routes </summary>
-  
-- Get /flights/iata-code
-- Get /flights/search
+```http  
+ Get /flights/iata-code
+ Get /flights/search
+```
 
 </details>
 
 ## Tests:
 
-![App Screenshot](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/adminlogin.jpg)  
+![Test Screenshot](tests/adminlogin.jpg)  
+![Test Screenshot](tests/test1.jpg)  
+![Test Screenshot](tests/test2.jpg)  
+![Test Screenshot](tests/test3.jpg)  
+![Test Screenshot](tests/test4.jpg)  
+![Test Screenshot](tests/test5.jpg)  
+![Test Screenshot](tests/test6.jpg)  
+![Test Screenshot](tests/test7.jpg)  
+![Test Screenshot](tests/test8.jpg)  
+![Test Screenshot](tests/test9.jpg)  
+![Test Screenshot](tests/test10.jpg)  
+![Test Screenshot](tests/test11.jpg)  
+![Test Screenshot](tests/test12.jpg)  
+![Test Screenshot](tests/test13.jpg)  
+![Test Screenshot](tests/test14.jpg)  
+![Test Screenshot](tests/test15.jpg)  
+![Test Screenshot](tests/test16.jpg)  
 
 
 ## How to use:
 1. Clone the repository on VS code (using this comand): git clone https://github.com/Advanced-computer-lab-2024/Explorease.git
-2. Set up environment variables (Create a .env file in the root directory (Backend folder) and add the following): 
-MONGO_URI="mongodb+srv://peteradelmakram:123456Peter@mernapp.qmjr7.mongodb.net/?retryWrites=true&w=majority&appName=MERNApp"
-JWT_SECRET=mySuperSecretKey1234
-CLOUDINARY_CLOUD_NAME=dglhvla5v
-CLOUDINARY_API_KEY=877731735338471
-CLOUDINARY_API_SECRET=WXRXDhSbvdlX7_6fCGMiwiTT568
-AMADEUS_API_KEY=Gd4Wnrdgz2Nlowi8wUQ9oDNRDB5bi1Hb
-AMADEUS_API_SECRET=3EFvncvOtpjvoztM
-API_TOKEN = 'dbff005947c84451a8e8f71e5254d8b3';
-PARTNER_ID = '585688';
-GOOGLE_API = AIzaSyDUP5fw3jw8bvJ7yj9OskV5wdm5sNUbII4
-STRIPE_SECRET_KEY=sk_test_51QOJUXJQW7K2cQRDikcIoUMV9TZhm5dWsUhXveSaHbAmY2Y8S6pqTwC4UvG2JcqH9sRmAEQWI8xFLOTgTBMJ5svx00sgaAWP8T
-STRIPE_PUBLISHABLE_KEY=pk_test_51QOJUXJQW7K2cQRDilsJEyTVcgbhVUvgMEnXR8EdY4jsZl4M9MoUuyU8CdRygYSYXbrLrpQpcqkDkhM9iDBNtdvj00dsrJLL50
-FRONTEND_URL=http://localhost:3000  # Your frontend URL
-FAILSAFECODE = NGD7KNYZ5Q79XHRD7PGKT4UZ
-MAILGUN_API_KEY = d2e64ad18dfb270fb004c8e2664265d8-c02fd0ba-489278df
-MAILGUN_DOMAIN=sandboxb1e282bce15c48b6a0eba45b8ef55bf2.mailgun.org
-MAILGUN_SENDER=postmaster@sandboxb1e282bce15c48b6a0eba45b8ef55bf2.mailgun.org
+2. Set up environment variables (Create a .env file in the root directory (Backend folder)): Message the admin of the repository to gain access to our own API Keys and Environment Variables.
+
 3. Install dependencies and run the application (open 2 separate terminals):
-   1. Backend: cd Backend, then npm i, then Node App.js
-   2. Frontend: cd frontend, then npm i, then npm start
+   1. Backend: `cd Backend` , then `npm i`, then `npm run dev`
+   2. Frontend: `cd frontend`, then `npm i`, then `npm start`
 4. Or open [http://localhost:3000](http://localhost:3000) to view it in your browser.   
 5. Register to make an account on the website, and naviagte easily after.
 
