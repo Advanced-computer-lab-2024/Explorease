@@ -796,6 +796,114 @@ GET    /seller/salesReport/filter
 
 ## How to use:
 
+Explorease is designed to cater to tourists, advertisers, sellers, tour guides, and tourism governors, ensuring a seamless experience for exploring, booking, and creating tourism-related activities and services. 
+
+---
+
+#### **Tourists**
+
+1. **Sign Up**
+   - Register an account with your email or social media.
+   - Complete your profile for personalized recommendations.
+
+2. **Booking Services**
+   - **Flights:** Browse and book flights to your desired destination.  
+   - **Hotels:** Explore a range of accommodations and make bookings directly.  
+   - **Itineraries:** Discover itineraries crafted by tour guides that include schedules, activities, and languages supported.  
+   - **Activities:** Book activities like tours, adventures, or events offered by advertisers.
+
+3. **Shopping**
+   - Purchase unique products crafted by our sellers.  
+   - Pay conveniently with **cash on delivery**, **credit card**, or **wallet credit**.
+
+4. **Wallet and Points System**
+   - Earn points by spending money on Explorease.  
+   - Redeem points for wallet credit to save on future bookings or purchases.
+
+5. **Feedback and Reviews**
+   - Share your experiences by rating and reviewing itineraries, activities, and products to help others make informed decisions.
+
+
+---
+
+#### **Sellers**
+
+1. **Sign Up and Approval**
+   - Register and upload your **Tax Registration** and **ID**.  
+   - Once approved, gain access to upload products.
+
+2. **Upload Products**
+   - Add your products with images, descriptions, and pricing.  
+   - Manage inventory and track sales through your dashboard.
+
+3. **Sales and Revenue Management**
+   - View detailed reports of your sales and revenue.  
+
+---
+
+#### **Tour Guides**
+
+1. **Sign Up and Approval**
+   - Register and upload your **Qualifications** and **ID**.  
+   - Get approved to start creating itineraries.
+
+2. **Create Itineraries**
+   - Use pre-existing activities or create new ones to design itineraries.  
+   - Include features like multiple languages, customizable schedules, and special details to enhance appeal.
+
+3. **Manage Itineraries**
+   - Update itineraries with new activities or adjustments based on user feedback.  
+   - Track user interest and bookings.
+  
+4. **Monitor Revenue**
+   - Track your earnings through the dashboard.  
+   - Analyze the performance of your activities and make improvements.
+
+
+---
+
+
+#### **Advertisers**
+
+1. **Sign Up and Approval**
+   - Register an account and upload your **Tax Registration** and **ID**.  
+   - Wait for system approval to start creating activities.
+
+2. **Create Activities**
+   - Advertise activities such as guided tours, outdoor adventures, or special events.  
+   - Include all relevant details like prices, dates, and descriptions.
+
+3. **Monitor Revenue**
+   - Track your earnings through the dashboard.  
+   - Analyze the performance of your activities and make improvements.
+
+4. **Explore Other Activities**
+   - Browse activities created by other advertisers for inspiration and market trends.
+
+---
+
+#### **Tourism Governors**
+
+1. **Contact an Admin**
+   - Request to be added to the system by contacting an admin.  
+   - Provide necessary credentials and authorization.
+
+2. **Add Historical Places**
+   - Upload details about historical sites, including descriptions, images, prices, and available amenities.  
+   - Update information regularly to ensure accuracy.
+
+3. **Manage Content**
+   - Monitor and refine the information provided about historical places.  
+   - Engage with users and address queries related to the sites.
+
+---
+
+#### **General Features for All Users**
+- **Multi-Language Support:** The platform supports multiple languages for a global user base.  
+- **User Dashboard:** Each user type has a dedicated dashboard to manage their activities, bookings, or uploads.  
+- **Support:** Reach out to the support team for help or guidance at any time.
+
+
 ## **Contribute**
 
 We welcome contributions to **Explorease**! If you have ideas, suggestions, or fixes (other than the ones mentioned in the build status) that can improve this project, feel free to contribute. Here's how you can get involved:
