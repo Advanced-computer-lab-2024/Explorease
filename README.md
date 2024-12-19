@@ -38,8 +38,21 @@ We are actively working to address these issues in future updates.
 
 ![App Screenshot](screenshots/book_itinerary.png)  
 
-[Watch the video](https://github.com/Advanced-computer-lab-2024/Explorease/blob/main/Explorease.mp4)
+![App Screenshot](screenshots/tourguide_dashboard.jpeg)  
 
+![App Screenshot](screenshots/tourguide_profile.jpeg)  
+
+![App Screenshot](screenshots/guide_report.jpeg)  
+
+![App Screenshot](screenshots/tourguide_itineraries.jpeg)  
+
+![App Screenshot](screenshots/guide_notif.jpeg)  
+
+![App Screenshot](screenshots/historical.jpeg)  
+
+![App Screenshot](screenshots/add_product.jpeg)  
+
+![App Screenshot](screenshots/seller_report.jpeg)  
 
 
 ## Tech/Framework Used:
