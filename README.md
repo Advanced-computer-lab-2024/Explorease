@@ -493,7 +493,14 @@ const getFilteredSortedProducts = async (req, res) => {
 - **[Postman](https://www.postman.com/downloads/)**: Choose the version that suits your operating system.  
 - **[MongoDB (Atlas)](https://www.mongodb.com/atlas/database)**.
 
-In a terminal , make sure to change directory to either `cd frontend` or `cd Backend`, and use the command `npm i` to install all dependencies found in the `package.json` file.
+1. Clone the repository on VS code (using this comand): git clone https://github.com/Advanced-computer-lab-2024/Explorease.git
+2. Set up environment variables (Create a .env file in the root directory (Backend folder)): Message the admin of the repository to gain access to our own API Keys and Environment Variables.
+
+3. Install dependencies and run the application (open 2 separate terminals):
+   1. Backend: `cd Backend` , then `npm i`, then `npm run dev`
+   2. Frontend: `cd frontend`, then `npm i`, then `npm start`
+4. Or open [http://localhost:3000](http://localhost:3000) to view it in your browser.   
+5. Register to make an account on the website, and naviagte easily after.
 
 ## API Refrences:
 The Base address for the API is  `http://localhost:5000`
@@ -788,16 +795,6 @@ GET    /seller/salesReport/filter
 
 
 ## How to use:
-1. Clone the repository on VS code (using this comand): git clone https://github.com/Advanced-computer-lab-2024/Explorease.git
-2. Set up environment variables (Create a .env file in the root directory (Backend folder)): Message the admin of the repository to gain access to our own API Keys and Environment Variables.
-
-3. Install dependencies and run the application (open 2 separate terminals):
-   1. Backend: `cd Backend` , then `npm i`, then `npm run dev`
-   2. Frontend: `cd frontend`, then `npm i`, then `npm start`
-4. Or open [http://localhost:3000](http://localhost:3000) to view it in your browser.   
-5. Register to make an account on the website, and naviagte easily after.
-
-
 
 ## **Contribute**
 
