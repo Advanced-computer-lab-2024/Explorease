@@ -800,7 +800,7 @@ Explorease is designed to cater to tourists, advertisers, sellers, tour guides, 
 
 ---
 
-#### **Tourists**
+### **Tourists**
 
 1. **Sign Up**
    - Register an account with your email or social media.
@@ -826,7 +826,7 @@ Explorease is designed to cater to tourists, advertisers, sellers, tour guides, 
 
 ---
 
-#### **Sellers**
+### **Sellers**
 
 1. **Sign Up and Approval**
    - Register and upload your **Tax Registration** and **ID**.  
@@ -841,7 +841,7 @@ Explorease is designed to cater to tourists, advertisers, sellers, tour guides, 
 
 ---
 
-#### **Tour Guides**
+### **Tour Guides**
 
 1. **Sign Up and Approval**
    - Register and upload your **Qualifications** and **ID**.  
@@ -863,7 +863,7 @@ Explorease is designed to cater to tourists, advertisers, sellers, tour guides, 
 ---
 
 
-#### **Advertisers**
+### **Advertisers**
 
 1. **Sign Up and Approval**
    - Register an account and upload your **Tax Registration** and **ID**.  
@@ -882,7 +882,7 @@ Explorease is designed to cater to tourists, advertisers, sellers, tour guides, 
 
 ---
 
-#### **Tourism Governors**
+### **Tourism Governors**
 
 1. **Contact an Admin**
    - Request to be added to the system by contacting an admin.  
@@ -898,7 +898,7 @@ Explorease is designed to cater to tourists, advertisers, sellers, tour guides, 
 
 ---
 
-#### **General Features for All Users**
+### **General Features for All Users**
 - **Multi-Language Support:** The platform supports multiple languages for a global user base.  
 - **User Dashboard:** Each user type has a dedicated dashboard to manage their activities, bookings, or uploads.  
 - **Support:** Reach out to the support team for help or guidance at any time.
